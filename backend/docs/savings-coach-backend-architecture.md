@@ -869,13 +869,13 @@ The AI can **suggest** a change ("Want me to push the deadline 2 weeks? That get
 | `model` | `ANTHROPIC_MODEL` = `claude-sonnet-5-5` | D16 |
 | `output_config.effort` | `low` for chat and proactive runs (`ANTHROPIC_EFFORT`) | Sonnet 5.5 defaults to `high`, too slow for a voice exchange. Measure on the eval set; go to `medium` only if tool choice gets worse |
 | `thinking` | omit (adaptive by default) | `{type: "disabled"}` returns a 400 on Sonnet 5.5 |
-| `max_tokens` | 8000 | thinking counts toward it |
+| `max_tokens` | 8000 | thinking counts toward it. 🆕 Scaled with effort (A1): low 8 000 · medium 16 000 · high 32 000 · xhigh/max 64 000. 🆕 The wrapper **streams internally** (`get_final_message()`), so the 30 s timeout bounds silence between chunks, not the whole generation; the caller (A6/A7/B9) owns the overall deadline |
 | `temperature` / `top_p` / `top_k` | **never send** | non-default values return a 400 |
 | `tool_choice` | `auto` only | forced `any` / `tool` return a 400 on this model; steer from the prompt and tool descriptions |
 | Tools | `strict: true` + `additionalProperties: false` on every tool | tool inputs always match the schema; Pydantic stays as the domain check |
 | Parallel tool calls | allowed; return **all** `tool_result` blocks in **one** user message (6.3 already does) | "annotate + create receivable" in one step = faster reply |
 | Stop reasons | `end_turn` → reply · `tool_use` → loop · `max_tokens` / `refusal` → fallback template (6.3) | never show a refused or cut-off text |
-| Refusal fallback | optional: server-side `fallbacks: "default"` with beta `server-side-fallback-2026-07-01` (Claude API only) | a safety false positive doesn't break the demo |
+| Refusal fallback | optional: server-side `fallbacks: "default"` with beta `server-side-fallback-2026-07-01` (Claude API only) | a safety false positive doesn't break the demo. 🆕 Setting `ANTHROPIC_REFUSAL_FALLBACK`, **off** by default (D45); SDK 2.3.0 has it only on `client.beta.messages.*`, so the wrapper always uses the beta endpoint; on Sonnet 5.5 it only rescues `cyber`/`frontier_llm` declines |
 | Within a run | append `resp.content` unchanged (thinking blocks included) | required by the API; v0.7 already does it |
 | Intermediate text | on Sonnet 5.5, text between tool calls arrives as (empty by default) thinking blocks, so the final `text` blocks are the reply | settles Q16 |
 | Prompt caching | order: tools → frozen rules (`system`, cache breakpoint) → snapshot (2nd breakpoint) → messages. Keep tool order deterministic and the date in the snapshot, not in the frozen rules. Check `usage.cache_read_input_tokens` | cheaper, faster repeated runs |
