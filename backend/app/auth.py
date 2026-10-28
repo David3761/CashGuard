@@ -1,0 +1,159 @@
+"""Keycloak JWT verification (arch 5.1, B5).
+
+Error codes (arch 9.1 envelope): missing_token, invalid_token, token_expired, invalid_issuer,
+invalid_audience, unknown_user (401); forbidden (403); auth_unavailable (503).
+Token times are checked against the real clock: tokens come from Keycloak, not the simulator.
+"""
+
+import asyncio
+import logging
+import time
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import Any
+
+import httpx
+import jwt
+from jwt import PyJWK
+
+from app.config import get_settings
+from app.errors import DomainError
+
+log = logging.getLogger(__name__)
+
+ACCEPTED_CLIENTS = frozenset({"savings-frontend", "savings-dev", "savings-cron"})
+LEEWAY_SECONDS = 30
+REFETCH_INTERVAL_SECONDS = 60.0
+
+
+def _unauthorized(code: str, message: str) -> DomainError:
+    return DomainError(code, message, status=401)
+
+
+@dataclass(frozen=True)
+class Claims:
+    sub: str
+    azp: str | None
+    roles: frozenset[str]
+    raw: dict[str, Any]
+
+
+class JWKSCache:
+    """Signing keys by `kid`, from `<base_url>/.well-known/openid-configuration` → `jwks_uri`.
+    An unknown `kid` refetches at most once per 60 s (key rotation without a DoS lever)."""
+
+    def __init__(
+        self,
+        base_url: str,
+        *,
+        now: Callable[[], float] = time.monotonic,
+        timeout: float = 5.0,
+    ) -> None:
+        self.base_url = base_url.rstrip("/")
+        self._now = now
+        self._timeout = timeout
+        self._keys: dict[str, PyJWK] = {}
+        self._loaded = False
+        self._unknown_kid_refetch_at: float | None = None
+        self._lock = asyncio.Lock()
+
+    def preload(self, jwks: dict[str, Any]) -> None:
+        """Use these keys as if just fetched (tests, warm start)."""
+        self._keys = self._signing_keys(jwks)
+        self._loaded = True
+
+    async def get_key(self, kid: str) -> PyJWK:
+        if kid in self._keys:
+            return self._keys[kid]
+        async with self._lock:
+            if not self._loaded:
+                await self._refresh()
+            elif kid not in self._keys and self._may_refetch_for_unknown_kid():
+                self._unknown_kid_refetch_at = self._now()
+                await self._refresh()
+        if kid not in self._keys:
+            raise _unauthorized("invalid_token", "The token is signed with an unknown key.")
+        return self._keys[kid]
+
+    def _may_refetch_for_unknown_kid(self) -> bool:
+        last = self._unknown_kid_refetch_at
+        return last is None or self._now() - last >= REFETCH_INTERVAL_SECONDS
+
+    async def _refresh(self) -> None:
+        try:
+            async with httpx.AsyncClient(timeout=self._timeout) as http:
+                discovery = await http.get(f"{self.base_url}/.well-known/openid-configuration")
+                discovery.raise_for_status()
+                certs = await http.get(discovery.json()["jwks_uri"])
+                certs.raise_for_status()
+                keys = self._signing_keys(certs.json())
+        except (httpx.HTTPError, KeyError, ValueError, jwt.PyJWTError) as exc:
+            log.warning("JWKS fetch from %s failed: %s", self.base_url, exc)
+            raise DomainError(
+                "auth_unavailable", "The login service can't be reached. Try again.", status=503
+            ) from exc
+        self._keys = keys
+        self._loaded = True
+
+    @staticmethod
+    def _signing_keys(jwks: dict[str, Any]) -> dict[str, PyJWK]:
+        return {
+            k["kid"]: PyJWK(k)
+            for k in jwks.get("keys", [])
+            if k.get("use", "sig") == "sig" and k.get("alg", "RS256") == "RS256" and "kid" in k
+        }
+
+
+_jwks: JWKSCache | None = None
+
+
+def get_jwks() -> JWKSCache:
+    global _jwks
+    if _jwks is None:
+        settings = get_settings()
+        _jwks = JWKSCache(settings.KEYCLOAK_INTERNAL_URL or settings.KEYCLOAK_ISSUER)
+    return _jwks
+
+
+def set_jwks(cache: JWKSCache | None) -> None:
+    """Replace the key source (tests); None = rebuild from settings on next use."""
+    global _jwks
+    _jwks = cache
+
+
+async def verify_token(token: str) -> Claims:
+    """Check signature (RS256 only), `iss`, `exp`/`nbf` (30 s leeway) and `azp`/`aud`."""
+    try:
+        header = jwt.get_unverified_header(token)
+    except jwt.PyJWTError as exc:
+        raise _unauthorized("invalid_token", "The token is malformed.") from exc
+    kid = header.get("kid")
+    if header.get("alg") != "RS256" or not isinstance(kid, str):
+        raise _unauthorized("invalid_token", "The token's algorithm or key id is not accepted.")
+
+    key = await get_jwks().get_key(kid)
+    settings = get_settings()
+    try:
+        raw: dict[str, Any] = jwt.decode(
+            token,
+            key=key.key,
+            algorithms=["RS256"],
+            issuer=settings.KEYCLOAK_ISSUER,
+            leeway=LEEWAY_SECONDS,
+            options={"verify_aud": False, "require": ["exp", "iat", "iss", "sub"]},
+        )
+    except jwt.ExpiredSignatureError as exc:
+        raise _unauthorized("token_expired", "The token expired. Refresh it and retry.") from exc
+    except jwt.InvalidIssuerError as exc:
+        raise _unauthorized("invalid_issuer", "The token was issued by another server.") from exc
+    except jwt.PyJWTError as exc:
+        raise _unauthorized("invalid_token", "The token is not valid.") from exc
+
+    azp = raw.get("azp")
+    aud = raw.get("aud")
+    audiences = {aud} if isinstance(aud, str) else set(aud or [])
+    if azp not in ACCEPTED_CLIENTS and settings.KEYCLOAK_AUDIENCE not in audiences:
+        raise _unauthorized("invalid_audience", "The token is not meant for this API.")
+
+    roles = raw.get("realm_access", {}).get("roles", [])
+    return Claims(sub=str(raw["sub"]), azp=azp, roles=frozenset(roles), raw=raw)
