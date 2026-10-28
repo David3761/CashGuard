@@ -553,13 +553,16 @@ ADD_LIFE_EVENT = {
     "input_schema": {
         "type": "object",
         "properties": {
-            "name":     {"type": "string"},
-            "date":     {"type": "string", "format": "date", "description": "YYYY-MM-DD"},
+            "name": {"type": "string"},
+            "date": {"type": "string", "format": "date", "description": "YYYY-MM-DD"},
             "est_cost": {"type": "number", "minimum": 0, "description": "RON"},
-            "type":     {"type": "string", "enum": ["trip", "gift", "social", "purchase", "education", "other"]}
+            "type": {
+                "type": "string",
+                "enum": ["trip", "gift", "social", "purchase", "education", "other"],
+            },
         },
-        "required": ["name", "date", "est_cost", "type"]
-    }
+        "required": ["name", "date", "est_cost", "type"],
+    },
 }
 ```
 
@@ -569,29 +572,36 @@ Good tool descriptions are the most important part of the prompt: they tell Clau
 
 ```python
 def run_agent(user_id: int, trigger: str, user_message: str | None) -> AgentResult:
-    system   = build_system_prompt(user_id)        # rules + context snapshot (6.5)
-    messages = load_history(user_id) + ([{"role": "user", "content": user_message}] if user_message else [])
+    system = build_system_prompt(user_id)  # rules + context snapshot (6.5)
+    messages = load_history(user_id) + (
+        [{"role": "user", "content": user_message}] if user_message else []
+    )
     run = agent_runs.create(user_id, trigger)
 
-    for i in range(MAX_ITERATIONS):                 # e.g. 6
-        resp = await client.messages.create(        # 🆕 AsyncAnthropic: don't block the event loop
-            model=MODEL, max_tokens=8000,           # 🆕 thinking counts toward max_tokens; 1024 risks cut-offs
-            output_config={"effort": EFFORT},       # 🆕 "low" for chat/proactive (6.8)
+    for i in range(MAX_ITERATIONS):  # e.g. 6
+        resp = await client.messages.create(  # 🆕 AsyncAnthropic: don't block the event loop
+            model=MODEL,
+            max_tokens=8000,  # 🆕 thinking counts toward max_tokens; 1024 risks cut-offs
+            output_config={"effort": EFFORT},  # 🆕 "low" for chat/proactive (6.8)
             system=system,
-            tools=tools_for(user_id, trigger),      # rebuilt every iteration (D21, D22)
-            messages=messages)
-        if resp.stop_reason in ("refusal", "max_tokens"):    # 🆕 never show a refused or cut-off reply
+            tools=tools_for(user_id, trigger),  # rebuilt every iteration (D21, D22)
+            messages=messages,
+        )
+        if resp.stop_reason in (
+            "refusal",
+            "max_tokens",
+        ):  # 🆕 never show a refused or cut-off reply
             return fallback_reply(run, reason=resp.stop_reason)
-        if resp.stop_reason != "tool_use":                   # end_turn
+        if resp.stop_reason != "tool_use":  # end_turn
             break
         messages.append({"role": "assistant", "content": resp.content})
         results = [execute_tool(user_id, run.id, b) for b in resp.content if b.type == "tool_use"]
         messages.append({"role": "user", "content": results})
     else:
-        return fallback_reply(run)                  # loop limit hit
+        return fallback_reply(run)  # loop limit hit
 
     text = "".join(b.text for b in resp.content if b.type == "text")
-    after_run_hooks(user_id, run)                   # push plan.updated once, mark events (❓Q15)
+    after_run_hooks(user_id, run)  # push plan.updated once, mark events (❓Q15)
     return AgentResult(text=text, quick_replies=run.quick_replies, plan_changed=run.plan_changed)
 ```
 
@@ -603,18 +613,23 @@ REGISTRY = {
     # ... one entry per tool
 }
 
+
 def execute_tool(user_id, run_id, block):
     entry = REGISTRY.get(block.name)
     if entry is None:
         return tool_error(block.id, f"Unknown tool {block.name}")
     schema, fn = entry
     try:
-        args = schema(**block.input)                      # Pydantic validation
-        result = fn(user_id=user_id, **args.model_dump()) # user_id injected by the backend
-        if block.name in MONEY_TOOLS:                     # D18: recompute inside the tool call
+        args = schema(**block.input)  # Pydantic validation
+        result = fn(user_id=user_id, **args.model_dump())  # user_id injected by the backend
+        if block.name in MONEY_TOOLS:  # D18: recompute inside the tool call
             result["plan"] = engine.recompute_plan(user_id).summary(compare_to_previous=True)
         tool_calls.log(run_id, block, result, "ok")
-        return {"type": "tool_result", "tool_use_id": block.id, "content": json.dumps(result, default=str)}
+        return {
+            "type": "tool_result",
+            "tool_use_id": block.id,
+            "content": json.dumps(result, default=str),
+        }
     except (ValidationError, DomainError) as e:
         tool_calls.log(run_id, block, str(e), "error")
         return {"type": "tool_result", "tool_use_id": block.id, "content": str(e), "is_error": True}

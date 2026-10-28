@@ -1,0 +1,79 @@
+[project]
+name = "cashguard-api"
+version = "0.1.0"
+description = "CashGuard backend: savings coach API"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "sqlalchemy[asyncio]>=2.0.36",
+    "psycopg[binary]>=3.2",
+    "anthropic>=0.40",
+    "numpy>=2.1",
+    "pyjwt[crypto]>=2.10",
+    "httpx>=0.28",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6.0",
+    "hypothesis>=6.115",
+    "respx>=0.21",
+    "jsonschema>=4.23",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-m 'not live' --strict-markers"
+asyncio_mode = "auto"
+# One event loop for the whole session, so session-scoped async fixtures (the DB engine) work.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+markers = [
+    "db: needs Postgres (make db-up)",
+    "api: HTTP endpoint tests (needs Postgres)",
+    "ws: WebSocket tests (needs Postgres)",
+    "live: calls the real Anthropic API, costs money",
+    "slow: slow tests",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]  # Romanian text uses ă î ș ț and typographic quotes
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = ["app.domain.*", "app.engine.*", "app.context.*"]
+disallow_any_generics = true
+disallow_untyped_calls = true
+warn_return_any = true
+no_implicit_reexport = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
