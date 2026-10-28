@@ -52,8 +52,8 @@
 | Task | Agent | Worktree / branch | Needs (from) | Status |
 |---|---|---|---|---|
 | F1 (F1.2–F1.5) | f1 | `.worktrees/f1` · `dga-task/f1-skeleton` | — | plan ✅ · building F1.2 |
-| F2 | f2 | `.worktrees/f2` · `dga-task/f2-domain` | — | plan ✅ · building 1a |
-| C1 | c1 | `.worktrees/c1` · `dga-task/c1-lists` | C1.2+: F2 step 1a (f2) | plan ✅ · building C1.1 |
+| F2 | f2 | `.worktrees/f2` · `dga-task/f2-domain` | — | 1a ✅ merged · 1a-fix (review) |
+| C1 | c1 | `.worktrees/c1` · `dga-task/c1-lists` | C1.4 `to_money`: F2 step 2 (f2) | plan ✅ · building C1.1 (C1.2+ unblocked) |
 | A1 | a1 | `.worktrees/a1` · `dga-task/a1-llm` | step 5: F1.2 Settings (f1) | plan ✅ · building step 1 |
 | A5 | a5 | `.worktrees/a5` · `dga-task/a5-prompts` | A5.1: C1.1 `fold()`; A5.3: C1 `format_money` (c1) | plan ✅ · blocked on C1.1 |
 
