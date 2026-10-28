@@ -4,7 +4,7 @@ Not to be confused with `tests/builders.py` (F2, David G.): those build pure dom
 """
 
 import uuid
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -31,3 +31,12 @@ async def goal(db: AsyncSession, user_id: int, **kw: Any) -> m.Goal:
         "motivation": "Fond de urgență",
     }
     return await add(db, m.Goal(user_id=user_id, **(defaults | kw)))
+
+
+async def transaction(db: AsyncSession, user_id: int, **kw: Any) -> m.Transaction:
+    defaults: dict[str, Any] = {
+        "amount": Decimal("500.00"),
+        "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+        "occurred_at": datetime.fromisoformat("2026-06-15T13:05:00+03:00"),
+    }
+    return await add(db, m.Transaction(user_id=user_id, **(defaults | kw)))
