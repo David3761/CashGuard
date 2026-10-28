@@ -3,6 +3,14 @@
 The values are stored in the DB (B2 builds its CHECK constraints from these enums) and sent in JSON,
 so they are part of the contract: never rename one. `StrEnum` makes `str()`, f-strings and
 `json.dumps` give the value; `@unique` makes a duplicate value an import error instead of an alias.
+
+Values are unique *within* an enum, not across enums: `Decision.AUTO == AnnotationSource.AUTO`
+(both "auto"), so they are equal dict and set keys. A map that mixes enums must key by
+`(type(member), member)`. The tests list every overlap, so a new one is a conscious decision.
+
+The fixed sets are tuples in the doc's order. A frozenset of strings iterates in hash order, which
+changes per process (PYTHONHASHSEED), and snapshots and prompt caching need a stable order.
+`in` works with members and with the plain strings read from the DB.
 """
 
 from enum import StrEnum, unique
@@ -135,18 +143,16 @@ class Liquidity(StrEnum):
     LOCKED = "locked"
 
 
-HOUSEHOLD_SCALED_CATEGORIES: Final[frozenset[Category]] = frozenset(
-    {
-        Category.GROCERIES,
-        Category.HOUSEHOLD_GOODS,
-        Category.HEALTH_PHARMACY,
-        Category.UTILITIES,
-        Category.KIDS,
-        Category.CLOTHING,
-        Category.PERSONAL_CARE,
-    }
+HOUSEHOLD_SCALED_CATEGORIES: Final[tuple[Category, ...]] = (
+    Category.GROCERIES,
+    Category.HOUSEHOLD_GOODS,
+    Category.HEALTH_PHARMACY,
+    Category.UTILITIES,
+    Category.KIDS,
+    Category.CLOTHING,
+    Category.PERSONAL_CARE,
 )
 """Categories whose expected spending scales with the household size (arch 4.5, 5.3.5)."""
 
-NEVER_ASKED_CATEGORIES: Final[frozenset[Category]] = frozenset({Category.HEALTH_PHARMACY})
+NEVER_ASKED_CATEGORIES: Final[tuple[Category, ...]] = (Category.HEALTH_PHARMACY,)
 """Categories the agent never asks about (arch 4.5): health is private."""

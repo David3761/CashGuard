@@ -1,13 +1,23 @@
 """F2 step 1a: the fixed value lists (arch 4.4 / 4.5) and the shared category sets.
 
-The expected lists below are copied from the architecture doc. The values are stored in the DB and
-sent in JSON, so renaming, reordering or dropping one must break loudly (work-breakdown 0.3 rule 7).
+The expected values are parsed from the architecture doc itself, so the doc is the single source
+of truth (work-breakdown 0.3 rule 7) and there is no second hand-typed copy that could carry the
+same typo. The values are stored in the DB and sent in JSON: renaming, reordering or dropping one
+must break loudly. If a doc edit changes the format a parser expects, the test fails and the parser
+gets updated together with the doc.
 """
 
 import inspect
 import json
+import os
 import re
+import subprocess
+import sys
+from collections import defaultdict
+from collections.abc import Callable
 from enum import StrEnum
+from functools import cache
+from pathlib import Path
 
 import pytest
 
@@ -27,107 +37,146 @@ from app.domain.enums import (
     Purpose,
 )
 
-# (enum, values in the doc's order, where the doc lists them)
-GOLDEN: list[tuple[type[StrEnum], list[str], str]] = [
-    (
-        Category,
-        [
-            "groceries",
-            "restaurants",
-            "food_delivery",
-            "transport",
-            "fuel",
-            "electronics",
-            "clothing",
-            "sport",
-            "health_pharmacy",
-            "kids",
-            "education",
-            "books",
-            "entertainment",
-            "subscriptions",
-            "travel",
-            "housing_rent",
-            "utilities",
-            "telecom",
-            "gifts",
-            "pets",
-            "household_goods",
-            "personal_care",
-            "transfers",
-            "income",
-            "savings",
-            "other",
-        ],
-        "arch 4.5 Categories",
-    ),
-    (
-        Purpose,
-        [
-            "essential_living",
-            "household_care",
-            "work_tool",
-            "self_investment",
-            "identity_joy",
-            "social_connection",
-            "planned_event",
-            "on_behalf_of_others",
-            "unplanned_discretionary",
-            "emergency",
-            "unknown",
-        ],
-        "arch 4.5 Purposes",
-    ),
-    (
-        Beneficiary,
-        ["self", "household", "shared", "others", "employer"],
-        "arch 4.4 transactions.beneficiary",
-    ),
-    (
-        Decision,
-        ["ignore", "auto", "inform", "ask", "ask_later"],
-        "arch 4.4 transactions.decision",
-    ),
-    (Direction, ["debit", "credit"], "arch 4.4 transactions.direction"),
+BACKEND = Path(__file__).resolve().parents[3]
+ARCH_DOC = BACKEND / "docs" / "savings-coach-backend-architecture.md"
+SNAKE_CASE = re.compile(r"[a-z]+(_[a-z]+)*")
+
+
+# ── parsers: pure functions of the doc text ─────────────────────────────────────────────────
+
+
+@cache
+def arch_doc() -> str:
+    return ARCH_DOC.read_text(encoding="utf-8")
+
+
+def section(text: str, heading: str) -> str:
+    """The lines under the heading that starts with `heading`, up to the next ##/### heading."""
+    lines = text.splitlines()
+    start = next(i for i, line in enumerate(lines) if line.startswith(heading))
+    rest = lines[start + 1 :]
+    end = next((i for i, line in enumerate(rest) if line.startswith(("## ", "### "))), len(rest))
+    return "\n".join(rest[:end])
+
+
+def line_starting(text: str, prefix: str) -> str:
+    return next(line for line in text.splitlines() if line.startswith(prefix))
+
+
+def code_words(fragment: str) -> list[str]:
+    """Every `snake_case` code span, in order (spans with spaces or symbols are skipped)."""
+    return re.findall(r"`([a-z_]+)`", fragment)
+
+
+def slash_list(row: str, column: str) -> list[str]:
+    """`column` (`a / b / c`) or `column` values `a / b`, as in the arch 4.2 / 4.4 tables."""
+    match = re.search(rf"`{re.escape(column)}`(?: values)? \(?`([^`]+)`", row)
+    assert match, f"no `{column}` value list in: {row[:80]}…"
+    return [value.strip() for value in match.group(1).split("/")]
+
+
+def fixed_lists(text: str) -> str:
+    return section(text, "### 4.5")
+
+
+def categories(text: str) -> list[str]:
+    return code_words(line_starting(fixed_lists(text), "**Categories:**"))
+
+
+def purposes(text: str) -> list[str]:
+    return re.findall(r"^\| `([a-z_]+)` \|", fixed_lists(text), flags=re.MULTILINE)
+
+
+def household_scaled(text: str) -> list[str]:
+    line = line_starting(fixed_lists(text), "**Household-scaled categories:**")
+    return code_words(line.split("Not scaled")[0])
+
+
+def not_household_scaled(text: str) -> list[str]:
+    line = line_starting(fixed_lists(text), "**Household-scaled categories:**")
+    return code_words(line.split("Not scaled")[1])
+
+
+def never_asked(text: str) -> list[str]:
+    return code_words(line_starting(fixed_lists(text), "**Never asked about:**"))
+
+
+def column(table_row_prefix: str, name: str) -> Callable[[str], list[str]]:
+    def parse(text: str) -> list[str]:
+        return slash_list(line_starting(text, table_row_prefix), name)
+
+    return parse
+
+
+# (enum, parser of its list in the doc, where the doc lists it). Every 1a enum has a parseable list.
+DOC_LISTS: list[tuple[type[StrEnum], Callable[[str], list[str]], str]] = [
+    (Category, categories, "arch 4.5 Categories"),
+    (Purpose, purposes, "arch 4.5 Purposes table"),
+    (Beneficiary, column("| `transactions` |", "beneficiary"), "arch 4.4 transactions"),
+    (Decision, column("| `transactions` |", "decision"), "arch 4.4 transactions"),
+    (Direction, column("| `transactions` |", "direction"), "arch 4.4 transactions"),
     (
         AnnotationSource,
-        ["auto", "rule", "fact", "pot", "answer", "user_edit", "default"],
-        "arch 4.4 transactions.annotation_source",
+        column("| `transactions` |", "annotation_source"),
+        "arch 4.4 transactions",
     ),
-    (Language, ["ro", "en"], "arch 4.2 users.language"),
-    (CoachStyle, ["warm", "direct"], "arch 4.4 users.coach_style"),
-    (
-        ProductKind,
-        ["flexible_pot", "savings_account", "term_deposit"],
-        "arch 4.4 products.kind",
-    ),
-    (Liquidity, ["instant", "notice", "locked"], "arch 4.4 products.liquidity"),
+    (Language, column("| `users.language`", "users.language"), "arch 4.2 users.language"),
+    (CoachStyle, column("| `users` |", "coach_style"), "arch 4.4 users"),
+    (ProductKind, column("| `products` |", "kind"), "arch 4.4 products"),
+    (Liquidity, column("| `products` |", "liquidity"), "arch 4.4 products"),
 ]
 
-ENUMS = [pytest.param(enum, id=enum.__name__) for enum, _, _ in GOLDEN]
-SNAKE_CASE_ASCII = re.compile(r"[a-z][a-z0-9_]*")
+# (module constant name, parser of its list in the doc)
+DOC_SETS: dict[str, Callable[[str], list[str]]] = {
+    "HOUSEHOLD_SCALED_CATEGORIES": household_scaled,
+    "NEVER_ASKED_CATEGORIES": never_asked,
+}
+
+# Values shared by two enums. Equal values are equal dict / set keys (StrEnum == str), so a map
+# that mixes these enums must key by (type, member). A new overlap must be added here on purpose.
+KNOWN_OVERLAPS: dict[str, set[str]] = {
+    "auto": {"Decision", "AnnotationSource"},
+}
+
+ENUMS = [pytest.param(enum, id=enum.__name__) for enum, _, _ in DOC_LISTS]
+FIXED_SETS = [pytest.param(getattr(enums, name), id=name) for name in DOC_SETS]
 
 
-@pytest.mark.parametrize(
-    ("enum", "expected"),
-    [
-        pytest.param(enum, values, id=f"{enum.__name__} ({source})")
-        for enum, values, source in GOLDEN
-    ],
-)
-def test_enum_values_match_the_architecture_doc(enum: type[StrEnum], expected: list[str]) -> None:
-    assert [member.value for member in enum] == expected
-
-
-def test_every_enum_in_the_module_has_a_golden_list() -> None:
-    # A new enum without a golden list here would escape the rename check above.
-    defined = {
+def module_enums() -> set[type[StrEnum]]:
+    return {
         obj
         for _, obj in inspect.getmembers(enums, inspect.isclass)
         if issubclass(obj, StrEnum) and obj is not StrEnum and obj.__module__ == enums.__name__
     }
 
-    assert defined == {enum for enum, _, _ in GOLDEN}
+
+def module_fixed_sets() -> set[str]:
+    return {
+        name
+        for name, value in vars(enums).items()
+        if not name.startswith("_") and isinstance(value, tuple | frozenset | set | list)
+    }
+
+
+# ── the values ───────────────────────────────────────────────────────────────────────────────
+
+
+@pytest.mark.parametrize(
+    ("enum", "parse"),
+    [
+        pytest.param(enum, parse, id=f"{enum.__name__} ({source})")
+        for enum, parse, source in DOC_LISTS
+    ],
+)
+def test_enum_values_match_the_architecture_doc(
+    enum: type[StrEnum], parse: Callable[[str], list[str]]
+) -> None:
+    assert [member.value for member in enum] == parse(arch_doc())
+
+
+def test_every_enum_in_the_module_is_checked_against_the_doc() -> None:
+    # A new enum without an entry in DOC_LISTS would escape the rename check above.
+    assert module_enums() == {enum for enum, _, _ in DOC_LISTS}
 
 
 def test_enum_lookup_by_value_returns_the_member() -> None:
@@ -139,10 +188,11 @@ def test_enum_lookup_by_value_returns_the_member() -> None:
 
 
 @pytest.mark.parametrize("enum", ENUMS)
-def test_enum_values_are_snake_case_ascii_and_member_names_match(enum: type[StrEnum]) -> None:
-    # __members__ includes aliases, so an alias with another name is caught here too.
+def test_enum_values_are_snake_case_and_member_names_match(enum: type[StrEnum]) -> None:
+    # __members__ includes aliases. An alias always has a name other than value.upper(), so this
+    # also catches a duplicate value that @unique would otherwise have to stop.
     for name, member in enum.__members__.items():
-        assert SNAKE_CASE_ASCII.fullmatch(member.value), member.value
+        assert SNAKE_CASE.fullmatch(member.value), member.value
         assert name == member.value.upper()
 
 
@@ -167,52 +217,84 @@ def test_enum_rejects_unknown_or_miscased_values(enum: type[StrEnum], value: str
 
 
 @pytest.mark.parametrize("enum", ENUMS)
-def test_enum_is_a_str_enum_without_aliases(enum: type[StrEnum]) -> None:
-    # A duplicate value silently becomes an alias, and list(enum) then hides it.
-    assert issubclass(enum, StrEnum)
-    assert len(enum.__members__) == len(list(enum))
-
-
-@pytest.mark.parametrize("enum", ENUMS)
-def test_enum_members_format_and_serialise_as_their_value(enum: type[StrEnum]) -> None:
+def test_enum_members_are_str_enums_that_format_and_serialise_as_their_value(
+    enum: type[StrEnum],
+) -> None:
     # A `(str, Enum)` would print "Category.GROCERIES" in f-strings, logs and SQL.
+    assert issubclass(enum, StrEnum)
     for member in enum:
         assert f"{member}" == str(member) == member.value
         assert json.dumps(member) == f'"{member.value}"'
 
 
-def test_household_scaled_categories_match_the_doc() -> None:
-    # arch 4.5: these scale with the household; the activity-driven ones don't.
-    assert set(HOUSEHOLD_SCALED_CATEGORIES) == {
-        Category.GROCERIES,
-        Category.HOUSEHOLD_GOODS,
-        Category.HEALTH_PHARMACY,
-        Category.UTILITIES,
-        Category.KIDS,
-        Category.CLOTHING,
-        Category.PERSONAL_CARE,
-    }
-    not_scaled = {
-        Category.ELECTRONICS,
-        Category.SUBSCRIPTIONS,
-        Category.SPORT,
-        Category.ENTERTAINMENT,
-    }
-    assert not_scaled.isdisjoint(HOUSEHOLD_SCALED_CATEGORIES)
+def test_cross_enum_value_overlaps_are_the_known_ones() -> None:
+    owners: defaultdict[str, set[str]] = defaultdict(set)
+    for enum in module_enums():
+        for member in enum:
+            owners[member.value].add(enum.__name__)
+
+    assert {value: names for value, names in owners.items() if len(names) > 1} == KNOWN_OVERLAPS
 
 
-def test_never_asked_categories_is_only_health_pharmacy() -> None:
-    # arch 4.5: health spending is never asked about (privacy, never judgmental).
-    assert set(NEVER_ASKED_CATEGORIES) == {Category.HEALTH_PHARMACY}
+# ── the fixed sets ───────────────────────────────────────────────────────────────────────────
 
 
-@pytest.mark.parametrize(
-    "fixed_set",
-    [
-        pytest.param(HOUSEHOLD_SCALED_CATEGORIES, id="HOUSEHOLD_SCALED_CATEGORIES"),
-        pytest.param(NEVER_ASKED_CATEGORIES, id="NEVER_ASKED_CATEGORIES"),
-    ],
-)
-def test_fixed_sets_are_frozen_sets_of_category_members(fixed_set: frozenset[Category]) -> None:
-    assert isinstance(fixed_set, frozenset)
+@pytest.mark.parametrize(("name", "parse"), list(DOC_SETS.items()), ids=list(DOC_SETS))
+def test_fixed_set_lists_the_doc_values_in_the_doc_order(
+    name: str, parse: Callable[[str], list[str]]
+) -> None:
+    assert [category.value for category in getattr(enums, name)] == parse(arch_doc())
+
+
+def test_every_fixed_set_in_the_module_is_checked_against_the_doc() -> None:
+    # A new module-level collection without an entry in DOC_SETS would escape the check above.
+    assert module_fixed_sets() == set(DOC_SETS)
+
+
+def test_household_scaled_categories_exclude_the_activity_driven_ones() -> None:
+    # arch 4.5: electronics, subscriptions, sport, entertainment follow activity facts instead.
+    not_scaled = not_household_scaled(arch_doc())
+
+    assert not_scaled == ["electronics", "subscriptions", "sport", "entertainment"]
+    assert not set(not_scaled) & set(HOUSEHOLD_SCALED_CATEGORIES)
+
+
+@pytest.mark.parametrize("fixed_set", FIXED_SETS)
+def test_fixed_sets_are_tuples_of_unique_category_members(fixed_set: tuple[Category, ...]) -> None:
+    # A tuple iterates in its written order in every process (R1); a frozenset doesn't.
+    assert isinstance(fixed_set, tuple)
     assert all(isinstance(category, Category) for category in fixed_set)
+    assert len(set(fixed_set)) == len(fixed_set)
+
+
+def test_fixed_sets_iterate_in_the_same_order_in_every_process() -> None:
+    # str hashes are salted per process (PYTHONHASHSEED), so a frozenset's iteration order changes
+    # between runs. Snapshots, prompt caching and generated lists need the same order every time.
+    script = (
+        "import json; from app.domain import enums; "
+        f"print(json.dumps({{n: list(getattr(enums, n)) for n in {sorted(DOC_SETS)!r}}}))"
+    )
+    outputs = set()
+    for seed in ("1", "2", "3"):
+        env = {**os.environ, "PYTHONHASHSEED": seed, "PYTHONPATH": str(BACKEND)}
+        result = subprocess.run(  # noqa: S603 (fixed argv: this interpreter + a literal script)
+            [sys.executable, "-c", script],
+            cwd=BACKEND,
+            env=env,
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=30,
+        )
+        outputs.add(result.stdout)
+
+    in_process = json.dumps({name: list(getattr(enums, name)) for name in sorted(DOC_SETS)})
+    assert outputs == {in_process + "\n"}
+
+
+def test_fixed_sets_contain_the_plain_strings_read_from_the_db() -> None:
+    # C6 / C7 check a category string straight from the DB: the privacy rule must hold for it.
+    assert "health_pharmacy" in NEVER_ASKED_CATEGORIES
+    assert "Health_Pharmacy" not in NEVER_ASKED_CATEGORIES
+    assert "groceries" in HOUSEHOLD_SCALED_CATEGORIES
+    assert "electronics" not in HOUSEHOLD_SCALED_CATEGORIES
