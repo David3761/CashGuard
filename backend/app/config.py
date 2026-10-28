@@ -12,15 +12,18 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = "postgresql+psycopg://cashguard:cashguard@localhost:5434/cashguard"
     TEST_DATABASE_URL: str = (
-        "postgresql+psycopg://cashguard:cashguard@localhost:5433/cashguard_test"
+        "postgresql+psycopg://cashguard:cashguard@localhost:5435/cashguard_test"
     )
 
     ANTHROPIC_API_KEY: SecretStr | None = None
     ANTHROPIC_MODEL: str = "claude-sonnet-5-5"
     ANTHROPIC_EFFORT: str = "low"
 
-    KEYCLOAK_ISSUER: str = "http://localhost:8080/realms/cashguard"
+    KEYCLOAK_ISSUER: str = "http://localhost:8081/realms/cashguard"
     KEYCLOAK_AUDIENCE: str = "cashguard-api"
+    # Where the API itself reaches the realm (discovery + JWKS); defaults to the issuer.
+    # Locally in docker: http://keycloak:8080/realms/cashguard. Hosted: leave unset.
+    KEYCLOAK_INTERNAL_URL: str | None = None
 
     SIM_MODE: bool = True
     SIM_START_DATE: date = date(2026, 6, 15)

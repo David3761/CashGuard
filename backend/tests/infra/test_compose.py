@@ -7,6 +7,7 @@ import json
 import shutil
 import subprocess
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pytest
 
@@ -45,9 +46,10 @@ def test_compose_db_keeps_data_in_a_named_volume(compose):
     assert any(m["type"] == "volume" and m["target"] == "/var/lib/postgresql/data" for m in mounts)
 
 
-def test_compose_db_test_is_on_5433_and_in_tmpfs(compose):
+def test_compose_db_test_is_on_5435_and_in_tmpfs(compose):
+    # 5435, not the 5433 of the spec: 5432/5433 are often taken by other local Postgres projects.
     svc = compose["services"]["db-test"]
-    assert ("5433", 5432) in published(svc)
+    assert ("5435", 5432) in published(svc)
     assert any(t.startswith("/var/lib/postgresql/data") for t in svc["tmpfs"])
 
 
@@ -74,3 +76,54 @@ def test_compose_api_waits_for_a_healthy_db(compose):
 def test_compose_api_reaches_db_by_service_name(compose):
     env = compose["services"]["api"]["environment"]
     assert "@db:5432/" in env["DATABASE_URL"]
+
+
+def test_compose_keycloak_is_pinned_and_imports_the_realm(compose):
+    kc = compose["services"]["keycloak"]
+    image, _, tag = kc["image"].rpartition(":")
+    assert image == "quay.io/keycloak/keycloak"
+    assert tag and tag != "latest"
+    assert "--import-realm" in kc["command"]
+    mounts = kc["volumes"]
+    assert any(
+        m["source"].endswith("keycloak/realm-cashguard.json")
+        and m["target"].startswith("/opt/keycloak/data/import/")
+        for m in mounts
+    )
+
+
+def test_compose_keycloak_stores_its_data_in_postgres(compose):
+    kc = compose["services"]["keycloak"]
+    env = kc["environment"]
+    assert env["KC_DB"] == "postgres"
+    assert env["KC_DB_URL"] == "jdbc:postgresql://db:5432/keycloak"
+    assert kc["depends_on"]["db"]["condition"] == "service_healthy"
+
+
+def test_compose_db_creates_the_keycloak_database_on_first_start(compose):
+    mounts = compose["services"]["db"]["volumes"]
+    assert any(m["target"].startswith("/docker-entrypoint-initdb.d") for m in mounts)
+    env = compose["services"]["db"]["environment"]
+    assert env["KC_DB_PASSWORD"] == compose["services"]["keycloak"]["environment"]["KC_DB_PASSWORD"]
+
+
+def test_compose_keycloak_issuer_host_is_fixed(compose):
+    # Every token's `iss` must match the API's KEYCLOAK_ISSUER, whoever asked for it (D36).
+    env = compose["services"]["keycloak"]["environment"]
+    assert env["KC_HOSTNAME"]
+    assert env["KC_HOSTNAME_BACKCHANNEL_DYNAMIC"] == "true"
+
+
+def test_compose_keycloak_host_port_matches_its_public_hostname(compose):
+    # A token fetched from the host must carry the same `iss` the API checks.
+    kc = compose["services"]["keycloak"]
+    host_port = urlparse(kc["environment"]["KC_HOSTNAME"]).port
+    assert (str(host_port), 8080) in published(kc)
+    issuer = compose["services"]["api"]["environment"]["KEYCLOAK_ISSUER"]
+    assert issuer == kc["environment"]["KC_HOSTNAME"] + "/realms/cashguard"
+
+
+def test_compose_api_fetches_keys_from_keycloak_inside_the_network(compose):
+    env = compose["services"]["api"]["environment"]
+    assert env["KEYCLOAK_INTERNAL_URL"].startswith("http://keycloak:8080/realms/cashguard")
+    assert env["KEYCLOAK_ISSUER"].endswith("/realms/cashguard")

@@ -1,0 +1,125 @@
+{
+  "realm": "cashguard",
+  "displayName": "CashGuard",
+  "enabled": true,
+  "sslRequired": "external",
+  "accessTokenLifespan": 1800,
+  "ssoSessionIdleTimeout": 36000,
+  "ssoSessionMaxLifespan": 86400,
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "roles": {
+    "realm": [
+      { "name": "internal", "description": "Cron jobs: may call /api/internal/*" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "savings-frontend",
+      "name": "CashGuard app",
+      "description": "Flutter app: authorization code + PKCE (S256)",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": ["ro.cashguard.app:/oauthredirect", "http://localhost:*"],
+      "webOrigins": ["+"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "+"
+      }
+    },
+    {
+      "clientId": "savings-cron",
+      "name": "CashGuard cron",
+      "description": "Cron container: client credentials, realm role internal",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${KC_CRON_CLIENT_SECRET:dev-cron-secret}",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "savings-dev",
+      "name": "CashGuard dev scripts",
+      "description": "DEV/TEST ONLY: password grant for scripts and tests (demo client, smoke). Disable on a real deployment.",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "implicitFlowEnabled": false,
+      "serviceAccountsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-savings-cron",
+      "enabled": true,
+      "serviceAccountClientId": "savings-cron",
+      "realmRoles": ["default-roles-cashguard", "internal"]
+    },
+    {
+      "id": "a0000000-0000-4000-8000-000000000001",
+      "username": "matei",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Matei",
+      "lastName": "Demo",
+      "email": "matei@demo.cashguard.ro",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
+    },
+    {
+      "id": "a0000000-0000-4000-8000-000000000002",
+      "username": "andrei",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Andrei",
+      "lastName": "Demo",
+      "email": "andrei@demo.cashguard.ro",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
+    },
+    {
+      "id": "a0000000-0000-4000-8000-000000000003",
+      "username": "bianca",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Bianca",
+      "lastName": "Demo",
+      "email": "bianca@demo.cashguard.ro",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
+    },
+    {
+      "id": "a0000000-0000-4000-8000-000000000004",
+      "username": "ioana",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Ioana",
+      "lastName": "Demo",
+      "email": "ioana@demo.cashguard.ro",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
+    },
+    {
+      "id": "a0000000-0000-4000-8000-000000000005",
+      "username": "alex",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Alex",
+      "lastName": "Demo",
+      "email": "alex@demo.cashguard.ro",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
+    }
+  ]
+}

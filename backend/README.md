@@ -12,7 +12,7 @@ How we work: [`docs/how-we-work.md`](docs/how-we-work.md).
 cd backend
 cp .env.example .env
 uv sync
-make db-up        # Postgres for tests (port 5433)
+make db-up        # Postgres for tests (port 5435)
 make check        # ruff + mypy + tests (everything except live)
 make dev          # API on http://localhost:8000/api/health
 ```

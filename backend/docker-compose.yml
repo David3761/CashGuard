@@ -9,11 +9,14 @@ services:
     image: postgres:16
     environment:
       <<: *pg-env
-      POSTGRES_DB: cashguard
+      POSTGRES_DB: cashguard   # our app tables (B2)
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
     ports:
       - "5434:5432"   # host 5432 is often taken by a local Postgres
     volumes:
       - db-data:/var/lib/postgresql/data
+      # first start only: also create the `keycloak` database (users, clients, roles)
+      - ./db/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U cashguard -d cashguard"]
       interval: 2s
@@ -26,7 +29,7 @@ services:
       <<: *pg-env
       POSTGRES_DB: cashguard_test
     ports:
-      - "5433:5432"
+      - "5435:5432"   # 5432/5433 are often taken by other local Postgres projects
     tmpfs:
       - /var/lib/postgresql/data
     # Throwaway data: trade durability for speed.
@@ -37,6 +40,45 @@ services:
       timeout: 3s
       retries: 20
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.0
+    # Users, clients and roles are stored in Postgres (`keycloak` database in `db`).
+    # --import-realm seeds them from the realm file on the first start only; an existing realm is skipped.
+    command: ["start-dev", "--import-realm"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
+      KC_DEMO_PASSWORD: ${KC_DEMO_PASSWORD:-cashguard-dev}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+      # One public address for every token's `iss` (D36); hosted: https://auth.<domain>
+      KC_HOSTNAME: ${KC_HOSTNAME:-http://localhost:8081}
+      # ...but token/JWKS calls from inside the network (api, cron) use http://keycloak:8080
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_CRON_CLIENT_SECRET: ${KC_CRON_CLIENT_SECRET:-dev-cron-secret}
+    ports:
+      - "8081:8080"   # host 8081: 8080 is often taken (pgadmin, other Keycloaks); must match KC_HOSTNAME
+    volumes:
+      - ./keycloak/realm-cashguard.json:/opt/keycloak/data/import/realm-cashguard.json:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          exec 3<>/dev/tcp/localhost/9000 &&
+          printf 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 &&
+          grep -q '"UP"' <&3
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
   api:
     build: .
     env_file:
@@ -44,6 +86,8 @@ services:
         required: false
     environment:
       DATABASE_URL: postgresql+psycopg://cashguard:cashguard@db:5432/cashguard
+      KEYCLOAK_ISSUER: ${KC_HOSTNAME:-http://localhost:8081}/realms/cashguard
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080/realms/cashguard
     # One worker: the WebSocket manager lives in memory (arch 5.2).
     command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
     ports:
