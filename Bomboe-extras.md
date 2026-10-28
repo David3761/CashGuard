@@ -26,6 +26,13 @@
 | `app/main.py` | `create_app(settings=None)`, router at `/api`, `GET /api/health`, OpenAPI at `/api/openapi.json` | — |
 | `tests/unit/test_config.py`, `test_clock.py`, `test_app.py` | the F1 test list (Settings env/.env, SIM_MODE spellings, optional key None, secret not logged; clock + DST 2026-10-25; health, 404, DomainError, 422, 500 envelopes) | — |
 
+**Later changes to F1 files from my tasks (keep them when merging):**
+
+| File | Change | From |
+|---|---|---|
+| `pyproject.toml` | dev dependency `shellcheck-py` (the B1 cron test runs shellcheck); ruff `extend-exclude = ["*.md"]` (ruff 0.17 reformats code blocks in the shared docs otherwise) | B1 |
+| `app/config.py` | `KEYCLOAK_INTERNAL_URL: str \| None` (where the API fetches discovery/JWKS inside docker; defaults to the issuer); default issuer port **8081**; test DB port **5435** | B1 |
+
 ## F2 step 1 (owner: David G.) — enums only
 
 | File | What's in it | Notes |
