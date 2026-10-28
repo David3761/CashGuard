@@ -366,3 +366,141 @@ class Transfer(Base):
     )
     created_at: Mapped[datetime] = created_at()
     undone_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+# ── 4.1 / 4.2 / 4.4: conversation ────────────────────────────────────────────────────────
+
+# Dedup (arch 4.4): transaction-level events are unique per transaction, every other type is
+# unique per day. Adding an AgentEventType means putting it in one of these two groups.
+TRANSACTION_EVENT_TYPES: tuple[e.AgentEventType, ...] = (e.AgentEventType.TRANSACTION_QUESTION,)
+DAY_LEVEL_EVENT_TYPES: tuple[e.AgentEventType, ...] = tuple(
+    t for t in e.AgentEventType if t not in TRANSACTION_EVENT_TYPES
+)
+
+
+def _in(values: tuple[StrEnum, ...]) -> str:
+    return "type IN (" + ", ".join(f"'{v.value}'" for v in values) + ")"
+
+
+class AgentEvent(Base):
+    """Something worth talking about: pending → asked → answered / handled / expired."""
+
+    __tablename__ = "agent_events"
+    __table_args__ = (
+        enum_check("type", e.AgentEventType),
+        enum_check("status", e.AgentEventStatus),
+        CheckConstraint(
+            f"NOT ({_in(TRANSACTION_EVENT_TYPES)}) OR ref_transaction_id IS NOT NULL",
+            name="transaction_event_has_ref",
+        ),
+        Index(
+            "uq_agent_events_day_level",
+            "user_id",
+            "type",
+            "event_date",
+            unique=True,
+            postgresql_where=text(_in(DAY_LEVEL_EVENT_TYPES)),
+        ),
+        Index(
+            "uq_agent_events_transaction_level",
+            "user_id",
+            "type",
+            "ref_transaction_id",
+            unique=True,
+            postgresql_where=text(_in(TRANSACTION_EVENT_TYPES)),
+        ),
+        Index(None, "user_id", "status"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk())
+    type: Mapped[str] = mapped_column(String(30))
+    payload: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    status: Mapped[str] = mapped_column(String(10), default=e.AgentEventStatus.PENDING)
+    # the Bucharest (sim) day the event belongs to; stored so the unique index can use it
+    event_date: Mapped[date] = mapped_column(Date)
+    ref_transaction_id: Mapped[int | None] = mapped_column(
+        ForeignKey("transactions.id", ondelete="CASCADE")
+    )
+    created_at: Mapped[datetime] = created_at()
+    asked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    answered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    handled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Message(Base):
+    __tablename__ = "messages"
+    __table_args__ = (
+        enum_check("role", e.MessageRole),
+        enum_check("input_mode", e.InputMode),
+        Index(None, "user_id", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk())
+    role: Mapped[str] = mapped_column(String(10))
+    content: Mapped[str] = mapped_column(Text)
+    quick_replies: Mapped[list[str]] = mapped_column(JSONB, default=list)
+    action_cards: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    input_mode: Mapped[str | None] = mapped_column(String(12))
+    speak: Mapped[bool] = mapped_column(Boolean, default=False)
+    speak_text: Mapped[str | None] = mapped_column(Text)
+    agent_event_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent_events.id", ondelete="SET NULL")
+    )
+    ref_transaction_id: Mapped[int | None] = mapped_column(
+        ForeignKey("transactions.id", ondelete="SET NULL")
+    )
+    created_at: Mapped[datetime] = created_at()
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+    __table_args__ = (Index(None, "user_id", "created_at"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk())
+    type: Mapped[str] = mapped_column(String(40))
+    title: Mapped[str] = mapped_column(String(200))
+    body: Mapped[str] = mapped_column(Text)
+    read: Mapped[bool] = mapped_column(Boolean, default=False)
+    opens_chat: Mapped[bool] = mapped_column(Boolean, default=False)
+    agent_event_id: Mapped[int | None] = mapped_column(
+        ForeignKey("agent_events.id", ondelete="SET NULL")
+    )
+    message_id: Mapped[int | None] = mapped_column(ForeignKey("messages.id", ondelete="SET NULL"))
+    created_at: Mapped[datetime] = created_at()
+
+
+class AgentRun(Base):
+    """One row per agent loop (audit, B15). Never stores prompts or transcripts (Q27)."""
+
+    __tablename__ = "agent_runs"
+    __table_args__ = (
+        enum_check("trigger", e.AgentTrigger),
+        enum_check("status", e.AgentRunStatus),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk(), index=True)
+    trigger: Mapped[str] = mapped_column(String(10))
+    model: Mapped[str] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(10), default=e.AgentRunStatus.RUNNING)
+    iterations: Mapped[int] = mapped_column(Integer, default=0)
+    error: Mapped[str | None] = mapped_column(Text)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ToolCall(Base):
+    __tablename__ = "tool_calls"
+    __table_args__ = (enum_check("status", e.ToolCallStatus),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    run_id: Mapped[int] = mapped_column(ForeignKey("agent_runs.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(user_fk())
+    tool_name: Mapped[str] = mapped_column(String(64))
+    input: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    output: Mapped[Any] = mapped_column(JSONB, nullable=True)
+    status: Mapped[str] = mapped_column(String(5))
+    created_at: Mapped[datetime] = created_at()
