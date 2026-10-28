@@ -49,7 +49,7 @@ The AI is triggered in three ways:
 | D18 | **Automatic plan recompute inside every money-related tool call**; the new plan is returned in the tool result, so the AI's reply always has the real new number. The AI has no `compute_plan` tool (6.7) |
 | D19 | **The AI can shape the budget directly** with `shape_budget`: weekday weights, pinned days, weekly category caps, buffer (6.7) |
 | D20 | **What-if tool `simulate_plan`:** runs the engine on hypothetical changes without saving, including a solve mode for a target daily budget (6.7) |
-| D21 | **`set_goal` only exists when there is no active goal** (onboarding or after a goal is completed); otherwise only `update_goal` (6.7) |
+| D21 | **`set_goal` only exists when there is no active goal** (onboarding or after a goal is completed); otherwise only `update_goal` (6.7). 🆕 **Amended (D46, 2026-10-29):** the tool list is computed **once per run**, not every iteration. On Sonnet 5.5, changing tools mid-run while thinking blocks are replayed returns a 400, so `update_goal` appears from the next message; the executor's `goal_already_active` guard stays |
 | D22 | **Proactive runs are read-only:** the AI can suggest changes, but writes happen only when the user replies (6.7) |
 | D23 🆕✅ | **Life Context layer.** The person's life is stored as structured `life_facts`; each fact owns `spending_signatures` that say what it predicts about spending; every transaction gets a `life_fit` score, a `purpose` and an explanation (the "because"). No purchase is ever labelled good or bad (5.3) |
 | D24 🆕✅ | **Every transaction is evaluated when it's processed** (F3), not only at close-day: context-adjusted anomaly score → `ignore / auto / inform / ask / ask_later` (5.3) |
