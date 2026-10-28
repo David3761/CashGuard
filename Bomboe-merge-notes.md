@@ -61,18 +61,27 @@
 
 Later F1-file changes from my tasks: `pyproject.toml` (+ `shellcheck-py`, `alembic`; ruff `extend-exclude = ["*.md"]` because ruff 0.17 reformats code blocks in the shared docs; E501 ignored in generated migrations), `app/config.py` (`KEYCLOAK_INTERNAL_URL`, ports).
 
-### F2 step 1 (owner: David G.): enums only
+### F2 (owner: David G.): all of it, built per DGAdavid1.md F2 steps 1–3
 
-| File | What's in it | Not done |
+bomboe asked for it on 2026-10-29 because B3/B4 and the stubs return these types and nothing was on any branch.
+
+| File | What's in it | Differences from the spec |
 |---|---|---|
-| `app/domain/enums.py` | every `StrEnum` of the F2 list, values from arch 4.4/4.5 | `money.py`, `models.py`, `results.py`, `tests/builders.py` |
-| `tests/unit/test_enums.py` | golden value list per enum | — |
+| `app/domain/enums.py` | every `StrEnum` of the F2 list, values from arch 4.4/4.5 | **additions** for the DB CHECKs (arch 4.1/4.2): `TransactionStatus`, `TransactionSource`, `GoalStatus`, `LifeEventType` (from the `add_life_event` schema, 6.2), `LifeEventStatus`, `LedgerStatus`, `MessageRole`, `AgentTrigger` (chat/proactive), `AgentRunStatus` (running/completed/failed, 🟡 my pick), `ToolCallStatus` (ok/error) |
+| `app/domain/money.py` | `to_money` (half-up, floats via `str`), `split_share(total, people) -> (own, others)` (always adds up), `share_each(others, n)` | — |
+| `app/domain/base.py` | `Frozen` base, `Money` (Decimal, rounded to 2 dp on input, **JSON number** in JSON mode), `PositiveMoney`, `NonNegativeMoney`, `Score` (float 0–1), `Weekday` (ISO 1–7), `Month` | **extra file**: `models.py` needs `PlanSummary`/`Forecast` for `UserContext` and `results.py` needs `Money`, so the shared pieces live here to avoid an import cycle |
+| `app/domain/models.py` | `Item`, `TxView` (`effective_amount` defaults to `amount`), `LifeFact` (+ `active_on(day)`), typed values `OccupationValue`, `HouseholdMemberValue`, `PetValue`, `VehicleValue`, `ActivityValue`, `PriorityValue`, `LifeEventValue`, `CustomValue` (any other type), `TimeWindow`, `Signature`, `RuleMatch`, `RuleOutcome`, `PatternRule`, `Account`, `Goal`, `IncomeSource`, `FixedCost`, `LifeEvent`, `Pot`, `Receivable`, `PlanPreferences`, `Baseline`, `Merchant`, `UserProfile`, `AgentEventView`, `UserContext` | **additions**: `Account`, `Transfer` (`auto_save` returns it, arch 15.1), `LifeFactDraft` (`infer_hypotheses`, 15.1), `TimeWindow`. `PriorityValue.category` is a `Category` + a free `label` (arch's example `"concerts"` is not a category → `{"category": "entertainment", "label": "concerte"}`). `LifeEventValue` dates are `starts_on` (a field named `date` breaks Pydantic). `TimeWindow`/`RuleMatch` use `from_` in Python, `"from"` in JSON |
+| `app/domain/results.py` | `QuestionHint`, `Evaluation`, `FitResult`, `QuestionCandidate`, `RuleChange`, `PropagationResult`, `AnomalyFeatures`, `DayBudget`, `PlanResult`, `PlanSummary`, `Driver`, `Option`, `Forecast`, `SimDiff`, `Solve`, `SimResult`, `AgentResult` | `Evaluation` also carries `merchant`, `annotation_source` (default `auto`), `annotation_confidence` (the pipeline saves them) |
+| `tests/builders.py` | `tx()`, `history()` (resolved), `fact()`, `signature()`, `rule()` (Matei's Friday rule), `ctx()`, `matei_ctx()`, `andrei_ctx()`, `bianca_ctx()`, `ioana_ctx()`, `at(day, hh, mm)` | personas are small and hand-made from arch 16.1; numbers are not calibrated (E13 tunes the seeded data, not these) |
+| tests | `tests/unit/test_enums.py`, `test_money.py` (+ hypothesis property), `test_domain_models.py` (one pass + one fail per validation rule, frozen, JSON round-trip with diacritics + emoji, money as JSON number), `test_builders.py` | — |
 
-**Additions** (needed for DB CHECKs, values from arch 4.1/4.2): `TransactionStatus`, `TransactionSource`, `GoalStatus`, `LifeEventType` (from the `add_life_event` schema, arch 6.2), `LifeEventStatus`, `LedgerStatus`, `MessageRole`, `AgentTrigger` (chat/proactive), `AgentRunStatus` (running/completed/failed, 🟡 my pick), `ToolCallStatus` (ok/error).
+### F3 step 1 (mine): DB fixtures ✅
 
-### F3 step 1 (mine, started early inside B2)
-
-`tests/fixtures/db.py`: `engine` (session) and `db` (rollback per test, SAVEPOINT inside). `db_committed`, `seeded_db` and F3's own tests come in F3.
+`tests/fixtures/db.py` (loaded by `tests/conftest.py`):
+- `engine` (session): the test DB, tables dropped and rebuilt with `alembic upgrade head` once.
+- `db`: rollback per test; the session runs in a SAVEPOINT, so even `await db.commit()` stays inside the test.
+- `db_committed`: real commits (pipeline, locks, concurrency); **the app's own `unit_of_work()` / `get_db()` use the test DB too**; every table is truncated (ids restart) after the test.
+- `seeded_db` comes after B12. Auth / API / WS fixtures come with F3 step 2 (after B5.1).
 
 ---
 
@@ -130,4 +139,6 @@ Later F1-file changes from my tasks: `pyproject.toml` (+ `shellcheck-py`, `alemb
 | `457e697` | B2.2 money-flow tables |
 | `ff0e8df` | B2.3 conversation tables |
 | `02212e2` | B2.4 life-context tables, golden schema, cascades; **Alembic** migrations; `make check` → 228 passed |
-| (next) | `goals.soft` + migration `56a08bb4ec07`; `make check` → 230 passed |
+| `6885c54` | `goals.soft` + migration `56a08bb4ec07`; `make check` → 230 passed |
+| `f452337` | F3.1 `db_committed` fixture |
+| `795cf23`, `7adce82`, `7a4e99d` | F2: money helpers, domain models + results, builders; `make check` → 320 passed |
