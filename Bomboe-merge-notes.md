@@ -75,13 +75,21 @@ bomboe asked for it on 2026-10-29 because B3/B4 and the stubs return these types
 | `tests/builders.py` | `tx()`, `history()` (resolved), `fact()`, `signature()`, `rule()` (Matei's Friday rule), `ctx()`, `matei_ctx()`, `andrei_ctx()`, `bianca_ctx()`, `ioana_ctx()`, `at(day, hh, mm)` | personas are small and hand-made from arch 16.1; numbers are not calibrated (E13 tunes the seeded data, not these) |
 | tests | `tests/unit/test_enums.py`, `test_money.py` (+ hypothesis property), `test_domain_models.py` (one pass + one fail per validation rule, frozen, JSON round-trip with diacritics + emoji, money as JSON number), `test_builders.py` | — |
 
-### F3 step 1 (mine): DB fixtures ✅
+### F3 (mine): test fixtures ✅ (`seeded_db` after B12)
 
-`tests/fixtures/db.py` (loaded by `tests/conftest.py`):
-- `engine` (session): the test DB, tables dropped and rebuilt with `alembic upgrade head` once.
-- `db`: rollback per test; the session runs in a SAVEPOINT, so even `await db.commit()` stays inside the test.
-- `db_committed`: real commits (pipeline, locks, concurrency); **the app's own `unit_of_work()` / `get_db()` use the test DB too**; every table is truncated (ids restart) after the test.
-- `seeded_db` comes after B12. Auth / API / WS fixtures come with F3 step 2 (after B5.1).
+How to use them: **`backend/tests/README.md`** (one example per fixture, how to run each marker).
+
+| Fixture | File | What |
+|---|---|---|
+| `engine` | `tests/fixtures/db.py` | the test DB, rebuilt with `alembic upgrade head` once per session |
+| `db` | same | rolled back after the test (SAVEPOINT inside: even `commit()` stays in the test) |
+| `db_committed` | same | real commits; the app's own `unit_of_work()` / `get_db()` use the test DB; every table truncated after |
+| `test_keys`, `make_token`, `test_jwks` | `tests/fixtures/auth.py` | one RSA key per session; `make_token(sub, roles, exp_in, iss, azp, aud, nbf_in, kid)`; the app verifies tokens against the test key; `unsigned_token` / `hs256_with_public_key` for security tests |
+| `app`, `client`, `as_user` | `tests/fixtures/api.py` | a fresh app whose `get_db` yields the test's `db` session; httpx client on `http://test/api`; `as_user(user_or_sub, roles=(), **token_kw)` |
+| `ws_client`, `ws_connect` | `tests/fixtures/ws.py` | Starlette TestClient; `ws_connect(user, path="/ws", token=None)` → `/ws?token=…` (other thread + loop: use committed data) |
+| `fixed_clock` (autouse) | `tests/conftest.py` | app clock at 2026-06-15 12:00 Bucharest |
+
+Spec note: F3.2 says a token with `exp_in=-1` must fail with `token_expired`, but B5.1 asks for a 30 s leeway, so `-1` is still valid. I followed B5 (tests use `exp_in=-31`).
 
 ---
 
@@ -111,6 +119,13 @@ bomboe asked for it on 2026-10-29 because B3/B4 and the stubs return these types
 | Test helpers | `backend/tests/factories.py` | `user`, `goal`, `transaction`, `everything` (one row in every per-user table) |
 
 **Beyond the spec (all tested):** `users.city` and `agent_events.event_date` (both from Bomboe.md B2); **`goals.soft`** (bool, default `true`: the deadline may move; danutu's E9 offers "move the deadline" only for soft goals; second migration `56a08bb4ec07`, agreed by bomboe); `transfers` one auto-save per income transaction (D37 idempotency); `pots` one per goal; `life_facts` CHECK "temporary needs `valid_to`"; signatures `replacement_cycle_days > 0`; forecasts `p10 ≤ p50 ≤ p90`; `reflections.motivation` 1–5; `plan_preferences.buffer_pct` 0–0.3; `products.min_months ≤ max_months`; extra indexes `notifications(user_id, created_at)`, `life_facts(user_id, status)`, `receivables(user_id, status)`, `spending_signatures/pattern_rules(user_id, active)`, `goal_forecasts(user_id, computed_at)`.
+
+### B5 · Auth (step 1 ✅ token verification; step 2 `current_user` etc. next)
+
+| Piece | Where | Notes for others |
+|---|---|---|
+| `verify_token(token) -> Claims(sub, azp, roles, raw)` | `backend/app/auth.py` | RS256 only; `iss == KEYCLOAK_ISSUER`; `exp`/`nbf` with 30 s leeway **against real time** (tokens come from Keycloak's clock, not the simulator's); `azp` ∈ {savings-frontend, savings-dev, savings-cron} or `aud` ∋ `KEYCLOAK_AUDIENCE`. Errors: `invalid_token`, `token_expired`, `invalid_issuer`, `invalid_audience` (401), `auth_unavailable` (503) |
+| `JWKSCache`, `get_jwks()`, `set_jwks()` | same | keys by `kid` from `<KEYCLOAK_INTERNAL_URL or KEYCLOAK_ISSUER>/.well-known/openid-configuration`; encryption keys ignored; an unknown `kid` refetches at most once per 60 s; Keycloak down → 503 only when the key isn't cached. Verified live against the running Keycloak (a Matei token and a cron token) |
 
 ### Service contract (stubs for danutu and David G.) ✅ signatures · bodies in B3/B4
 
@@ -156,3 +171,6 @@ Differences from the names in Bomboe.md / arch 15.1:
 | `6885c54` | `goals.soft` + migration `56a08bb4ec07`; `make check` → 230 passed |
 | `f452337` | F3.1 `db_committed` fixture |
 | `795cf23`, `7adce82`, `7a4e99d` | F2: money helpers, domain models + results, builders; `make check` → 320 passed |
+| `c548bd1` | service contract: stubs of every B3 service + `load_user_context` stub; contract test |
+| `c2d0ddd` | B5.1 `verify_token` + JWKS cache; F3 auth helpers |
+| `34f1687` | F3.2–3 API + WS fixtures, `tests/README.md`; `make check` → 481 passed |
