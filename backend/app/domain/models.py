@@ -32,12 +32,17 @@ from app.domain.enums import (
     FactStatus,
     FactType,
     GoalStatus,
+    InputMode,
     Language,
+    LedgerStatus,
     LifeEventStatus,
     LifeEventType,
+    Liquidity,
+    MessageRole,
     Persistence,
     PotKind,
     PotStatus,
+    ProductKind,
     Purpose,
     ReceivableStatus,
     RuleKind,
@@ -458,6 +463,36 @@ class Merchant(Frozen):
     multi_category: bool = False
 
 
+class Product(Frozen):
+    """Mock savings product (data/products.json); `id` is the file's slug."""
+
+    id: str
+    name: str
+    kind: ProductKind
+    rate: Decimal = Field(ge=0)
+    liquidity: Liquidity
+    description: str | None = None
+    min_months: int | None = Field(default=None, ge=0)
+    max_months: int | None = Field(default=None, ge=0)
+    mock: bool = True
+
+    @model_validator(mode="after")
+    def _months_range(self) -> Self:
+        lo, hi = self.min_months, self.max_months
+        if lo is not None and hi is not None and lo > hi:
+            raise ValueError("min_months must not exceed max_months")
+        return self
+
+
+class LedgerDay(Frozen):
+    """One day of the ledger: the budget and what was spent (effective amounts)."""
+
+    date: date
+    budget: Money = Decimal("0")
+    spent: NonNegativeMoney = Decimal("0")
+    status: LedgerStatus = LedgerStatus.OK
+
+
 # ── the user ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -483,6 +518,34 @@ class AgentEventView(Frozen):
     created_at: AwareDatetime | None = None
     asked_at: AwareDatetime | None = None
     answered_at: AwareDatetime | None = None
+
+
+class MessageView(Frozen):
+    """A chat message as the API returns it (arch 9.3)."""
+
+    id: int
+    role: MessageRole
+    content: str
+    quick_replies: tuple[str, ...] = ()
+    action_cards: tuple[dict[str, Any], ...] = ()
+    input_mode: InputMode | None = None
+    speak: bool = False
+    speak_text: str | None = None
+    ref_transaction_id: int | None = None
+    agent_event_id: int | None = None
+    created_at: AwareDatetime
+
+
+class NotificationView(Frozen):
+    id: int
+    type: str
+    title: str
+    body: str
+    read: bool = False
+    opens_chat: bool = False
+    agent_event_id: int | None = None
+    message_id: int | None = None
+    created_at: AwareDatetime
 
 
 class UserContext(Frozen):

@@ -286,3 +286,63 @@ def test_user_context_is_frozen_and_complete():
     assert ctx.goal is None and ctx.transactions == () and ctx.questions_asked_today == 0
     with pytest.raises(ValidationError):
         ctx.today = date(2026, 6, 16)  # type: ignore[misc]
+
+
+# ── additions for the services (B3) ──────────────────────────────────────────────────────
+
+
+def test_product_ledger_message_notification_views():
+    p = dm.Product(
+        id="depozit_6",
+        name="Depozit 6 luni",
+        kind="term_deposit",
+        rate=Decimal("0.0550"),
+        liquidity="locked",
+        min_months=6,
+        max_months=6,
+    )
+    assert p.mock is True
+    day = dm.LedgerDay(date=date(2026, 6, 15), budget=Decimal("120"), spent=Decimal("18"))
+    assert day.status == "ok"
+    msg = dm.MessageView(
+        id=381,
+        role="assistant",
+        content="Ce a fost?",
+        created_at=AT,
+        quick_replies=["Doar pentru mine"],
+        speak=True,
+    )
+    assert msg.quick_replies == ("Doar pentru mine",) and msg.action_cards == ()
+    n = dm.NotificationView(
+        id=77, type="overspend", title="Planul s-a actualizat", body="…", created_at=AT
+    )
+    assert (n.read, n.opens_chat) == (False, False)
+
+
+@pytest.mark.parametrize(
+    ("model", "kw"),
+    [
+        (dm.Product, {"id": "x", "name": "x", "kind": "crypto", "rate": 1, "liquidity": "instant"}),
+        (
+            dm.Product,
+            {
+                "id": "x",
+                "name": "x",
+                "kind": "term_deposit",
+                "rate": 1,
+                "liquidity": "locked",
+                "min_months": 12,
+                "max_months": 6,
+            },
+        ),
+        (dm.LedgerDay, {"date": date(2026, 6, 15), "spent": -1}),
+        (dm.MessageView, {"id": 1, "role": "system", "content": "x", "created_at": AT}),
+        (
+            dm.MessageView,
+            {"id": 1, "role": "user", "content": "x", "created_at": datetime(2026, 6, 15, 10, 0)},
+        ),
+    ],
+)
+def test_service_views_reject_invalid_values(model, kw):
+    with pytest.raises(ValidationError):
+        model(**kw)

@@ -112,6 +112,20 @@ bomboe asked for it on 2026-10-29 because B3/B4 and the stubs return these types
 
 **Beyond the spec (all tested):** `users.city` and `agent_events.event_date` (both from Bomboe.md B2); **`goals.soft`** (bool, default `true`: the deadline may move; danutu's E9 offers "move the deadline" only for soft goals; second migration `56a08bb4ec07`, agreed by bomboe); `transfers` one auto-save per income transaction (D37 idempotency); `pots` one per goal; `life_facts` CHECK "temporary needs `valid_to`"; signatures `replacement_cycle_days > 0`; forecasts `p10 ≤ p50 ≤ p90`; `reflections.motivation` 1–5; `plan_preferences.buffer_pct` 0–0.3; `products.min_months ≤ max_months`; extra indexes `notifications(user_id, created_at)`, `life_facts(user_id, status)`, `receivables(user_id, status)`, `spending_signatures/pattern_rules(user_id, active)`, `goal_forecasts(user_id, computed_at)`.
 
+### Service contract (stubs for danutu and David G.) ✅ signatures · bodies in B3/B4
+
+| What | Where | Notes for others |
+|---|---|---|
+| Every service of arch 15.1 + Bomboe.md B3 | `backend/app/services/<group>.py` (25 modules) | **code against these now.** Bodies raise `NotImplementedError("B3 step n")` until B3 fills them; the signatures won't change |
+| The full list (names + parameters) | `backend/tests/unit/test_service_contracts.py::CONTRACT` | read this first; changing it is a contract change (tell the others) |
+| Rules | `app/services/__init__.py` docstring | every function takes `db, user_id` and only sees that user's rows (except `products`, `merchants`); another user's id → `DomainError("not_found", 404)`; bad state change → `invalid_transition` (409); returns `app.domain` objects, never ORM rows; **functions flush, the caller commits** |
+| `load_user_context(db, user_id, today, history_days=180)` | `app/services/context_loader.py` | **stub returns `tests.builders.matei_ctx(today=today)` for any user** until B4 |
+| Domain additions for the services | `app/domain/models.py` | `Product`, `LedgerDay`, `MessageView`, `NotificationView` |
+
+Differences from the names in Bomboe.md / arch 15.1:
+- `list(…)` → **`list_all(…)`** everywhere (a module function named `list` shadows the builtin inside the module); `ledger.range` → `ledger.between`.
+- Added because the callers need them: `transactions.set_receivable`, `ledger.add_spent` (atomic delta for E3), `ledger.between`, `plans.save(db, user_id, result: PlanResult, *, reason, trigger_ref)` (E4 saves through it; the next version is assigned inside), `transfers.for_income` (auto-save idempotency), `messages.recent(limit=20)` (agent history), `notifications.unread_count`, `agent_runs.is_running`, `life_facts.list_all(status)`, `signatures.list_for_fact`, `pattern_rules.set_confidence` (C8), `pots.goal_pot`, `forecasts.weekly_history`, `life_profile.get/set_key/delete_key`, `life_events.mark_done`, `goals.get`.
+
 ---
 
 ## 4. Open questions & follow-ups
