@@ -94,3 +94,28 @@ async def test_reset_works_on_tables_from_an_older_schema(engine):
         await upgrade(conn)
         assert await conn.scalar(OUR_TABLES) == len(m.Base.metadata.tables)
         await trans.rollback()
+
+
+async def test_add_goals_soft_keeps_existing_goals_and_makes_them_soft(engine):
+    async with engine.connect() as conn:
+        trans = await conn.begin()
+        await conn.execute(text("CREATE SCHEMA b2_data"))
+        await conn.execute(text("SET LOCAL search_path TO b2_data"))
+        await upgrade(conn, "71bc35840018")  # the schema before goals.soft
+        user_id = await conn.scalar(
+            text(
+                "INSERT INTO users (keycloak_sub, name, language, coach_style, timezone, "
+                "household_scale, created_at) VALUES ('s', 'x', 'ro', 'warm', 'UTC', 1, now()) "
+                "RETURNING id"
+            )
+        )
+        await conn.execute(
+            text(
+                "INSERT INTO goals (user_id, amount, deadline, status, created_at) "
+                "VALUES (:u, 10000, '2026-12-31', 'active', now())"
+            ),
+            {"u": user_id},
+        )
+        await upgrade(conn)
+        assert await conn.scalar(text("SELECT soft FROM goals")) is True
+        await trans.rollback()

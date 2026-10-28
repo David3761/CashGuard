@@ -101,7 +101,7 @@ Later F1-file changes from my tasks: `pyproject.toml` (+ `shellcheck-py`, `alemb
 | Cascades | all `user_id` FKs | `ON DELETE CASCADE`: deleting a user deletes everything it owns (`/sim/reset`); links between rows are `SET NULL`, except a fact's signatures, a run's tool calls, a goal's forecasts and a transaction's questions (CASCADE) |
 | Test helpers | `backend/tests/factories.py` | `user`, `goal`, `transaction`, `everything` (one row in every per-user table) |
 
-**Beyond the spec (all tested):** `users.city` and `agent_events.event_date` (both from Bomboe.md B2); `transfers` one auto-save per income transaction (D37 idempotency); `pots` one per goal; `life_facts` CHECK "temporary needs `valid_to`"; signatures `replacement_cycle_days > 0`; forecasts `p10 ≤ p50 ≤ p90`; `reflections.motivation` 1–5; `plan_preferences.buffer_pct` 0–0.3; `products.min_months ≤ max_months`; extra indexes `notifications(user_id, created_at)`, `life_facts(user_id, status)`, `receivables(user_id, status)`, `spending_signatures/pattern_rules(user_id, active)`, `goal_forecasts(user_id, computed_at)`.
+**Beyond the spec (all tested):** `users.city` and `agent_events.event_date` (both from Bomboe.md B2); **`goals.soft`** (bool, default `true`: the deadline may move; danutu's E9 offers "move the deadline" only for soft goals; second migration `56a08bb4ec07`, agreed by bomboe); `transfers` one auto-save per income transaction (D37 idempotency); `pots` one per goal; `life_facts` CHECK "temporary needs `valid_to`"; signatures `replacement_cycle_days > 0`; forecasts `p10 ≤ p50 ≤ p90`; `reflections.motivation` 1–5; `plan_preferences.buffer_pct` 0–0.3; `products.min_months ≤ max_months`; extra indexes `notifications(user_id, created_at)`, `life_facts(user_id, status)`, `receivables(user_id, status)`, `spending_signatures/pattern_rules(user_id, active)`, `goal_forecasts(user_id, computed_at)`.
 
 ---
 
@@ -109,7 +109,7 @@ Later F1-file changes from my tasks: `pyproject.toml` (+ `shellcheck-py`, `alemb
 
 | # | For | Item |
 |---|---|---|
-| 1 | danutu | E9 needs "soft vs hard goal" (deadline option only for soft goals) but arch §4 has no such column. Add `goals.soft BOOL`? (needs a migration) |
+| 1 | danutu | ✅ done: `goals.soft BOOL NOT NULL DEFAULT true` for E9. Seed: set `soft: false` in `profile.json` for fixed-date goals (e.g. Bianca's summer trip) |
 | 2 | David G. | `merchants.json` / `products.json` need an `"id"` slug per entry (§1) |
 | 3 | team | Q21: should the hosted demo run cron with `CRON_ENABLED_JOBS="process recover"`? |
 | 4 | bomboe | B1 step 4 (local smoke script) after B6a (`/me`) and B8 (`/internal/process`) |
@@ -130,3 +130,4 @@ Later F1-file changes from my tasks: `pyproject.toml` (+ `shellcheck-py`, `alemb
 | `457e697` | B2.2 money-flow tables |
 | `ff0e8df` | B2.3 conversation tables |
 | `02212e2` | B2.4 life-context tables, golden schema, cascades; **Alembic** migrations; `make check` → 228 passed |
+| (next) | `goals.soft` + migration `56a08bb4ec07`; `make check` → 230 passed |

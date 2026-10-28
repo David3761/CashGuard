@@ -24,6 +24,7 @@ from sqlalchemy import (
     String,
     Text,
     text,
+    true,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -124,6 +125,8 @@ class Goal(Base):
     deadline: Mapped[date] = mapped_column(Date)
     motivation: Mapped[str | None] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(10), default=e.GoalStatus.ACTIVE)
+    # soft: the deadline may move (E9 offers "move the deadline" only for soft goals)
+    soft: Mapped[bool] = mapped_column(Boolean, default=True, server_default=true())
     created_at: Mapped[datetime] = created_at()
 
 

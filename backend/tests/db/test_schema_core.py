@@ -190,3 +190,14 @@ async def test_product_checks_kind_liquidity_and_months(db):
 async def test_sim_clock_has_a_single_row(db):
     await accepted(db, m.SimClock(id=1, today=date(2026, 6, 15)))
     await rejected(db, m.SimClock(id=2, today=date(2026, 6, 16)))
+
+
+async def test_goal_is_soft_by_default_and_can_be_hard(db):
+    # soft = the deadline may move (E9 offers "move the deadline" only for soft goals)
+    u = await f.user(db)
+    soft = await f.goal(db, u.id, status="completed")
+    await db.refresh(soft)
+    assert soft.soft is True
+    hard = await f.goal(db, u.id, soft=False)
+    await db.refresh(hard)
+    assert hard.soft is False

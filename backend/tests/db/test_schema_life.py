@@ -19,7 +19,7 @@ GOLDEN_SCHEMA = {
     "accounts": "user_id current_balance savings_pot",
     "income_sources": "id user_id source amount day_of_month",
     "fixed_costs": "id user_id name amount day_of_month",
-    "goals": "id user_id amount deadline motivation status created_at",
+    "goals": "id user_id amount deadline motivation status soft created_at",
     "life_events": "id user_id name date est_cost type source status",
     "life_profile": "user_id data updated_at",
     "transactions": "id user_id amount merchant category occurred_at status attempts locked_at "
