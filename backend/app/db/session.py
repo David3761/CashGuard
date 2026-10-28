@@ -24,6 +24,13 @@ def configure(url: str | None = None) -> AsyncEngine:
     return _engine
 
 
+def use_engine(engine: AsyncEngine | None) -> None:
+    """Point the app's sessions at an existing engine (tests); None = back to DATABASE_URL."""
+    global _engine, _sessions
+    _engine = engine
+    _sessions = async_sessionmaker(engine, expire_on_commit=False) if engine is not None else None
+
+
 def get_engine() -> AsyncEngine:
     return _engine if _engine is not None else configure()
 
