@@ -59,6 +59,13 @@ select = [
 "datetime.date.today".msg = "Use app.clock.today()."
 "time.time".msg = "Use app.clock.now()."
 "time.time_ns".msg = "Use app.clock.now()."
+"time.localtime".msg = "Reads the wall clock: use app.clock.now()."
+"time.gmtime".msg = "Reads the wall clock: use app.clock.now()."
+"time.strftime".msg = "Reads the wall clock: use app.clock.now()."
+"time.ctime".msg = "Reads the wall clock: use app.clock.now()."
+"time.asctime".msg = "Reads the wall clock: use app.clock.now()."
+"time.clock_gettime".msg = "Reads the wall clock: use app.clock.now()."
+"time.clock_gettime_ns".msg = "Reads the wall clock: use app.clock.now()."
 
 [tool.ruff.lint.per-file-ignores]
 "app/clock.py" = ["TID251"]
