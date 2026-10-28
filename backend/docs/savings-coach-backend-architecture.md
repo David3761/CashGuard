@@ -1093,7 +1093,7 @@ tap → POST /receivables/{id}/request-payment → status=requested → notifica
 ```
 - "Și pentru alții" with no count or amount → the code estimates the own share from the baseline (`estimated: true`), and Claude asks **one** follow-up as quick replies: "Partea ta a fost ~100 lei? [Da] [Altă sumă]".
 - Unanswered for 24h → `unplanned_discretionary`, confidence 0.3, editable in the feed.
-- Receivable not paid after 14 days → `agent_event(receivable_reminder)` (counts as the day's question only if it asks something).
+- Receivable not paid after 14 days → `agent_event(receivable_reminder)`. 🆕 It's a statement + a tap card, never a question, so it never uses the day's question (D49).
 
 ### F12. 🆕 Life change → re-plan
 ```
