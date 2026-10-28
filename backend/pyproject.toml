@@ -1,0 +1,121 @@
+[project]
+name = "cashguard-api"
+version = "0.1.0"
+description = "CashGuard backend: FastAPI app with the platform, engine, context and agent modules"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "anthropic>=2.3.0",
+    "fastapi>=0.162.0",
+    "httpx>=0.28.1",
+    "numpy>=2.5.4",
+    "psycopg[binary]>=3.3.6",
+    "pydantic>=2.14.1",
+    "pydantic-settings>=2.16.2",
+    "pyjwt[crypto]>=2.15.1",
+    "sqlalchemy[asyncio]>=2.1.6",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.170.13",
+    "jsonschema>=4.26.0",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1",
+    "pytest-cov>=7.1.0",
+    "respx>=0.23.1",
+    "ruff>=0.17.3",
+]
+
+# ── ruff: lint + format ──────────────────────────────────────────────────────────────────
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+# The docs hold pseudocode snippets, not code to format.
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "B", "UP", "SIM", "RUF",
+    "ASYNC",  # blocking calls inside async code
+    "S",      # bandit security checks
+    "DTZ",    # naive datetimes
+    "PT",     # pytest style
+    "TID",    # banned APIs (below)
+]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+# Time comes only from app.clock (work-breakdown 0.3 rule 3); that's what makes the simulator work.
+"datetime.datetime.now".msg = "Use app.clock.now() (cores receive `today` as a parameter)."
+"datetime.datetime.utcnow".msg = "Use app.clock.now()."
+"datetime.datetime.today".msg = "Use app.clock.today()."
+"datetime.date.today".msg = "Use app.clock.today()."
+"time.time".msg = "Use app.clock.now()."
+
+[tool.ruff.lint.per-file-ignores]
+"app/clock.py" = ["TID251"]
+# Tests use plain asserts and fake credentials.
+"tests/**" = ["S101", "S105", "S106"]
+
+# ── mypy ─────────────────────────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+check_untyped_defs = true
+no_implicit_optional = true
+strict_equality = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+# mypy's `strict` is global-only, so the strict flag set is listed here for the pure cores
+# (work-breakdown 0.1), the agent and the F1 foundation modules.
+[[tool.mypy.overrides]]
+module = [
+    "app.main", "app.config", "app.clock", "app.errors", "app.logging",
+    "app.domain.*", "app.engine.*", "app.context.*", "app.agent.*", "app.i18n.*",
+]
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+no_implicit_reexport = true
+warn_return_any = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+# ── pytest ───────────────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = ["-ra", "--strict-markers", "--strict-config", "-m", "not live"]
+markers = [
+    "db: needs Postgres (make db-up)",
+    "api: HTTP endpoint tests",
+    "ws: WebSocket tests",
+    "live: calls the real Anthropic API and costs money; run on purpose only",
+    "slow: slower than ~1 s",
+]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+xfail_strict = true
+# Warnings are errors. A third-party warning we can't fix gets an explicit, commented ignore here.
+filterwarnings = ["error"]
+
+# ── coverage (a hint, not the goal: how-we-work §7) ─────────────────────────────────────────
+[tool.coverage.run]
+source = ["app"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
