@@ -1,8 +1,8 @@
 # DGAREADME1: discussion log, decisions & important notes (David G.)
 
 > A running log of what we discussed and decided. Update it after every discussion.
-> **Source of truth for the architecture:** [`api/docs/savings-coach-backend-architecture.md`](api/docs/savings-coach-backend-architecture.md) (bomboe's doc, now v0.8 with the AI team's additions marked 🆕).
-> Why each addition was made: [`api/docs/architecture-gap-review.md`](api/docs/architecture-gap-review.md).
+> **Source of truth for the architecture:** [`backend/docs/savings-coach-backend-architecture.md`](backend/docs/savings-coach-backend-architecture.md) (bomboe's doc, now v0.8 with the AI team's additions marked 🆕).
+> Why each addition was made: [`backend/docs/architecture-gap-review.md`](backend/docs/architecture-gap-review.md).
 >
 > Status legend: ✅ **Agreed** · 🟡 **Proposed** (needs the owner's OK) · ❓ **Open**
 
@@ -12,9 +12,9 @@
 
 - **Event:** VibeHack (nexxt × Raiffeisen Bank), track **"AI for Scaling & Growth"**, started 2026-10-28, 24 hours.
 - **Challenge (slide):** build an AI agent that actively helps an individual or business navigate financial decisions and services. Directions: compare financial products using customer context · support budgeting or saving decisions · guide customers through onboarding. **What to demonstrate:** an agent that uses relevant information and tools to complete a meaningful task, *beyond a basic search interface or fixed decision tree*. **Data:** fictional customer profiles, synthetic spending histories, mock product catalogues.
-- **Repo:** `main` = `api/` (backend, with bomboe's architecture doc in `api/docs/`) + `mobile/` (Flutter base project).
+- **Repo:** `backend/` = the Python app, with the docs in `backend/docs/` · `mobile/` = the Flutter base project. bomboe **created** `backend/` in 6214a5d (a copy of the 4 docs + an empty `requirements.txt`); the old `api/` copy is still tracked and goes away with the commit that lands F1 (it's deleted in the working tree). Branches: `backend/` exists on `api-development` (team API work) and `dga-final` (David G., local, not pushed yet); **`main` still has only `api/`**. Also `engine-development` (danutu) and `api-ai` (obsolete).
   - ✅ 2026-10-28: the **`api-ai` branch is old** (an earlier separate-AI-service design). We stick with bomboe's architecture. Only ideas from `api-ai` were reused, adapted to bomboe's design.
-  - ⚠️ `README.md` is UTF-16 encoded and has local, uncommitted changes (it shows garbled in some tools). Not touched by this work.
+  - ✅ `README.md` was UTF-16; it was converted to UTF-8 in 3a2ed0e.
 
 ## 2. Team & ownership ✅
 
@@ -54,7 +54,7 @@
 
 ## 5. Review of bomboe's architecture (2026-10-28)
 
-**Verdict:** v0.7 was a solid platform (Postgres, queue, Claude tool calling, WebSocket, simulator, cron, error handling) but **not complete end-to-end** for our pitch. It described a *daily-budget coach* (reacting at 23:55 to a day over budget), not a *context companion* (reacting to one transaction against the person's life). The 60-second demo couldn't run on it. Missing: the whole life-context layer, per-transaction anomaly + question, effective amounts, receivables, pots, goal probability, voice, learning, the question budget, the AI's snapshot + tools for all of this, endpoints / WS events for the app, personas, team interfaces, a 4-person split. Full list (G-01…G-96): `api/docs/architecture-gap-review.md`.
+**Verdict:** v0.7 was a solid platform (Postgres, queue, Claude tool calling, WebSocket, simulator, cron, error handling) but **not complete end-to-end** for our pitch. It described a *daily-budget coach* (reacting at 23:55 to a day over budget), not a *context companion* (reacting to one transaction against the person's life). The 60-second demo couldn't run on it. Missing: the whole life-context layer, per-transaction anomaly + question, effective amounts, receivables, pots, goal probability, voice, learning, the question budget, the AI's snapshot + tools for all of this, endpoints / WS events for the app, personas, team interfaces, a 4-person split. Full list (G-01…G-96): `backend/docs/architecture-gap-review.md`.
 
 **What we did:** folded every gap into the architecture doc as **v0.8**, marking each addition 🆕 so bomboe can review it. New sections: 4.4–4.5 (tables, fixed lists), 5.3 (Life Context layer), 6.8 (Claude API settings), 6.9 (prompt rules), F10–F16 (flows), 15 (team function contracts), 16 (personas, demo script, acceptance tests, data files).
 
@@ -82,6 +82,11 @@
 | D39 | **Frontend = David V.'s call**, separate from us for now | ✅ team | §2, §9 |
 | — | Claude: keep bomboe's `claude-sonnet-5-5` (D16); `effort: low` on chat/proactive runs; `AsyncAnthropic`; handle `refusal` / `max_tokens`; `strict: true` tools; no `temperature`; `tool_choice: auto` only | 🟡 David G. | 6.3, 6.8 |
 | — | Signatures for free-text facts are written by Claude inside `add_life_fact` (no extra LLM call); the curated library wins | 🟡 David G. | 5.3.3, Q35 |
+| D40 🆕 | **The app folder is `backend/`** (bomboe created it in 6214a5d, replacing `api/`); every doc path updated | ✅ David G. + bomboe's commit, 2026-10-29 | §5 |
+| D41 🆕 | **Packaging:** uv + `pyproject.toml` + `uv.lock` are the source of truth; `requirements.txt` is generated (`make requirements`) for the Docker image, and `make check` fails on drift. The app starts via the factory `uvicorn app.main:create_app --factory --workers 1` | ✅ David G. · 🟡 bomboe to confirm ([HANDOFFS](HANDOFFS.md) H-2) | work-breakdown 0.1 |
+| D42 🆕 | **Cross-team rule:** when one of us needs something another owns, we build it ourselves and log it in [`HANDOFFS.md`](HANDOFFS.md) with a merge instruction (no skipping, no waiting) | ✅ team, 2026-10-29 | — |
+| D44 🆕 | **Orchestrated parallel agents:** one AI agent per David G. task, coordinated by the main session (the boss): every agent plans first and waits for David G.'s approval; after that, every step is gated by an independent review + `make check` before it's merged into `dga-final`. Process: [`ORCHESTRATION.md`](ORCHESTRATION.md) | ✅ David G., 2026-10-29 | how-we-work |
+| D43 🆕 | F1 is split into 5 reviewable steps (F1.1 tooling + factory, F1.2 settings, F1.3 clock, F1.4 error envelope, F1.5 logging) + DOC-0 (doc paths); reports in [`backend/docs/reports/F1.md`](backend/docs/reports/F1.md) | ✅ David G., 2026-10-29 | how-we-work §2 |
 
 ## 7. Open questions ❓
 
@@ -92,15 +97,19 @@
 | Q35 | David G. | Signatures for free-text facts inside `add_life_fact`, or a separate LLM call? | Inside `add_life_fact` |
 | — | danutu | Confirm the engine definitions and the Monte Carlo design (arch 6.7) | — |
 
-Answered on 2026-10-28: Q30 → Keycloak stays (D36) · Q31 → auto-save yes (D37) · Q22 → hosted (D38) · the 🟡 decisions → approved. The frontend questions (home screen, auto mic, persona switcher) are **David V.'s to decide** (D39); they don't block the backend or the AI.
 | — | all | Pitch length, judging criteria, pitch time slot? | ask the organisers |
 | — | all | Anthropic API key / credits available? | needed by hour 1 |
 | — | David G. | Verify the Deloitte 2026 and Revolut numbers and their sources before the slides | — |
+| — | bomboe | Confirm D41 (uv + generated `requirements.txt`, the `--factory` start) and review the work done for him: [`HANDOFFS.md`](HANDOFFS.md) H-1 (test-DB compose), H-2 | merge instructions are in each entry |
+| — | David G. | Tell bomboe and danutu when F1 lands (they're blocked on it) | — |
+| — | all | Which branch is the integration branch? how-we-work §9 says "rebase on `main`", but the team works on `api-development` and `main` has no `backend/` yet | `api-development` until the first merge to `main` |
+
+Answered on 2026-10-28: Q30 → Keycloak stays (D36) · Q31 → auto-save yes (D37) · Q22 → hosted (D38) · the 🟡 decisions → approved. The frontend questions (home screen, auto mic, persona switcher) are **David V.'s to decide** (D39); they don't block the backend or the AI.
 
 ## 7b. How we work & the task list ✅ (2026-10-28)
 
-- **Way of working** (David G.): implement in **small steps** (one concern, ≤ ~150 lines). Each step goes plan → test analysis over every category → tests first (red) → implement (green) → `make check` → self-review → step report → human review → a post-review report (what went wrong, why, the fix, how we prevent it). Details: [`api/docs/how-we-work.md`](api/docs/how-we-work.md).
-- **Every task in detail:** [`api/docs/work-breakdown.md`](api/docs/work-breakdown.md) (60 tasks: files, functions, steps, edge cases, every test, "done when").
+- **Way of working** (David G.): implement in **small steps** (one concern, ≤ ~150 lines). Each step goes plan → test analysis over every category → tests first (red) → implement (green) → `make check` → self-review → step report → human review → a post-review report (what went wrong, why, the fix, how we prevent it). Details: [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md).
+- **Every task in detail:** [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) (60 tasks: files, functions, steps, edge cases, every test, "done when").
 - **Short list:** [`TASKS.md`](TASKS.md). ✅ **Assigned by David G.:** backend platform (B1–B15, incl. the seed loader B12) → **bomboe**; engine & calculations (E1–E13) → **danutu**; context layer (C1–C12), agent & LLM (A1–A11), data/demo/quality (D1–D6) → **David G.**; foundations as suggested (F1, F2 → David G.; F3 → bomboe). Per-person detailed files, each task split into reviewable steps with the tests per step and "who needs what from whom, by when": [`Bomboe.md`](Bomboe.md), [`Danutu.md`](Danutu.md), [`DGAdavid1.md`](DGAdavid1.md).
 - ⚠️ Load after the assignment: P0 ≈ 13.75 h (bomboe) / 10.25 h (danutu) / 18 h (David G.). Moving C1, C2, C7, D2 to danutu would even it out (open, David G.'s call).
 - 🟡 Technical defaults in work-breakdown §0 (uv, async SQLAlchemy, `create_all` instead of migrations, a pure core + thin DB shell for engine/context, Decimal money, real Postgres in tests, `FakeLLM` in tests and real Claude only with `-m live`). Platform choices need bomboe's OK.
@@ -110,7 +119,7 @@ Answered on 2026-10-28: Q30 → Keycloak stays (D36) · Q31 → auto-save yes (D
 
 1. ✅ v0.8 reviewed by bomboe (decisions approved, Q30 / Q31 / Q22 answered).
 2. Hour 0–1: commit stubs for our §15 functions (`evaluate_transaction`, `pick_question`, `build_snapshot`, `recompute_plan`, `forecast_goal`, `auto_save`, …) returning fixtures, so bomboe can integrate.
-2b. With bomboe: the scripted demo client (`api/scripts/demo_client.py`, arch §14) so we can run Scenes A–E without the app.
+2b. With bomboe: the scripted demo client (`backend/scripts/demo_client.py`, arch §14) so we can run Scenes A–E without the app.
 3. **danutu:** persona generator (Matei first), baselines, budget engine definitions incl. payday auto-save (6.7), anomaly features, Monte Carlo forecast with the demo numbers 78% → 71% → 77% (last week 72%).
 4. **David G.:** `data/merchants.json`, the fixed lists (4.5), the signature library, `evaluate_transaction` passing acceptance tests 16.3 #1 and #3–#7, the snapshot builder, the tools (6.6), the prompts (6.9), then the eval set (16.4).
 5. Checkpoint at hour 11–12: Scene A end-to-end.
@@ -122,3 +131,5 @@ Answered on 2026-10-28: Q30 → Keycloak stays (D36) · Q31 → auto-save yes (D
 - **2026-10-28 (later)**: bomboe's answers: Keycloak stays because we host it (D36); auto-save on payday: yes (D37); the backend will be hosted (D38); the 🟡 decisions are OK. David V.'s work is separate for now and he decides everything app-side (D39). The architecture doc, the gap review and this log are updated. The backend/AI checkpoint is now verified with a scripted demo client instead of the app.
 - **2026-10-28 21:15**: Agreed the way of working (small steps, tests first, reviews with post-review reports). Wrote `api/docs/work-breakdown.md` (every API task in detail), `TASKS.md` (the short list with suggested owners, waiting for assignment) and `api/docs/how-we-work.md`. Flagged that P0 doesn't fit the remaining time.
 - **2026-10-28 (later)**: David G. assigned the tasks (platform → bomboe, engine → danutu, context/agent/data/demo/quality → David G.; foundations as suggested). Wrote `Bomboe.md`, `Danutu.md`, `DGAdavid1.md` and updated `TASKS.md` and `work-breakdown.md`. The per-person files are now the working copies.
+- **2026-10-29**: bomboe created `backend/` as the app folder (6214a5d, replacing `api/`); David G. agreed, and every doc path now says `backend/` (D40; the changelog lines above keep the old paths as history). Packaging decided: uv + generated `requirements.txt` (D41). New team rule: do it yourself and log it in `HANDOFFS.md` (D42). F1 split into steps (D43); **F1.1 done and approved** (tooling, `create_app()`, `GET /api/health`, test-DB compose); report: `backend/docs/reports/F1.md`.
+- **2026-10-29 (later)**: DOC-0 approved. David G. switched to **parallel agents** (D44, [`ORCHESTRATION.md`](ORCHESTRATION.md)): first wave F1 (F1.2–F1.5), F2, C1, A1, A5, each in its own worktree. The baseline (F1.1 + DOC-0 + the shared hypothesis profile, HANDOFFS H-4) is committed on `dga-final`.

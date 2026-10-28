@@ -131,7 +131,7 @@ Not applicable: concurrency (pure function), …
 ## 8. Commands
 
 ```bash
-cd api
+cd backend
 uv sync                         # install
 make db-up                      # Postgres for tests (docker compose up -d db-test)
 make test                       # unit + db + api + ws (everything except live)
@@ -153,6 +153,6 @@ uv run python scripts/demo_client.py --scene A   # end-to-end scene
 
 Start every session with:
 
-> Read `api/docs/how-we-work.md`, `api/docs/work-breakdown.md` (task <ID>), the architecture doc sections it references, and `<YourName>.md`. We're doing task <ID>, step 1. Follow the loop: plan → test analysis → tests (red) → implement (green) → `make check` → self-review → step report. Stop after the report and wait for my review.
+> Read `backend/docs/how-we-work.md`, `backend/docs/work-breakdown.md` (task <ID>), the architecture doc sections it references, and `<YourName>.md`. We're doing task <ID>, step 1. Follow the loop: plan → test analysis → tests (red) → implement (green) → `make check` → self-review → step report. Stop after the report and wait for my review.
 
 Then review each step report, comment, and let Claude produce the post-review report before moving on.

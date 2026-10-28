@@ -3,10 +3,10 @@
 > Assigned 2026-10-28 by David G. **Scope:** all the deterministic money maths in `app/engine/` (and `app/pipeline/signals.py`): daily budget, ledger, plans, what-if, household-adjusted baselines, anomaly features, the Monte Carlo goal forecast, drivers & options, pots / receivables / payday auto-save, day-level signals, and the persona data generator + demo calibration.
 > **Not yours:** DB, endpoints, pipeline plumbing (bomboe); the context layer, the agent and the data files `merchants.json` / `priors.json` (David G.; you agree the priors numbers together).
 >
-> **Read first:** [`api/docs/how-we-work.md`](api/docs/how-we-work.md), [`api/docs/work-breakdown.md`](api/docs/work-breakdown.md) §0, and the architecture doc [`api/docs/savings-coach-backend-architecture.md`](api/docs/savings-coach-backend-architecture.md) §5.3.4–5.3.5, §6.7 (engine definitions + forecast), §15, §16.
+> **Read first:** [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md), [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) §0, and the architecture doc [`backend/docs/savings-coach-backend-architecture.md`](backend/docs/savings-coach-backend-architecture.md) §5.3.4–5.3.5, §6.7 (engine definitions + forecast), §15, §16.
 >
 > **Opening prompt for Claude Code:**
-> *Read `api/docs/how-we-work.md`, `api/docs/work-breakdown.md` §0, the architecture doc sections listed in `Danutu.md`, and `Danutu.md`. We're doing task <ID>, step <n>. Follow the loop: plan → test analysis over every category → tests first (red) → implement (green) → `make check` → self-review → step report. Then stop and wait for my review.*
+> *Read `backend/docs/how-we-work.md`, `backend/docs/work-breakdown.md` §0, the architecture doc sections listed in `Danutu.md`, and `Danutu.md`. We're doing task <ID>, step <n>. Follow the loop: plan → test analysis over every category → tests first (red) → implement (green) → `make check` → self-review → step report. Then stop and wait for my review.*
 
 ---
 

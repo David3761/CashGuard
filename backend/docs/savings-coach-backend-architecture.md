@@ -89,7 +89,7 @@ The AI is triggered in three ways:
 | Deploy | docker-compose (db, keycloak, api, cron) 🆕 **on a hosted server** behind HTTPS (D38; provider ❓Q22). The Flutter app runs on a phone/emulator and talks to the public URLs |
 | Tests | pytest (budget engine + tool executor) + 🆕 context acceptance tests (16.3) + LLM eval set (16.4) |
 
-🆕 **Environment variables** (`api/.env`, never committed): `DATABASE_URL`, `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL=claude-sonnet-5-5`, `ANTHROPIC_EFFORT=low`, `KEYCLOAK_ISSUER`, `KEYCLOAK_AUDIENCE`, cron client secret, `SIM_MODE=true`, `SIM_START_DATE=2026-06-15`, `TZ=Europe/Bucharest`, `MAX_AGENT_ITERATIONS=6`, `QUESTIONS_PER_DAY=1`.
+🆕 **Environment variables** (`backend/.env`, never committed): `DATABASE_URL`, `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL=claude-sonnet-5-5`, `ANTHROPIC_EFFORT=low`, `KEYCLOAK_ISSUER`, `KEYCLOAK_AUDIENCE`, cron client secret, `SIM_MODE=true`, `SIM_START_DATE=2026-06-15`, `TZ=Europe/Bucharest`, `MAX_AGENT_ITERATIONS=6`, `QUESTIONS_PER_DAY=1`.
 
 ---
 
@@ -313,7 +313,7 @@ merchants (id, canonical_name, aliases JSONB, category, mcc, typical_basket NUME
 ```
 
 ```
-api/app/                     🆕 the repo folder is api/, not backend/                          OWNER (section 13)
+backend/app/                 🆕 the repo folder is backend/ (created by bomboe, 2026-10-29)    OWNER (section 13)
 ├── main.py  config.py  clock.py                                                              bomboe
 ├── db/        models.py, session.py, seed.py (🆕 loads data/personas/)                        bomboe
 ├── services/  users.py, accounts.py, goals.py, life_events.py, transactions.py, ...  (CRUD)  bomboe
@@ -1452,7 +1452,7 @@ danutu and David G. pair on the boundary: `evaluate_transaction` (David G.) call
 ## 14. Next Steps
 
 1. ✅ bomboe approved the 🆕 decisions and answered Q30 (Keycloak stays, D36), Q31 (auto-save: yes, D37) and Q22 (hosted, D38). Frontend questions are David V.'s (D39). Still open: the hosting provider / URL (Q22), Q33 (mock payment request), Q35.
-1b. 🆕 bomboe + David G.: a scripted **demo client** (`api/scripts/demo_client.py`: logs in as a persona through `savings-dev`, calls `/sim/reset`, `/sim/transaction` and `/chat`, prints the WS events). It's how we test Scenes A–E without the app.
+1b. 🆕 bomboe + David G.: a scripted **demo client** (`backend/scripts/demo_client.py`: logs in as a persona through `savings-dev`, calls `/sim/reset`, `/sim/transaction` and `/chat`, prints the WS events). It's how we test Scenes A–E without the app.
 2. 🆕 Hour 0–1: everyone commits stubs for their section 15 functions so the others can integrate against fixtures.
 3. DB schema (4.1 + 4.4) + seed loader; danutu's generator produces `data/personas/`.
 4. Budget engine + baselines + forecast + tests; `context.evaluate_transaction` + acceptance tests 16.3.
@@ -1562,7 +1562,7 @@ Before every run: `POST /sim/reset` (sim date 2026-06-15, Monday).
 
 **Scene E (optional): life changes the plan.** Ioana → `ioana_shopgo_350` → nothing (normal for 4 people). Then: "De luna asta stă și mama la noi" → groceries rescaled ×2.6/2.1 for the month → new probability + options as quick replies.
 
-### 16.3 Acceptance tests: definition of done for the context layer (`api/tests/test_context_acceptance.py`)
+### 16.3 Acceptance tests: definition of done for the context layer (`backend/tests/test_context_acceptance.py`)
 
 | # | Persona | Input | Expected |
 |---|---|---|---|
@@ -1582,7 +1582,7 @@ Before every run: `POST /sim/reset` (sim date 2026-06-15, Monday).
 | 14 | Matei | "m-am mutat, chiria e 2.400" | fixed cost updated, `plans.reason` set, forecast recomputed, options if it dropped > 10 pp |
 | 15 | anyone | hypothesis "Ai mașină?" rejected | never proposed again |
 
-### 16.4 LLM eval set (`api/tests/eval/answers.jsonl`)
+### 16.4 LLM eval set (`backend/tests/eval/answers.jsonl`)
 
 60–100 utterances (mostly Romanian, some English) → the expected tool calls and key arguments. 5–10 per row of the "Typical calls" table (6.6), plus multi-intent answers ("am luat pentru colegi și oricum de luna viitoare mă mut"), negations ("nu, doar pentru mine"), missing diacritics, slang, numbers in words and off-topic answers. Targets: ≥ 90% correct tool + key arguments, **100% on the demo utterances**, 0 banned phrases in generated questions. Run it after every prompt change. It calls the real API, so keep it small.
 
@@ -1592,7 +1592,7 @@ Before every run: `POST /sim/reset` (sim date 2026-06-15, Monday).
 |---|---|---|
 | `data/personas/<id>/profile.json` | user, account, income, fixed costs, goal, pots | danutu |
 | `data/personas/<id>/facts.json` | life facts (+ signature overrides, seeded rules) | David G. |
-| `data/personas/<id>/transactions.json` | 3–4 months before 2026-06-15, seeded RNG, the patterns in 16.1 + calendar (Orthodox Easter 12 Apr 2026, 1 Iunie) | danutu (`api/scripts/generate_personas.py`) |
+| `data/personas/<id>/transactions.json` | 3–4 months before 2026-06-15, seeded RNG, the patterns in 16.1 + calendar (Orthodox Easter 12 Apr 2026, 1 Iunie) | danutu (`backend/scripts/generate_personas.py`) |
 | `data/scenarios/<scene>.json` | the scripted transactions per scene (16.2) | danutu + David G. |
 | `data/merchants.json` | ~40 Romanian merchants: canonical name, aliases, category, MCC, typical basket, `multi_category` | David G. |
 | `data/priors.json` | single-adult monthly priors per category + city index | David G. + danutu |

@@ -1,7 +1,7 @@
 # TASKS: the short list for assigning (API only)
 
-> Full detail of every task (files, functions, steps, tests, "done when"): [`api/docs/work-breakdown.md`](api/docs/work-breakdown.md).
-> How we work on each task: [`api/docs/how-we-work.md`](api/docs/how-we-work.md). The frontend is David V.'s and separate (arch D39).
+> Full detail of every task (files, functions, steps, tests, "done when"): [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md).
+> How we work on each task: [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md). The frontend is David V.'s and separate (arch D39).
 > ✅ Assigned on 2026-10-28. Each person's tasks in detail, split into steps: [`Bomboe.md`](Bomboe.md), [`Danutu.md`](Danutu.md), [`DGAdavid1.md`](DGAdavid1.md).
 >
 > **P0** = needed for the demo (Scenes A + B) · **P1** = clearly better pitch · **P2** = cut first.

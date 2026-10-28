@@ -145,7 +145,7 @@
 | ID | P | Gap in v0.7 | Fix in v0.8 | Owner |
 |---|---|---|---|---|
 | G-70 | P0 | Keycloak + Flutter: PKCE needs `flutter_appauth` and a redirect scheme. On an Android emulator Keycloak is reached at `10.0.2.2`, so the token's `iss` differs from `localhost` and JWT validation fails unless `KC_HOSTNAME` is one address reachable from both. That's costly in 24h. | ✅ Keycloak stays and is hosted with one public HTTPS hostname, which removes the mismatch (D36). A `savings-dev` client lets scripts log in without a browser. | BE, FE |
-| G-71 | P1 | The doc says `backend/app/`, but the repo has `api/`. | Use `api/app/`. | BE |
+| G-71 | P1 | The doc says `backend/app/`, but the repo has `api/`. | Use `api/app/`. 🆕 **2026-10-29: reversed.** bomboe created `backend/` as the app folder (commit 6214a5d), and every doc now says `backend/`. | BE |
 | G-72 | P1 | Phone ↔ laptop networking at the venue. | ✅ Solved by hosting the backend (D38). | BE |
 | G-73 | P1 | A sync Anthropic client inside async FastAPI background tasks blocks the event loop. | `AsyncAnthropic`, or run the agent in a threadpool. | BE, CTX |
 | G-74 | P2 | Env vars aren't listed. | Listed in v0.8 §3. | BE |

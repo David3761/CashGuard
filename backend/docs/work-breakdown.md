@@ -1,6 +1,6 @@
 # Work breakdown: every API task in detail
 
-> **Scope:** the API only (`api/`). The Flutter app is David V.'s and is separate for now (arch D39).
+> **Scope:** the API only (`backend/`). The Flutter app is David V.'s and is separate for now (arch D39).
 > **Source of truth for *what* to build:** [`savings-coach-backend-architecture.md`](savings-coach-backend-architecture.md) (v0.8). This file says *how*: files, functions, steps, edge cases, tests and "done when" for every task.
 > **How we work on each task:** [`how-we-work.md`](how-we-work.md). **Short list for assigning:** [`../../TASKS.md`](../../TASKS.md).
 > Written 2026-10-28 by David G. with Claude. Sizes are rough hours **with Claude Code, including tests and review**.
@@ -14,7 +14,7 @@
 
 | Concern | Choice |
 |---|---|
-| Python | 3.12, managed with **uv** (`api/pyproject.toml`, `uv.lock` committed) |
+| Python | 3.12, managed with **uv** (`backend/pyproject.toml`, `uv.lock` committed) |
 | Web | FastAPI + Pydantic v2 + `pydantic-settings`; uvicorn, **1 worker** (in-memory WS manager) |
 | DB | PostgreSQL 16, SQLAlchemy 2 **async** + psycopg 3; schema via `metadata.create_all` (no Alembic: the demo DB is reset anyway) |
 | LLM | `anthropic` SDK, `AsyncAnthropic`, settings in arch 6.8 |
@@ -26,7 +26,7 @@
 ### 0.2 Folder layout (final)
 
 ```
-api/
+backend/
 ├── pyproject.toml  uv.lock  .python-version  .env.example  Makefile  Dockerfile  docker-compose.yml  README.md
 ├── keycloak/realm-cashguard.json
 ├── cron/crontab  cron/run.sh
@@ -114,7 +114,7 @@ F1 ─► B1 ─► F3 ─► (all db/api tests)   B5, B7 ─┘   E12 + D1 + D2
 
 ### F1 · Repo skeleton & tooling · S 0.5h · P0 · deps: — · suggested: David G.
 **Goal.** A runnable, testable empty app that everyone builds on.
-**Files.** `pyproject.toml` (deps from 0.1; dev group), `.python-version`, `.env.example` (every var from arch §3), `Makefile` (`dev`, `test`, `test-all`, `check`, `db-up`, `fmt`), `app/main.py` (`create_app()` factory, router mount at `/api`, `/api/health`), `app/config.py` (`Settings`), `app/clock.py`, `app/errors.py`, `app/logging.py`, `api/README.md` (run locally), `.gitignore` additions (`.env`, `.venv`, `__pycache__`, `.pytest_cache`, `.coverage`).
+**Files.** `pyproject.toml` (deps from 0.1; dev group), `.python-version`, `.env.example` (every var from arch §3), `Makefile` (`dev`, `test`, `test-all`, `check`, `db-up`, `fmt`), `app/main.py` (`create_app()` factory, router mount at `/api`, `/api/health`), `app/config.py` (`Settings`), `app/clock.py`, `app/errors.py`, `app/logging.py`, `backend/README.md` (run locally), `.gitignore` additions (`.env`, `.venv`, `__pycache__`, `.pytest_cache`, `.coverage`).
 **Steps.**
 1. `uv init` / write `pyproject.toml`; tool configs for ruff, mypy, pytest (markers `db`, `api`, `ws`, `live`, `slow`; default `-m "not live"`).
 2. `Settings` (pydantic-settings): every env var; `SIM_MODE: bool`, `SIM_START_DATE: date`, `ANTHROPIC_API_KEY: SecretStr | None`.
@@ -125,7 +125,7 @@ F1 ─► B1 ─► F3 ─► (all db/api tests)   B5, B7 ─┘   E12 + D1 + D2
 - unit: `FixedClock` returns its date; `RealClock.now()` is tz-aware Bucharest; at `2026-06-14T21:30Z` `today()` is `2026-06-15` (UTC+3); on the DST day (2026-10-25) `today()` is correct before and after 04:00 local.
 - api: `GET /api/health` → 200 `{"status":"ok"}`; unknown route → 404 in the envelope; a test route raising `DomainError("x_code")` → its status + envelope; bad body → 422 envelope; a route raising `RuntimeError` → 500 envelope with no stack trace in the body.
 - tooling: `make check` (ruff + mypy + unit tests) passes on the empty project.
-**Done when.** `uv sync && make check` is green; `api/README.md` explains how to run.
+**Done when.** `uv sync && make check` is green; `backend/README.md` explains how to run.
 
 ### F2 · Shared domain types & enums (`app/domain/`) · M 1h · P0 · deps: F1 · suggested: David G. (danutu reviews)
 **Goal.** One set of typed objects used by every pure core, so teams never exchange loose dicts.
@@ -599,10 +599,10 @@ F1 ─► B1 ─► F3 ─► (all db/api tests)   B5, B7 ─┘   E12 + D1 + D2
 **Tests.** It's the end-to-end test: Scene A asserts effective 100, receivable 400, probability 77 ± 1; run locally and against the hosted server.
 
 ### D5 · Demo runbook & rehearsal · S 0.5h · P1 · deps: D4 · suggested: everyone
-**Files.** `api/docs/demo-runbook.md`: before the demo (reset, warm-up LLM call, WS check), timing per scene, fallback steps, who clicks what, the backup video.
+**Files.** `backend/docs/demo-runbook.md`: before the demo (reset, warm-up LLM call, WS check), timing per scene, fallback steps, who clicks what, the backup video.
 
 ### D6 · Security & privacy review · S 0.5h · P1 · deps: most tasks · suggested: David G. (review), bomboe (fixes)
-**Checklist.** Isolation tests exist for every resource; internal and sim gating; no secrets in the repo (`git grep -n "sk-ant"`); prompt injection; data minimisation; logs. **Output:** `api/docs/reviews/security.md`.
+**Checklist.** Isolation tests exist for every resource; internal and sim gating; no secrets in the repo (`git grep -n "sk-ant"`); prompt injection; data minimisation; logs. **Output:** `backend/docs/reviews/security.md`.
 
 ---
 

@@ -2,9 +2,9 @@
 
 > Assigned 2026-10-28 by David G. **Scope:** the foundations everyone starts from (F1, F2), the whole **context layer** (`app/context/`, `app/i18n/`, the data files), the **agent** (`app/agent/`: Claude client, tools, executor, snapshot, prompts, loop, proactive questions, fallbacks, eval), the persona facts, the scenarios, the acceptance suite, the demo client, the runbook and the security review.
 > **Not yours:** DB / endpoints / pipeline plumbing / auth / sim / hosting (bomboe); all money maths (`app/engine/`, danutu). You call their §15 functions, never re-implement them.
-> We work on this file together with Claude, step by step, exactly as in [`api/docs/how-we-work.md`](api/docs/how-we-work.md): every step ends with a step report and **waits for your review**.
+> We work on this file together with Claude, step by step, exactly as in [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md): every step ends with a step report and **waits for your review**.
 >
-> **Read first:** `api/docs/how-we-work.md`, [`api/docs/work-breakdown.md`](api/docs/work-breakdown.md) §0, and the architecture doc [`api/docs/savings-coach-backend-architecture.md`](api/docs/savings-coach-backend-architecture.md) §4.4–4.5, §5.3 (all), §6 (all), §7, F10–F16, §15, §16.
+> **Read first:** `backend/docs/how-we-work.md`, [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) §0, and the architecture doc [`backend/docs/savings-coach-backend-architecture.md`](backend/docs/savings-coach-backend-architecture.md) §4.4–4.5, §5.3 (all), §6 (all), §7, F10–F16, §15, §16.
 
 ---
 
@@ -12,7 +12,7 @@
 
 | Order | ID | Task | P | h | Status |
 |---|---|---|---|---|---|
-| 1 | F1 | Repo skeleton, tooling, config, clock, error envelope | P0 | 0.5 | ☐ |
+| 1 | F1 | Repo skeleton, tooling, config, clock, error envelope | P0 | 0.5 | ◐ F1.1 ✅ ([report](backend/docs/reports/F1.md)) |
 | 2 | F2 | Shared domain types, enums, money helpers, test builders | P0 | 1 | ☐ |
 | 3 | C1 | Fixed lists, RO/EN labels & formats, data files | P0 | 1 | ☐ |
 | 4 | C2 | Merchant normalisation | P0 | 0.5 | ☐ |
@@ -79,7 +79,7 @@
 ## 3. Tasks (P0, in order)
 
 ### F1 · Repo skeleton & tooling · P0 · 0.5 h · deps: —
-**Files.** `api/pyproject.toml`, `.python-version` (3.12), `.env.example`, `Makefile`, `app/main.py`, `app/config.py`, `app/clock.py`, `app/errors.py`, `app/logging.py`, `api/README.md`, `.gitignore` additions.
+**Files.** `backend/pyproject.toml`, `.python-version` (3.12), `.env.example`, `Makefile`, `app/main.py`, `app/config.py`, `app/clock.py`, `app/errors.py`, `app/logging.py`, `backend/README.md`, `.gitignore` additions.
 
 - **Step 1: project + tooling.** Dependencies from work-breakdown §0.1 (main + dev groups); ruff, mypy (strict for `app/domain`, `app/engine`, `app/context`), pytest config (markers `db`, `api`, `ws`, `live`, `slow`; default `-m "not live"`; asyncio mode auto); `Makefile` targets `dev`, `test`, `test-all`, `check`, `db-up`, `fmt`; `create_app()` with a router at `/api` and `GET /api/health`. *Tests:* health → 200 `{"status":"ok"}`; `make check` green on the empty project.
 - **Step 2: config, clock, errors, logging.** `Settings` (pydantic-settings) with every variable of arch §3; a `Clock` protocol + `RealClock` (Europe/Bucharest) + `FixedClock` + `get_clock()` / `set_clock()`; `DomainError(code, message, status)` and the three exception handlers (arch 9.1 envelope); JSON logging that never prints secrets. *Tests:* `Settings` from env and `.env`; `SIM_MODE` accepts `true/1/false/0`; `FixedClock`; `RealClock.now()` tz-aware; `2026-06-14T21:30Z` → today `2026-06-15`; the DST day 2026-10-25 before/after 04:00; unknown route → 404 envelope; `DomainError` → its status + envelope; bad body → 422 envelope; `RuntimeError` → 500 envelope with no stack trace; `SecretStr` never appears in a logged settings dump.
@@ -205,10 +205,10 @@ Commit, with the exact arch 15.1 signatures and simple bodies: `context.service.
 - **Step 2: runner.** Live run (`-m live`) → an accuracy table + a report file. Scoring: tool-name match, key-arg match with tolerance, multi-intent order-insensitive. *Tests:* the scoring unit-tested with FakeLLM. **Targets:** ≥ 90% overall, 100% on the demo rows. Costs money: run it after prompt changes only.
 
 ### D6 · Security & privacy review · P1 · 0.5 h · deps: most tasks
-- **Step 1.** Check: isolation tests exist for every resource; internal + sim gating; no secrets in the repo (`git grep -n "sk-ant"`); prompt injection (snapshot + live eval); data minimisation; logs. **Output:** `api/docs/reviews/security.md` (problem → why → fix → owner).
+- **Step 1.** Check: isolation tests exist for every resource; internal + sim gating; no secrets in the repo (`git grep -n "sk-ant"`); prompt injection (snapshot + live eval); data minimisation; logs. **Output:** `backend/docs/reviews/security.md` (problem → why → fix → owner).
 
 ### D5 · Demo runbook & rehearsal · P1 · 0.5 h · deps: D4
-- **Step 1.** `api/docs/demo-runbook.md`: before the demo (reset, a warm-up LLM call, a WS check), timing per scene, the fallback steps, who clicks what, the backup video. Run one full dry run with the demo client and record the timings.
+- **Step 1.** `backend/docs/demo-runbook.md`: before the demo (reset, a warm-up LLM call, a WS check), timing per scene, the fallback steps, who clicks what, the backup video. Run one full dry run with the demo client and record the timings.
 
 ---
 

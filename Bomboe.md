@@ -1,12 +1,12 @@
 # Bomboe: API tasks (backend platform)
 
-> Assigned 2026-10-28 by David G. **Scope:** the platform half of `api/`: DB, services, auth, REST, WebSocket, the pipeline plumbing, chat orchestration, simulator, jobs/cron, seed loader, notifications, hosting, audit logging, and the test fixtures (F3).
+> Assigned 2026-10-28 by David G. **Scope:** the platform half of `backend/`: DB, services, auth, REST, WebSocket, the pipeline plumbing, chat orchestration, simulator, jobs/cron, seed loader, notifications, hosting, audit logging, and the test fixtures (F3).
 > **Not yours:** the money maths (`app/engine/`, danutu) and the context layer + agent (`app/context/`, `app/agent/`, David G.). You *call* their functions through the contracts in arch §15; you never re-implement them.
 >
-> **Read first:** [`api/docs/how-we-work.md`](api/docs/how-we-work.md) (the step loop and templates), [`api/docs/work-breakdown.md`](api/docs/work-breakdown.md) §0 (conventions + the test checklist), and the architecture doc [`api/docs/savings-coach-backend-architecture.md`](api/docs/savings-coach-backend-architecture.md) §4, §5.1, §5.2, §8, §9, §10, §11, §15.
+> **Read first:** [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md) (the step loop and templates), [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) §0 (conventions + the test checklist), and the architecture doc [`backend/docs/savings-coach-backend-architecture.md`](backend/docs/savings-coach-backend-architecture.md) §4, §5.1, §5.2, §8, §9, §10, §11, §15.
 >
 > **Opening prompt for Claude Code:**
-> *Read `api/docs/how-we-work.md`, `api/docs/work-breakdown.md` §0, the architecture doc sections listed in `Bomboe.md`, and `Bomboe.md`. We're doing task <ID>, step <n>. Follow the loop: plan → test analysis over every category → tests first (red) → implement (green) → `make check` → self-review → step report. Then stop and wait for my review.*
+> *Read `backend/docs/how-we-work.md`, `backend/docs/work-breakdown.md` §0, the architecture doc sections listed in `Bomboe.md`, and `Bomboe.md`. We're doing task <ID>, step <n>. Follow the loop: plan → test analysis over every category → tests first (red) → implement (green) → `make check` → self-review → step report. Then stop and wait for my review.*
 
 ---
 
@@ -68,7 +68,7 @@
 
 ### B1 · docker-compose, env & Keycloak realm · P0 · 0.75 h · deps: —
 **Goal.** One command brings up Postgres (dev + test), Keycloak with our realm, the API and cron.
-**Files.** `api/docker-compose.yml`, `api/Dockerfile`, `api/keycloak/realm-cashguard.json`, `api/cron/crontab`, `api/cron/run.sh`, `api/scripts/smoke_local.sh`, `api/.env.example` (add the Keycloak/cron vars).
+**Files.** `backend/docker-compose.yml`, `backend/Dockerfile`, `backend/keycloak/realm-cashguard.json`, `backend/cron/crontab`, `backend/cron/run.sh`, `backend/scripts/smoke_local.sh`, `backend/.env.example` (add the Keycloak/cron vars).
 
 - **Step 1: compose skeleton.** Services `db` (postgres:16, volume), `db-test` (postgres:16, port 5433, `tmpfs` for speed), `api` (built from `Dockerfile`, uvicorn `--workers 1`, depends on db). *Tests:* `docker compose config` is valid; `db-test` accepts a connection (`pg_isready`).
 - **Step 2: Keycloak realm.** `keycloak` service (pinned version) with `--import-realm`. Realm `cashguard`: client `savings-frontend` (public, standard flow + PKCE S256, redirect URIs `ro.cashguard.app:/oauthredirect` and `http://localhost:*`); `savings-cron` (confidential, service account, realm role `internal`); `savings-dev` (direct access grants, dev/test only); users `matei`, `andrei`, `bianca`, `ioana`, `alex` with **fixed ids** (these become `users.keycloak_sub` in the seed) and known dev passwords; access token lifespan 1800 s. *Tests (unit, `tests/unit/test_realm.py`):* the JSON parses; exactly these 3 clients with these flags; PKCE method S256 on `savings-frontend`; redirect URIs present; 5 users with the expected ids; lifespan ≥ 1800; `savings-cron`'s service account has role `internal`; `savings-dev` isn't public-facing in prod docs (note).

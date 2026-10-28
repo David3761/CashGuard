@@ -6,13 +6,17 @@ A voice-first money companion for young people that understands the life behind 
 
 | Doc | What's inside |
 |---|---|
-| [`api/docs/savings-coach-backend-architecture.md`](api/docs/savings-coach-backend-architecture.md) | **The architecture (source of truth):** data, flows, Life Context layer, AI, API contract |
-| [`api/docs/architecture-gap-review.md`](api/docs/architecture-gap-review.md) | What v0.7 was missing and why each v0.8 addition exists |
+| [`backend/docs/savings-coach-backend-architecture.md`](backend/docs/savings-coach-backend-architecture.md) | **The architecture (source of truth):** data, flows, Life Context layer, AI, API contract |
+| [`backend/docs/architecture-gap-review.md`](backend/docs/architecture-gap-review.md) | What v0.7 was missing and why each v0.8 addition exists |
 | [`TASKS.md`](TASKS.md) | Every API task, who owns it |
 | [`Bomboe.md`](Bomboe.md) · [`Danutu.md`](Danutu.md) · [`DGAdavid1.md`](DGAdavid1.md) | Each person's tasks, split into steps |
-| [`api/docs/work-breakdown.md`](api/docs/work-breakdown.md) | The tasks in detail + conventions + the test checklist |
-| [`api/docs/how-we-work.md`](api/docs/how-we-work.md) | How we implement, test and review each step |
+| [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) | The tasks in detail + conventions + the test checklist |
+| [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md) | How we implement, test and review each step |
 | [`DGAREADME1.md`](DGAREADME1.md) | Decision log |
+| [`HANDOFFS.md`](HANDOFFS.md) | Work done on someone else's behalf, with merge instructions |
+| [`ORCHESTRATION.md`](ORCHESTRATION.md) | How David G.'s tasks run as parallel agents + a boss (plans, gates, merges) |
+| [`backend/README.md`](backend/README.md) | How to set up, run and test the backend |
+| [`backend/docs/reports/`](backend/docs/reports/) | Step reports and reviews per task |
 
 In this README, "arch §x" means a section of the architecture doc.
 
