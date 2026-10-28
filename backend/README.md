@@ -30,7 +30,7 @@ All configuration is environment variables, read by `Settings` in `app/config.py
 - An invalid value stops the app at startup with an error naming the variable (the value itself isn't printed, so a rejected `DATABASE_URL` doesn't show its password). DB URLs must be `postgresql+psycopg://user:password@host:port/db`; `KEYCLOAK_ISSUER` must be a realm URL (`…/realms/<name>`); `SIM_START_DATE` is `YYYY-MM-DD`.
 - `TZ` is not read by the app: day boundaries are always Europe/Bucharest (`app/clock.py`).
 - In code: `create_app(settings)` stores them; routes use `Depends(get_app_settings)`; classes take a `Settings` argument. Only `create_app()` and command-line entry points call `get_settings()`.
-- In tests: every test is isolated automatically (`tests/conftest.py`): `Settings()` and `get_settings()` see only the code defaults plus what the test sets (`monkeypatch.setenv`), never your real `.env` or shell variables. Tests marked `live` opt out, so they can use the real key on purpose. The `settings` fixture gives the defaults; `make_client(app)` gives an in-process HTTP client.
+- In tests: every test is isolated automatically (`tests/conftest.py`): `Settings()` and `get_settings()` see only the code defaults plus what the test sets (`monkeypatch.setenv`), never your real `.env` or shell variables; and no `ANTHROPIC_*` variable reaches the anthropic SDK (it reads `ANTHROPIC_BASE_URL`, `ANTHROPIC_LOG`, … by itself). Tests marked `live` opt out, so they can use the real key on purpose. The `settings` fixture gives the defaults; `make_client(app)` gives an in-process HTTP client.
 
 ## Everyday commands
 
