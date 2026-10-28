@@ -1,10 +1,12 @@
-"""F2 step 1a: the fixed value lists (arch 4.4 / 4.5) and the shared category sets.
+"""F2 step 1: every fixed value list (arch 4.1 / 4.2 / 4.4 / 4.5) and the shared sets.
 
-The expected values are parsed from the architecture doc itself, so the doc is the single source
-of truth (work-breakdown 0.3 rule 7) and there is no second hand-typed copy that could carry the
-same typo. The values are stored in the DB and sent in JSON: renaming, reordering or dropping one
-must break loudly. If a doc edit changes the format a parser expects, the test fails and the parser
-gets updated together with the doc.
+The expected values are parsed from the docs themselves (the strict parsers in doc_lists.py), so
+the doc is the single source of truth (work-breakdown 0.3 rule 7) and there is no second
+hand-typed copy that could carry the same typo. Every enum has a parseable list. The one
+hand-typed list is QUESTION_EVENT_TYPES, because D25 names its sources in prose. The values are
+stored in the DB and sent in JSON: renaming, reordering or dropping one must break loudly. If a
+doc edit changes the format a parser expects, the parser raises DocParseError and is updated
+together with the doc.
 """
 
 import inspect
@@ -14,9 +16,7 @@ import re
 import subprocess
 import sys
 from collections import defaultdict
-from collections.abc import Callable
 from enum import StrEnum
-from functools import cache
 from pathlib import Path
 
 import pytest
@@ -25,121 +25,230 @@ from app.domain import enums
 from app.domain.enums import (
     HOUSEHOLD_SCALED_CATEGORIES,
     NEVER_ASKED_CATEGORIES,
+    QUESTION_EVENT_TYPES,
+    AgentEventStatus,
+    AgentEventType,
     AnnotationSource,
     Beneficiary,
     Category,
     CoachStyle,
     Decision,
     Direction,
+    FactSource,
+    FactStatus,
+    FactType,
+    GoalStatus,
+    HouseholdRole,
+    InputMode,
     Language,
+    LedgerStatus,
+    LifeEventStatus,
+    LifeEventType,
     Liquidity,
+    MessageRole,
+    Persistence,
+    PotKind,
+    PotStatus,
+    PriorityLevel,
     ProductKind,
     Purpose,
+    ReceivableStatus,
+    RuleKind,
+    RuleSource,
+    SignatureEffect,
+    SignatureOrigin,
+    TransferKind,
+    TxSource,
+    TxStatus,
+)
+from tests.unit.domain.doc_lists import (
+    ARCH_DOC,
+    BACKEND,
+    WORK_BREAKDOWN,
+    Parser,
+    agent_event_statuses,
+    agent_event_types,
+    categories,
+    column,
+    household_roles,
+    household_scaled,
+    ledger_statuses,
+    life_event_types,
+    message_roles,
+    never_asked,
+    not_household_scaled,
+    priority_levels,
+    purposes,
+    read,
+    section,
+    sql_block,
+    sql_column,
 )
 
-BACKEND = Path(__file__).resolve().parents[3]
-ARCH_DOC = BACKEND / "docs" / "savings-coach-backend-architecture.md"
 SNAKE_CASE = re.compile(r"[a-z]+(_[a-z]+)*")
 
 
-# ── parsers: pure functions of the doc text ─────────────────────────────────────────────────
-
-
-@cache
-def arch_doc() -> str:
-    return ARCH_DOC.read_text(encoding="utf-8")
-
-
-def section(text: str, heading: str) -> str:
-    """The lines under the heading that starts with `heading`, up to the next ##/### heading."""
-    lines = text.splitlines()
-    start = next(i for i, line in enumerate(lines) if line.startswith(heading))
-    rest = lines[start + 1 :]
-    end = next((i for i, line in enumerate(rest) if line.startswith(("## ", "### "))), len(rest))
-    return "\n".join(rest[:end])
-
-
-def line_starting(text: str, prefix: str) -> str:
-    return next(line for line in text.splitlines() if line.startswith(prefix))
-
-
-def code_words(fragment: str) -> list[str]:
-    """Every `snake_case` code span, in order (spans with spaces or symbols are skipped)."""
-    return re.findall(r"`([a-z_]+)`", fragment)
-
-
-def slash_list(row: str, column: str) -> list[str]:
-    """`column` (`a / b / c`) or `column` values `a / b`, as in the arch 4.2 / 4.4 tables."""
-    match = re.search(rf"`{re.escape(column)}`(?: values)? \(?`([^`]+)`", row)
-    assert match, f"no `{column}` value list in: {row[:80]}…"
-    return [value.strip() for value in match.group(1).split("/")]
-
-
-def fixed_lists(text: str) -> str:
-    return section(text, "### 4.5")
-
-
-def categories(text: str) -> list[str]:
-    return code_words(line_starting(fixed_lists(text), "**Categories:**"))
-
-
-def purposes(text: str) -> list[str]:
-    return re.findall(r"^\| `([a-z_]+)` \|", fixed_lists(text), flags=re.MULTILINE)
-
-
-def household_scaled(text: str) -> list[str]:
-    line = line_starting(fixed_lists(text), "**Household-scaled categories:**")
-    return code_words(line.split("Not scaled")[0])
-
-
-def not_household_scaled(text: str) -> list[str]:
-    line = line_starting(fixed_lists(text), "**Household-scaled categories:**")
-    return code_words(line.split("Not scaled")[1])
-
-
-def never_asked(text: str) -> list[str]:
-    return code_words(line_starting(fixed_lists(text), "**Never asked about:**"))
-
-
-def column(table_row_prefix: str, name: str) -> Callable[[str], list[str]]:
-    def parse(text: str) -> list[str]:
-        return slash_list(line_starting(text, table_row_prefix), name)
-
-    return parse
-
-
-# (enum, parser of its list in the doc, where the doc lists it). Every 1a enum has a parseable list.
-DOC_LISTS: list[tuple[type[StrEnum], Callable[[str], list[str]], str]] = [
-    (Category, categories, "arch 4.5 Categories"),
-    (Purpose, purposes, "arch 4.5 Purposes table"),
-    (Beneficiary, column("| `transactions` |", "beneficiary"), "arch 4.4 transactions"),
-    (Decision, column("| `transactions` |", "decision"), "arch 4.4 transactions"),
-    (Direction, column("| `transactions` |", "direction"), "arch 4.4 transactions"),
+# (enum, parser, which doc, where the doc lists it). Every enum has a parseable list.
+DOC_LISTS: list[tuple[type[StrEnum], Parser, Path, str]] = [
+    (Category, categories, ARCH_DOC, "arch 4.5 Categories"),
+    (Purpose, purposes, ARCH_DOC, "arch 4.5 Purposes table"),
+    (
+        Beneficiary,
+        column("| `transactions` |", "beneficiary"),
+        ARCH_DOC,
+        "arch 4.4 transactions",
+    ),
+    (Decision, column("| `transactions` |", "decision"), ARCH_DOC, "arch 4.4 transactions"),
+    (Direction, column("| `transactions` |", "direction"), ARCH_DOC, "arch 4.4 transactions"),
     (
         AnnotationSource,
         column("| `transactions` |", "annotation_source"),
+        ARCH_DOC,
         "arch 4.4 transactions",
     ),
-    (Language, column("| `users.language`", "users.language"), "arch 4.2 users.language"),
-    (CoachStyle, column("| `users` |", "coach_style"), "arch 4.4 users"),
-    (ProductKind, column("| `products` |", "kind"), "arch 4.4 products"),
-    (Liquidity, column("| `products` |", "liquidity"), "arch 4.4 products"),
+    (
+        Language,
+        column("| `users.language`", "users.language"),
+        ARCH_DOC,
+        "arch 4.2 users.language",
+    ),
+    (CoachStyle, column("| `users` |", "coach_style"), ARCH_DOC, "arch 4.4 users"),
+    (ProductKind, column("| `products` |", "kind"), ARCH_DOC, "arch 4.4 products"),
+    (Liquidity, column("| `products` |", "liquidity"), ARCH_DOC, "arch 4.4 products"),
+    (FactType, sql_column("### 4.4", "life_facts", "type"), ARCH_DOC, "arch 4.4 life_facts"),
+    (FactSource, sql_column("### 4.4", "life_facts", "source"), ARCH_DOC, "arch 4.4 life_facts"),
+    (FactStatus, sql_column("### 4.4", "life_facts", "status"), ARCH_DOC, "arch 4.4 life_facts"),
+    (
+        Persistence,
+        sql_column("### 4.4", "life_facts", "persistence"),
+        ARCH_DOC,
+        "arch 4.4 life_facts",
+    ),
+    (
+        SignatureEffect,
+        sql_column("### 4.4", "spending_signatures", "effect"),
+        ARCH_DOC,
+        "arch 4.4 spending_signatures",
+    ),
+    (
+        SignatureOrigin,
+        sql_column("### 4.4", "spending_signatures", "origin"),
+        ARCH_DOC,
+        "arch 4.4 spending_signatures",
+    ),
+    (RuleKind, sql_column("### 4.4", "pattern_rules", "kind"), ARCH_DOC, "arch 4.4 pattern_rules"),
+    (
+        RuleSource,
+        sql_column("### 4.4", "pattern_rules", "source"),
+        ARCH_DOC,
+        "arch 4.4 pattern_rules",
+    ),
+    (
+        ReceivableStatus,
+        sql_column("### 4.4", "receivables", "status"),
+        ARCH_DOC,
+        "arch 4.4 receivables",
+    ),
+    (PotKind, sql_column("### 4.4", "pots", "kind"), ARCH_DOC, "arch 4.4 pots"),
+    (PotStatus, sql_column("### 4.4", "pots", "status"), ARCH_DOC, "arch 4.4 pots"),
+    (InputMode, column("| `messages` |", "input_mode"), ARCH_DOC, "arch 4.4 messages"),
+    (AgentEventType, agent_event_types, ARCH_DOC, "arch 4.1 agent_events + 4.4 new types"),
+    (AgentEventStatus, agent_event_statuses, ARCH_DOC, "arch 4.4 agent_events"),
+    (
+        TransferKind,
+        column("| **New:** `transfers", "kind"),
+        ARCH_DOC,
+        "arch 4.2 transfers.kind",
+    ),
+    (
+        TxStatus,
+        sql_column("### 4.1", "transactions", "status"),
+        ARCH_DOC,
+        "arch 4.1 transactions",
+    ),
+    (
+        TxSource,
+        column("| `transactions.source`", "transactions.source"),
+        ARCH_DOC,
+        "arch 4.2 transactions.source",
+    ),
+    (GoalStatus, column("| `goals.status`", "goals.status"), ARCH_DOC, "arch 4.2 goals.status"),
+    (
+        LifeEventStatus,
+        column("| `life_events.status`", "life_events.status"),
+        ARCH_DOC,
+        "arch 4.2 life_events.status",
+    ),
+    (LifeEventType, life_event_types, ARCH_DOC, "arch 6.2 add_life_event schema"),
+    (LedgerStatus, ledger_statuses, ARCH_DOC, "arch 4.1 day_ledger"),
+    (MessageRole, message_roles, ARCH_DOC, "arch 9.3 Message"),
+    (HouseholdRole, household_roles, WORK_BREAKDOWN, "work-breakdown F2 validation rules"),
+    (PriorityLevel, priority_levels, ARCH_DOC, "arch 4.4 life_facts.value examples"),
 ]
 
-# (module constant name, parser of its list in the doc)
-DOC_SETS: dict[str, Callable[[str], list[str]]] = {
-    "HOUSEHOLD_SCALED_CATEGORIES": household_scaled,
-    "NEVER_ASKED_CATEGORIES": never_asked,
+# (member enum, the doc's list: a parser of the arch doc, or a hand list when there is none, source)
+FIXED_SETS: dict[str, tuple[type[StrEnum], Parser | list[str], str]] = {
+    "HOUSEHOLD_SCALED_CATEGORIES": (Category, household_scaled, "arch 4.5"),
+    "NEVER_ASKED_CATEGORIES": (Category, never_asked, "arch 4.5"),
+    "QUESTION_EVENT_TYPES": (
+        AgentEventType,
+        # Hand list: D25 names the sources in prose ("transaction questions, overspend 'what
+        # happened?', weekly reflection, preemptive check-ins"). David G. (2026-10-29) added
+        # underspend_week: it replaces that Sunday's weekly reflection and asks, so it counts.
+        [
+            "transaction_question",
+            "overspend",
+            "weekly_reflection",
+            "underspend_week",
+            "preemptive_checkin",
+        ],
+        "arch D25 + David G. 2026-10-29 (hand list: prose, no value list)",
+    ),
+}
+
+# 4.1 columns with no value list in the doc, each left without an enum on purpose (review R10).
+# The test below fails if the doc ever gives one of them a list, so the decision gets revisited.
+LEFT_OUT_COLUMNS: dict[tuple[str, str], str] = {
+    ("life_events", "source"): "reuses the FactSource values (onboarding … seed)",
+    ("slips", "reason"): "free text: the user's own words",
+    ("notifications", "type"): "B13's notification templates define it",
 }
 
 # Values shared by two enums. Equal values are equal dict / set keys (StrEnum == str), so a map
 # that mixes these enums must key by (type, member). A new overlap must be added here on purpose.
+# All of these live in different columns, so none of them is a problem today.
 KNOWN_OVERLAPS: dict[str, set[str]] = {
     "auto": {"Decision", "AnnotationSource"},
+    "answer": {"AnnotationSource", "RuleSource"},
+    "user_edit": {"AnnotationSource", "FactSource"},
+    "custom": {"FactType", "PotKind"},
+    "emergency": {"Purpose", "PotKind"},
+    "expired": {"FactStatus", "AgentEventStatus"},
+    "active": {"PotStatus", "GoalStatus"},
+    "completed": {"PotStatus", "GoalStatus"},
+    "cancelled": {"ReceivableStatus", "LifeEventStatus"},
+    "voice": {"FactSource", "InputMode"},
+    "warning": {"AgentEventType", "LedgerStatus"},
+    "other": {"Category", "LifeEventType"},
+    "education": {"Category", "LifeEventType"},
+    "seed": {"FactSource", "TxSource"},
 }
 
-ENUMS = [pytest.param(enum, id=enum.__name__) for enum, _, _ in DOC_LISTS]
-FIXED_SETS = [pytest.param(getattr(enums, name), id=name) for name in DOC_SETS]
+# Belt and braces behind the FactType allow-list: stems of the special categories (arch 4.5 + the
+# GDPR art. 9 list). A fact type containing any of them must never exist.
+SENSITIVE_STEMS = (
+    "health", "medic", "diagnos", "disab", "illness", "disease", "therap", "mental", "pregnan",
+    "religio", "faith", "belief", "church", "ethnic", "racial", "race", "sexual", "orientation",
+    "gender", "politic", "union", "genetic", "biometric", "criminal",
+)  # fmt: skip
+
+
+def is_sensitive(word: str) -> bool:
+    return any(stem in word for stem in SENSITIVE_STEMS)
+
+
+ENUMS = [pytest.param(enum, id=enum.__name__) for enum, _, _, _ in DOC_LISTS]
+SETS = [pytest.param(name, id=name) for name in FIXED_SETS]
 
 
 def module_enums() -> set[type[StrEnum]]:
@@ -158,25 +267,36 @@ def module_fixed_sets() -> set[str]:
     }
 
 
+def doc_list(name: str) -> list[str]:
+    _, listed, _ = FIXED_SETS[name]
+    return listed if isinstance(listed, list) else listed(read(ARCH_DOC))
+
+
 # ── the values ───────────────────────────────────────────────────────────────────────────────
 
 
 @pytest.mark.parametrize(
-    ("enum", "parse"),
+    ("enum", "parse", "doc"),
     [
-        pytest.param(enum, parse, id=f"{enum.__name__} ({source})")
-        for enum, parse, source in DOC_LISTS
+        pytest.param(enum, parse, doc, id=f"{enum.__name__} ({source})")
+        for enum, parse, doc, source in DOC_LISTS
     ],
 )
-def test_enum_values_match_the_architecture_doc(
-    enum: type[StrEnum], parse: Callable[[str], list[str]]
-) -> None:
-    assert [member.value for member in enum] == parse(arch_doc())
+def test_enum_values_match_the_docs(enum: type[StrEnum], parse: Parser, doc: Path) -> None:
+    assert [member.value for member in enum] == parse(read(doc))
 
 
-def test_every_enum_in_the_module_is_checked_against_the_doc() -> None:
+def test_every_enum_in_the_module_is_checked_against_the_docs() -> None:
     # A new enum without an entry in DOC_LISTS would escape the rename check above.
-    assert module_enums() == {enum for enum, _, _ in DOC_LISTS}
+    assert module_enums() == {enum for enum, _, _, _ in DOC_LISTS}
+
+
+def test_agent_event_statuses_include_the_original_4_1_ones() -> None:
+    # 4.1 listed pending | handled | expired; 4.4 extends that lifecycle (the list parsed above).
+    original = sql_column("### 4.1", "agent_events", "status")(read(ARCH_DOC))
+
+    assert original == ["pending", "handled", "expired"]
+    assert set(original) <= {status.value for status in AgentEventStatus}
 
 
 def test_enum_lookup_by_value_returns_the_member() -> None:
@@ -185,6 +305,8 @@ def test_enum_lookup_by_value_returns_the_member() -> None:
     assert Decision("ask_later") is Decision.ASK_LATER
     assert Beneficiary("self") is Beneficiary.SELF
     assert AnnotationSource("user_edit") is AnnotationSource.USER_EDIT
+    assert AgentEventType("transaction_question") is AgentEventType.TRANSACTION_QUESTION
+    assert TransferKind("auto_save") is TransferKind.AUTO_SAVE
 
 
 @pytest.mark.parametrize("enum", ENUMS)
@@ -207,6 +329,10 @@ def test_enum_values_are_snake_case_and_member_names_match(enum: type[StrEnum]) 
         (Purpose, "good_purchase"),
         (Decision, "ASK"),
         (Beneficiary, ""),
+        (FactType, "health"),
+        (AgentEventStatus, "done"),
+        (InputMode, "speech"),
+        (HouseholdRole, "parent"),
     ],
 )
 def test_enum_rejects_unknown_or_miscased_values(enum: type[StrEnum], value: str) -> None:
@@ -236,43 +362,89 @@ def test_cross_enum_value_overlaps_are_the_known_ones() -> None:
     assert {value: names for value, names in owners.items() if len(names) > 1} == KNOWN_OVERLAPS
 
 
+def test_fact_types_are_exactly_the_documented_allow_list() -> None:
+    # arch 4.5: sensitive facts (health, religion, ethnicity, sexual orientation, politics) are
+    # never stored or inferred. The allow-list is the arch 4.4 type list: nothing else may exist.
+    allowed = sql_column("### 4.4", "life_facts", "type")(read(ARCH_DOC))
+
+    sensitive = [fact_type.value for fact_type in FactType if is_sensitive(fact_type.value)]
+
+    assert {fact_type.value for fact_type in FactType} == set(allowed)
+    assert not sensitive, f"sensitive fact types: {sensitive}"
+
+
+@pytest.mark.parametrize(
+    "word",
+    [
+        "health", "diagnosis", "disability", "medication", "mental_health", "chronic_illness",
+        "pregnancy", "religion", "faith", "ethnicity", "race", "sexual_orientation",
+        "gender_identity", "political_party", "trade_union", "genetic_test", "biometric_id",
+        "criminal_record",
+    ],
+)  # fmt: skip
+def test_the_sensitive_blocklist_catches_the_special_categories(word: str) -> None:
+    assert is_sensitive(word)
+
+
+@pytest.mark.parametrize(
+    ("table", "column"),
+    [pytest.param(table, column, id=f"{table}.{column}") for table, column in LEFT_OUT_COLUMNS],
+)
+def test_left_out_columns_still_have_no_value_list_in_the_doc(table: str, column: str) -> None:
+    (line,) = sql_block(section(read(ARCH_DOC), "### 4.1"), table, f"4.1 {table}")
+    code, _, comment = line.partition("--")
+
+    assert re.search(rf"\b{column}\b", code), f"{table}.{column} isn't in the 4.1 listing"
+    assert not comment, f"4.1 now lists values for {table}.{column}: revisit LEFT_OUT_COLUMNS"
+
+
 # ── the fixed sets ───────────────────────────────────────────────────────────────────────────
 
 
-@pytest.mark.parametrize(("name", "parse"), list(DOC_SETS.items()), ids=list(DOC_SETS))
-def test_fixed_set_lists_the_doc_values_in_the_doc_order(
-    name: str, parse: Callable[[str], list[str]]
-) -> None:
-    assert [category.value for category in getattr(enums, name)] == parse(arch_doc())
+@pytest.mark.parametrize("name", SETS)
+def test_fixed_set_lists_the_doc_values_in_the_doc_order(name: str) -> None:
+    assert [member.value for member in getattr(enums, name)] == doc_list(name)
 
 
-def test_every_fixed_set_in_the_module_is_checked_against_the_doc() -> None:
-    # A new module-level collection without an entry in DOC_SETS would escape the check above.
-    assert module_fixed_sets() == set(DOC_SETS)
+def test_every_fixed_set_in_the_module_is_checked_against_the_docs() -> None:
+    # A new module-level collection without an entry in FIXED_SETS would escape the check above.
+    assert module_fixed_sets() == set(FIXED_SETS)
+
+
+@pytest.mark.parametrize("name", SETS)
+def test_fixed_sets_are_tuples_of_unique_members_of_one_enum(name: str) -> None:
+    # A tuple iterates in its written order in every process (R1); a frozenset doesn't.
+    member_enum, _, _ = FIXED_SETS[name]
+    fixed_set = getattr(enums, name)
+
+    assert isinstance(fixed_set, tuple)
+    assert all(type(member) is member_enum for member in fixed_set)
+    assert len(set(fixed_set)) == len(fixed_set)
 
 
 def test_household_scaled_categories_exclude_the_activity_driven_ones() -> None:
     # arch 4.5: electronics, subscriptions, sport, entertainment follow activity facts instead.
-    not_scaled = not_household_scaled(arch_doc())
+    not_scaled = not_household_scaled(read(ARCH_DOC))
 
     assert not_scaled == ["electronics", "subscriptions", "sport", "entertainment"]
     assert not set(not_scaled) & set(HOUSEHOLD_SCALED_CATEGORIES)
 
 
-@pytest.mark.parametrize("fixed_set", FIXED_SETS)
-def test_fixed_sets_are_tuples_of_unique_category_members(fixed_set: tuple[Category, ...]) -> None:
-    # A tuple iterates in its written order in every process (R1); a frozenset doesn't.
-    assert isinstance(fixed_set, tuple)
-    assert all(isinstance(category, Category) for category in fixed_set)
-    assert len(set(fixed_set)) == len(fixed_set)
+def test_question_event_types_leave_out_what_never_uses_the_daily_question() -> None:
+    # 5.3.6 / 5.3.8: hypotheses never use the daily question; WB A7: goal_completed doesn't.
+    # David G. (2026-10-29): a receivable reminder is a statement + a tap card and never asks.
+    assert AgentEventType.HYPOTHESIS_CHECK not in QUESTION_EVENT_TYPES
+    assert AgentEventType.GOAL_COMPLETED not in QUESTION_EVENT_TYPES
+    assert AgentEventType.RECEIVABLE_REMINDER not in QUESTION_EVENT_TYPES
 
 
 def test_fixed_sets_iterate_in_the_same_order_in_every_process() -> None:
     # str hashes are salted per process (PYTHONHASHSEED), so a frozenset's iteration order changes
     # between runs. Snapshots, prompt caching and generated lists need the same order every time.
+    names = sorted(FIXED_SETS)
     script = (
         "import json; from app.domain import enums; "
-        f"print(json.dumps({{n: list(getattr(enums, n)) for n in {sorted(DOC_SETS)!r}}}))"
+        f"print(json.dumps({{n: list(getattr(enums, n)) for n in {names!r}}}))"
     )
     outputs = set()
     for seed in ("1", "2", "3"):
@@ -288,13 +460,17 @@ def test_fixed_sets_iterate_in_the_same_order_in_every_process() -> None:
         )
         outputs.add(result.stdout)
 
-    in_process = json.dumps({name: list(getattr(enums, name)) for name in sorted(DOC_SETS)})
+    in_process = json.dumps({name: list(getattr(enums, name)) for name in names})
     assert outputs == {in_process + "\n"}
 
 
 def test_fixed_sets_contain_the_plain_strings_read_from_the_db() -> None:
-    # C6 / C7 check a category string straight from the DB: the privacy rule must hold for it.
+    # C6 / C7 / B3 check a string straight from the DB: the rules must hold for it.
     assert "health_pharmacy" in NEVER_ASKED_CATEGORIES
     assert "Health_Pharmacy" not in NEVER_ASKED_CATEGORIES
     assert "groceries" in HOUSEHOLD_SCALED_CATEGORIES
     assert "electronics" not in HOUSEHOLD_SCALED_CATEGORIES
+    assert "transaction_question" in QUESTION_EVENT_TYPES
+    assert "underspend_week" in QUESTION_EVENT_TYPES
+    assert "hypothesis_check" not in QUESTION_EVENT_TYPES
+    assert "receivable_reminder" not in QUESTION_EVENT_TYPES
