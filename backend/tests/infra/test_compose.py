@@ -1,4 +1,7 @@
-"""docker-compose.yml structure (B1). Uses `docker compose config`, which needs the CLI, not the daemon."""
+"""docker-compose.yml structure (B1).
+
+Uses `docker compose config`, which needs the docker CLI, not the daemon.
+"""
 
 import json
 import shutil
