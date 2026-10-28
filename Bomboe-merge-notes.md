@@ -1,44 +1,132 @@
-# Bomboe: work done outside my assignment
+# Bomboe: merge notes (branch `bomboe`)
 
-> Everything here was built on branch `bomboe` because it blocked my tasks and didn't exist yet on any branch.
-> **Owner of each item: read the row, keep or replace my version, and tell me if a name or signature changes** so my code (B1–B15) follows.
-> Rule I followed: implement the owner's spec exactly (DGAdavid1.md / work-breakdown), nothing extra unless listed under "Additions".
+> **What this is:** everything built on branch `bomboe`: my tasks (Bomboe.md), the pieces of other people's tasks I had to build because they blocked mine, every decision that changes a team convention, and every deviation from the spec. Updated after every step.
+> **Before merging** another branch with this one, read §0 and §1. **If you own something in §2**, keep or replace my version and tell bomboe if a name or signature changes.
 
-## Repo-level changes
+---
+
+## 0. Merge checklist
+
+1. `cd backend && uv sync && make db-up && make check` is green on `bomboe` (last run: see §5).
+2. Files most likely to conflict, and what to keep:
+   | File | Rule |
+   |---|---|
+   | `backend/pyproject.toml` | union of dependencies; keep `alembic`, `shellcheck-py`, the ruff excludes / per-file-ignores and the pytest settings below |
+   | `backend/app/config.py` | union of settings; keep `KEYCLOAK_INTERNAL_URL`, `TEST_DATABASE_URL`, ports 8081 / 5434 / 5435 |
+   | `backend/app/domain/enums.py` | union; values must stay exactly the strings in arch 4.4/4.5 (they're in DB CHECKs). **Any value change needs a migration** (§1, Alembic) |
+   | `backend/app/main.py`, `errors.py`, `clock.py` | keep the function names listed in §2; merge bodies |
+   | `backend/tests/conftest.py` | keep `pytest_plugins`, the folder→marker hook and the autouse `fixed_clock` |
+3. If your branch changed `app/db/models.py`: rebase on `bomboe`, then `uv run alembic revision --autogenerate -m "…"` on top of the current head and read the file (backend/README.md, "Database migrations").
+4. After merging: `make check` again (the single-head test catches parallel migrations).
+
+---
+
+## 1. Changes that affect everyone
+
+| What | The docs say | Now | Why | What you do |
+|---|---|---|---|---|
+| Folder | `api/` | **`backend/`** (docs in `backend/docs/`) | renamed by bomboe | read every `api/…` path in the docs as `backend/…` |
+| Schema management | `metadata.create_all`, "no Alembic" (work-breakdown 0.1) | **Alembic migrations** in `backend/migrations/` | bomboe's decision, 2026-10-29 | change `models.py` → add a migration (`uv run alembic revision --autogenerate`), read it, commit both. Enum value added → `replace_enum_check(...)` in the migration (autogenerate can't see CHECKs) |
+| Test DB | — | built with `alembic upgrade head` once per test session | tests run on the real migrated schema | nothing; `make db-up` first |
+| Host ports | 8080 (Keycloak), 5433 (test DB) | API **8000**, Keycloak **8081**, dev DB **5434**, test DB **5435** | 5432/5433/8080 were taken on bomboe's machine (local Postgres, another project, pgadmin) | use these in scripts and the app's dev config |
+| Test clock | — | **every test runs at 2026-06-15 12:00 Bucharest** (autouse `fixed_clock` in `tests/conftest.py`) | DB timestamps come from `app.clock.now()`; tests must be deterministic | a test that needs another time calls `clock.set_clock(FixedClock(...))` (restored automatically) |
+| Test markers | per-file | **automatic by folder**: `tests/db` → `db`, `tests/api` → `api`, `tests/ws` → `ws` | less boilerplate | put files in the right folder |
+| Merchant & product ids | not specified | **text slugs** (`"mega_image"`, `"pusculita_flexibila"`) | `context.normalize` is pure and reads `data/merchants.json`, so `transactions.merchant_id` must be the file's id | David G.: give each entry of `merchants.json` / `products.json` an `"id"` slug |
+
+---
+
+## 2. Built outside my assignment
+
+### Repo-level
 
 | Change | Why | Merge note |
 |---|---|---|
-| `api/` → `backend/` (docs moved to `backend/docs/`) | done by bomboe before this work | Every doc still says `api/`; paths inside (`app/`, `tests/`, `data/`) are unchanged |
+| `api/` → `backend/` | done by bomboe before this work | see §1 |
 | Root `.gitignore` (Python, `.env*` except `.env.example`, editors, OS files) | F1 asked for `.gitignore` additions | `mobile/.gitignore` untouched |
-| Removed the empty `backend/requirements.txt` and `backend/.gitkeep` | we use uv + `pyproject.toml` (work-breakdown 0.1) | — |
+| Removed the empty `backend/requirements.txt` and `backend/.gitkeep` | uv + `pyproject.toml` (work-breakdown 0.1) | — |
 
-## F1 (owner: David G.) — minimal skeleton, done 2026-10-29
+### F1 (owner: David G.): minimal skeleton
 
 | File | What's in it | Differences from the F1 spec |
 |---|---|---|
-| `backend/pyproject.toml`, `uv.lock`, `.python-version` | deps from work-breakdown 0.1 (main + dev group); ruff; mypy (strict-ish flags for `app.domain/engine/context`, `disallow_untyped_defs` for all of `app`); pytest markers `db api ws live slow`, default `-m 'not live'`, asyncio auto, **session-scoped event loop** | `[tool.uv] package = false` (the app isn't installed as a package; `pythonpath = ["."]` for pytest) |
-| `backend/Makefile` | `dev test test-all lint typecheck check fmt db-up db-down up down` | extra targets `lint`, `typecheck`, `up`, `down` |
-| `backend/.env.example` | every var of arch §3 | dev DB on host port **5434** (5432 is often taken by a local Postgres) |
-| `app/config.py` | `Settings` (pydantic-settings) + `get_settings()` (cached) | adds `TEST_DATABASE_URL`, `LOG_LEVEL`; no cron secret (only the cron container needs it, B1) |
-| `app/clock.py` | `Clock` protocol, `RealClock`, `FixedClock` (+ `FixedClock.on(date)`), `get_clock`/`set_clock`, module `today()`/`now()` | adds helpers `to_local(dt)` and `local_date(dt)` (Bucharest day of an instant; used by B3 `question_asked_today` and the ledger) |
-| `app/errors.py` | `DomainError(code, message, status=400)`; handlers for `DomainError`, `RequestValidationError` (422 `invalid_request`), `HTTPException` (404 → `not_found`, …) and `Exception` (500 `internal_error`, no stack trace) | the HTTPException handler is extra (needed for the 404 envelope) |
-| `app/logging.py` | `configure_logging(level)`: JSON lines on stdout | — |
-| `app/main.py` | `create_app(settings=None)`, router at `/api`, `GET /api/health`, OpenAPI at `/api/openapi.json` | — |
-| `tests/unit/test_config.py`, `test_clock.py`, `test_app.py` | the F1 test list (Settings env/.env, SIM_MODE spellings, optional key None, secret not logged; clock + DST 2026-10-25; health, 404, DomainError, 422, 500 envelopes) | — |
+| `pyproject.toml`, `uv.lock`, `.python-version` | deps from work-breakdown 0.1; ruff; mypy (strict-ish for `app.domain/engine/context`, `disallow_untyped_defs` for all of `app`); pytest markers `db api ws live slow`, default `-m 'not live'`, asyncio auto, **session-scoped event loop** | `[tool.uv] package = false` (`pythonpath = ["."]` for pytest) |
+| `Makefile` | `dev test test-all lint typecheck check fmt db-up db-down up down` | extra targets `lint`, `typecheck`, `up`, `down` |
+| `.env.example` | every var of arch §3 + Keycloak/cron vars (B1) | ports per §1 |
+| `app/config.py` | `Settings` + `get_settings()` (cached) | adds `TEST_DATABASE_URL`, `LOG_LEVEL`, `KEYCLOAK_INTERNAL_URL` |
+| `app/clock.py` | `Clock`, `RealClock`, `FixedClock` (+ `FixedClock.on(date)`), `get_clock`/`set_clock`, `today()`/`now()` | adds `to_local(dt)`, `local_date(dt)` (Bucharest day of an instant) |
+| `app/errors.py` | `DomainError(code, message, status=400)`; handlers → arch 9.1 envelope: `DomainError`, 422 `invalid_request`, `HTTPException` (404 `not_found`…), 500 `internal_error` (no stack trace) | `error_response(status, code, message)` helper + the HTTPException handler are extra |
+| `app/logging.py` | `configure_logging(level)`: JSON lines | — |
+| `app/main.py` | `create_app(settings=None)`, `/api` router, `GET /api/health`, OpenAPI at `/api/openapi.json` | — |
+| `tests/unit/test_config.py`, `test_clock.py`, `test_app.py` | the F1 test list | written after the code (not tests-first) |
 
-**Later changes to F1 files from my tasks (keep them when merging):**
+Later F1-file changes from my tasks: `pyproject.toml` (+ `shellcheck-py`, `alembic`; ruff `extend-exclude = ["*.md"]` because ruff 0.17 reformats code blocks in the shared docs; E501 ignored in generated migrations), `app/config.py` (`KEYCLOAK_INTERNAL_URL`, ports).
 
-| File | Change | From |
+### F2 step 1 (owner: David G.): enums only
+
+| File | What's in it | Not done |
 |---|---|---|
-| `pyproject.toml` | dev dependency `shellcheck-py` (the B1 cron test runs shellcheck); ruff `extend-exclude = ["*.md"]` (ruff 0.17 reformats code blocks in the shared docs otherwise) | B1 |
-| `app/config.py` | `KEYCLOAK_INTERNAL_URL: str \| None` (where the API fetches discovery/JWKS inside docker; defaults to the issuer); default issuer port **8081**; test DB port **5435** | B1 |
-
-## F2 step 1 (owner: David G.) — enums only
-
-| File | What's in it | Notes |
-|---|---|---|
-| `app/domain/enums.py` | every `StrEnum` of the F2 list, values copied from arch 4.4/4.5 | **Not done:** `money.py`, `models.py`, `results.py`, `tests/builders.py` |
+| `app/domain/enums.py` | every `StrEnum` of the F2 list, values from arch 4.4/4.5 | `money.py`, `models.py`, `results.py`, `tests/builders.py` |
 | `tests/unit/test_enums.py` | golden value list per enum | — |
 
-**Additions** (not in the F2 list, needed for the DB CHECK constraints in B2; values from arch 4.1/4.2):
-`TransactionStatus` (unresolved/processing/resolved/failed), `TransactionSource` (seed/sim), `GoalStatus` (active/completed), `LifeEventType` (trip/gift/social/purchase/education/other, from the `add_life_event` tool schema in 6.2), `LifeEventStatus` (planned/done/cancelled), `LedgerStatus` (ok/warning/overspent/under), `MessageRole` (user/assistant), `AgentTrigger` (chat/proactive), `AgentRunStatus` (running/completed/failed — 🟡 my pick, the arch doc doesn't list them), `ToolCallStatus` (ok/error).
+**Additions** (needed for DB CHECKs, values from arch 4.1/4.2): `TransactionStatus`, `TransactionSource`, `GoalStatus`, `LifeEventType` (from the `add_life_event` schema, arch 6.2), `LifeEventStatus`, `LedgerStatus`, `MessageRole`, `AgentTrigger` (chat/proactive), `AgentRunStatus` (running/completed/failed, 🟡 my pick), `ToolCallStatus` (ok/error).
+
+### F3 step 1 (mine, started early inside B2)
+
+`tests/fixtures/db.py`: `engine` (session) and `db` (rollback per test, SAVEPOINT inside). `db_committed`, `seeded_db` and F3's own tests come in F3.
+
+---
+
+## 3. My tasks: what exists and how to use it
+
+### B1 · docker-compose, Keycloak, cron ✅ steps 1–3 (step 4 smoke waits for `/me` + `/internal/process`)
+
+| Piece | Where | Notes for others |
+|---|---|---|
+| Stack | `backend/docker-compose.yml` | `db` (Postgres 16; databases `cashguard` = app, `keycloak` = Keycloak), `db-test` (tmpfs), `keycloak` 26.5.0, `api` (migrates, then 1 uvicorn worker), `cron` |
+| Keycloak storage | `keycloak` DB in `db`; created by `backend/db/init/01-keycloak.sh` on the volume's first start | users, clients, roles persist across restarts |
+| Realm seed | `backend/keycloak/realm-cashguard.json` (imported on first start only) | clients `savings-frontend` (public, PKCE S256, redirects `ro.cashguard.app:/oauthredirect`, `http://localhost:*`), `savings-cron` (service account, role `internal`), `savings-dev` (password grant, **dev only**); access token 1800 s |
+| Persona users | `matei` `andrei` `bianca` `ioana` `alex`, ids `a0000000-0000-4000-8000-00000000000{1..5}` | **these ids are `users.keycloak_sub` in the seed (B12)**; password `KC_DEMO_PASSWORD` (dev `cashguard-dev`) |
+| Issuer | `KC_HOSTNAME` (dev `http://localhost:8081`) = API's `KEYCLOAK_ISSUER` | inside docker the API fetches keys from `KEYCLOAK_INTERNAL_URL=http://keycloak:8080/realms/cashguard` |
+| Cron | `backend/cron/{Dockerfile,crontab,run.sh}` | crontab = arch §10; `run.sh [--dry-run] <endpoint>` gets a client-credentials token, POSTs `/api/internal/<endpoint>`; `CRON_ENABLED_JOBS` (default `all`; demo idea: `"process recover"`, Q21) |
+
+### B2 · Database schema ✅ (waiting for review)
+
+| Piece | Where | Notes for others |
+|---|---|---|
+| Models | `backend/app/db/models.py` | every table of arch §4 (29), typed `Mapped[]`; class names: `User Account Goal IncomeSource FixedCost LifeEvent LifeProfile PlanPreferences Product SimClock Transaction DayLedger Plan Slip Reflection Transfer AgentEvent Message Notification AgentRun ToolCall LifeFact SpendingSignature PatternRule Receivable Pot GoalForecast CategoryBaseline Merchant` |
+| Conventions | same file | money `NUMERIC(12,2)` (`Money`), scores `NUMERIC(5,4)`, JSONB, timestamptz **defaulting to `app.clock.now()`** (sim time, never the DB clock), enums as text + CHECK from `app.domain.enums` (`enum_check` / `enum_in`), constraint names `ck_/uq_/ix_/fk_<table>_…` |
+| Session | `backend/app/db/session.py` | `get_db()` (FastAPI dependency), `unit_of_work()` (commit / rollback), `session_factory()`, `configure(url)` |
+| Schema mgmt | `backend/app/db/init.py`, `migrations/`, `app/db/migration_helpers.py` | `upgrade(conn)`, `downgrade(conn)`, `drop_all(conn)`, CLI `python -m app.db.init [--reset]`; `replace_enum_check(table, column, Enum)` |
+| Event dedup | `models.DAY_LEVEL_EVENT_TYPES`, `models.TRANSACTION_EVENT_TYPES` | `transaction_question` is unique per `(user, type, transaction)` and needs `ref_transaction_id`; **every other type is unique per `(user, type, event_date)`**, incl. `receivable_reminder` and `hypothesis_check` (one per day) |
+| Cascades | all `user_id` FKs | `ON DELETE CASCADE`: deleting a user deletes everything it owns (`/sim/reset`); links between rows are `SET NULL`, except a fact's signatures, a run's tool calls, a goal's forecasts and a transaction's questions (CASCADE) |
+| Test helpers | `backend/tests/factories.py` | `user`, `goal`, `transaction`, `everything` (one row in every per-user table) |
+
+**Beyond the spec (all tested):** `users.city` and `agent_events.event_date` (both from Bomboe.md B2); `transfers` one auto-save per income transaction (D37 idempotency); `pots` one per goal; `life_facts` CHECK "temporary needs `valid_to`"; signatures `replacement_cycle_days > 0`; forecasts `p10 ≤ p50 ≤ p90`; `reflections.motivation` 1–5; `plan_preferences.buffer_pct` 0–0.3; `products.min_months ≤ max_months`; extra indexes `notifications(user_id, created_at)`, `life_facts(user_id, status)`, `receivables(user_id, status)`, `spending_signatures/pattern_rules(user_id, active)`, `goal_forecasts(user_id, computed_at)`.
+
+---
+
+## 4. Open questions & follow-ups
+
+| # | For | Item |
+|---|---|---|
+| 1 | danutu | E9 needs "soft vs hard goal" (deadline option only for soft goals) but arch §4 has no such column. Add `goals.soft BOOL`? (needs a migration) |
+| 2 | David G. | `merchants.json` / `products.json` need an `"id"` slug per entry (§1) |
+| 3 | team | Q21: should the hosted demo run cron with `CRON_ENABLED_JOBS="process recover"`? |
+| 4 | bomboe | B1 step 4 (local smoke script) after B6a (`/me`) and B8 (`/internal/process`) |
+| 5 | bomboe | an empty `cashguard_db-data` volume is left on the native Docker engine (stack now runs on Docker Desktop); safe to delete |
+
+---
+
+## 5. Changelog
+
+| Commit | What |
+|---|---|
+| `da088e8` | `api/` → `backend/`, root `.gitignore` |
+| `90cea6e`, `7e333d9` | F1 minimal skeleton + enums; restored the arch doc ruff had reformatted |
+| `82df875`, `cd7d4a1` | B1.1 compose skeleton |
+| `42580c6` | B1.2 Keycloak on Postgres, realm seed |
+| `4fe9bd5` | B1.3 cron container |
+| `994b982` | B2.1 core tables, session, init; F3 db fixtures started |
+| `457e697` | B2.2 money-flow tables |
+| `ff0e8df` | B2.3 conversation tables |
+| (next) | B2.4 life-context tables, golden schema, cascades; **Alembic** migrations; `make check` → 228 passed |

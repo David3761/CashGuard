@@ -64,9 +64,15 @@ def test_compose_databases_have_healthchecks(compose):
 
 def test_compose_api_runs_exactly_one_uvicorn_worker(compose):
     # The WebSocket manager is in memory (arch 5.2): more workers would split the sockets.
-    command = compose["services"]["api"]["command"]
-    assert "uvicorn" in command
-    assert command[command.index("--workers") + 1] == "1"
+    command = " ".join(compose["services"]["api"]["command"])
+    assert "uvicorn app.main:app" in command
+    assert "--workers 1" in command
+
+
+def test_compose_api_migrates_the_db_before_serving(compose):
+    command = " ".join(compose["services"]["api"]["command"])
+    assert "alembic upgrade head &&" in command
+    assert command.index("alembic upgrade head") < command.index("uvicorn")
 
 
 def test_compose_api_waits_for_a_healthy_db(compose):

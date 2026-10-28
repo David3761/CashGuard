@@ -14,7 +14,7 @@
 
 | Order | ID | Task | P | h | Status |
 |---|---|---|---|---|---|
-| 1 | B1 | docker-compose, env, Keycloak realm, cron container | P0 | 0.75 | ☐ |
+| 1 | B1 | docker-compose, env, Keycloak realm, cron container | P0 | 0.75 | ✅ steps 1–3 (step 4 after B6a/B8) |
 | 2 | B2 | DB models for every table | P0 | 1.5 | ☐ |
 | 3 | F3 | Test fixtures (DB, API, auth, WS) | P0 | 1 | ☐ |
 | 4 | B3 | CRUD services | P0 | 1.5 | ☐ |

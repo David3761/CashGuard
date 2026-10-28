@@ -88,8 +88,11 @@ services:
       DATABASE_URL: postgresql+psycopg://cashguard:cashguard@db:5432/cashguard
       KEYCLOAK_ISSUER: ${KC_HOSTNAME:-http://localhost:8081}/realms/cashguard
       KEYCLOAK_INTERNAL_URL: http://keycloak:8080/realms/cashguard
-    # One worker: the WebSocket manager lives in memory (arch 5.2).
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+    # Migrate the DB, then serve. One worker: the WebSocket manager lives in memory (arch 5.2).
+    command:
+      - sh
+      - -c
+      - alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1
     ports:
       - "8000:8000"
     depends_on:

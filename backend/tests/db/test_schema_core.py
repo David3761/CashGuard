@@ -4,12 +4,11 @@ from datetime import date
 from decimal import Decimal
 
 import pytest
-from sqlalchemy import select, text
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from app.clock import BUCHAREST
 from app.db import models as m
-from app.db.init import create_all, drop_all
 from tests import factories as f
 
 
@@ -26,19 +25,6 @@ async def accepted(db, row):
         db.add(row)
         await db.flush()
     return row
-
-
-async def test_create_all_then_drop_all_succeed_in_a_scratch_schema(engine):
-    async with engine.connect() as conn:
-        trans = await conn.begin()
-        await conn.execute(text("CREATE SCHEMA b2_scratch"))
-        await conn.execute(text("SET LOCAL search_path TO b2_scratch"))
-        count = text("select count(*) from information_schema.tables where table_schema = :s")
-        await create_all(conn)
-        assert await conn.scalar(count, {"s": "b2_scratch"}) == len(m.Base.metadata.tables)
-        await drop_all(conn)
-        assert await conn.scalar(count, {"s": "b2_scratch"}) == 0
-        await trans.rollback()
 
 
 async def test_user_defaults(db, fixed_clock):

@@ -47,10 +47,16 @@ class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=NAMING)
 
 
-def enum_check(column: str, enum: type[StrEnum]) -> CheckConstraint:
+def enum_in(column: str, enum: type[StrEnum]) -> str:
     """`column IN ('a', 'b', …)`; NULL passes (nullable columns stay optional)."""
     values = ", ".join(f"'{member.value}'" for member in enum)
-    return CheckConstraint(f"{column} IN ({values})", name=column)
+    return f"{column} IN ({values})"
+
+
+def enum_check(column: str, enum: type[StrEnum]) -> CheckConstraint:
+    """Named `ck_<table>_<column>` by the naming convention. Changing the enum needs a migration
+    with `app.db.migration_helpers.replace_enum_check` (autogenerate doesn't see CHECKs)."""
+    return CheckConstraint(enum_in(column, enum), name=column)
 
 
 def _now() -> datetime:
@@ -269,7 +275,7 @@ class Transaction(Base):
     error: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = created_at()
     # evaluation / annotation (arch 4.4, 5.3.4)
-    merchant_id: Mapped[str | None] = mapped_column(String(64))  # FK added with merchants
+    merchant_id: Mapped[str | None] = mapped_column(ForeignKey("merchants.id", ondelete="SET NULL"))
     merchant: Mapped[str | None] = mapped_column(String(100))
     category: Mapped[str | None] = mapped_column(String(20))
     effective_amount: Mapped[Decimal] = mapped_column(Money, default=_amount_default)
@@ -282,11 +288,17 @@ class Transaction(Base):
     anomaly_score: Mapped[Decimal | None] = mapped_column(Score)
     unexplained: Mapped[Decimal | None] = mapped_column(Score)
     decision: Mapped[str | None] = mapped_column(String(10))
-    # links to the life-context tables (FKs added in step 4)
-    matched_fact_id: Mapped[int | None]
-    matched_rule_id: Mapped[int | None]
-    pot_id: Mapped[int | None]
-    receivable_id: Mapped[int | None]
+    matched_fact_id: Mapped[int | None] = mapped_column(
+        ForeignKey("life_facts.id", ondelete="SET NULL")
+    )
+    matched_rule_id: Mapped[int | None] = mapped_column(
+        ForeignKey("pattern_rules.id", ondelete="SET NULL")
+    )
+    pot_id: Mapped[int | None] = mapped_column(ForeignKey("pots.id", ondelete="SET NULL"))
+    # receivables.transaction_id points back here: the cycle is closed with ALTER TABLE
+    receivable_id: Mapped[int | None] = mapped_column(
+        ForeignKey("receivables.id", ondelete="SET NULL", use_alter=True)
+    )
 
 
 class DayLedger(Base):
@@ -360,7 +372,7 @@ class Transfer(Base):
     user_id: Mapped[int] = mapped_column(user_fk(), index=True)
     amount: Mapped[Decimal] = mapped_column(Money)
     kind: Mapped[str] = mapped_column(String(10), default=e.TransferKind.MANUAL)
-    pot_id: Mapped[int | None]  # FK added with pots
+    pot_id: Mapped[int | None] = mapped_column(ForeignKey("pots.id", ondelete="SET NULL"))
     income_transaction_id: Mapped[int | None] = mapped_column(
         ForeignKey("transactions.id", ondelete="SET NULL")
     )
@@ -504,3 +516,229 @@ class ToolCall(Base):
     output: Mapped[Any] = mapped_column(JSONB, nullable=True)
     status: Mapped[str] = mapped_column(String(5))
     created_at: Mapped[datetime] = created_at()
+
+
+# ── 4.4: life context & savings ──────────────────────────────────────────────────────────
+
+
+class LifeFact(Base):
+    """One statement about the person's life (arch 5.3)."""
+
+    __tablename__ = "life_facts"
+    __table_args__ = (
+        enum_check("type", e.FactType),
+        enum_check("source", e.FactSource),
+        enum_check("status", e.FactStatus),
+        enum_check("persistence", e.Persistence),
+        CheckConstraint("confidence BETWEEN 0 AND 1", name="confidence"),
+        CheckConstraint("valid_to >= valid_from", name="validity_window"),
+        CheckConstraint(
+            "persistence <> 'temporary' OR valid_to IS NOT NULL", name="temporary_has_end"
+        ),
+        Index(None, "user_id", "status"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk())
+    type: Mapped[str] = mapped_column(String(20))
+    value: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    text: Mapped[str | None] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(String(12))
+    status: Mapped[str] = mapped_column(String(12), default=e.FactStatus.CONFIRMED)
+    confidence: Mapped[Decimal] = mapped_column(Score, default=Decimal("0.95"))
+    persistence: Mapped[str] = mapped_column(String(10), default=e.Persistence.PERMANENT)
+    valid_from: Mapped[date | None] = mapped_column(Date)
+    valid_to: Mapped[date | None] = mapped_column(Date)
+    evidence: Mapped[list[Any]] = mapped_column(JSONB, default=list)
+    created_at: Mapped[datetime] = created_at()
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_now, onupdate=_now
+    )
+
+
+class SpendingSignature(Base):
+    """What a fact predicts about spending (arch 5.3.3)."""
+
+    __tablename__ = "spending_signatures"
+    __table_args__ = (
+        enum_check("effect", e.SignatureEffect),
+        enum_check("category", e.Category),
+        enum_check("purpose", e.Purpose),
+        enum_check("origin", e.SignatureOrigin),
+        CheckConstraint("strength BETWEEN 0 AND 1", name="strength"),
+        CheckConstraint("amount_min <= amount_max", name="amount_range"),
+        CheckConstraint("multiplier > 0", name="multiplier_positive"),
+        CheckConstraint("replacement_cycle_days > 0", name="replacement_cycle_positive"),
+        Index(None, "user_id", "active"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk())
+    fact_id: Mapped[int] = mapped_column(
+        ForeignKey("life_facts.id", ondelete="CASCADE"), index=True
+    )
+    effect: Mapped[str] = mapped_column(String(20))
+    category: Mapped[str | None] = mapped_column(String(20))
+    merchant_hints: Mapped[list[str]] = mapped_column(JSONB, default=list)
+    item_keywords: Mapped[list[str]] = mapped_column(JSONB, default=list)
+    amount_min: Mapped[Decimal | None] = mapped_column(Money)
+    amount_max: Mapped[Decimal | None] = mapped_column(Money)
+    multiplier: Mapped[Decimal | None] = mapped_column(Numeric(6, 3))
+    time_window: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    expected_date: Mapped[date | None] = mapped_column(Date)
+    expected_amount: Mapped[Decimal | None] = mapped_column(Money)
+    replacement_cycle_days: Mapped[int | None]
+    purpose: Mapped[str] = mapped_column(String(30))
+    strength: Mapped[Decimal] = mapped_column(Score)
+    origin: Mapped[str] = mapped_column(String(10))
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = created_at()
+
+
+class PatternRule(Base):
+    """A learned pattern: "every Friday is lunch with the team" (arch 5.3.7)."""
+
+    __tablename__ = "pattern_rules"
+    __table_args__ = (
+        enum_check("kind", e.RuleKind),
+        enum_check("source", e.RuleSource),
+        CheckConstraint("confidence BETWEEN 0 AND 1", name="confidence"),
+        Index(None, "user_id", "active"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk())
+    kind: Mapped[str] = mapped_column(String(10))
+    match: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    outcome: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    confidence: Mapped[Decimal] = mapped_column(Score)
+    hits: Mapped[int] = mapped_column(Integer, default=0)
+    misses: Mapped[int] = mapped_column(Integer, default=0)
+    source: Mapped[str] = mapped_column(String(10))
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = created_at()
+    last_hit_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Receivable(Base):
+    """Money other people owe the user; the payment request is a mock (D31)."""
+
+    __tablename__ = "receivables"
+    __table_args__ = (
+        enum_check("status", e.ReceivableStatus),
+        CheckConstraint("amount > 0", name="amount_positive"),
+        CheckConstraint("people_count > 0", name="people_count_positive"),
+        Index(None, "user_id", "status"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk())
+    transaction_id: Mapped[int | None] = mapped_column(
+        ForeignKey("transactions.id", ondelete="SET NULL")
+    )
+    amount: Mapped[Decimal] = mapped_column(Money)
+    debtor_label: Mapped[str] = mapped_column(String(100))
+    people_count: Mapped[int | None]
+    amount_each: Mapped[Decimal | None] = mapped_column(Money)
+    expected_by: Mapped[date] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(String(10), default=e.ReceivableStatus.OPEN)
+    requested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = created_at()
+
+
+class Pot(Base):
+    """A named savings pot; the goal has its own (kind = goal)."""
+
+    __tablename__ = "pots"
+    __table_args__ = (
+        enum_check("kind", e.PotKind),
+        enum_check("status", e.PotStatus),
+        CheckConstraint("target > 0", name="target_positive"),
+        CheckConstraint("saved >= 0", name="saved_not_negative"),
+        CheckConstraint("monthly_contribution >= 0", name="contribution_not_negative"),
+        Index(
+            "uq_pots_one_per_goal",
+            "goal_id",
+            unique=True,
+            postgresql_where=text("kind = 'goal'"),
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk(), index=True)
+    name: Mapped[str] = mapped_column(String(100))
+    kind: Mapped[str] = mapped_column(String(10))
+    goal_id: Mapped[int | None] = mapped_column(ForeignKey("goals.id", ondelete="SET NULL"))
+    life_event_id: Mapped[int | None] = mapped_column(
+        ForeignKey("life_events.id", ondelete="SET NULL")
+    )
+    fact_id: Mapped[int | None] = mapped_column(ForeignKey("life_facts.id", ondelete="SET NULL"))
+    target: Mapped[Decimal] = mapped_column(Money)
+    saved: Mapped[Decimal] = mapped_column(Money, default=Decimal("0"))
+    deadline: Mapped[date | None] = mapped_column(Date)
+    monthly_contribution: Mapped[Decimal] = mapped_column(Money, default=Decimal("0"))
+    status: Mapped[str] = mapped_column(String(10), default=e.PotStatus.ACTIVE)
+    created_at: Mapped[datetime] = created_at()
+
+
+class GoalForecast(Base):
+    """Goal probability history: "81%, vs 72% last week" (arch 6.7)."""
+
+    __tablename__ = "goal_forecasts"
+    __table_args__ = (
+        CheckConstraint("probability BETWEEN 0 AND 1", name="probability"),
+        CheckConstraint("p10 <= p50 AND p50 <= p90", name="percentiles_ordered"),
+        Index(None, "user_id", "computed_at"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(user_fk())
+    goal_id: Mapped[int] = mapped_column(ForeignKey("goals.id", ondelete="CASCADE"))
+    plan_version: Mapped[int] = mapped_column(Integer)
+    sim_date: Mapped[date] = mapped_column(Date)
+    computed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+    probability: Mapped[Decimal] = mapped_column(Score)
+    p10: Mapped[Decimal] = mapped_column(Money)
+    p50: Mapped[Decimal] = mapped_column(Money)
+    p90: Mapped[Decimal] = mapped_column(Money)
+    expected_reach_date: Mapped[date | None] = mapped_column(Date)
+    drivers: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    options: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONB)
+    is_weekly_snapshot: Mapped[bool] = mapped_column(Boolean, default=False)
+    reason: Mapped[str | None] = mapped_column(Text)
+
+
+class CategoryBaseline(Base):
+    """Cached per-category baselines, recomputed by the engine (arch 5.3.5)."""
+
+    __tablename__ = "category_baselines"
+    __table_args__ = (enum_check("category", e.Category),)
+
+    user_id: Mapped[int] = mapped_column(user_fk(), primary_key=True)
+    category: Mapped[str] = mapped_column(String(20), primary_key=True)
+    personal_median: Mapped[Decimal | None] = mapped_column(Money)
+    personal_mad: Mapped[Decimal | None] = mapped_column(Money)
+    n: Mapped[int] = mapped_column(Integer, default=0)
+    prior_median: Mapped[Decimal | None] = mapped_column(Money)
+    household_multiplier: Mapped[Decimal] = mapped_column(Numeric(4, 2), default=Decimal("1"))
+    expected_median: Mapped[Decimal | None] = mapped_column(Money)
+    monthly_expected: Mapped[Decimal | None] = mapped_column(Money)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_now, onupdate=_now
+    )
+
+
+class Merchant(Base):
+    """Merchant catalogue (data/merchants.json); `id` is the file's slug, e.g. "mega_image"."""
+
+    __tablename__ = "merchants"
+    __table_args__ = (enum_check("category", e.Category),)
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    canonical_name: Mapped[str] = mapped_column(String(100), unique=True)
+    aliases: Mapped[list[str]] = mapped_column(JSONB, default=list)
+    category: Mapped[str] = mapped_column(String(20))
+    mcc: Mapped[str | None] = mapped_column(String(4))
+    typical_basket: Mapped[Decimal | None] = mapped_column(Money)
+    multi_category: Mapped[bool] = mapped_column(Boolean, default=False)
