@@ -8,7 +8,7 @@ import re
 import unicodedata
 from collections.abc import Callable
 from datetime import UTC, date, datetime
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 
 import pytest
 from hypothesis import given
@@ -101,29 +101,117 @@ def test_format_money_rejects_amounts_that_are_not_a_finite_sum(amount: Decimal)
         format_money(amount, "ro")
 
 
-@given(
-    st.decimals(
-        min_value=Decimal("-1e12"),
-        max_value=Decimal("1e12"),
-        places=4,
-        allow_nan=False,
-        allow_infinity=False,
-    ),
-    st.sampled_from(["ro", "en"]),
-)
-def test_format_money_shows_exactly_the_rounded_amount(amount: Decimal, lang: str) -> None:
-    thousands, decimal_sep = SEPARATORS[lang]
-    text = format_money(amount, lang)
+def _half_up(n: int, k: int, places: int) -> tuple[str, int, int]:
+    """n * 10^-k rounded half-up (away from zero) to `places` decimals, in integers only:
+    (sign, whole part, fraction digits). An oracle independent of `decimal` (review R7)."""
+    shift = k - places
+    if shift >= 0:
+        quotient, remainder = divmod(abs(n), 10**shift)
+        if 2 * remainder >= 10**shift and shift > 0:
+            quotient += 1
+    else:
+        quotient = abs(n) * 10**-shift
+    sign = "-" if n < 0 and quotient else ""  # never "-0"
+    whole, fraction = divmod(quotient, 10**places)
+    return sign, whole, fraction
 
-    assert text.endswith(" lei")
-    number = text.removesuffix(" lei")
-    integer, _, fraction = number.removeprefix("-").partition(decimal_sep)
-    groups = integer.split(thousands)
-    assert 1 <= len(groups[0]) <= 3
-    assert all(len(group) == 3 for group in groups[1:])
-    assert fraction == "" or (len(fraction) == 2 and fraction != "00")
-    parsed = Decimal(number.replace(thousands, "").replace(decimal_sep, "."))
-    assert parsed == amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+def _grouped(whole: int, separator: str) -> str:
+    digits = str(whole)
+    groups: list[str] = []
+    while digits:
+        groups.insert(0, digits[-3:])
+        digits = digits[:-3]
+    return separator.join(groups)
+
+
+def _money_oracle(n: int, k: int, lang: str) -> str:
+    thousands, decimal_sep = SEPARATORS[lang]
+    sign, whole, cents = _half_up(n, k, 2)
+    fraction = f"{decimal_sep}{cents:02d}" if cents else ""
+    return f"{sign}{_grouped(whole, thousands)}{fraction} lei"
+
+
+def _pct_oracle(n: int, k: int, lang: str, decimals: int) -> str:
+    thousands, decimal_sep = SEPARATORS[lang]
+    sign, whole, fraction = _half_up(n, k - 2, decimals)  # percent = n * 10^-(k-2)
+    tail = f"{decimal_sep}{fraction:0{decimals}d}" if decimals else ""
+    return f"{sign}{_grouped(whole, thousands)}{tail}%"
+
+
+@given(st.integers(-(10**35), 10**35), st.integers(10, 45), st.sampled_from(["ro", "en"]))
+def test_format_money_equals_an_integer_arithmetic_oracle(n: int, k: int, lang: str) -> None:
+    # Up to 36 significant digits: past the 28-digit decimal context, where double rounding
+    # would show (review R1/R7). The exact string is compared, so "-0 lei" can't hide.
+    assert format_money(Decimal(f"{n}E-{k}"), lang) == _money_oracle(n, k, lang)
+
+
+@given(
+    st.integers(-(10**35), 10**35),
+    st.integers(15, 45),
+    st.sampled_from(["ro", "en"]),
+    st.sampled_from([0, 1, 2]),
+)
+def test_format_pct_equals_an_integer_arithmetic_oracle(
+    n: int, k: int, lang: str, decimals: int
+) -> None:
+    assert format_pct(Decimal(f"{n}E-{k}"), lang, decimals=decimals) == _pct_oracle(
+        n, k, lang, decimals
+    )
+
+
+# Uniform integers almost never land on a rounding half, so these put the digits right at one:
+# n = q·10^s + 5·10^(s-1) + delta, with s digits below the rounding position (up to 33).
+NEAR_HALF = st.tuples(
+    st.integers(0, 10**6), st.integers(1, 33), st.sampled_from([-1, 0, 1]), st.booleans()
+)
+
+
+def _near_half(q: int, s: int, delta: int, negative: bool) -> int:
+    n = q * 10**s + 5 * 10 ** (s - 1) + delta
+    return -n if negative else n
+
+
+@given(NEAR_HALF, st.sampled_from(["ro", "en"]))
+def test_format_money_rounds_half_boundaries_like_the_oracle(
+    case: tuple[int, int, int, bool], lang: str
+) -> None:
+    n, k = _near_half(*case), case[1] + 2
+    assert format_money(Decimal(f"{n}E-{k}"), lang) == _money_oracle(n, k, lang)
+
+
+@given(NEAR_HALF, st.sampled_from(["ro", "en"]), st.sampled_from([0, 1, 2]))
+def test_format_pct_rounds_half_boundaries_like_the_oracle(
+    case: tuple[int, int, int, bool], lang: str, decimals: int
+) -> None:
+    n, k = _near_half(*case), case[1] + 2 + decimals
+    assert format_pct(Decimal(f"{n}E-{k}"), lang, decimals=decimals) == _pct_oracle(
+        n, k, lang, decimals
+    )
+
+
+@pytest.mark.parametrize(
+    ("amount", "expected"),
+    [
+        (Decimal("0.004999999999999999999999999999999"), "0 lei"),
+        (Decimal("2.674999999999999999999999999999999"), "2,67 lei"),
+        (Decimal("2.675000000000000000000000000000001"), "2,68 lei"),
+        (Decimal("-0.004999999999999999999999999999999"), "0 lei"),
+        (10**25, "10.000.000.000.000.000.000.000.000 lei"),
+    ],
+)
+def test_format_money_rounds_once_even_beyond_28_digits(
+    amount: Decimal | int, expected: str
+) -> None:
+    assert format_money(amount, "ro") == expected
+
+
+def test_format_money_reports_the_callers_amount_beyond_the_format_limit() -> None:
+    # 10^26 lei needs 29 digits with the cents: past the 28-digit context (the limit).
+    with pytest.raises(ValueError, match="too large") as info:
+        format_money(10**26, "ro")
+
+    assert str(10**26) in str(info.value)
 
 
 @given(st.decimals(min_value=Decimal("-1e12"), max_value=Decimal("1e12"), places=2))
@@ -164,7 +252,34 @@ def test_format_pct_examples_and_boundaries(
     assert format_pct(value, lang, decimals=decimals) == expected
 
 
-@pytest.mark.parametrize("value", [float("nan"), float("inf"), Decimal("NaN"), 1e300])
+@pytest.mark.parametrize(
+    ("value", "decimals", "expected"),
+    [
+        (Decimal("0.1249999999999999999999999999999"), 0, "12%"),  # double rounding: 13%
+        (Decimal("0.12449999999999999999999999999999"), 1, "12,4%"),  # double rounding: 12,5%
+        (Decimal("0.1249999999999999999999999999999"), 1, "12,5%"),  # correct: 12.4999… → 12.5
+        (Decimal("0.004999999999999999999999999999999"), 0, "0%"),
+        (Decimal("0.005000000000000000000000000000000"), 0, "1%"),
+        (Decimal("-0.004999999999999999999999999999999"), 0, "0%"),
+    ],
+)
+def test_format_pct_rounds_once_even_beyond_28_digits(
+    value: Decimal, decimals: int, expected: str
+) -> None:
+    # Review R1: scaling to percent must be exact; only the final quantize may round.
+    assert format_pct(value, "ro", decimals=decimals) == expected
+
+
+@pytest.mark.parametrize("value", [Decimal("1E+999999999"), Decimal("1E+30"), 1e300])
+def test_format_pct_reports_the_callers_value_when_too_large(value: Decimal | float) -> None:
+    # Review R6: an overflow is "too large", not "not finite", and names what the caller passed.
+    with pytest.raises(ValueError, match="too large") as info:
+        format_pct(value, "ro")
+
+    assert repr(value) in str(info.value)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), Decimal("NaN")])
 def test_format_pct_rejects_values_that_cannot_be_shown(value: float | Decimal) -> None:
     with pytest.raises(ValueError, match="value"):
         format_pct(value, "ro")
@@ -176,10 +291,10 @@ def test_format_pct_rejects_non_numbers(value: object) -> None:
         format_pct(value, "ro")  # type: ignore[arg-type]
 
 
-@pytest.mark.parametrize("decimals", [-1, 3, True])
-def test_format_pct_accepts_zero_to_two_decimals_only(decimals: int) -> None:
+@pytest.mark.parametrize("decimals", [-1, 3, True, 1.0, Decimal(1), 2.0])
+def test_format_pct_accepts_zero_to_two_decimals_only(decimals: object) -> None:
     with pytest.raises(ValueError, match="decimals"):
-        format_pct(0.5, "ro", decimals=decimals)
+        format_pct(0.5, "ro", decimals=decimals)  # type: ignore[arg-type]
 
 
 @given(st.floats(min_value=0, max_value=1), st.sampled_from(["ro", "en"]))

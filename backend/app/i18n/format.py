@@ -8,7 +8,7 @@ or Babel (process-global and machine-dependent). The spoken forms ("1 leu", "500
 A11's `speak_text`, not this module's.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date, datetime
 from decimal import ROUND_HALF_UP, Context, Decimal, InvalidOperation
 from types import MappingProxyType
@@ -21,10 +21,15 @@ class _Locale:
     decimal: str
     months: tuple[str, ...]
     weekdays: tuple[str, ...]  # Monday first, as date.weekday()
+    _table: dict[int, int] = field(init=False, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        # Built once per language: Python's "," / "." → this language's separators.
+        object.__setattr__(self, "_table", str.maketrans(",.", self.thousands + self.decimal))
 
     def number(self, text: str) -> str:
         """Python's `format(x, ",.2f")` text ("1,234.50") with this language's separators."""
-        return text.translate(str.maketrans(",.", self.thousands + self.decimal))
+        return text.translate(self._table)
 
 
 _MONTHS_RO: Final = ("ianuarie", "februarie", "martie", "aprilie", "mai", "iunie", "iulie",
@@ -52,13 +57,20 @@ def _locale(lang: str) -> _Locale:
         raise ValueError(f"unsupported language {lang!r}: expected 'ro' or 'en'") from None
 
 
-def _round_half_up(value: Decimal, exponent: Decimal, what: str) -> Decimal:
+def _shift(value: Decimal, places: int) -> Decimal:
+    """value * 10**places, exactly: no context, so no rounding and no overflow (finite only)."""
+    sign, digits, exponent = value.as_tuple()
+    return Decimal((sign, digits, int(exponent) + places))
+
+
+def _round_half_up(value: Decimal, exponent: Decimal, what: str, given: object) -> Decimal:
+    """The one rounding step; errors name what the caller passed (`given`)."""
     if not value.is_finite():
-        raise ValueError(f"the {what} must be a finite number, got {value}")
+        raise ValueError(f"the {what} must be a finite number, got {given!r}")
     try:
         rounded = value.quantize(exponent, rounding=ROUND_HALF_UP, context=_CONTEXT)
     except InvalidOperation:
-        raise ValueError(f"the {what} is too large to format: {value}") from None
+        raise ValueError(f"the {what} is too large to format: {given!r}") from None
     return abs(rounded) if rounded == 0 else rounded  # never "-0"
 
 
@@ -71,23 +83,21 @@ def format_money(amount: Decimal | int, lang: str) -> str:
             f"format_money takes a Decimal or an int, not {type(amount).__name__}: "
             "round money with to_money() first"
         )
-    cents = _round_half_up(Decimal(amount), _CENT, "amount")
+    cents = _round_half_up(Decimal(amount), _CENT, "amount", amount)
     return f"{locale.number(format(cents, ',.2f').removesuffix('.00'))} lei"
 
 
 def format_pct(value: Decimal | float | int, lang: str, *, decimals: int = 0) -> str:
     """A ratio as a percent: 0.77 → `77%`; `decimals=1`: 0.125 → RO `12,5%`, EN `12.5%`."""
     locale = _locale(lang)
-    if isinstance(decimals, bool) or decimals not in (0, 1, 2):
-        raise ValueError(f"decimals must be 0, 1 or 2, got {decimals!r}")
+    if type(decimals) is not int or decimals not in (0, 1, 2):  # not True, 1.0, Decimal(1)
+        raise ValueError(f"decimals must be the int 0, 1 or 2, got {decimals!r}")
     if isinstance(value, bool) or not isinstance(value, Decimal | float | int):
         raise TypeError(f"format_pct takes a Decimal, float or int, not {type(value).__name__}")
     ratio = Decimal(str(value)) if isinstance(value, float) else Decimal(value)  # str: 0.285 → 29%
     if not ratio.is_finite():
-        raise ValueError(f"the value must be a finite number, got {value}")
-    percent = _round_half_up(
-        ratio.scaleb(2, context=_CONTEXT), Decimal(1).scaleb(-decimals), "value"
-    )
+        raise ValueError(f"the value must be a finite number, got {value!r}")
+    percent = _round_half_up(_shift(ratio, 2), _shift(Decimal(1), -decimals), "value", value)
     return f"{locale.number(format(percent, f',.{decimals}f'))}%"
 
 
