@@ -89,7 +89,7 @@ How to use them: **`backend/tests/README.md`** (one example per fixture, how to 
 | `ws_client`, `ws_connect` | `tests/fixtures/ws.py` | Starlette TestClient; `ws_connect(user, path="/ws", token=None)` → `/ws?token=…` (other thread + loop: use committed data) |
 | `fixed_clock` (autouse) | `tests/conftest.py` | app clock at 2026-06-15 12:00 Bucharest |
 
-Spec note: F3.2 says a token with `exp_in=-1` must fail with `token_expired`, but B5.1 asks for a 30 s leeway, so `-1` is still valid. I followed B5 (tests use `exp_in=-31`).
+**Decided (bomboe, 2026-10-29): the 30 s leeway of B5.1 wins.** F3.2 says a token with `exp_in=-1` must fail with `token_expired`, but with B5.1's leeway it is still valid, so the tests use `exp_in=-31` for an expired token. Someone writing a test with `exp_in=-1` will see it accepted: that's intended. (David G.: please update F3.2 in work-breakdown / Bomboe.md when you merge.)
 
 ---
 
@@ -151,6 +151,7 @@ Differences from the names in Bomboe.md / arch 15.1:
 | 2 | David G. | `merchants.json` / `products.json` need an `"id"` slug per entry (§1) |
 | 3 | team | Q21: should the hosted demo run cron with `CRON_ENABLED_JOBS="process recover"`? |
 | 4 | bomboe | B1 step 4 (local smoke script) after B6a (`/me`) and B8 (`/internal/process`) |
+| 6 | David G. | ✅ decided: token expiry has a 30 s leeway (B5.1). Update the F3.2 test line (`exp_in=-1` → `exp_in=-31`) in the docs |
 | 5 | bomboe | an empty `cashguard_db-data` volume is left on the native Docker engine (stack now runs on Docker Desktop); safe to delete |
 
 ---
