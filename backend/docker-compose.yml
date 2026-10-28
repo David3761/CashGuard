@@ -1,0 +1,61 @@
+name: cashguard
+
+x-pg-env: &pg-env
+  POSTGRES_USER: cashguard
+  POSTGRES_PASSWORD: cashguard
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      <<: *pg-env
+      POSTGRES_DB: cashguard
+    ports:
+      - "5434:5432"   # host 5432 is often taken by a local Postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cashguard -d cashguard"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  db-test:
+    image: postgres:16
+    environment:
+      <<: *pg-env
+      POSTGRES_DB: cashguard_test
+    ports:
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    # Throwaway data: trade durability for speed.
+    command: ["postgres", "-c", "fsync=off", "-c", "synchronous_commit=off", "-c", "full_page_writes=off"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cashguard -d cashguard_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://cashguard:cashguard@db:5432/cashguard
+    # One worker: the WebSocket manager lives in memory (arch 5.2).
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+volumes:
+  db-data:
