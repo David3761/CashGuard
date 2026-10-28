@@ -33,7 +33,7 @@
 ## 3. Git
 
 - `dga-final` is the integration branch for David G.'s work. Nothing is pushed unless David G. says so.
-- Every task agent works in its own worktree: **`.worktrees/<task>/`** on branch **`dga/<task>-<slug>`**, created from `dga-final`. `.worktrees/` is excluded locally (`.git/info/exclude`).
+- Every task agent works in its own worktree: **`.worktrees/<task>/`** on branch **`dga-task/<task>-<slug>`** (not `dga/…`: a branch named `dga` already exists), created from `dga-final`. `.worktrees/` is excluded locally (`.git/info/exclude`).
 - One commit per reviewed step: `[F2] step 1: enums + money`. Only the boss merges (`git merge --no-ff`).
 
 ## 4. Who may edit what (so parallel branches merge cleanly)
@@ -51,10 +51,10 @@
 
 | Task | Agent | Worktree / branch | Needs (from) | Status |
 |---|---|---|---|---|
-| F1 (F1.2–F1.5) | f1 | `.worktrees/f1` · `dga/f1-skeleton` | — | planning |
-| F2 | f2 | `.worktrees/f2` · `dga/f2-domain` | — | planning |
-| C1 | c1 | `.worktrees/c1` · `dga/c1-lists` | F2 step 1 enums (f2) | planning |
-| A1 | a1 | `.worktrees/a1` · `dga/a1-llm` | F1.2 Settings (f1) | planning |
-| A5 | a5 | `.worktrees/a5` · `dga/a5-prompts` | step 2: C1 labels + formats (c1) | planning |
+| F1 (F1.2–F1.5) | f1 | `.worktrees/f1` · `dga-task/f1-skeleton` | — | planning |
+| F2 | f2 | `.worktrees/f2` · `dga-task/f2-domain` | — | planning |
+| C1 | c1 | `.worktrees/c1` · `dga-task/c1-lists` | F2 step 1 enums (f2) | planning |
+| A1 | a1 | `.worktrees/a1` · `dga-task/a1-llm` | F1.2 Settings (f1) | planning |
+| A5 | a5 | `.worktrees/a5` · `dga-task/a5-prompts` | step 2: C1 labels + formats (c1) | planning |
 
 **Next waves** (an agent starts as soon as its inputs are merged): S0, C2, C4, A2 (after F2) → D1, C5, A4 → C6, A3 → C7, A6 → A7, D2 → D4 → ★ checkpoint (Scene A) → the P1 / P2 tasks. Dependencies: [`DGAdavid1.md`](DGAdavid1.md) §1–§2 and [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) §1.
