@@ -123,6 +123,21 @@ def test_compose_keycloak_host_port_matches_its_public_hostname(compose):
     assert issuer == kc["environment"]["KC_HOSTNAME"] + "/realms/cashguard"
 
 
+def test_compose_cron_calls_the_api_with_the_cron_client(compose):
+    cron = compose["services"]["cron"]
+    env = cron["environment"]
+    assert env["API_URL"] == "http://api:8000/api"
+    assert env["KEYCLOAK_TOKEN_URL"] == (
+        "http://keycloak:8080/realms/cashguard/protocol/openid-connect/token"
+    )
+    assert (
+        env["CRON_CLIENT_SECRET"]
+        == compose["services"]["keycloak"]["environment"]["KC_CRON_CLIENT_SECRET"]
+    )
+    assert env["TZ"] == "Europe/Bucharest"
+    assert {"api", "keycloak"} <= set(cron["depends_on"])
+
+
 def test_compose_api_fetches_keys_from_keycloak_inside_the_network(compose):
     env = compose["services"]["api"]["environment"]
     assert env["KEYCLOAK_INTERNAL_URL"].startswith("http://keycloak:8080/realms/cashguard")

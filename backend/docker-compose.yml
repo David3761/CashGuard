@@ -101,5 +101,18 @@ services:
       timeout: 3s
       retries: 12
 
+  cron:
+    build: ./cron
+    environment:
+      API_URL: http://api:8000/api
+      KEYCLOAK_TOKEN_URL: http://keycloak:8080/realms/cashguard/protocol/openid-connect/token
+      CRON_CLIENT_SECRET: ${KC_CRON_CLIENT_SECRET:-dev-cron-secret}
+      # "all", or a space-separated list (demo: "process recover"; the simulator drives the day jobs, Q21)
+      CRON_ENABLED_JOBS: ${CRON_ENABLED_JOBS:-all}
+      TZ: Europe/Bucharest
+    depends_on:
+      - api
+      - keycloak
+
 volumes:
   db-data:
