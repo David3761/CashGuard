@@ -112,8 +112,10 @@ typing-inspection==0.4.4
     #   fastapi
     #   pydantic
     #   pydantic-settings
-tzdata==2026.6 ; sys_platform == 'win32'
-    # via psycopg
+tzdata==2026.6
+    # via
+    #   cashguard-api
+    #   psycopg
 uvicorn==0.54.0
     # via cashguard-api
 uvloop==0.23.0 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
