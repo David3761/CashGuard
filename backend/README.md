@@ -14,11 +14,23 @@ Needs Python 3.12 and [uv](https://docs.astral.sh/uv/). Docker is needed only fo
 ```bash
 cd backend
 make install        # uv sync: creates .venv with the app + dev dependencies
+cp .env.example .env   # local settings; add ANTHROPIC_API_KEY only for real Claude calls
 make dev            # http://localhost:8000/api/health → {"status":"ok"}
 ```
 
 The app has no module-level instance; it's always started through the factory:
 `uv run uvicorn app.main:create_app --factory --workers 1` (1 worker: the WebSocket manager is in memory, arch 5.2).
+
+## Settings
+
+All configuration is environment variables, read by `Settings` in `app/config.py` (field names = variable names, e.g. `settings.ANTHROPIC_MODEL`). [`.env.example`](.env.example) lists every one; a test fails if the two drift apart.
+
+- Sources: real environment variables, then `backend/.env`, then the code defaults. An empty value means "not set"; surrounding spaces never matter.
+- Secrets (`*_DATABASE_URL`, `ANTHROPIC_API_KEY`, `KEYCLOAK_CRON_CLIENT_SECRET`) are `SecretStr`: they never show in `repr` or dumps; read them with `.get_secret_value()`.
+- An invalid value stops the app at startup with an error naming the variable (the value itself isn't printed, so a rejected `DATABASE_URL` doesn't show its password). DB URLs must be `postgresql+psycopg://user:password@host:port/db`; `KEYCLOAK_ISSUER` must be a realm URL (`…/realms/<name>`); `SIM_START_DATE` is `YYYY-MM-DD`.
+- `TZ` is not read by the app: day boundaries are always Europe/Bucharest (`app/clock.py`).
+- In code: `create_app(settings)` stores them; routes use `Depends(get_app_settings)`; classes take a `Settings` argument. Only `create_app()` and command-line entry points call `get_settings()`.
+- In tests: every test is isolated automatically (`tests/conftest.py`): `Settings()` and `get_settings()` see only the code defaults plus what the test sets (`monkeypatch.setenv`), never your real `.env` or shell variables. Tests marked `live` opt out, so they can use the real key on purpose. The `settings` fixture gives the defaults; `make_client(app)` gives an in-process HTTP client.
 
 ## Everyday commands
 
