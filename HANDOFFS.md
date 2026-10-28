@@ -47,3 +47,22 @@
 - **What was done:** `backend/tests/conftest.py` registers and loads the profile `cashguard` (`derandomize=True`, `deadline=None`, `print_blob=True`); `tests/unit/test_hypothesis_profile.py` asserts it's active.
 - **Decisions taken on the owner's behalf:** `deadline=None` (parallel runs make timing deadlines flaky).
 - **Merge instruction:** merge. F3 adds its fixtures (`db`, `db_committed`, `client`, `as_user`, `make_token`, `ws_connect`, `seeded_db`) to this file and keeps the profile block. Check afterwards: `test_hypothesis_profile.py` passes.
+- **Extension (2026-10-29, F1.2, merged 833c644):** the conftest also has:
+  - a hermetic `settings` fixture
+  - an **autouse isolation fixture**: every test runs with no `.env` file and no Settings variables in the environment, and the settings cache is cleared. Tests marked `live` opt out, so they see the real key.
+  - a shared `make_client(app, *, raise_app_exceptions=True)` ASGI client fixture
+
+  F3's `client` fixture should build on `make_client` and `create_app(settings)`. Keep the isolation block, because without it a test could read a developer's real `.env` and make paid Claude calls. Check: `tests/unit/test_isolation.py` passes.
+
+### H-5 · bomboe B1/B5/B14/F3 · env var names, local defaults, `.env.example` · 🟢
+- **Date / by:** 2026-10-29, DGAdavid1 (F1.2, merged 833c644)
+- **Why it was needed:** A1 and F3 need `Settings` before bomboe's B1 exists, and work-breakdown F1 ships `.env.example`.
+- **What was done:** `backend/app/config.py` `Settings` (field names = env names, frozen, unknown variables ignored, `backend/.env` read by absolute path, an empty value means "unset", every value whitespace-stripped, errors never print the input value) + `backend/.env.example` + a no-drift test (parsed with python-dotenv). `create_app(settings=None)` stores the settings in `app.state.settings`; the typed dependency is `get_app_settings(request)`.
+- **Decisions taken on the owner's behalf:**
+  - dev DB `postgresql+psycopg://cashguard:cashguard@localhost:5432/cashguard` (a `db` service with user/password/db `cashguard`, port 5432). DB URLs **must** be `postgresql+psycopg://user:password@host:port/db` (psycopg 3; plain `postgresql://` means psycopg2, which isn't installed), checked at startup.
+  - `KEYCLOAK_ISSUER` example `http://localhost:8080/realms/cashguard`; it must be `http(s)://host[:port][/prefix]/realms/<realm>`, with the trailing `/` dropped.
+  - `KEYCLOAK_AUDIENCE` empty (B5 decides between `azp` and `aud`); the cron secret is named `KEYCLOAK_CRON_CLIENT_SECRET` (kept in `Settings`, masked).
+  - `SIM_MODE` false in code, true in the example (and in the hosted `.env`, B14). `SIM_START_DATE` must be `YYYY-MM-DD`. `LOG_LEVEL` added.
+  - `TZ` isn't read by the app, but **the cron container needs `TZ=Europe/Bucharest`** so the crontab times (arch §10) are local time.
+  - In Docker, env comes from compose (`env_file:`), and **`.dockerignore` must exclude `.env`** (otherwise the key is baked into the image).
+- **Merge instruction:** keep the app variable names (A1/B5 read them), or rename them in `Settings` and `.env.example` together. When B1 adds compose-only variables (`POSTGRES_*`, `KC_*`, `KEYCLOAK_ADMIN*`) to `.env.example`, add them to `NON_APP_KEYS` in `tests/unit/test_config.py`; the drift test names the missing ones. Check: `uv run pytest tests/unit/test_config.py`, then `docker compose config` resolves every `${VAR}`.
