@@ -6,7 +6,12 @@ import pytest
 from app import clock
 from app.clock import FixedClock
 
-pytest_plugins = ["tests.fixtures.db", "tests.fixtures.auth"]
+pytest_plugins = [
+    "tests.fixtures.db",
+    "tests.fixtures.auth",
+    "tests.fixtures.api",
+    "tests.fixtures.ws",
+]
 
 SIM_START = date(2026, 6, 15)
 
