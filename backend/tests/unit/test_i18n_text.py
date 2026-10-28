@@ -27,11 +27,20 @@ ANY_TEXT = st.text(
 )
 
 APOSTROPHES = ["\u2019", "\u2018", "\u02bc", "\u00b4", "`", "\u201b", "\u02bb", "\u2032",
-               "\uff07"]  # fmt: skip
+               "\uff07", "\u02b9", "\u2035", "\u02c8", "\ua78c"]  # fmt: skip
+# Every dash punctuation character (category Pd) folds to "-"; these are the usual ones + review R4.
 DASHES = ["\u2010", "\u2011", "\u2012", "\u2013", "\u2014", "\u2015", "\u2212", "\ufe58",
-          "\ufe63", "\uff0d"]  # fmt: skip
+          "\ufe63", "\uff0d", "\u2e3a", "\u2e3b", "\u058a", "\u05be", "\u301c"]  # fmt: skip
 INVISIBLES = ["\u200b", "\u200c", "\u200d", "\u2060", "\u00ad", "\ufeff", "\u200e",
               "\u200f", "\u202e", "\u2066", "\u061c"]  # fmt: skip
+# Review R3: blanks that are letters or symbols (Hangul fillers, Braille blank) and the
+# Default_Ignorable_Code_Point characters that are not Cf (range ends included).
+FILLERS = ["\u3164", "\uffa0", "\u115f", "\u1160", "\u2800", "\u034f", "\u17b4", "\u17b5",
+           "\u180b", "\u180f", "\u180e", "\ufe00", "\ufe0f", "\U000e0001", "\U000e0020",
+           "\U000e007f", "\U000e0100", "\U000e01ef", "\U0001bca0", "\U0001d173"]  # fmt: skip
+# Review R2: spacing diacritics; NFKD makes each one a space + a combining mark.
+SPACING_DIACRITICS = ["\u00a8", "\u00af", "\u00b8", "\u02d8", "\u02d9", "\u02da", "\u02db",
+                      "\u02dc", "\u02dd", "\u0384", "\u1fed", "\u203e", "\uffe3"]  # fmt: skip
 SPACES = ["\u00a0", "\u202f", "\u2009", "\u2007", "\u3000", "\u1680", "\t", "\n", "\r",
           "\u2028", "\u2029", "\u0085"]  # fmt: skip
 
@@ -44,8 +53,10 @@ def _clean_problems(out: str) -> list[str]:
             problems.append(f"mark/format {ord(ch):#06x}")
         if ch.isspace() and ch != " ":
             problems.append(f"non-plain space {ord(ch):#06x}")
-        if ch in APOSTROPHES or ch in DASHES:
-            problems.append(f"punctuation variant {ord(ch):#06x}")
+        if ch in APOSTROPHES or ch in DASHES or ch in FILLERS:
+            problems.append(f"variant or filler {ord(ch):#06x}")
+        if unicodedata.category(ch) == "Pd" and ch != "-":
+            problems.append(f"dash {ord(ch):#06x}")
     if out != out.casefold():
         problems.append("not casefolded")
     return problems
@@ -122,6 +133,18 @@ def test_fold_drops_invisible_format_characters(invisible: str) -> None:
     assert fold(f"risi{invisible}pă") == "risipa"
 
 
+@pytest.mark.parametrize("filler", FILLERS)
+def test_fold_drops_invisible_fillers_and_default_ignorables(filler: str) -> None:
+    # Review R3: these render as nothing, so they would hide a banned phrase too.
+    assert fold(f"risi{filler}pă") == "risipa"
+
+
+@pytest.mark.parametrize("diacritic", SPACING_DIACRITICS)
+def test_fold_drops_spacing_diacritics_instead_of_leaving_a_space(diacritic: str) -> None:
+    # Review R2: "risi¨pa" must not become "risi pa" (a banned-phrase bypass, a split word).
+    assert fold(f"risi{diacritic}pa") == "risipa"
+
+
 @pytest.mark.parametrize("space", SPACES)
 def test_fold_turns_every_unicode_space_into_one_plain_space(space: str) -> None:
     assert fold(f"de{space}ce") == "de ce"
@@ -142,6 +165,11 @@ def test_fold_maps_spaces_one_to_one_without_collapsing() -> None:
 def test_fold_unifies_apostrophe_variants(apostrophe: str) -> None:
     # U+00B4 is the trap: NFKD alone would turn it into a space plus a combining accent.
     assert fold(f"N{apostrophe}am") == "n'am"
+
+
+def test_fold_maps_a_variant_that_casefold_produces() -> None:
+    # Casefold runs last: the capital saltillo folds to the small one, an apostrophe variant.
+    assert fold_char("\ua78b") == "'"
 
 
 @pytest.mark.parametrize("dash", [*DASHES, "-"])
@@ -205,6 +233,16 @@ def _assigned_characters() -> list[str]:
     ]
 
 
+def _is_spacing_diacritic(ch: str) -> bool:
+    parts = unicodedata.normalize("NFKD", ch)
+    return (
+        not ch.isspace()
+        and len(parts) > 1
+        and parts[0] == " "
+        and all(unicodedata.category(p) in {"Mn", "Me"} for p in parts[1:])
+    )
+
+
 @pytest.mark.slow  # ~1 s under coverage: 149 251 code points
 def test_fold_char_is_a_clean_fixed_point_for_every_assigned_character() -> None:
     # Exhaustive over all assigned code points: since fold is per character, this proves
@@ -212,18 +250,27 @@ def test_fold_char_is_a_clean_fixed_point_for_every_assigned_character() -> None
     not_fixed: list[str] = []
     dirty: list[str] = []
     marks_kept: list[str] = []
+    dashes_kept: list[str] = []
+    spacing_kept: list[str] = []
     for ch in _assigned_characters():
         out = fold_char(ch)
+        code = f"{ord(ch):#06x}"
         if fold(out) != out:
-            not_fixed.append(f"{ord(ch):#06x}")
+            not_fixed.append(code)
         if _clean_problems(out):
-            dirty.append(f"{ord(ch):#06x}")
+            dirty.append(code)
         if unicodedata.category(ch) in {"Mn", "Me", "Cf"} and out != "":
-            marks_kept.append(f"{ord(ch):#06x}")
+            marks_kept.append(code)
+        if unicodedata.category(ch) == "Pd" and out != "-":
+            dashes_kept.append(code)
+        if _is_spacing_diacritic(ch) and ch not in APOSTROPHES and out != "":
+            spacing_kept.append(code)
 
     assert not_fixed == []
     assert dirty == []
     assert marks_kept == []  # every combining mark (Mn, Me) and format character (Cf) is dropped
+    assert dashes_kept == []  # every dash punctuation character (Pd) becomes "-" (review R4)
+    assert spacing_kept == []  # every spacing diacritic is dropped, not left as a space (R2)
 
 
 # ── performance ─────────────────────────────────────────────────────────────────────────
