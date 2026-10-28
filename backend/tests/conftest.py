@@ -23,15 +23,17 @@ pytest_plugins = ["pytester"]
 # ── Isolation (F1.2) ─────────────────────────────────────────────────────────────────────────
 # Every test is isolated from the developer's real backend/.env and shell variables (a real
 # ANTHROPIC_API_KEY there would make real, paid calls): Settings() and get_settings() see only
-# the code defaults plus what the test itself sets. Tests marked `live` opt out, so they can use
-# the real key on purpose (`-m live`).
+# the code defaults plus what the test itself sets. Every ANTHROPIC_* variable goes too: the
+# anthropic SDK reads ANTHROPIC_BASE_URL, _CUSTOM_HEADERS, _LOG, _AUTH_TOKEN, … by itself (a
+# developer shell, e.g. Claude Code, may set them). Tests marked `live` opt out, so they can use
+# the real key and setup on purpose (`-m live`).
 
 
-def _isolate_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+def _isolate_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(Settings.model_config, "env_file", None)
     fields = {name.lower() for name in Settings.model_fields}  # pydantic-settings ignores case
     for key in list(os.environ):
-        if key.lower() in fields:
+        if key.lower() in fields or key.upper().startswith("ANTHROPIC_"):
             monkeypatch.delenv(key)
 
 
@@ -41,7 +43,7 @@ def _restore_global_state(
 ) -> Iterator[None]:
     """Isolate the settings, and undo process-wide state a test may change (cached settings)."""
     if request.node.get_closest_marker("live") is None:
-        _isolate_settings(monkeypatch)
+        _isolate_environment(monkeypatch)
     get_settings.cache_clear()
     yield
     get_settings.cache_clear()
