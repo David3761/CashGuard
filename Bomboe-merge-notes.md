@@ -129,4 +129,4 @@ Later F1-file changes from my tasks: `pyproject.toml` (+ `shellcheck-py`, `alemb
 | `994b982` | B2.1 core tables, session, init; F3 db fixtures started |
 | `457e697` | B2.2 money-flow tables |
 | `ff0e8df` | B2.3 conversation tables |
-| (next) | B2.4 life-context tables, golden schema, cascades; **Alembic** migrations; `make check` → 228 passed |
+| `02212e2` | B2.4 life-context tables, golden schema, cascades; **Alembic** migrations; `make check` → 228 passed |
