@@ -7,7 +7,9 @@ import pytest
 from pydantic import ValidationError
 from sqlalchemy import event
 
+from app.agent import snapshot
 from app.db import models as m
+from app.services import context_loader
 from app.services.context_loader import load_user_context
 from tests import factories as f
 
@@ -104,4 +106,83 @@ async def test_statement_budget(db, engine):
         await load_user_context(db, u.id, TODAY)
     finally:
         event.remove(sync_engine, "before_cursor_execute", on_exec)
-    assert count["n"] <= 20
+    assert count["n"] <= 25  # 20 + the 5 snapshot extras: one bounded query each, no N+1
+
+
+def _product(slug: str) -> m.Product:
+    return m.Product(
+        id=slug, name=slug, kind="savings_account", rate=Decimal("0.05"), liquidity="instant",
+        min_months=0, max_months=12,
+    )  # fmt: skip
+
+
+async def _history(db, user_id: int, *, days: int, reason: str = "livrări") -> None:
+    """`days` daily ledger rows, slips and weekly reflections ending on TODAY, plus one of each
+    after TODAY (a sim date before the seeded data must not see the future)."""
+    for back in range(-1, days):
+        day = TODAY - timedelta(days=back)
+        db.add(
+            m.DayLedger(user_id=user_id, date=day, budget=Decimal("100"), spent=Decimal(abs(back)))
+        )
+        db.add(m.Slip(user_id=user_id, date=day, amount_over=Decimal(abs(back)), reason=reason))
+        week = TODAY - timedelta(days=TODAY.weekday() + 7 * back)
+        db.add(m.Reflection(user_id=user_id, week_start=week, motivation=3, answer=f"w{back}"))
+    await db.flush()
+
+
+def test_the_bounds_are_the_snapshots():
+    assert context_loader.RECENT_DAYS == snapshot.RECENT_DAYS
+    assert context_loader.MAX_HISTORY == snapshot.MAX_HISTORY
+
+
+async def test_the_snapshot_extras_are_filled_and_bounded(db):
+    u = await f.user(db)
+    await _history(db, u.id, days=30)
+    db.add(m.Slip(user_id=u.id, date=TODAY, amount_over=Decimal("1")))  # no reason: left out
+    db.add(m.LifeProfile(user_id=u.id, data={"what_works": ["gătit acasă"]}))
+    db.add_all([_product("cg_b"), _product("cg_a")])
+    await db.flush()
+    ctx = await load_user_context(db, u.id, TODAY)
+    days = [d.date for d in ctx.recent_days]  # the last 14 days up to TODAY, oldest first
+    assert days == [TODAY - timedelta(days=n) for n in range(13, -1, -1)]
+    assert [s.date for s in ctx.slips] == [TODAY - timedelta(days=n) for n in range(4, -1, -1)]
+    assert all(s.reason == "livrări" for s in ctx.slips)
+    weeks = [r.week_start for r in ctx.reflections]
+    assert len(weeks) == 5 and weeks == sorted(weeks) and weeks[-1] <= TODAY
+    assert [r.answer for r in ctx.reflections] == ["w4", "w3", "w2", "w1", "w0"]
+    assert ctx.life_notes == {"what_works": ["gătit acasă"]}
+    ids = [p.id for p in ctx.products]
+    assert {"cg_a", "cg_b"} <= set(ids) and ids == sorted(ids)
+    text = snapshot.render_snapshot(ctx, "chat", None)
+    assert text.count("\n- slip ") == 5 and text.count("\n- reflection week of ") == 5
+    assert "[product cg_a]" in text and '"what_works"' in text
+
+
+async def test_the_extras_are_the_users_own(db):
+    a, b = await f.user(db), await f.user(db)
+    await _history(db, b.id, days=10, reason="al altcuiva")
+    db.add(m.LifeProfile(user_id=b.id, data={"secret": "b"}))
+    await db.flush()
+    ctx = await load_user_context(db, a.id, TODAY)
+    assert ctx.recent_days == ctx.slips == ctx.reflections == ()
+    assert ctx.life_notes == {}
+    other = await load_user_context(db, b.id, TODAY)
+    assert len(other.slips) == 5 and other.life_notes == {"secret": "b"}
+
+
+async def test_blank_and_long_texts_are_normalised(db):
+    u = await f.user(db)
+    db.add_all(
+        [
+            m.Slip(user_id=u.id, date=TODAY, amount_over=Decimal("5"), reason="  "),
+            m.Slip(
+                user_id=u.id, date=TODAY, amount_over=Decimal("7"), reason="haine", detail="x" * 900
+            ),
+            m.Reflection(user_id=u.id, week_start=TODAY, answer="", reason="r" * 900),
+        ]
+    )
+    await db.flush()
+    ctx = await load_user_context(db, u.id, TODAY)
+    assert [(s.reason, len(s.detail or "")) for s in ctx.slips] == [("haine", 500)]
+    (r,) = ctx.reflections
+    assert r.answer is None and r.reason == "r" * 300

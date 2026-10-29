@@ -280,8 +280,10 @@ async def _split_answer(
     texts: Mapping[str, str],
     lang: str,
 ) -> FallbackAnswer:
-    """The F11 reply with the code's numbers, plus the payment-request card. TODO(A3): the
-    annotate result carries `effective_amount` and `receivable: {id, amount}`."""
+    """The F11 reply with the code's numbers, plus the payment-request card.
+    TODO(A3): the real annotate result (`AnnotationResult`) has `effective_amount`,
+    `receivable_id` and `receivable_amount`, not a nested `receivable: {id, amount}`, so `owed`
+    stays None and the reply is `split_plain` (no numbers): read `receivable_amount` too."""
     share = _money(data.get("effective_amount"))
     raw = data.get("receivable")
     receivable: dict[str, Any] = raw if isinstance(raw, dict) else {}
