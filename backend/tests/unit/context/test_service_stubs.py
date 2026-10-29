@@ -9,6 +9,8 @@ import pytest
 from app.context import service
 from app.domain.enums import AnnotationSource, Category, Decision, Direction, FactType, Purpose
 from app.domain.models import Item, TxView
+from app.domain.results import Evaluation, PropagationResult, QuestionCandidate
+from tests.builders import fact
 
 TODAY = date(2026, 6, 15)
 
@@ -51,7 +53,7 @@ def one_tx(monkeypatch: pytest.MonkeyPatch) -> Any:
 def test_evaluate_transaction_asks_above_300(one_tx: Any, amount: str, decision: Decision) -> None:
     one_tx(_tx(amount))
     result = service.evaluate_transaction(None, 1, 1)
-    assert isinstance(result, service.Evaluation)
+    assert isinstance(result, Evaluation)
     assert result.decision == decision
     assert result.effective_amount == Decimal(amount)
     assert (result.question_hint is not None) == (decision == Decision.ASK)
@@ -89,7 +91,7 @@ def test_pick_question_first_ask(monkeypatch: pytest.MonkeyPatch) -> None:
            _tx("700", tx_id=3, decision=Decision.ASK)]  # fmt: skip
     _day(monkeypatch, txs, asked=False)
     candidate = service.pick_question(None, 1, TODAY)
-    assert isinstance(candidate, service.QuestionCandidate)
+    assert isinstance(candidate, QuestionCandidate)
     assert candidate.transaction_id == 2
 
 
@@ -103,9 +105,9 @@ def test_pick_question_none_when_asked_today_or_nothing_to_ask(
 
 
 def test_the_other_stubs() -> None:
-    fact = service.LifeFact(id=7, type=FactType.OCCUPATION, text="analist sportiv")
-    assert service.signatures_for_fact(fact, None) == []
-    assert service.on_fact_changed(None, 1, 7) == service.PropagationResult(fact_id=7)
+    occupation = fact(FactType.OCCUPATION, id=7)
+    assert service.signatures_for_fact(occupation, None) == []
+    assert service.on_fact_changed(None, 1, 7) == PropagationResult(fact_id=7)
     assert service.learn_from_annotation(None, 1, 1) is None
     assert service.infer_hypotheses(None, 1) == []
 

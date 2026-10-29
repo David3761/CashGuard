@@ -18,7 +18,7 @@ from app.domain.models import DomainModel, TxView
 from app.domain.money import Money, share_each, split_share, to_money
 from app.errors import DomainError
 
-# ── TODO(F2/A3): the result shape is A3's (not in F2.md); kept minimal until A3 lands. ──────
+# ── TODO(A3): the result shape is A3's (F2 has none); kept minimal until A3 lands. ─────────
 
 
 class AnnotationResult(DomainModel):  # TODO(A3): the real handler's result
