@@ -43,10 +43,10 @@ The full design is in
 - `/api/*`: every request needs a **Keycloak JWT** (signature checked against the realm's JWKS,
   plus issuer, audience and expiry). The user is always taken from the token's `sub`, never from
   the request body.
-- `/internal/*` (the scheduled jobs): only tokens with the `internal` realm role, which only
+- `/api/internal/*` (the scheduled jobs): only tokens with the `internal` realm role, which only
   the confidential `savings-cron` client (client-credentials grant) has. The mobile app never calls
   these endpoints.
-- `/sim/*` (the demo simulator, which moves the clock and feeds synthetic transactions): mounted
+- `/api/sim/*` (the demo simulator, which moves the clock and feeds synthetic transactions): mounted
   **only when `SIM_MODE=true`**, and every route also needs the realm role **`sim`** (the demo
   operator; a plain login gets 403).
 - Only **access tokens** are accepted (`typ: Bearer`): a Keycloak ID or refresh token is refused.
@@ -107,7 +107,8 @@ not only in the prompt:
   snapshot carries no IBANs, card numbers or addresses.
 - **Bounded runs:** a maximum number of agent iterations per run (`MAX_AGENT_ITERATIONS`, default
   6), `max_tokens` per call, timeouts on every model call, and a templated fallback reply when a
-  limit, an API error, a refusal or a cut-off reply is hit. Every tool call is logged.
+  limit, an API error, a refusal or a cut-off reply is hit. <!-- PORTS -->Every tool call is logged in the
+  `tool_calls` table.<!-- /PORTS -->
 - **Rate limits** on the chat, simulator and WebSocket endpoints (see Abuse limits above).
 
 ## Development-only defaults

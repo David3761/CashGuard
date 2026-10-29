@@ -1,7 +1,7 @@
 # TASKS: the short list for assigning (API only)
 
-> Full detail of every task (files, functions, steps, tests, "done when"): [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md).
-> How we work on each task: [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md). The frontend is David V.'s and separate (arch D39).
+> Full detail of every task (files, functions, steps, tests, "done when"): [`backend/docs/work-breakdown.md`](../../backend/docs/work-breakdown.md).
+> How we work on each task: [`backend/docs/how-we-work.md`](../../backend/docs/how-we-work.md). The frontend is David V.'s and separate (arch D39).
 > ✅ Assigned on 2026-10-28. Each person's tasks in detail, split into steps: [`Bomboe.md`](Bomboe.md), [`Danutu.md`](Danutu.md), [`DGAdavid1.md`](DGAdavid1.md).
 >
 > **P0** = needed for the demo (Scenes A + B) · **P1** = clearly better pitch · **P2** = cut first.
@@ -110,4 +110,4 @@ Detailed per-person files: [`Bomboe.md`](Bomboe.md) · [`Danutu.md`](Danutu.md) 
 
 Moving C1, C2, C7 and D2 (≈ 3 h of P0) from David G. to danutu would even it out (~15 / ~13.25). Not done; David G. decides.
 
-⚠️ **Time check (2026-10-28 21:15):** if the hackathon ends around 10:00 tomorrow with a feature freeze around 05:00 (arch §13 hour 19), there are about **8 build hours** left. P0 alone is ~13.5h per person, so **even P0 is over capacity**. Options: work fast on P0 only and accept fewer review rounds; cut more (B14 hosting, E8 → a simpler forecast, C7 → a plain "1 per day" rule); or confirm a later end time.
+⚠️ **Historical, written at 21:15 on day 1. Time check (2026-10-28 21:15):** if the hackathon ends around 10:00 tomorrow with a feature freeze around 05:00 (arch §13 hour 19), there are about **8 build hours** left. P0 alone is ~13.5h per person, so **even P0 is over capacity**. Options: work fast on P0 only and accept fewer review rounds; cut more (B14 hosting, E8 → a simpler forecast, C7 → a plain "1 per day" rule); or confirm a later end time.

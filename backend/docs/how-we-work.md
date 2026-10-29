@@ -1,11 +1,11 @@
 # How we work (API)
 
-> Agreed 2026-10-28 (David G.). Applies to every API task in [`TASKS.md`](../../TASKS.md), whether it's done by a person alone or with Claude Code.
+> Agreed 2026-10-28 (David G.). Applies to every API task in [`TASKS.md`](../../docs/team/TASKS.md), whether it's done by a person alone or with Claude Code.
 > Detailed task specs: [`work-breakdown.md`](work-breakdown.md). Architecture (the *what*): [`savings-coach-backend-architecture.md`](savings-coach-backend-architecture.md).
 
 ## 1. The idea
 
-**Small steps, each one tested, explained and reviewed before the next.** A task from `TASKS.md` is split into steps. A **step** is one concern and about ≤ 150 changed lines of code (tests not counted), small enough that a human can review it in 5–10 minutes. Nothing moves on until the step is green and reviewed.
+**Small steps, each one tested, explained and reviewed before the next.** A task from `docs/team/TASKS.md` is split into steps. A **step** is one concern and about ≤ 150 changed lines of code (tests not counted), small enough that a human can review it in 5–10 minutes. Nothing moves on until the step is green and reviewed.
 
 ## 2. The loop for every step
 
@@ -20,7 +20,7 @@
 | 7 | **Explain** | The step report (§3): what changed, why, how it's tested, the real test output, known limits | report |
 | 8 | **Human review** | The owner (and, for a contract change, the people who depend on it) reads the diff + report and comments | comments |
 | 9 | **Fix & post-review report** | Fix every comment, re-run everything, and for each problem explain *what went wrong, why, how it was fixed, and how we prevent it next time* (§4). Usually the prevention is a new test | report |
-| 10 | **Close** | Commit (only when the owner says so), tick the step in the person's file, add a line to the `DGAREADME1.md` changelog when a decision changed, update the arch doc when a contract changed | commit + docs |
+| 10 | **Close** | Commit (only when the owner says so), tick the step in the person's file, add a line to the `docs/team/DGAREADME1.md` changelog when a decision changed, update the arch doc when a contract changed | commit + docs |
 
 **Rules**
 - A test that never failed proves nothing: step 3 must show red before step 4.
@@ -99,7 +99,7 @@ Not applicable: concurrency (pure function), …
 - [ ] The budgets in the arch doc are asserted (forecast < 100 ms, snapshot builder, query counts).
 
 **Docs**
-- [ ] The person's task file is updated; the arch doc is updated if a contract changed (marked 🆕, with a changelog line in `DGAREADME1.md`).
+- [ ] The person's task file is updated; the arch doc is updated if a contract changed (marked 🆕, with a changelog line in `docs/team/DGAREADME1.md`).
 
 ## 6. Definition of done (a whole task)
 
@@ -117,9 +117,9 @@ Not applicable: concurrency (pure function), …
 | Database | `tests/db/` | `db` | Postgres (`make db-up`) | 10–100 ms |
 | API | `tests/api/` | `api` | Postgres | 10–100 ms |
 | WebSocket | `tests/ws/` | `ws` | Postgres | 10–100 ms |
-| Acceptance (arch 16.3, demo numbers) | `tests/acceptance/` | `db` | seeded Postgres | 100 ms–1 s |
-| Live LLM eval | `tests/eval/` | `live` | `ANTHROPIC_API_KEY`, **costs money** | seconds |
-| End-to-end | `scripts/demo_client.py` | — | the running stack | seconds |
+| Acceptance (demo numbers) | `tests/acceptance/` | — | the committed persona files | < 1 s |
+| Live LLM eval | `tests/eval/` | `live` | Claude credentials (`ANTHROPIC_API_KEY` or Bedrock), **costs money** | seconds |
+| End-to-end | `scripts/smoke_local.sh` (stack + Scene A's transaction); `tests/unit/agent/test_scene_a.py` (the scene, scripted LLM) | — | the running stack / nothing | seconds |
 
 - **Determinism:** time via `FixedClock`; every random generator is seeded (never Python's `hash()`); no `sleep` in tests. A flaky test is a bug, fixed at once.
 - **The LLM in tests:** every test uses `FakeLLM` with a scripted response. Real Claude runs only with `-m live`, deliberately.
@@ -139,7 +139,7 @@ make check                      # ruff + mypy + make test
 uv run pytest tests/unit/test_money.py -q        # one file
 uv run pytest -m live tests/eval                 # real Claude: only on purpose
 uv run python -m app.db.seed --reset             # reseed the dev DB
-uv run python scripts/demo_client.py --scene A   # end-to-end scene
+scripts/smoke_local.sh                           # the whole stack + Scene A's transaction
 ```
 
 ## 9. Git

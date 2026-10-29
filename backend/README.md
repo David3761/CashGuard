@@ -5,7 +5,7 @@ One FastAPI app with every backend module: platform (bomboe), `engine/` (danutu)
 - **What we build:** [`docs/savings-coach-backend-architecture.md`](docs/savings-coach-backend-architecture.md) (source of truth)
 - **How (tasks, conventions, tests):** [`docs/work-breakdown.md`](docs/work-breakdown.md), with the folder layout in §0.2
 - **How we work (step loop, reports, reviews):** [`docs/how-we-work.md`](docs/how-we-work.md)
-- **Work done on someone else's behalf:** [`../HANDOFFS.md`](../HANDOFFS.md)
+- **Work done on someone else's behalf:** [`../HANDOFFS.md`](../docs/team/HANDOFFS.md)
 
 ## Setup
 
@@ -14,9 +14,14 @@ Needs Python 3.12 and [uv](https://docs.astral.sh/uv/). Docker is needed only fo
 ```bash
 cd backend
 make install        # uv sync: creates .venv with the app + dev dependencies
-cp .env.example .env   # local settings; add ANTHROPIC_API_KEY only for real Claude calls
+cp .env.example .env   # local settings; add the Claude credentials (below) only for real Claude calls
 make dev            # http://localhost:8000/api/health → {"status":"ok"}
 ```
+
+**Claude credentials** (optional: without them the agent answers with templates and the deterministic fallbacks). Set one provider in `backend/.env`:
+
+- **Amazon Bedrock** (the hackathon's): `LLM_PROVIDER=bedrock`, `AWS_DEFAULT_REGION=us-west-2`, and a Bedrock API key in `AWS_BEARER_TOKEN_BEDROCK` (preferred) or the temporary `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_SESSION_TOKEN`. The model `claude-sonnet-5-5` becomes the cross-region inference profile `us.anthropic.claude-sonnet-5-5`, and `ANTHROPIC_REFUSAL_FALLBACK` is ignored.
+- **Claude API:** `LLM_PROVIDER=anthropic` (the default) and `ANTHROPIC_API_KEY`.
 
 The app has no module-level instance; it's always started through the factory:
 `uv run uvicorn app.main:create_app --factory --workers 1` (1 worker: the WebSocket manager is in memory, arch 5.2).
@@ -26,7 +31,7 @@ The app has no module-level instance; it's always started through the factory:
 All configuration is environment variables, read by `Settings` in `app/config.py` (field names = variable names, e.g. `settings.ANTHROPIC_MODEL`). [`.env.example`](.env.example) lists every one; a test fails if the two drift apart.
 
 - Sources: real environment variables, then `backend/.env`, then the code defaults. An empty value means "not set"; surrounding spaces never matter.
-- Secrets (`*_DATABASE_URL`, `ANTHROPIC_API_KEY`, `KEYCLOAK_CRON_CLIENT_SECRET`) are `SecretStr`: they never show in `repr` or dumps; read them with `.get_secret_value()`.
+- Secrets (`*_DATABASE_URL`, `ANTHROPIC_API_KEY`, `AWS_BEARER_TOKEN_BEDROCK`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `KEYCLOAK_CRON_CLIENT_SECRET`) are `SecretStr`: they never show in `repr` or dumps; read them with `.get_secret_value()`.
 - An invalid value stops the app at startup with an error naming the variable (the value itself isn't printed, so a rejected `DATABASE_URL` doesn't show its password). DB URLs must be `postgresql+psycopg://user:password@host:port/db`; `KEYCLOAK_ISSUER` must be a realm URL (`…/realms/<name>`); `SIM_START_DATE` is `YYYY-MM-DD`.
 - `TZ` is not read by the app: day boundaries are always Europe/Bucharest (`app/clock.py`).
 - In code: `create_app(settings)` stores them; routes use `Depends(get_app_settings)`; classes take a `Settings` argument. Only `create_app()` and command-line entry points call `get_settings()`.
@@ -58,7 +63,7 @@ Every non-2xx response is `{"error": {"code": "...", "message": "..."}}` (arch 9
 | `make check` | lock check + `ruff` + `mypy` + every non-live test. **Must be green before a review.** |
 | `make test` | Every test except `live`, with coverage |
 | `make fmt` | Format and auto-fix lint |
-| `make db-up` / `make db-down` | Start/stop the test Postgres (port 5433, data in tmpfs) |
+| `make db-up` / `make db-down` | Start/stop the test Postgres (port 5435, data in tmpfs) |
 | `make test-all` | Also runs `live` tests: **real Claude, costs money** |
 | `uv run pytest tests/api/test_health.py -q` | One file |
 

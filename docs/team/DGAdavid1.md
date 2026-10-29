@@ -2,9 +2,9 @@
 
 > Assigned 2026-10-28 by David G. **Scope:** the foundations everyone starts from (F1, F2), the whole **context layer** (`app/context/`, `app/i18n/`, the data files), the **agent** (`app/agent/`: Claude client, tools, executor, snapshot, prompts, loop, proactive questions, fallbacks, eval), the persona facts, the scenarios, the acceptance suite, the demo client, the runbook and the security review.
 > **Not yours:** DB / endpoints / pipeline plumbing / auth / sim / hosting (bomboe); all money maths (`app/engine/`, danutu). You call their §15 functions, never re-implement them.
-> We work on this file together with Claude, step by step, exactly as in [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md): every step ends with a step report and **waits for your review**.
+> We work on this file together with Claude, step by step, exactly as in [`backend/docs/how-we-work.md`](../../backend/docs/how-we-work.md): every step ends with a step report and **waits for your review**.
 >
-> **Read first:** `backend/docs/how-we-work.md`, [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) §0, and the architecture doc [`backend/docs/savings-coach-backend-architecture.md`](backend/docs/savings-coach-backend-architecture.md) §4.4–4.5, §5.3 (all), §6 (all), §7, F10–F16, §15, §16.
+> **Read first:** `backend/docs/how-we-work.md`, [`backend/docs/work-breakdown.md`](../../backend/docs/work-breakdown.md) §0, and the architecture doc [`backend/docs/savings-coach-backend-architecture.md`](../../backend/docs/savings-coach-backend-architecture.md) §4.4–4.5, §5.3 (all), §6 (all), §7, F10–F16, §15, §16.
 
 ---
 
@@ -12,27 +12,27 @@
 
 | Order | ID | Task | P | h | Status |
 |---|---|---|---|---|---|
-| 1 | F1 | Repo skeleton, tooling, config, clock, error envelope | P0 | 0.5 | ✅ ([report](backend/docs/reports/F1.md)) |
-| 2 | F2 | Shared domain types, enums, money helpers, test builders | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/F2.md)) |
-| 3 | C1 | Fixed lists, RO/EN labels & formats, data files | P0 | 1 | ✅ ([report](backend/docs/reports/C1.md)) |
+| 1 | F1 | Repo skeleton, tooling, config, clock, error envelope | P0 | 0.5 | ✅ ([report](../../backend/docs/reports/F1.md)) |
+| 2 | F2 | Shared domain types, enums, money helpers, test builders | P0 | 1 | ✅ fast mode ([report](../../backend/docs/reports/F2.md)) |
+| 3 | C1 | Fixed lists, RO/EN labels & formats, data files | P0 | 1 | ✅ ([report](../../backend/docs/reports/C1.md)) |
 | 4 | C2 | Merchant normalisation | P0 | 0.5 | ✅ fast mode |
-| 5 | S0 | Stubs of your §15 functions | P0 | 0.25 | ✅ fast mode ([report](backend/docs/reports/S0.md)) |
+| 5 | S0 | Stubs of your §15 functions | P0 | 0.25 | ✅ fast mode ([report](../../backend/docs/reports/S0.md)) |
 | 6 | C4 | Signature library + `signatures_for_fact` | P0 | 1.5 | ✅ fast mode |
 | 7 | D1 | Persona life facts + Matei's seeded rule | P0 | 0.75 | ✅ fast mode |
-| 8 | C5 | `life_fit` + the "because" | P0 | 1.5 | ✅ fast mode ([report](backend/docs/reports/C5-C7.md)) |
-| 9 | C6 | `evaluate_transaction` | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/C5-C7.md)) |
-| 10 | C7 | Question policy | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/C5-C7.md)) |
-| 11 | A1 | Claude client wrapper + `FakeLLM` | P0 | 0.5 | ✅ ([report](backend/docs/reports/A1.md)) |
-| 12 | A2 | Tool schemas, registry, `tools_for` | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/A2-A4.md)) |
-| 13 | A5 | Prompts, banned-phrase checker, templates | P0 | 0.75 | ✅ fast mode ([report](backend/docs/reports/A5.md)) |
-| 14 | A4 | Snapshot builder | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/A2-A4.md)) |
-| 15 | A3 | Tool executor + every handler | P0 | 2 | ✅ fast mode ([report](backend/docs/reports/A3.md)) |
-| 16 | A6 | Agent loop | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/A6-A7-A9.md)) |
-| 17 | A7 | Proactive runs (the spoken question) | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/A6-A7-A9.md)) |
-| 18 | D2 | Scenario files | P0 | 0.5 | ✅ fast mode ([report](backend/docs/reports/S0.md)) |
+| 8 | C5 | `life_fit` + the "because" | P0 | 1.5 | ✅ fast mode ([report](../../backend/docs/reports/C5-C7.md)) |
+| 9 | C6 | `evaluate_transaction` | P0 | 1 | ✅ fast mode ([report](../../backend/docs/reports/C5-C7.md)) |
+| 10 | C7 | Question policy | P0 | 1 | ✅ fast mode ([report](../../backend/docs/reports/C5-C7.md)) |
+| 11 | A1 | Claude client wrapper + `FakeLLM` | P0 | 0.5 | ✅ ([report](../../backend/docs/reports/A1.md)) |
+| 12 | A2 | Tool schemas, registry, `tools_for` | P0 | 1 | ✅ fast mode ([report](../../backend/docs/reports/A3.md)) |
+| 13 | A5 | Prompts, banned-phrase checker, templates | P0 | 0.75 | ✅ fast mode ([report](../../backend/docs/reports/A5.md)) |
+| 14 | A4 | Snapshot builder | P0 | 1 | ✅ fast mode ([report](../../backend/docs/reports/A3.md)) |
+| 15 | A3 | Tool executor + every handler | P0 | 2 | ✅ fast mode ([report](../../backend/docs/reports/A3.md)) |
+| 16 | A6 | Agent loop | P0 | 1 | ✅ fast mode ([report](../../backend/docs/reports/A6-A7-A9.md)) |
+| 17 | A7 | Proactive runs (the spoken question) | P0 | 1 | ✅ fast mode ([report](../../backend/docs/reports/A6-A7-A9.md)) |
+| 18 | D2 | Scenario files | P0 | 0.5 | ✅ fast mode ([report](../../backend/docs/reports/S0.md)) |
 | 19 | D4 | Demo client (end-to-end scenes) | P0 | 0.75 | ⏸ blocked on bomboe's API (B5/B7/B9/B10); our side proven by `tests/unit/agent/test_scene_a.py` |
 | | | ★ **Checkpoint: Scene A end-to-end** | | | |
-| 20 | A9 | Deterministic fallbacks (LLM down) | P1 | 0.75 | ✅ fast mode ([report](backend/docs/reports/A6-A7-A9.md)) |
+| 20 | A9 | Deterministic fallbacks (LLM down) | P1 | 0.75 | ✅ fast mode ([report](../../backend/docs/reports/A6-A7-A9.md)) |
 | 21 | C8 | Learning rules | P1 | 1 | ✂ cut (D52) |
 | 22 | C9 | Propagation on a fact change | P1 | 1 | ✂ cut (D52) |
 | 23 | D3 | Acceptance suite (arch 16.3) | P1 | 1 | ✂ cut (D52) |
