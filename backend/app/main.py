@@ -1,5 +1,6 @@
 """The app factory. Run with `uvicorn app.main:create_app --factory --workers 1`."""
 
+import logging
 from typing import Literal
 
 from fastapi import APIRouter, FastAPI
@@ -8,6 +9,9 @@ from starlette.types import ASGIApp
 
 from app.config import Settings, get_settings
 from app.errors import ERROR_RESPONSES, install_error_handlers, outermost_first
+from app.logging import configure_logging
+
+logger = logging.getLogger(__name__)
 
 
 class _App(FastAPI):
@@ -43,6 +47,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     them with `Depends(app.config.get_app_settings)`.
     """
     settings = get_settings() if settings is None else settings
+    configure_logging(settings.LOG_LEVEL)
     # Every route documents the arch 9.1 error envelope (instead of FastAPI's own 422 shape).
     app = _App(title="CashGuard API", version="0.1.0", responses=ERROR_RESPONSES)
     app.state.settings = settings
@@ -50,4 +55,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     api = APIRouter(prefix="/api")
     api.include_router(_health_router())
     app.include_router(api)
+    # Secrets show as "**********" (SecretStr) and the redaction filter backs that up.
+    logger.info("app_configured", extra={"settings": settings.model_dump(mode="json")})
     return app
