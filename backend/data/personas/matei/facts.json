@@ -1,0 +1,11 @@
+{
+  "facts": [
+    {"type": "occupation", "value": {"title": "junior developer", "work_mode": "office Tue-Thu"}, "text": "Sunt developer junior, merg la birou marți, miercuri și joi", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "employment", "value": {"kind": "employee"}, "text": "Sunt angajat", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "rhythm", "value": {"name": "zile la birou", "weekdays": [2, 3, 4]}, "text": "Sunt la birou marți, miercuri și joi", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "housing", "value": {"kind": "rent", "note": "lives alone"}, "text": "Stau singur, în chirie", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "city", "value": {"name": "București"}, "text": "Stau în București", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "priority", "value": {"category": "concerts", "priority": "protected"}, "text": "Concertele contează pentru mine", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "priority", "value": {"category": "food_delivery", "priority": "reduce"}, "text": "Vreau să comand mai rar mâncare", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"}
+  ]
+}

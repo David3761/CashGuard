@@ -1,0 +1,7 @@
+{
+  "facts": [
+    {"type": "occupation", "value": {"title": "analist sportiv", "work_mode": "remote"}, "text": "Sunt analist sportiv, lucrez de acasă", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "employment", "value": {"kind": "employee"}, "text": "Sunt angajat", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "household_member", "value": {"role": "adult", "relation": "partner"}, "text": "Stau cu prietena mea", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"}
+  ]
+}

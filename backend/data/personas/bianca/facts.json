@@ -1,0 +1,9 @@
+{
+  "facts": [
+    {"type": "occupation", "value": {"title": "barista", "work_mode": "part_time"}, "text": "Lucrez part-time ca barista", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "employment", "value": {"kind": "student"}, "text": "Sunt studentă", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "income_pattern", "value": {"irregular": true, "note": "tips"}, "text": "Venitul meu variază, depinde de bacșiș", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "housing", "value": {"kind": "shared_flat"}, "text": "Stau cu o colegă, împărțim chiria", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "city", "value": {"name": "Iași"}, "text": "Stau în Iași", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"}
+  ]
+}
