@@ -108,6 +108,7 @@
 | — | all | Pitch length, judging criteria, pitch time slot? | ask the organisers |
 | — | all | Anthropic API key / credits available? | needed by hour 1 |
 | — | David G. | Verify the Deloitte 2026 and Revolut numbers and their sources before the slides | — |
+| — | bomboe | `load_user_context` is async but the context §15 shells are sync. Make the shells async when B4 lands? (HANDOFFS H-12) | make them async |
 | — | bomboe | Confirm D41 (uv + generated `requirements.txt`, the `--factory` start) and review the work done for him: [`HANDOFFS.md`](HANDOFFS.md) H-1 (test-DB compose), H-2 | merge instructions are in each entry |
 | — | David G. | Tell bomboe and danutu when F1 lands (they're blocked on it). **F2 step 1a (the enums for B2's CHECKs) is on `dga-final` (d184687)**: `app/domain/enums.py`; generate the CHECK lists from it, never copy them by hand | — |
 | — | bomboe | Heads-up from A5/D46/D47: B13 notification texts must avoid the banned words (also "iar" as "and", "din nou"/"try again", "de ce"); B9's exception fallback uses `fallback_reply("llm_down", lang)`; D21 is amended (D46); merchant ids are slugs (D47); the Docker image needs no system tzdata (the `tzdata` package is in `requirements.txt`) | tell him at the next sync |

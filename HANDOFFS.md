@@ -153,6 +153,7 @@
   - B4 fills the Q6 extras of `UserContext`: `recent_days` (14 days), `slips`/`reflections` (5 each), `life_notes`, `products`, `recent_questions`. It includes the asked question event (payload: reason, params, ask_what_item; `ref_transaction_id`) and its transaction.
   - B9 saves the user message first, then `await run_agent(...)`; a fallback reply marks the run failed.
   - B8 calls `await run_proactive(...)` for sim/cron triggers (not chat).
+  - **Open (decide with bomboe):** `load_user_context` is async, but the context shells (`evaluate_transaction`, `pick_question`) are sync. Make the shells async when B4 lands (preferred), or B4 adds a sync variant. `AgentWiring.setup` takes a context loader until B4 exists (TODO(B4/B9)).
   - Check: `tests/unit/agent/test_scene_a.py`.
 
 ### H-13 · bomboe B12 + B10 · persona facts/rules + scenario files · 🟢
