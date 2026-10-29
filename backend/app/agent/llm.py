@@ -558,7 +558,9 @@ def _check_tool_inputs(message: BetaMessage, tool_json: Mapping[int, list[str]])
     for index, block in enumerate(message.content):
         if block.type != "tool_use" or index not in tool_json:
             continue  # no deltas: the input came whole with the block's start
-        if _strict_object("".join(tool_json[index])) != block.input:
+        text = "".join(tool_json[index])
+        # A tool without arguments streams only empty chunks (Bedrock does): that input is {}.
+        if (_strict_object(text) if text else {}) != block.input:
             raise _BrokenStream(f"the input of tool call {index} isn't complete, strict JSON")
 
 
