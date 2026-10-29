@@ -10,11 +10,13 @@ from decimal import Decimal
 from anthropic.types.beta import BetaMessageParam
 
 from app.agent.loop import run_agent
+from app.agent.ports import LazyEngine
 from app.agent.style import find_banned
-from app.agent.wiring import AgentWiring
+from app.agent.wiring import AgentWiring, tool_context_factory
 from app.domain.enums import AgentEventStatus, AgentEventType
 from app.domain.models import AgentEventView
 from app.domain.user_context import UserContext
+from app.engine import service as engine_service
 from tests.builders import matei_ctx, tx
 from tests.fakes.fake_llm import FakeLLM, end_turn, tool_round, tool_use
 from tests.fakes.fake_services import FakeReceivables, FakeTransactions, Harness
@@ -94,3 +96,11 @@ async def test_scene_a_end_to_end() -> None:
     snapshot = fake.requests[0].system[2]
     assert "[tx 918]" in snapshot
     assert fake.requests[0].tools == fake.requests[2].tools  # D46
+
+
+def test_the_real_tool_context_uses_the_engine_service() -> None:
+    make = tool_context_factory(Harness().services)
+    ctx = make(1)
+    assert isinstance(ctx.engine, LazyEngine)
+    assert ctx.engine._fn("recompute_plan") is engine_service.recompute_plan
+    assert ctx.user_id == 1

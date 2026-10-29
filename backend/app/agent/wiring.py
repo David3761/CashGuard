@@ -23,6 +23,7 @@ from app.agent.executor import ToolEntry, execute_tool
 from app.agent.fallbacks import OpenQuestion, PotRef
 from app.agent.handlers.common import RunState, ToolContext
 from app.agent.loop import RunSetup, RunStatus
+from app.agent.ports import LazyContext, LazyEngine, Services
 from app.agent.snapshot import render_snapshot
 from app.agent.tools import ToolState, tools_for
 from app.domain.enums import AgentEventStatus, AgentEventType
@@ -56,6 +57,15 @@ def _open_question(ctx: UserContext, event_id: int | None) -> OpenQuestion | Non
         merchant_id=tx.merchant_id,
         agent_event_id=event.id,
         ask_what_item=bool(event.payload.get("ask_what_item")),
+    )
+
+
+def tool_context_factory(services: Services, db: Any = None) -> Callable[[int], ToolContext]:
+    """The real app's `ToolContext`: bomboe's services + danutu's engine (`app.engine.service`
+    through A3's `LazyEngine`, so money tools get `recompute_plan` / `forecast_goal`) + C's
+    context functions (`LazyContext`)."""
+    return lambda user_id: ToolContext(
+        user_id=user_id, services=services, engine=LazyEngine(), context=LazyContext(), db=db
     )
 
 
