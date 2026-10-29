@@ -4,6 +4,7 @@ Every domain model is frozen (a field can't be assigned past its validator), for
 changes only through `replace()` (re-validated) and reads JSON exactly (`money.parse_json`).
 """
 
+import gc
 import json
 from datetime import UTC, datetime, timedelta, timezone
 from decimal import Decimal
@@ -495,6 +496,7 @@ def test_a_thousand_tx_views_validate_well_within_the_context_budget() -> None:
         {**REFERENCE, "id": i, "occurred_at": datetime(2026, 1, 1, tzinfo=UTC) + timedelta(hours=i)}
         for i in range(1, 1001)
     ]
+    gc.collect()  # a collection of earlier tests' garbage inside the timed loop isn't ours
     start = perf_counter()
     views = [TxView.model_validate(raw) for raw in raws]
 
