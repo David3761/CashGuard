@@ -1,0 +1,29 @@
+{
+  "id": "bianca_tv",
+  "scene": "B",
+  "acceptance": [
+    4
+  ],
+  "persona": "bianca",
+  "merchant_raw": "PAYU*EMAG.RO",
+  "mcc": "5732",
+  "direction": "debit",
+  "amount": 4500.00,
+  "items": [
+    {
+      "name": "Televizor 65\"",
+      "qty": 1,
+      "amount": 4500.00
+    }
+  ],
+  "day_offset": 0,
+  "time": "18:45",
+  "requires": [],
+  "expected": {
+    "merchant_id": "emag",
+    "category": "electronics",
+    "decision": "ask",
+    "ask_what_item": false
+  },
+  "notes": "Scene B: the same TV is a gentle question for a student; zero reproach."
+}

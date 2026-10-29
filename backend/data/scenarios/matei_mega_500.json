@@ -1,0 +1,24 @@
+{
+  "id": "matei_mega_500",
+  "scene": "A",
+  "acceptance": [
+    1,
+    2
+  ],
+  "persona": "matei",
+  "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+  "mcc": "5411",
+  "direction": "debit",
+  "amount": 500.00,
+  "items": null,
+  "day_offset": 0,
+  "time": "13:05",
+  "requires": [],
+  "expected": {
+    "merchant_id": "mega_image",
+    "category": "groceries",
+    "decision": "ask",
+    "ask_what_item": false
+  },
+  "notes": "Scene A: 6x his median basket of 85 lei at lunch. The answer 'am luat și pentru colegi, suntem cinci' then gives effective 100 and a receivable of 400."
+}

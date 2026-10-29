@@ -1,0 +1,25 @@
+{
+  "id": "matei_shopgo_350",
+  "scene": "E",
+  "acceptance": [
+    7
+  ],
+  "persona": "matei",
+  "merchant_raw": "SHOP&GO 0217 BUCURESTI",
+  "mcc": "5411",
+  "direction": "debit",
+  "amount": 350.00,
+  "items": null,
+  "day_offset": 0,
+  "time": "19:10",
+  "requires": [
+    "today's question still free"
+  ],
+  "expected": {
+    "merchant_id": "shop_and_go",
+    "category": "groceries",
+    "decision": "ask",
+    "ask_what_item": false
+  },
+  "notes": "The same 350 lei that is normal for Ioana is unusual for Matei, who lives alone."
+}
