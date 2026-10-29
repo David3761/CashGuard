@@ -31,8 +31,12 @@ add_life_event = adder(_events, "life_event", _check_new)
 update_life_event = updater(_events, "life_event", _IDS, _check)
 
 
-def cancel_life_event(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def cancel_life_event(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
     rid = record_id(args, *_IDS)
-    ctx.services.life_events.get(ctx.user_id, rid)
-    row = ctx.services.life_events.update(ctx.user_id, rid, {"status": LifeEventStatus.CANCELLED})
+    await ctx.services.life_events.get(ctx.user_id, rid)
+    row = await ctx.services.life_events.update(
+        ctx.user_id, rid, {"status": LifeEventStatus.CANCELLED}
+    )
     return {"life_event": row, "_trigger_ref": {"life_event_id": rid}}

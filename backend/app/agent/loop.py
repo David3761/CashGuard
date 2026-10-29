@@ -6,8 +6,8 @@
   (`refusal`, `max_tokens`, `pause_turn`, …) → a template; so do the loop limit and LLM errors.
 - A tool the run didn't offer is refused here, before the executor (D22 defence in depth).
 - The final text is checked with `find_banned`: one regeneration, then the template (6.9).
-- Quick replies and action cards come from the UI tools; `speak_text` is a plain ≤ 2-sentence
-  version for voice input and proactive runs.
+- Quick replies and action cards come from the UI tools; `speak_text` (A11's `make_speak_text`)
+  is the plain ≤ 2-sentence spoken version for voice input and proactive runs.
 
 What the loop needs from the rest of the backend is the `AgentServices` port: B9/A3 wire the real
 one (`set_agent_services`), tests pass a fake.
@@ -15,8 +15,6 @@ one (`set_agent_services`), tests pass a fake.
 
 import json
 import logging
-import re
-import unicodedata
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any, Final, Literal, Protocol
@@ -29,6 +27,7 @@ from anthropic.types.beta import (
 )
 
 from app.agent.fallbacks import OpenQuestion, PotRef, answer_without_llm
+from app.agent.language import make_speak_text
 from app.agent.llm import LLMBadRequest, LLMClient, LLMUnavailable, get_llm
 from app.agent.prompts import instructions_for, system_rules
 from app.agent.style import find_banned
@@ -39,9 +38,7 @@ from app.domain.results import ActionCard, AgentResult
 log = logging.getLogger(__name__)
 
 HISTORY_LIMIT: Final = 20
-SPOKEN_SENTENCES: Final = 2
 MAX_TEXT: Final = 4000  # AgentResult.text (F2 Text4000)
-MAX_SPOKEN: Final = 300  # AgentResult.speak_text (F2 Text300)
 MAX_CHIP: Final = 80  # a quick reply (F2 Text80)
 MAX_CHIPS: Final = 4
 PromptKind = Literal["chat", "onboarding", "transaction_question"]
@@ -264,25 +261,12 @@ async def converse(
     turn.fallback = "loop_limit"
 
 
-# ── speak_text (a simple version; A11 refines it) ────────────────────────────────────────────
-
-_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
-_BULLET = re.compile(r"^\s*(?:[-•*]|\d+[.)])\s+", re.MULTILINE)
-_MARKUP = re.compile(r"[*_`#>|]+")
-_SENTENCE_END = re.compile(r"(?<=[.!?…])\s+")
-
-
-def _is_emoji(ch: str) -> bool:
-    return unicodedata.category(ch) in ("So", "Sk", "Cs", "Co") or ch in "‍️︎"
+# ── speak_text (A11: `app.agent.language.make_speak_text`) ──────────────────────────────────
 
 
 def speak_text_for(text: str, lang: str) -> str:
-    """At most 2 sentences, no markdown, no emoji; "~" said as "cam" / "about"."""
-    spoken = text.replace("~", " cam " if lang == "ro" else " about ")
-    spoken = _BULLET.sub("", _LINK.sub(r"\1", spoken))
-    spoken = _MARKUP.sub("", spoken)
-    spoken = " ".join("".join(ch for ch in spoken if not _is_emoji(ch)).split())
-    return _clip(" ".join(_SENTENCE_END.split(spoken)[:SPOKEN_SENTENCES]).strip(), MAX_SPOKEN)
+    """At most 2 sentences, no markdown or emoji, "77 la sută", "cam", amounts read aloud."""
+    return make_speak_text(text, lang)
 
 
 def _clip(text: str, limit: int) -> str:

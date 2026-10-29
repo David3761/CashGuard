@@ -24,15 +24,15 @@ class GoalIn(BaseModel):
     amount: float = Field(gt=0)
 
 
-def _ok(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def _ok(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
     return {"user_id_seen": ctx.user_id, "args": dict(args)}
 
 
-def _domain_error(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def _domain_error(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
     raise DomainError("goal_already_active", "A goal is already active: use update_goal.")
 
 
-def _boom(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def _boom(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
     raise RuntimeError("db exploded with secret details")
 
 
@@ -73,8 +73,8 @@ def _block(name: str, tool_input: object, tool_use_id: str = "toolu_1") -> dict[
     return {"type": "tool_use", "id": tool_use_id, "name": name, "input": tool_input}
 
 
-def _run(h: Harness, name: str, tool_input: object) -> tuple[dict[str, Any], dict[str, Any]]:
-    out = execute_tool(h.ctx, h.run, _block(name, tool_input), REGISTRY)
+async def _run(h: Harness, name: str, tool_input: object) -> tuple[dict[str, Any], dict[str, Any]]:
+    out = await execute_tool(h.ctx, h.run, _block(name, tool_input), REGISTRY)
     return out, json.loads(out["content"])
 
 
@@ -95,25 +95,25 @@ def test_registry_is_the_specs_that_have_a_handler() -> None:
     assert REGISTRY["set_goal"] == ToolEntry("set_goal", GoalIn, _ok, money=True, write=True)
 
 
-def test_happy_call_injects_user_id_and_returns_a_json_tool_result() -> None:
+async def test_happy_call_injects_user_id_and_returns_a_json_tool_result() -> None:
     h = Harness(user_id=42)
-    out, body = _run(h, "get_plan_status", {})
+    out, body = await _run(h, "get_plan_status", {})
     assert out == {"type": "tool_result", "tool_use_id": "toolu_1", "content": out["content"]}
     assert body == {"ok": True, "user_id_seen": 42, "args": {}}
     assert "plan" not in body  # not a money tool
 
 
 @pytest.mark.parametrize("name", ["drop_tables", "spec_without_handler", "handler_without_spec"])
-def test_unknown_tool_is_an_error(name: str) -> None:
+async def test_unknown_tool_is_an_error(name: str) -> None:
     h = Harness()
-    out, body = _run(h, name, {})
+    out, body = await _run(h, name, {})
     assert out["is_error"] is True
     assert body["error"]["code"] == "unknown_tool"
 
 
-def test_invalid_input_names_the_field_without_echoing_the_value() -> None:
+async def test_invalid_input_names_the_field_without_echoing_the_value() -> None:
     h = Harness()
-    out, body = _run(h, "set_goal", {"amount": -5})
+    out, body = await _run(h, "set_goal", {"amount": -5})
     assert out["is_error"] is True
     assert body["error"]["code"] == "invalid_input"
     assert "amount" in body["error"]["message"]
@@ -122,30 +122,30 @@ def test_invalid_input_names_the_field_without_echoing_the_value() -> None:
 
 
 @pytest.mark.parametrize("tool_input", [None, [1, 2], "x"])
-def test_non_object_input_is_an_error(tool_input: object) -> None:
-    _, body = _run(Harness(), "get_plan_status", tool_input)
+async def test_non_object_input_is_an_error(tool_input: object) -> None:
+    _, body = await _run(Harness(), "get_plan_status", tool_input)
     assert body["error"]["code"] == "invalid_input"
 
 
-def test_user_id_in_the_input_is_refused() -> None:
+async def test_user_id_in_the_input_is_refused() -> None:
     h = Harness(user_id=1)
-    out, body = _run(h, "set_goal", {"amount": 100, "user_id": 2})
+    out, body = await _run(h, "set_goal", {"amount": 100, "user_id": 2})
     assert out["is_error"] is True
     assert body["error"]["code"] == "invalid_input"
     assert "user_id" in body["error"]["message"]
 
 
 @pytest.mark.parametrize("name", ["set_goal", "update_life_profile"])
-def test_a_write_tool_in_a_proactive_run_is_refused(name: str) -> None:
+async def test_a_write_tool_in_a_proactive_run_is_refused(name: str) -> None:
     h = Harness(trigger="proactive")
-    out, body = _run(h, name, {"amount": 100} if name == "set_goal" else {})
+    out, body = await _run(h, name, {"amount": 100} if name == "set_goal" else {})
     assert out["is_error"] is True
     assert body["error"]["code"] == "not_allowed_in_proactive"
     assert h.engine.calls == []
 
 
-def test_a_read_tool_in_a_proactive_run_works() -> None:
-    _, body = _run(Harness(trigger="proactive"), "get_plan_status", {})
+async def test_a_read_tool_in_a_proactive_run_works() -> None:
+    _, body = await _run(Harness(trigger="proactive"), "get_plan_status", {})
     assert body["ok"] is True
 
 
@@ -156,8 +156,8 @@ def test_proactive_whitelist_is_d22() -> None:
         assert not allowed_in_proactive(name)
 
 
-def test_domain_error_becomes_is_error_with_its_code() -> None:
-    out, body = _run(Harness(), "fails_domain", {})
+async def test_domain_error_becomes_is_error_with_its_code() -> None:
+    out, body = await _run(Harness(), "fails_domain", {})
     assert out["is_error"] is True
     assert body["error"] == {
         "code": "goal_already_active",
@@ -165,21 +165,21 @@ def test_domain_error_becomes_is_error_with_its_code() -> None:
     }
 
 
-def test_unexpected_exception_is_generic_and_logged(caplog: pytest.LogCaptureFixture) -> None:
+async def test_unexpected_exception_is_generic_and_logged(caplog: pytest.LogCaptureFixture) -> None:
     h = Harness()
     with caplog.at_level(logging.ERROR, logger="app.agent.executor"):
-        out, body = _run(h, "fails_boom", {})
+        out, body = await _run(h, "fails_boom", {})
     assert out["is_error"] is True
     assert body["error"]["code"] == "internal_error"
     assert "secret" not in out["content"]
     assert any("fails_boom" in r.getMessage() and r.exc_info for r in caplog.records)
     # the loop keeps going: the next call works
-    assert _run(h, "get_plan_status", {})[1]["ok"] is True
+    assert (await _run(h, "get_plan_status", {}))[1]["ok"] is True
 
 
-def test_money_tool_result_has_plan_and_forecast_with_previous_values() -> None:
+async def test_money_tool_result_has_plan_and_forecast_with_previous_values() -> None:
     h = Harness()
-    out, body = _run(h, "set_goal", {"amount": 10000})
+    out, body = await _run(h, "set_goal", {"amount": 10000})
     assert "is_error" not in out
     assert body["plan"] == {
         "version": 8,
@@ -198,12 +198,23 @@ def test_money_tool_result_has_plan_and_forecast_with_previous_values() -> None:
     assert h.run.plan_changed is True
 
 
-def test_every_call_is_logged_ok_or_error() -> None:
+async def test_a_money_tool_without_a_plan_is_not_an_error() -> None:
+    # danutu's recompute_plan returns None while there is no goal (E4): nothing to forecast.
     h = Harness()
-    _run(h, "get_plan_status", {})
-    _run(h, "nope", {})
-    _run(h, "set_goal", {"amount": 0})
-    _run(h, "fails_boom", {})
+    h.engine.no_plan = True
+    out, body = await _run(h, "set_goal", {"amount": 10000})
+    assert "is_error" not in out
+    assert (body["ok"], body["plan"], body["forecast"]) == (True, None, None)
+    assert h.engine.names() == ["recompute_plan"]
+    assert h.run.plan_changed is False
+
+
+async def test_every_call_is_logged_ok_or_error() -> None:
+    h = Harness()
+    await _run(h, "get_plan_status", {})
+    await _run(h, "nope", {})
+    await _run(h, "set_goal", {"amount": 0})
+    await _run(h, "fails_boom", {})
     rows = _log(h).rows
     assert [(r["tool_name"], r["status"]) for r in rows] == [
         ("get_plan_status", "ok"),
@@ -214,17 +225,17 @@ def test_every_call_is_logged_ok_or_error() -> None:
     assert all(r["user_id"] == 1 and r["run_id"] == 55 for r in rows)
 
 
-def test_a_failing_log_does_not_break_the_call() -> None:
+async def test_a_failing_log_does_not_break_the_call() -> None:
     h = Harness()
 
-    def broken_log(*args: object) -> None:
+    async def broken_log(*args: object) -> None:
         raise RuntimeError("log down")
 
     _log(h).log = broken_log  # type: ignore[method-assign,assignment]
-    assert _run(h, "get_plan_status", {})[1]["ok"] is True
+    assert (await _run(h, "get_plan_status", {}))[1]["ok"] is True
 
 
-def test_sdk_style_block_objects_work() -> None:
+async def test_sdk_style_block_objects_work() -> None:
     @dataclass
     class Block:
         id: str
@@ -232,6 +243,6 @@ def test_sdk_style_block_objects_work() -> None:
         input: dict[str, Any]
 
     h = Harness()
-    out = execute_tool(h.ctx, h.run, Block("toolu_9", "get_plan_status", {}), REGISTRY)
+    out = await execute_tool(h.ctx, h.run, Block("toolu_9", "get_plan_status", {}), REGISTRY)
     assert out["tool_use_id"] == "toolu_9"
     assert json.loads(out["content"])["ok"] is True

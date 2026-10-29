@@ -102,7 +102,7 @@ class AgentWiring:
         run.run_id = run_id
         cards_before = len(run.action_cards)
         plan_before = run.plan_changed
-        result = execute_tool(self.tool_context(user_id), run, block, self.registry)
+        result = await execute_tool(self.tool_context(user_id), run, block, self.registry)
         content = result.get("content")
         out: BetaToolResultBlockParam = {
             "type": "tool_result",

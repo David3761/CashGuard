@@ -23,8 +23,8 @@ def _check_target(target: Any) -> None:
         raise DomainError("invalid_input", "The pot target must be above 0.", 422)
 
 
-def _active_pot(ctx: ToolContext, pot_id: int) -> Pot:
-    pot = ctx.services.pots.get(ctx.user_id, pot_id)
+async def _active_pot(ctx: ToolContext, pot_id: int) -> Pot:
+    pot = await ctx.services.pots.get(ctx.user_id, pot_id)
     if pot.status is not PotStatus.ACTIVE:
         raise DomainError("pot_not_active", f"Pot {pot.id} is {pot.status}.", 409)
     return pot
@@ -34,12 +34,12 @@ def _result(pot: Pot) -> dict[str, Any]:
     return {"pot": to_jsonable(pot), "_trigger_ref": {"pot_id": pot.id}}
 
 
-def create_pot(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def create_pot(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
     _check_target(args["target"])
     _check_deadline(args.get("deadline"))
     if args.get("life_event_id") is not None:
-        ctx.services.life_events.get(ctx.user_id, args["life_event_id"])  # the user's event
-    pot = ctx.services.pots.create(
+        await ctx.services.life_events.get(ctx.user_id, args["life_event_id"])  # the user's event
+    pot = await ctx.services.pots.create(
         ctx.user_id,
         {
             "name": args["name"],
@@ -54,26 +54,26 @@ def create_pot(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict
     return _result(pot)
 
 
-def update_pot(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
-    pot = _active_pot(ctx, args["pot_id"])
+async def update_pot(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+    pot = await _active_pot(ctx, args["pot_id"])
     found = changes(args, "pot_id")
     need_changes(found, "pot")
     _check_target(found.get("target"))
     _check_deadline(found.get("deadline"))
-    return _result(ctx.services.pots.update(ctx.user_id, pot.id, found))
+    return _result(await ctx.services.pots.update(ctx.user_id, pot.id, found))
 
 
-def close_pot(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
-    pot = _active_pot(ctx, args["pot_id"])
-    return _result(ctx.services.pots.close(ctx.user_id, pot.id))
+async def close_pot(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+    pot = await _active_pot(ctx, args["pot_id"])
+    return _result(await ctx.services.pots.close(ctx.user_id, pot.id))
 
 
-def link_transaction_to_pot(
+async def link_transaction_to_pot(
     ctx: ToolContext, run: RunState, args: Mapping[str, Any]
 ) -> dict[str, Any]:
-    tx = ctx.services.transactions.get(ctx.user_id, args["transaction_id"])
-    pot = _active_pot(ctx, args["pot_id"])
-    tx = ctx.services.transactions.set_pot(ctx.user_id, tx.id, pot.id)
+    tx = await ctx.services.transactions.get(ctx.user_id, args["transaction_id"])
+    pot = await _active_pot(ctx, args["pot_id"])
+    tx = await ctx.services.transactions.set_pot(ctx.user_id, tx.id, pot.id)
     run.pushes.append(("transaction.annotated", {"transaction_id": tx.id, "pot_id": pot.id}))
     return {
         "transaction_id": tx.id,

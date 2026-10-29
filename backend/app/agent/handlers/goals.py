@@ -17,13 +17,13 @@ def _check(amount: Any, deadline: Any) -> None:
         raise DomainError("invalid_deadline", "The goal deadline must be in the future.", 422)
 
 
-def set_goal(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
-    if ctx.services.goals.active(ctx.user_id) is not None:
+async def set_goal(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+    if await ctx.services.goals.active(ctx.user_id) is not None:
         raise DomainError(
             "goal_already_active", "A goal is already active: use update_goal to change it.", 409
         )
     _check(args["amount"], args["deadline"])
-    goal = ctx.services.goals.create(
+    goal = await ctx.services.goals.create(
         ctx.user_id,
         {
             "amount": to_money(args["amount"]),
@@ -35,12 +35,12 @@ def set_goal(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[s
     return {"goal": to_jsonable(goal), "_trigger_ref": {"goal_id": goal.id}}
 
 
-def update_goal(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
-    goal = ctx.services.goals.active(ctx.user_id)
+async def update_goal(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+    goal = await ctx.services.goals.active(ctx.user_id)
     if goal is None:
         raise DomainError("no_active_goal", "There is no active goal: use set_goal.", 409)
     found = changes(args)
     need_changes(found, "goal")
     _check(found.get("amount"), found.get("deadline"))
-    goal = ctx.services.goals.update(ctx.user_id, goal.id, found)
+    goal = await ctx.services.goals.update(ctx.user_id, goal.id, found)
     return {"goal": to_jsonable(goal), "_trigger_ref": {"goal_id": goal.id}}

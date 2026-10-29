@@ -36,7 +36,7 @@ def _h(**kw: Any) -> Harness:
     return h
 
 
-def _annotate(
+async def _annotate(
     h: Harness,
     *,
     purpose: Purpose = Purpose.ON_BEHALF_OF_OTHERS,
@@ -44,7 +44,7 @@ def _annotate(
     tx_id: int = 918,
     **kw: Any,
 ) -> transactions.AnnotationResult:
-    return transactions.apply_annotation(
+    return await transactions.apply_annotation(
         None,
         h.user_id,
         tx_id,
@@ -63,104 +63,111 @@ def _rcv(h: Harness) -> FakeReceivables:
     return r
 
 
-def test_five_people_gives_100_and_a_receivable_of_400() -> None:
+async def test_five_people_gives_100_and_a_receivable_of_400() -> None:
     h = _h()
-    result = _annotate(h, people_count=5, others_will_repay=True, debtor_label="colegi")
+    result = await _annotate(h, people_count=5, others_will_repay=True, debtor_label="colegi")
     assert result.effective_amount == D("100.00")
     assert result.receivable_amount == D("400.00")
     assert result.amount_each == D("100.00")
     assert result.estimated is False
-    tx = h.services.transactions.get(1, 918)
+    tx = await h.services.transactions.get(1, 918)
     assert tx.effective_amount == D("100.00")
     assert tx.annotation_source is AnnotationSource.ANSWER
-    rcv = _rcv(h).get(1, result.receivable_id or 0)
+    rcv = await _rcv(h).get(1, result.receivable_id or 0)
     assert (rcv.amount, rcv.debtor_label, rcv.status) == (D("400.00"), "colegi", "open")
     assert rcv.expected_by == date(2026, 11, 11)
     assert tx.receivable_id == rcv.id
     assert ("on_annotation_changed", (1, 918, D("500.00"), D("100.00"))) in h.engine.calls
+    [(before, after)] = h.engine.views  # danutu's E3 reads the views (purpose, pot, amount)
+    assert before is not None
+    assert after is not None
+    assert (before.effective_amount, before.purpose) == (D("500.00"), None)
+    assert (after.effective_amount, after.purpose) == (D("100.00"), Purpose.ON_BEHALF_OF_OTHERS)
     assert h.context.names() == ["learn_from_annotation"]
 
 
-def test_own_amount_wins_over_people_count() -> None:
+async def test_own_amount_wins_over_people_count() -> None:
     h = _h()
-    result = _annotate(h, own_amount=D("120"), people_count=5, others_will_repay=True)
+    result = await _annotate(h, own_amount=D("120"), people_count=5, others_will_repay=True)
     assert result.effective_amount == D("120.00")
     assert result.receivable_amount == D("380.00")
     assert result.amount_each == D("95.00")
-    assert _rcv(h).get(1, result.receivable_id or 0).debtor_label == "alții"
+    assert (await _rcv(h).get(1, result.receivable_id or 0)).debtor_label == "alții"
 
 
 @pytest.mark.parametrize("own", [D("500.01"), D("-1")])
-def test_own_amount_outside_the_amount_is_an_error(own: Decimal) -> None:
+async def test_own_amount_outside_the_amount_is_an_error(own: Decimal) -> None:
     h = _h()
     with pytest.raises(DomainError) as error:
-        _annotate(h, own_amount=own)
+        await _annotate(h, own_amount=own)
     assert error.value.code == "invalid_own_amount"
-    assert h.services.transactions.get(1, 918).effective_amount == D("500.00")  # unchanged
+    assert (await h.services.transactions.get(1, 918)).effective_amount == D("500.00")  # unchanged
 
 
-def test_one_person_means_no_receivable() -> None:
+async def test_one_person_means_no_receivable() -> None:
     h = _h()
-    result = _annotate(h, people_count=1, others_will_repay=True)
+    result = await _annotate(h, people_count=1, others_will_repay=True)
     assert result.effective_amount == D("500.00")
     assert result.receivable_id is None
-    assert _rcv(h).list_open(1) == []
+    assert await _rcv(h).list_open(1) == []
 
 
-def test_neither_count_nor_amount_is_estimated_and_clamped() -> None:
+async def test_neither_count_nor_amount_is_estimated_and_clamped() -> None:
     h = _h()
     h.engine.estimate = D("120")
-    result = _annotate(h, others_will_repay=True)
+    result = await _annotate(h, others_will_repay=True)
     assert (result.effective_amount, result.estimated) == (D("120.00"), True)
     assert result.receivable_amount == D("380.00")
     h.engine.estimate = D("9999")
-    assert _annotate(h).effective_amount == D("500.00")  # clamped to the amount
+    assert (await _annotate(h)).effective_amount == D("500.00")  # clamped to the amount
 
 
-def test_for_myself_only_is_the_whole_amount_without_an_estimate() -> None:
+async def test_for_myself_only_is_the_whole_amount_without_an_estimate() -> None:
     h = _h()
-    result = _annotate(h, purpose=Purpose.UNPLANNED_DISCRETIONARY, beneficiary=Beneficiary.SELF)
+    result = await _annotate(
+        h, purpose=Purpose.UNPLANNED_DISCRETIONARY, beneficiary=Beneficiary.SELF
+    )
     assert (result.effective_amount, result.estimated) == (D("500.00"), False)
     assert "own_share_estimate" not in h.engine.names()
 
 
-def test_a_correction_cancels_the_receivable_with_the_right_ledger_delta() -> None:
+async def test_a_correction_cancels_the_receivable_with_the_right_ledger_delta() -> None:
     h = _h()
-    first = _annotate(h, people_count=5, others_will_repay=True, debtor_label="colegi")
-    fix = _annotate(h, purpose=Purpose.UNPLANNED_DISCRETIONARY, beneficiary=Beneficiary.SELF)
+    first = await _annotate(h, people_count=5, others_will_repay=True, debtor_label="colegi")
+    fix = await _annotate(h, purpose=Purpose.UNPLANNED_DISCRETIONARY, beneficiary=Beneficiary.SELF)
     assert fix.cancelled_receivable_id == first.receivable_id
     assert fix.previous_effective_amount == D("100.00")
     assert fix.effective_amount == D("500.00")
-    assert _rcv(h).get(1, first.receivable_id or 0).status is ReceivableStatus.CANCELLED
+    assert (await _rcv(h).get(1, first.receivable_id or 0)).status is ReceivableStatus.CANCELLED
     assert h.engine.calls[-1] == ("on_annotation_changed", (1, 918, D("100.00"), D("500.00")))
-    assert h.services.transactions.get(1, 918).receivable_id is None
+    assert (await h.services.transactions.get(1, 918)).receivable_id is None
 
 
-def test_the_same_answer_twice_keeps_one_receivable() -> None:
+async def test_the_same_answer_twice_keeps_one_receivable() -> None:
     h = _h()
-    a = _annotate(h, people_count=5, others_will_repay=True, debtor_label="colegi")
-    b = _annotate(h, people_count=5, others_will_repay=True, debtor_label="colegi")
+    a = await _annotate(h, people_count=5, others_will_repay=True, debtor_label="colegi")
+    b = await _annotate(h, people_count=5, others_will_repay=True, debtor_label="colegi")
     assert a.receivable_id == b.receivable_id
     assert b.cancelled_receivable_id is None
-    assert len(_rcv(h).list_open(1)) == 1
+    assert len(await _rcv(h).list_open(1)) == 1
 
 
-def test_another_users_transaction_is_not_found() -> None:
+async def test_another_users_transaction_is_not_found() -> None:
     h = Harness(user_id=1)
     h.add_tx(918, "500.00", user_id=2)
     with pytest.raises(DomainError) as error:
-        _annotate(h, people_count=5, others_will_repay=True)
+        await _annotate(h, people_count=5, others_will_repay=True)
     assert error.value.code == "not_found"
 
 
-def test_the_open_question_is_marked_answered() -> None:
+async def test_the_open_question_is_marked_answered() -> None:
     h = _h()
     events = h.services.agent_events
     assert isinstance(events, FakeAgentEvents)
-    event = events.create(1, {"ref_transaction_id": 918, "status": "asked"})
-    result = _annotate(h, people_count=5, others_will_repay=True)
+    event = await events.create(1, {"ref_transaction_id": 918, "status": "asked"})
+    result = await _annotate(h, people_count=5, others_will_repay=True)
     assert result.answered_event_id == event["id"]
-    assert events.get(1, event["id"])["status"] == "answered"
+    assert (await events.get(1, event["id"]))["status"] == "answered"
 
 
 # ── through the executor (registered handlers, D18) ──────────────────────────────────────────
@@ -199,14 +206,16 @@ REGISTRY = {
 }
 
 
-def _call(h: Harness, name: str, tool_input: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
-    out = execute_tool(h.ctx, h.run, {"id": "toolu_1", "name": name, "input": tool_input}, REGISTRY)
+async def _call(h: Harness, name: str, tool_input: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+    out = await execute_tool(
+        h.ctx, h.run, {"id": "toolu_1", "name": name, "input": tool_input}, REGISTRY
+    )
     return bool(out.get("is_error")), json.loads(out["content"])
 
 
-def test_scene_a_annotate_returns_plan_forecast_then_a_payment_card() -> None:
+async def test_scene_a_annotate_returns_plan_forecast_then_a_payment_card() -> None:
     h = _h()
-    failed, body = _call(
+    failed, body = await _call(
         h,
         "annotate_transaction",
         {
@@ -238,7 +247,7 @@ def test_scene_a_annotate_returns_plan_forecast_then_a_payment_card() -> None:
     }
     assert [p[0] for p in h.run.pushes] == ["transaction.annotated", "receivable.updated"]
 
-    failed, card = _call(h, "offer_payment_request", {"receivable_id": body["receivable_id"]})
+    failed, card = await _call(h, "offer_payment_request", {"receivable_id": body["receivable_id"]})
     assert not failed
     assert card["status"] == "open"
     assert card["card"] == {
@@ -247,60 +256,61 @@ def test_scene_a_annotate_returns_plan_forecast_then_a_payment_card() -> None:
         "label": "Trimite cererea (4 \u00d7 100 lei)",
     }
     assert h.run.action_cards == [card["card"]]
-    assert _rcv(h).get(1, body["receivable_id"]).status is ReceivableStatus.OPEN
+    assert (await _rcv(h).get(1, body["receivable_id"])).status is ReceivableStatus.OPEN
 
 
-def test_offer_payment_request_on_a_paid_receivable_is_an_error() -> None:
+async def test_offer_payment_request_on_a_paid_receivable_is_an_error() -> None:
     h = _h()
-    rid = _annotate(h, people_count=5, others_will_repay=True).receivable_id
-    assert not _call(h, "mark_receivable_paid", {"receivable_id": rid})[0]
-    failed, body = _call(h, "offer_payment_request", {"receivable_id": rid})
+    rid = (await _annotate(h, people_count=5, others_will_repay=True)).receivable_id
+    assert not (await _call(h, "mark_receivable_paid", {"receivable_id": rid}))[0]
+    failed, body = await _call(h, "offer_payment_request", {"receivable_id": rid})
     assert failed
     assert body["error"]["code"] == "receivable_not_open"
     assert h.run.action_cards == []
-    failed, body = _call(h, "cancel_receivable", {"receivable_id": rid})
+    failed, body = await _call(h, "cancel_receivable", {"receivable_id": rid})
     assert body["error"]["code"] == "receivable_closed"
 
 
-def test_another_users_receivable_is_not_found() -> None:
+async def test_another_users_receivable_is_not_found() -> None:
     h = Harness(user_id=2)
     h.add_tx(5, "500.00")
-    rid = transactions.apply_annotation(
-        None,
-        2,
-        5,
-        Purpose.ON_BEHALF_OF_OTHERS,
-        Beneficiary.SHARED,
-        people_count=5,
-        others_will_repay=True,
-        services=h.services,
-        engine=h.engine,
-        context=h.context,
+    rid = (
+        await transactions.apply_annotation(
+            None,
+            2,
+            5,
+            Purpose.ON_BEHALF_OF_OTHERS,
+            Beneficiary.SHARED,
+            people_count=5,
+            others_will_repay=True,
+            services=h.services,
+            engine=h.engine,
+            context=h.context,
+        )
     ).receivable_id
     intruder = Harness(user_id=1, services=h.services)
-    failed, body = _call(intruder, "offer_payment_request", {"receivable_id": rid or 0})
+    failed, body = await _call(intruder, "offer_payment_request", {"receivable_id": rid or 0})
     assert failed
     assert body["error"]["code"] == "not_found"
 
 
-def test_create_receivable_splits_a_transaction() -> None:
+async def test_create_receivable_splits_a_transaction() -> None:
     h = _h()
-    result = receivables.create_receivable(
+    result = await receivables.create_receivable(
         h.ctx, h.run, {"transaction_id": 918, "people_count": 3, "debtor_label": "Andrei"}
     )
     assert result["receivable"]["amount"] == 333.33
     assert result["receivable"]["amount_each"] == 166.67
     with pytest.raises(DomainError):
-        receivables.create_receivable(h.ctx, h.run, {"debtor_label": "Andrei"})
+        await receivables.create_receivable(h.ctx, h.run, {"debtor_label": "Andrei"})
 
 
-def test_get_transaction_reads_only_the_users_own() -> None:
+async def test_get_transaction_reads_only_the_users_own() -> None:
     h = _h()
-    assert (
-        transactions.get_transaction(h.ctx, h.run, {"transaction_id": 918})["transaction"]["amount"]
-        == 500.0
-    )
+    assert (await transactions.get_transaction(h.ctx, h.run, {"transaction_id": 918}))[
+        "transaction"
+    ]["amount"] == 500.0
     h.add_tx(919, "10.00", user_id=2)
     with pytest.raises(DomainError) as error:
-        transactions.get_transaction(h.ctx, h.run, {"transaction_id": 919})
+        await transactions.get_transaction(h.ctx, h.run, {"transaction_id": 919})
     assert error.value.code == "not_found"

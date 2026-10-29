@@ -7,14 +7,17 @@ from pydantic import ValidationError
 
 from app import clock
 from app.agent.handlers.common import RunState, ToolContext, to_jsonable
+from app.context.rules import EXPLICIT_CONFIDENCE
 from app.domain.enums import RuleSource
 from app.domain.models import PatternRule
 from app.errors import DomainError
 
-EXPLICIT_CONFIDENCE = 0.9
+__all__ = ["EXPLICIT_CONFIDENCE", "create_pattern_rule"]
 
 
-def create_pattern_rule(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def create_pattern_rule(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
     try:
         rule = PatternRule.model_validate(
             {
@@ -32,5 +35,5 @@ def create_pattern_rule(ctx: ToolContext, run: RunState, args: Mapping[str, Any]
             for e in error.errors(include_url=False, include_input=False, include_context=False)
         )
         raise DomainError("invalid_rule", f"Invalid rule: {reasons}"[:1000], 422) from None
-    saved = ctx.services.pattern_rules.create(ctx.user_id, rule)
+    saved = await ctx.services.pattern_rules.create(ctx.user_id, rule)
     return {"rule": to_jsonable(saved)}

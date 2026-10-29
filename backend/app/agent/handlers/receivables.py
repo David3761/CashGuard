@@ -23,11 +23,13 @@ TIMES = "\u00d7"  # the multiplication sign on the card ("4 [x] 100 lei")
 _CARD = {"ro": "Trimite cererea ({what})", "en": "Send the request ({what})"}
 
 
-def create_receivable(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def create_receivable(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
     tx_id, people = args.get("transaction_id"), args.get("people_count")
     amount = args.get("amount")
     if tx_id is not None:
-        ctx.services.transactions.get(ctx.user_id, tx_id)  # the transaction is the user's
+        await ctx.services.transactions.get(ctx.user_id, tx_id)  # the transaction is the user's
     if amount is None:
         if tx_id is None or people is None or people < 2:
             raise DomainError(
@@ -35,14 +37,14 @@ def create_receivable(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) 
                 "Give the amount, or a transaction_id with people_count ≥ 2 to split it.",
                 422,
             )
-        tx = ctx.services.transactions.get(ctx.user_id, tx_id)
+        tx = await ctx.services.transactions.get(ctx.user_id, tx_id)
         amount = split_share(tx.amount, people).others
     amount = to_money(amount)
     if amount <= 0:
         raise DomainError("invalid_input", "The receivable amount must be above 0.", 422)
     each = share_each(amount, people - 1) if people is not None and people > 1 else None
     label = (args.get("debtor_label") or "").strip() or DEFAULT_DEBTOR.get(ctx.language, "alții")
-    receivable = ctx.services.receivables.create(
+    receivable = await ctx.services.receivables.create(
         ctx.user_id,
         ReceivableDraft(
             debtor_label=label,
@@ -58,34 +60,36 @@ def create_receivable(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) 
     return {"receivable": to_jsonable(receivable), "_trigger_ref": {"receivable_id": receivable.id}}
 
 
-def cancel_receivable(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
-    receivable = ctx.services.receivables.get(ctx.user_id, args["receivable_id"])
+async def cancel_receivable(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
+    receivable = await ctx.services.receivables.get(ctx.user_id, args["receivable_id"])
     if receivable.status not in _LIVE:
         raise DomainError(
             "receivable_closed", f"This receivable is already {receivable.status}.", 409
         )
-    receivable = ctx.services.receivables.cancel(ctx.user_id, receivable.id)
+    receivable = await ctx.services.receivables.cancel(ctx.user_id, receivable.id)
     run.pushes.append(("receivable.updated", {"receivable_id": receivable.id}))
     return {"receivable": to_jsonable(receivable), "_trigger_ref": {"receivable_id": receivable.id}}
 
 
-def mark_receivable_paid(
+async def mark_receivable_paid(
     ctx: ToolContext, run: RunState, args: Mapping[str, Any]
 ) -> dict[str, Any]:
-    receivable = ctx.services.receivables.get(ctx.user_id, args["receivable_id"])
+    receivable = await ctx.services.receivables.get(ctx.user_id, args["receivable_id"])
     if receivable.status not in _LIVE:
         raise DomainError(
             "receivable_closed", f"This receivable is already {receivable.status}.", 409
         )
-    receivable = ctx.services.receivables.mark_paid(ctx.user_id, receivable.id)
+    receivable = await ctx.services.receivables.mark_paid(ctx.user_id, receivable.id)
     run.pushes.append(("receivable.updated", {"receivable_id": receivable.id}))
     return {"receivable": to_jsonable(receivable), "_trigger_ref": {"receivable_id": receivable.id}}
 
 
-def offer_payment_request(
+async def offer_payment_request(
     ctx: ToolContext, run: RunState, args: Mapping[str, Any]
 ) -> dict[str, Any]:
-    receivable = ctx.services.receivables.get(ctx.user_id, args["receivable_id"])
+    receivable = await ctx.services.receivables.get(ctx.user_id, args["receivable_id"])
     if receivable.status is not ReceivableStatus.OPEN:
         raise DomainError(
             "receivable_not_open",
