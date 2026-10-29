@@ -53,7 +53,7 @@ dependencies:
   # Re-running the command ensures that your Flutter app's Firebase configuration is up-to-date and
   #  (for Android) automatically adds any required Gradle plugins to your app.
   # More details here: https://firebase.google.com/docs/flutter/setup?platform=android#configure-firebase
-  firebase_core: ^4.15.0
+  firebase_core: ^4.15.2
   firebase_messaging: ^16.7.0
 
   flutter:
