@@ -235,6 +235,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageHint => 'Write a message…';
 
   @override
+  String get sendMessage => 'Send message';
+
+  @override
   String amountInLei(String amount) {
     return '$amount lei';
   }

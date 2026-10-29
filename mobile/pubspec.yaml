@@ -68,6 +68,10 @@ dependencies:
   # The main package for state management
   flutter_riverpod: ^3.4.3
 
+  # A package for storing secrets (e.g.: the AES key) in the platform's
+  # keystore: the Keychain on iOS and the Android Keystore on Android.
+  flutter_secure_storage: ^11.2.0
+
   # A package for displaying toasts.
   fluttertoast: ^10.0.2
 
