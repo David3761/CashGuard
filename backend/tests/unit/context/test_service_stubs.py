@@ -92,7 +92,52 @@ def test_the_other_stubs() -> None:
     assert service.signatures_for_fact(occupation, None) == library.signatures_for_fact(occupation)
     assert service.on_fact_changed(None, 1, 7) == PropagationResult(fact_id=7)
     assert service.learn_from_annotation(None, 1, 1) is None
-    assert service.infer_hypotheses(None, 1) == []
+
+
+def _fuel(day: int) -> TxView:
+    return builders.tx(
+        id=800 + day,
+        occurred_at=builders.at(date(2026, 6, day), 18),
+        merchant_raw="PETROM 112",
+        merchant="Petrom",
+        merchant_id="petrom",
+        mcc="5541",
+        category="fuel",
+        amount="250",
+        effective_amount="250",
+    )
+
+
+class _LifeFacts:
+    def __init__(self, rejected: list[Any]) -> None:
+        self.rejected = rejected
+
+    def list_rejected(self, db: Any, user_id: int) -> list[Any]:
+        return self.rejected
+
+
+def test_infer_hypotheses_runs_the_pure_core_with_the_rejected_facts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    weekly_fuel = builders.ctx(transactions=[_fuel(1), _fuel(8), _fuel(14)])
+    monkeypatch.setattr(service, "_context", lambda db, user_id, today: weekly_fuel)
+    life_facts = _LifeFacts([])
+    monkeypatch.setattr(service, "_service", lambda name: life_facts)
+    with clock.use_clock(clock.FixedClock(NOON)):
+        [draft] = service.infer_hypotheses(None, 5)
+        assert draft.type is FactType.VEHICLE
+        life_facts.rejected = [fact(FactType.VEHICLE, status="rejected")]
+        assert service.infer_hypotheses(None, 5) == []
+
+
+def test_infer_hypotheses_without_list_rejected_still_runs(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    weekly_fuel = builders.ctx(transactions=[_fuel(1), _fuel(8), _fuel(14)])
+    monkeypatch.setattr(service, "_context", lambda db, user_id, today: weekly_fuel)
+    monkeypatch.setattr(service, "_service", lambda name: object())
+    with clock.use_clock(clock.FixedClock(NOON)):
+        assert [d.type for d in service.infer_hypotheses(None, 5)] == [FactType.VEHICLE]
 
 
 def test_services_are_looked_up_at_call_time() -> None:
