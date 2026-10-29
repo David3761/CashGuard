@@ -24,6 +24,7 @@ from app import auth, clock
 from app.config import get_settings
 
 TEST_KID = "test"
+LOCAL_ISSUER = "http://localhost:8081/realms/cashguard"  # bomboe's local Keycloak (B1/B5)
 MATEI_SUB = "a0000000-0000-4000-8000-000000000001"
 
 
@@ -68,7 +69,8 @@ def claims(
     # real time: tokens come from Keycloak's clock, not the simulator's (RealClock, never time.time)
     now = int(clock.RealClock().now().timestamp())
     body: dict[str, Any] = {
-        "iss": iss or get_settings().KEYCLOAK_ISSUER,
+        # unit tests run without KEYCLOAK_ISSUER (the code default is unset): sign for local
+        "iss": iss or get_settings().KEYCLOAK_ISSUER or LOCAL_ISSUER,
         "sub": sub,
         "iat": now,
         "exp": now + exp_in,
