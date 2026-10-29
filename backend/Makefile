@@ -3,7 +3,7 @@
 # --locked: fail (instead of exporting a stale lock) when pyproject.toml changed without `uv lock`.
 UV_EXPORT := uv export --format requirements-txt --no-dev --no-hashes --locked
 
-.PHONY: help install dev fmt lint typecheck test test-all requirements lock-check check db-up db-down
+.PHONY: help install dev fmt lint typecheck test test-all requirements lock-check check db-up db-down keycloak-sync
 
 help:  ## List the targets
 	@grep -E "^[a-z-]+:.*## " $(MAKEFILE_LIST) | sed "s/:.*## /\t/"
@@ -49,3 +49,6 @@ db-up:  ## Start the test Postgres (port 5435, tmpfs)
 
 db-down:  ## Stop and remove only the test Postgres (other compose services keep running)
 	docker compose rm --stop --force db-test
+
+keycloak-sync:  ## Add the realm file's new users/roles/settings to a running Keycloak (KC_URL, KC_ADMIN_*)
+	uv run python scripts/keycloak_sync.py
