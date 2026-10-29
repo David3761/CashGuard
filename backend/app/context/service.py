@@ -1,9 +1,9 @@
 """The context layer's §15 entry points (arch 15.1), with the exact signatures.
 
 Real: `evaluate_transaction` (C6, `context.evaluate`), `pick_question` and `default_reading` (C7,
-`context.questions`), `signatures_for_fact` (C4, `context.library`). Still S0 stubs, until C9
-(`on_fact_changed`), C8 (`learn_from_annotation`) and C10 (`infer_hypotheses`): `[]`, a no-op
-result, `None`.
+`context.questions`), `signatures_for_fact` (C4, `context.library`), `infer_hypotheses` (C10,
+`context.inference`). Still S0 stubs, until C9 (`on_fact_changed`) and C8
+(`learn_from_annotation`): a no-op result, `None`.
 
 `db` is typed `Any` until bomboe's session exists. The DB reads go through bomboe's services
 (arch 15.1 `services/`), looked up at call time because B3 isn't merged yet; tests replace them.
@@ -15,7 +15,7 @@ from typing import Any
 
 from app import clock
 from app.config import get_settings
-from app.context import library, questions
+from app.context import inference, library, questions
 from app.context.evaluate import evaluate, goal_impact
 from app.domain.enums import Decision
 from app.domain.models import LifeFact, LifeFactDraft, Signature, TxView
@@ -110,6 +110,20 @@ def learn_from_annotation(db: Any, user_id: int, tx_id: int) -> RuleChange | Non
     return None
 
 
+def _rejected_facts(db: Any, user_id: int) -> list[LifeFact]:
+    """The user's rejected facts (F16 "never again"). bomboe's B3 `life_facts` lists active and
+    hypotheses only; until it has `list_rejected`, nothing is known to be rejected (handoff)."""
+    list_rejected = getattr(_service("life_facts"), "list_rejected", None)
+    if list_rejected is None:
+        return []
+    rejected: list[LifeFact] = list_rejected(db, user_id)
+    return rejected
+
+
 def infer_hypotheses(db: Any, user_id: int) -> list[LifeFactDraft]:
-    """Stub of C10: no hypotheses."""
-    return []
+    """C10: at most one new hypothesis from the user's transactions (5.3.8), never a sensitive
+    type, never one the user already confirmed, has open or rejected. The caller saves it
+    (`life_facts.create`) and pushes WS `fact.hypothesis` with `inference.question_for`."""
+    today = clock.today()
+    ctx = _context(db, user_id, today)
+    return inference.infer_hypotheses(ctx, today, _rejected_facts(db, user_id))

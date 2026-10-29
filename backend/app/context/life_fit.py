@@ -12,8 +12,10 @@ For every active `explains` signature s:
 The other sources: `expects_event` (window + category + amount within ±50% of expected, scored
 strength · confidence), a partial classify rule (< 0.9: its confidence) and a precedent (a
 user-answered transaction at the same merchant, or the same category within ±30%:
-0.8 · (1 - |Δ| / amount)). life_fit = the best; ties: higher score, then a confirmed fact over a
-hypothesis, then the most recent fact. Pots are C6's hard filter.
+0.8 · (1 - |Δ| / amount)), and C11's calendar (`calendar_events.calendar_fit`: a relevant
+event in its lead window, only where no signature covers that category and month). life_fit =
+the best; ties: higher score, then a confirmed fact over a hypothesis, then the most recent fact.
+Pots are C6's hard filter.
 
 The winner carries `explanation_key` + `params`; `explain()` renders them from the RO / EN
 templates below. They describe the reading, never judge the purchase.
@@ -28,6 +30,7 @@ from typing import Final
 from pydantic import JsonValue
 
 from app.clock import APP_TZ
+from app.context.calendar_events import calendar_fit
 from app.domain.enums import (
     AnnotationSource,
     Direction,
@@ -74,6 +77,10 @@ FIT_TEMPLATES: Final[Mapping[str, tuple[str, str]]] = {
     "fit.precedent": (
         "Seamănă cu ce mi-ai explicat data trecută la {merchant}.",
         "Like what you explained to me last time at {merchant}.",
+    ),
+    "fit.calendar": (
+        "{purpose}: o cheltuială așteptată de {event_ro}.",
+        "{purpose}: an expected expense for {event_en}.",
     ),
 }
 """explanation_key → (ro, en). `{purpose}` is the purpose's label (C1)."""
@@ -307,12 +314,23 @@ def _precedent_fit(tx: TxView, ctx: UserContext) -> list[_Ranked]:
     return [] if best is None else [_rank(best.score, None, best)]
 
 
+def _calendar_fit(tx: TxView, ctx: UserContext) -> list[_Ranked]:
+    """C11: a relevant calendar event (1 Iunie with kids, Crăciun gifts…) not already covered by
+    a signature (`calendar_events.covered`: the library wins, nothing is counted twice)."""
+    result = calendar_fit(tx, ctx)
+    if result is None:
+        return []
+    fact = _facts_by_id(ctx).get(result.fact_id) if result.fact_id is not None else None
+    return [_rank(result.score, fact, result)]
+
+
 def life_fit(tx: TxView, ctx: UserContext) -> FitResult:
     """The best explanation the person's life gives for `tx` (score 0 with source "none")."""
     ranked = [
         *_signature_fits(tx, ctx),
         *_rule_fit(tx, ctx),
         *_precedent_fit(tx, ctx),
+        *_calendar_fit(tx, ctx),
     ]
     ranked = [r for r in ranked if r[0] > 0]
     if not ranked:

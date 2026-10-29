@@ -9,7 +9,7 @@ import pytest
 from app.agent.executor import default_registry, execute_tool
 from app.agent.tools import TOOL_SPECS
 from app.clock import FixedClock, use_clock
-from app.domain.enums import FactStatus
+from app.domain.enums import FactStatus, Language
 from tests.fakes.fake_services import (
     FakeAgentEvents,
     FakeLifeFacts,
@@ -313,10 +313,38 @@ def test_suggest_savings_products_ranks_by_the_goal_horizon() -> None:
         {"id": "depo", "liquidity": "locked", "rate": 0.055, "min_months": 6, "max_months": 24},
     ]
     ok(h, "set_goal", {"amount": 10000, "deadline": date(2027, 8, 1).isoformat()})
+    ok(h, "add_income_source", {"source": "Salariu", "amount": 7000, "day_of_month": 10})
     body = ok(h, "suggest_savings_products", {})
     assert body["horizon_months"] == 9
+    assert body["stable_income"] is True
     assert [p["id"] for p in body["products"]] == ["depo", "flex"]
-    assert all(p["fits"] for p in body["products"])
+    assert [p["rank"] for p in body["products"]] == [1, 2]
+    assert all(p["fits"] and p["mock"] for p in body["products"])
+    assert body["products"][0]["reason_key"] == "top.locked_fits"
+    assert "venit stabil" in body["products"][0]["why_for_you"]  # the user's language (RO)
+
+
+def test_suggest_savings_products_puts_liquidity_first_for_an_irregular_income() -> None:
+    h = Harness(language=Language.EN)
+    h.services.products.products = [  # type: ignore[attr-defined]
+        {"id": "flex", "liquidity": "instant", "rate": 0.02, "min_months": 0, "max_months": 12},
+        {"id": "acct", "liquidity": "notice", "rate": 0.035, "min_months": 3, "max_months": 24},
+        {"id": "depo", "liquidity": "locked", "rate": 0.055, "min_months": 6, "max_months": 24},
+    ]
+    ok(h, "set_goal", {"amount": 3000, "deadline": date(2027, 8, 1).isoformat()})
+    ok(
+        h,
+        "add_life_fact",
+        {
+            "type": "income_pattern",
+            "value": {"irregular": True, "note": "tips"},
+            "text": "Venitul meu variază",
+            "persistence": "permanent",
+        },
+    )
+    body = ok(h, "suggest_savings_products", {})
+    assert [p["id"] for p in body["products"]] == ["flex", "acct", "depo"]
+    assert body["products"][0]["why_for_you"].startswith("Your income changes")
 
 
 def test_show_quick_replies_stores_them_on_the_run() -> None:

@@ -9,6 +9,7 @@ from typing import Any
 from app import clock
 from app.agent.handlers.common import RunState, ToolContext, changes, pick, to_jsonable
 from app.agent.handlers.transactions import get_transaction
+from app.context import products
 from app.domain.enums import Direction
 from app.errors import DomainError
 
@@ -82,26 +83,35 @@ def simulate_plan(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> d
 def suggest_savings_products(
     ctx: ToolContext, run: RunState, args: Mapping[str, Any]
 ) -> dict[str, Any]:
-    """The mock products ranked for this person: the goal horizon first, then the rate."""
-    goal = ctx.services.goals.active(ctx.user_id)
-    months = None if goal is None else max(0, (goal.deadline - clock.today()).days // 30)
-    ranked = []
-    for product in ctx.services.products.list():
-        low, high = product.get("min_months", 0), product.get("max_months", 0)
-        fits = months is None or low <= months <= high
-        if months is None:
-            reason = "no goal deadline yet: an instant-access product keeps options open"
-            fits = product.get("liquidity") == "instant"
-        elif fits:
-            reason = f"fits a {months}-month horizon ({low}-{high} months)"
-        else:
-            reason = f"made for {low}-{high} months; the goal is {months} months away"
-        ranked.append((not fits, -float(product.get("rate", 0)), product, reason))
-    ranked.sort(key=lambda r: (r[0], r[1], str(r[2].get("id"))))
+    """The mock products ranked for this person by C12 (`context.products`): the goal horizon,
+    the set amount and how steady the income is; `why_for_you` in the user's language."""
+    s, uid = ctx.services, ctx.user_id
+    needs = products.needs_from(
+        s.goals.active(uid),
+        s.income_sources.list(uid),
+        s.life_facts.list_active(uid),
+        clock.today(),
+    )
+    ranked = products.rank_offers(needs, s.products.list())
     return {
-        "horizon_months": months,
+        "horizon_months": needs.horizon_months,
+        "stable_income": needs.stable_income,
         "products": [
-            {**to_jsonable(p), "fits": not unfit, "reason": reason}
-            for unfit, _, p, reason in ranked
+            {
+                "id": r.product.id,
+                "name": r.product.name,
+                "kind": r.product.kind.value,
+                "rate": float(r.product.rate),
+                "liquidity": r.product.liquidity.value,
+                "min_months": r.product.min_months,
+                "max_months": r.product.max_months,
+                "mock": r.mock,
+                "rank": rank,
+                "score": r.score,
+                "fits": r.fits,
+                "reason_key": r.reason_key,
+                "why_for_you": r.why(ctx.language),
+            }
+            for rank, r in enumerate(ranked, start=1)
         ],
     }
