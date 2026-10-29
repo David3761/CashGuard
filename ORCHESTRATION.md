@@ -51,7 +51,7 @@
 
 | Task | Agent | Worktree / branch | Needs (from) | Status |
 |---|---|---|---|---|
-| F1 (F1.2–F1.5) | f1 | `.worktrees/f1` · `dga-task/f1-skeleton` | — | F1.2 + 2-fix ✅ merged · F1.3 in review fixes |
+| F1 (F1.2–F1.5) | f1 | `.worktrees/f1` · `dga-task/f1-skeleton` | — | F1.2, F1.3 ✅ merged · building F1.4 |
 | F2 | f2 | `.worktrees/f2` · `dga-task/f2-domain` | — | 1a, 1b ✅ merged · building step 2 (money) |
 | C1 | c1 | `.worktrees/c1` · `dga-task/c1-lists` | C1.4 `to_money`: F2 step 2 (f2) | C1.1 + fix ✅ merged · C1.2 in review |
 | A1 | a1 | `.worktrees/a1` · `dga-task/a1-llm` | — | steps 1–2 ✅ merged · building step 3 |

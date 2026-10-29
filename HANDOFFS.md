@@ -66,3 +66,22 @@
   - `TZ` isn't read by the app, but **the cron container needs `TZ=Europe/Bucharest`** so the crontab times (arch §10) are local time.
   - In Docker, env comes from compose (`env_file:`), and **`.dockerignore` must exclude `.env`** (otherwise the key is baked into the image).
 - **Merge instruction:** keep the app variable names (A1/B5 read them), or rename them in `Settings` and `.env.example` together. When B1 adds compose-only variables (`POSTGRES_*`, `KC_*`, `KEYCLOAK_ADMIN*`) to `.env.example`, add them to `NON_APP_KEYS` in `tests/unit/test_config.py`; the drift test names the missing ones. Check: `uv run pytest tests/unit/test_config.py`, then `docker compose config` resolves every `${VAR}`.
+
+### H-6 · bomboe B2/B5/B7/B10/B12 · conventions in clock (+ errors, logging when F1.4/F1.5 land) · 🟢
+- **Date / by:** 2026-10-29, DGAdavid1 (F1.3, merged 17dde21)
+- **Why it was needed:** every one of bomboe's tasks reads the time, and B10's simulator must replace the clock.
+- **What was done:** `backend/app/clock.py`:
+  - `APP_TZ = Europe/Bucharest`, fixed; the OS `TZ` is ignored.
+  - a `Clock` protocol (`now()`, `today()`), `RealClock`, and `FixedClock(at)` (aware datetimes only, normalised through UTC)
+  - `get_clock()`, `set_clock(c) -> previous`, and the context manager `use_clock(c)` (per-block restore, so overlapping blocks are safe)
+  - module-level `now()` / `today()`
+  - `set_clock` / `use_clock` **validate** the clock once at install: no classes; `now()` must be aware with Bucharest's offset; `today()` must return a `date` equal to `now().date()`
+
+  The ban on direct wall-clock calls (`datetime.now/utcnow/today`, `date.today`, `time.time/time_ns/localtime/gmtime/strftime/ctime/asctime/clock_gettime*`) is enforced by ruff TID251 and an AST test. The test also catches aliases, `default_factory=datetime.now` and SQLAlchemy `default=datetime.now`.
+- **Decisions taken on the owner's behalf:**
+  - B10's SimClock is installed with `set_clock`/`use_clock` and must pass `test_every_clock_keeps_the_contract` (add it to that test's clock list). If it builds `now()` from the sim date plus a time of day, it takes the time from `RealClock().now()`, never `datetime.now()` (`app/sim/` isn't exempt from the ban).
+  - B2 models use `default_factory=clock.now` (never `datetime.now`).
+  - Tests use `with clock.use_clock(FixedClock(...))`; every test starts and ends with a fresh `RealClock` (conftest).
+  - **Team rule (PEP 495):** a Bucharest datetime in the repeated or skipped DST hour is never `==` to the same instant in another zone, so compare instants via `.astimezone(UTC)`.
+- **Merge instruction:** keep ours. B10 adds `app/sim/clock_store.py`'s SimClock and registers it in the contract test. Check: `make check` (the architecture test + the contract test) passes with SimClock installed.
+
