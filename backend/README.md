@@ -42,6 +42,15 @@ Time comes only from `app/clock.py`. ruff bans `datetime.now()`, `time.time()`, 
 - In tests: `with clock.use_clock(FixedClock(datetime.fromisoformat("2026-06-15T09:00:00Z"))):` (write instants in UTC). Blocks may overlap and end in any order; each removes only its own clock. Every test starts and ends with a fresh real clock (conftest).
 - The simulator (B10) installs its `SimClock` for the whole process with `clock.set_clock(...)`. Both `set_clock` and `use_clock` check that the clock really works: an instance, an aware Bucharest `now()`, a `date` `today()` equal to `now()`'s date.
 
+## Errors
+
+Every non-2xx response is `{"error": {"code": "...", "message": "..."}}` (arch 9.1), built by `app/errors.py`, which `create_app()` installs.
+
+- Raise `DomainError("agent_busy", "The assistant is still answering your previous message.", status=409, headers={"Retry-After": "5"})` anywhere: in a route, a dependency or a middleware. The code is snake_case (≤ 64 chars) and stable: the app branches on it. The status is 400–599 (default 400). `headers` are optional, e.g. `WWW-Authenticate` on a 401; they must be single-line and can't set Content-Length/Content-Type. The message is English text for developers/Claude; the app shows its own UI text per code.
+- On a WebSocket a `DomainError` closes the socket: code 1008 (1011 for 5xx), reason = the code, never the message.
+- F1's codes: `validation_error` (422: `field.path: fixed text` for up to 5 fields; nothing the client sent, no dict keys or unknown names, no internal validator names), `not_found` (404), `method_not_allowed` (405, with an `Allow` listing every method of the path), `internal_error` (500, generic message; the traceback goes only to the server log), `http_<status>` for other framework errors (a text detail is kept, a structured one isn't).
+- Don't raise `HTTPException` with a dict detail; raise a `DomainError`. OpenAPI documents the envelope as every route's `default` response.
+
 ## Everyday commands
 
 | Command | What it does |
