@@ -5,23 +5,31 @@
   unit of work, because `/chat` and the pipeline run the agent in a background task after their
   own session committed. The `agent_runs` row is bomboe's: `/chat` creates and finishes it, so
   `record_run` stays None here (no double finish).
-- the tool handlers' `Services` factory. TODO(INT): our handler ports are sync Protocols and
-  bomboe's services are async; the async handler refactor (separate branch) replaces
-  `_unwired_services` with the Postgres implementation. Until then a tool call returns an
-  `is_error` result (`tools_unavailable`) and the agent still answers in text.
+- the tool handlers' `Services` factory: `pg_ports.pg_services(db)`, bomboe's Postgres services.
+  Each tool call is its own unit of work (`PlatformServices.execute_tool`): one session for the
+  handler, danutu's engine (the D18 recompute) and the context layer; committed when the result
+  is ok, rolled back when it is an `is_error` result (a half-done write never sticks). The WS
+  pushes the handler queued (`RunState.pushes`) go out only after that commit.
+- the proactive services (A7): the same wiring plus the event, the message, the asked mark and
+  the notification, each in its own unit of work.
 """
 
+import json
+import logging
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from decimal import Decimal
-from typing import Any, NoReturn
+from typing import Any
 
-from anthropic.types.beta import BetaMessageParam
+from anthropic.types.beta import BetaMessageParam, BetaToolResultBlockParam, BetaToolUseBlock
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import clock, events
+from app.agent import pg_ports
 from app.agent import ports as agent_ports
 from app.agent.handlers.common import ToolContext
 from app.agent.loop import set_agent_services
-from app.agent.ports import LazyContext, LazyEngine, Services
+from app.agent.ports import LazyContext, LazyEngine
 from app.agent.proactive import ProactiveEvent, set_proactive_services
 from app.agent.wiring import AgentWiring
 from app.db.session import unit_of_work
@@ -29,31 +37,12 @@ from app.domain.enums import MessageRole
 from app.domain.results import ActionCard
 from app.domain.user_context import UserContext
 from app.errors import DomainError
-from app.services import agent_events, messages, notifications, transactions
+from app.pipeline import ports as pipeline_ports
+from app.services import agent_events, messages, notifications, receivables, transactions, users
 from app.services.context_loader import load_user_context
 from app.ws import push_after_commit
 
-
-class _UnwiredPort:
-    """Every method raises `tools_unavailable` (TODO(INT): the async Postgres ports)."""
-
-    def __init__(self, name: str) -> None:
-        self._name = name
-
-    def __getattr__(self, method: str) -> Any:
-        def unavailable(*_: object, **__: object) -> NoReturn:
-            raise DomainError(
-                "tools_unavailable",
-                f"{self._name}.{method} isn't wired to the database yet.",
-                status=503,
-            )
-
-        return unavailable
-
-
-def _unwired_services(_db: Any = None) -> Services:
-    ports: dict[str, Any] = {name: _UnwiredPort(name) for name in Services.__dataclass_fields__}
-    return Services(**ports)
+log = logging.getLogger(__name__)
 
 
 async def load_context(user_id: int) -> UserContext:
@@ -74,14 +63,55 @@ async def load_history(user_id: int, limit: int) -> list[BetaMessageParam]:
     return history
 
 
+_TOOL_DB: ContextVar[AsyncSession | None] = ContextVar("agent_tool_db", default=None)
+"""The session of the tool call running in this task (set by `PlatformServices.execute_tool`)."""
+
+
+class _Rollback(Exception):
+    """Leave the tool call's unit of work with a rollback (an `is_error` result)."""
+
+
 def _tool_context(user_id: int) -> ToolContext:
+    db = _TOOL_DB.get()
+    if db is None:
+        raise RuntimeError("a tool call runs inside PlatformServices.execute_tool")
     return ToolContext(
         user_id=user_id,
-        services=_unwired_services(),
+        services=pg_ports.pg_services(db),
         engine=LazyEngine(),
         context=LazyContext(),
-        db=None,
+        db=db,
     )
+
+
+async def _queue_pushes(
+    db: AsyncSession, user_id: int, pushes: list[tuple[str, dict[str, Any]]]
+) -> None:
+    """The WS events a handler asked for, sent once the tool call commits."""
+    for kind, body in pushes:
+        if kind == "transaction.annotated" and isinstance(body.get("transaction_id"), int):
+            tx = await transactions.get(db, user_id, body["transaction_id"])
+            language = (await users.get(db, user_id)).language
+            label = pipeline_ports.label(tx.purpose, language)
+            push_after_commit(db, user_id, events.transaction_annotated(tx, label))
+        elif kind == "receivable.updated":
+            for key in ("receivable_id", "cancelled_receivable_id"):
+                if isinstance(body.get(key), int):
+                    receivable = await receivables.get(db, user_id, body[key])
+                    push_after_commit(db, user_id, events.receivable_updated(receivable))
+
+
+def _internal_error(block: BetaToolUseBlock) -> BetaToolResultBlockParam:
+    content = json.dumps(
+        {
+            "ok": False,
+            "error": {
+                "code": "internal_error",
+                "message": "The change couldn't be saved. Tell the user it didn't work.",
+            },
+        }
+    )
+    return {"type": "tool_result", "tool_use_id": block.id, "content": content, "is_error": True}
 
 
 @dataclass
@@ -91,6 +121,31 @@ class PlatformServices(AgentWiring):
     the notification. Each write is its own unit of work."""
 
     _event_users: dict[int, int] = field(default_factory=dict)
+
+    async def execute_tool(
+        self, user_id: int, run_id: int | None, block: BetaToolUseBlock
+    ) -> BetaToolResultBlockParam:
+        """One tool call = one unit of work: commit on an ok result, rollback on `is_error`."""
+        try:
+            async with unit_of_work() as db:
+                token = _TOOL_DB.set(db)
+                try:
+                    run = self._runs.get(user_id)
+                    pushed = len(run.pushes) if run is not None else 0
+                    result = await super().execute_tool(user_id, run_id, block)
+                    if result.get("is_error"):
+                        raise _Rollback
+                    run = self._runs.get(user_id)
+                    if run is not None:
+                        await _queue_pushes(db, user_id, run.pushes[pushed:])
+                finally:
+                    _TOOL_DB.reset(token)
+        except _Rollback:
+            return result
+        except Exception:
+            log.exception("tool %s: the unit of work failed", block.name)
+            return _internal_error(block)
+        return result
 
     async def get_event(self, user_id: int, event_id: int) -> ProactiveEvent | None:
         async with unit_of_work() as db:
@@ -178,4 +233,4 @@ def install() -> None:
     wiring = platform_wiring()
     set_agent_services(wiring)
     set_proactive_services(wiring)
-    agent_ports.set_services_factory(_unwired_services)
+    agent_ports.set_services_factory(pg_ports.pg_services)

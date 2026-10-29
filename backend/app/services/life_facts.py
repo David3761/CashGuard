@@ -121,6 +121,18 @@ async def update(
     return _view(row)
 
 
+async def replace(
+    db: AsyncSession, user_id: int, fact_id: int, fact: dm.LifeFactDraft
+) -> dm.LifeFact:
+    """Overwrite every field with a validated draft (the agent's `update_life_fact` merges the
+    changes itself, so a field may also be cleared, e.g. `valid_to`). Another user's →
+    not_found."""
+    row = await _row(db, user_id, fact_id)
+    _write(row, fact)
+    await db.flush()
+    return _view(row)
+
+
 async def expire(db: AsyncSession, user_id: int, fact_id: int, valid_to: date) -> dm.LifeFact:
     """confirmed → expired from `valid_to`. Otherwise → invalid_transition."""
     row = await _move(db, user_id, fact_id, FactStatus.CONFIRMED, FactStatus.EXPIRED)

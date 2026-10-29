@@ -72,3 +72,19 @@ async def update(
     row.buffer_pct = prefs.buffer_pct
     await db.flush()
     return prefs
+
+
+async def save(db: AsyncSession, user_id: int, prefs: dm.PlanPreferences) -> dm.PlanPreferences:
+    """Store the whole preferences as given (the agent's `shape_budget` computed them, pins
+    removed included)."""
+    stored = prefs.model_dump(mode="json")
+    row = await db.get(m.PlanPreferences, user_id)
+    if row is None:
+        row = m.PlanPreferences(user_id=user_id)
+        db.add(row)
+    row.weekday_weights = stored["weekday_weights"]
+    row.pinned_days = stored["pinned_days"]
+    row.category_caps = stored["category_caps"]
+    row.buffer_pct = prefs.buffer_pct
+    await db.flush()
+    return prefs
