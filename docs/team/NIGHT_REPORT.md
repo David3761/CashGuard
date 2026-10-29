@@ -4,7 +4,8 @@ David G. asked for this before going to bed: "merge absolutely everything into m
 
 ## 1. Result
 
-- **`main` holds everything**, tagged **`v1.0-submission`**. `api-development` and `dga-final` point to the same commit.
+- **`main` holds everything**, tagged **`v1.0-submission`**, and it's pushed. `api-development` and `dga-final` point to the same commit. Every local and remote branch is merged in: `bomboe`, `engine-dev`, `engine-development`, `api-development`, `main`, `dga-final`, every `dga-task/*`, `int-engine-tests`, and the old local `api-ai` notes, which now live in `docs/team/early-ai-design/`.
+- **GitHub CI is green** on `main`: the backend job (ruff, mypy, pytest with Postgres), the mobile job (flutter analyze + test) and gitleaks over the full history.
 - **Tests:** 4 167 passed, 6 deselected (the paid `live` ones), **94 % coverage**. That covers unit, db, api, ws and acceptance. ruff, mypy strict, the lock check, bandit (0 issues) and gitleaks over the full history (no leaks) are all clean.
 - **Scene A, live on Amazon Bedrock**, through the mobile app's API, on the simulator clock:
   1. `/api/sim/reset`, then `POST /api/sim/transaction {"scenario_id": "matei_mega_500"}`.
@@ -79,3 +80,6 @@ The research agent's checklist, built from how hackathon code graders (AI repo g
 - **For danutu:** who lowers a pot when spending is pot-funded (`apply_transaction` vs `save_evaluation`) is still undecided; today only `apply_transaction` does it.
 - **Context loader:** it doesn't fill some optional snapshot fields yet (recent days, slips, reflections, life notes), so Claude works with less history than the spec allows.
 - **Voice:** the backend produces `speak_text`; the app has no mic or TTS.
+- **GitHub settings:** DGAdavid1 has only write access, so the repo description and topics couldn't be set. David V. (the owner) can set them with:
+  `gh repo edit David3761/CashGuard --description "CashGuard: a voice-first AI money coach that judges every purchase against your life" --add-topic fintech,ai-agent,claude,amazon-bedrock,fastapi,flutter`
+- **Dependabot opened 4 PRs right after the push** (#1–#4; python-dateutil 3.0.0 is a major bump). Don't merge them before the submission.
