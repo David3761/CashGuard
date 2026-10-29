@@ -6,13 +6,18 @@ from typing import Any
 
 import pytest
 
+from app import clock
 from app.context import service
+from app.context.evaluate import evaluate
 from app.domain.enums import AnnotationSource, Category, Decision, Direction, FactType, Purpose
 from app.domain.models import Item, TxView
-from app.domain.results import Evaluation, PropagationResult, QuestionCandidate
+from app.domain.results import PropagationResult, QuestionCandidate
+from app.domain.user_context import UserContext
+from tests import builders
 from tests.builders import fact
 
 TODAY = date(2026, 6, 15)
+NOON = datetime(2026, 6, 15, 11, 0, tzinfo=UTC)  # 14:00 in Bucharest
 
 
 def _tx(
@@ -41,36 +46,20 @@ def one_tx(monkeypatch: pytest.MonkeyPatch) -> Any:
     return install
 
 
-@pytest.mark.parametrize(
-    ("amount", "decision"),
-    [
-        ("500.00", Decision.ASK),
-        ("300.01", Decision.ASK),
-        ("300.00", Decision.AUTO),
-        ("85", Decision.AUTO),
-    ],
-)
-def test_evaluate_transaction_asks_above_300(one_tx: Any, amount: str, decision: Decision) -> None:
-    one_tx(_tx(amount))
-    result = service.evaluate_transaction(None, 1, 1)
-    assert isinstance(result, Evaluation)
-    assert result.decision == decision
-    assert result.effective_amount == Decimal(amount)
-    assert (result.question_hint is not None) == (decision == Decision.ASK)
+@pytest.fixture
+def matei(monkeypatch: pytest.MonkeyPatch) -> UserContext:
+    ctx = builders.matei_ctx()
+    monkeypatch.setattr(service, "_context", lambda db, user_id, today: ctx)
+    return ctx
 
 
-def test_evaluate_transaction_provisional_reading_and_item_hint(one_tx: Any) -> None:
-    one_tx(_tx("4500.00", items=False))
-    result = service.evaluate_transaction(None, 1, 1)
-    assert result.purpose == Purpose.UNPLANNED_DISCRETIONARY
-    assert result.annotation_source == AnnotationSource.DEFAULT
-    assert result.question_hint is not None
-    assert result.question_hint.ask_what_item is True
-
-
-def test_evaluate_auto_is_source_auto(one_tx: Any) -> None:
-    one_tx(_tx("85.00"))
-    assert service.evaluate_transaction(None, 1, 1).annotation_source == AnnotationSource.AUTO
+def test_evaluate_transaction_runs_the_pure_core(one_tx: Any, matei: UserContext) -> None:
+    tx = builders.tx(id=700, amount="500", effective_amount="500", decision=None)
+    one_tx(tx)
+    with clock.use_clock(clock.FixedClock(NOON)):
+        result = service.evaluate_transaction(None, 1, 700)
+    assert result == evaluate(matei, tx)
+    assert result.decision == Decision.ASK
 
 
 def test_default_reading() -> None:
@@ -81,27 +70,21 @@ def test_default_reading() -> None:
     assert reading.effective_amount == Decimal("120.50")
 
 
-def _day(monkeypatch: pytest.MonkeyPatch, txs: list[TxView], asked: bool) -> None:
-    monkeypatch.setattr(service, "_transactions_of_day", lambda db, user_id, day: txs)
-    monkeypatch.setattr(service, "_question_asked_today", lambda db, user_id, today: asked)
-
-
-def test_pick_question_first_ask(monkeypatch: pytest.MonkeyPatch) -> None:
-    txs = [_tx("50", tx_id=1, decision=Decision.AUTO), _tx("500", tx_id=2, decision=Decision.ASK),
-           _tx("700", tx_id=3, decision=Decision.ASK)]  # fmt: skip
-    _day(monkeypatch, txs, asked=False)
-    candidate = service.pick_question(None, 1, TODAY)
-    assert isinstance(candidate, QuestionCandidate)
-    assert candidate.transaction_id == 2
-
-
-def test_pick_question_none_when_asked_today_or_nothing_to_ask(
-    monkeypatch: pytest.MonkeyPatch,
+def test_pick_question_asks_the_waiting_transaction(
+    monkeypatch: pytest.MonkeyPatch, matei: UserContext
 ) -> None:
-    _day(monkeypatch, [_tx("500", decision=Decision.ASK)], asked=True)
-    assert service.pick_question(None, 1, TODAY) is None
-    _day(monkeypatch, [_tx("50", decision=Decision.AUTO)], asked=False)
-    assert service.pick_question(None, 1, TODAY) is None
+    waiting = builders.tx(id=701, amount="500", effective_amount="500", decision="ask",
+                          unexplained=0.8)  # fmt: skip
+    days = {TODAY: [waiting, builders.tx(id=702, decision="auto")]}
+    monkeypatch.setattr(service, "_transactions_of_day", lambda db, u, day: days.get(day, []))
+    with clock.use_clock(clock.FixedClock(NOON)):
+        candidate = service.pick_question(None, 1, TODAY)
+    assert isinstance(candidate, QuestionCandidate)
+    assert candidate.transaction_id == 701
+    asked = matei.replace(questions_asked_today=1)
+    monkeypatch.setattr(service, "_context", lambda db, user_id, today: asked)
+    with clock.use_clock(clock.FixedClock(NOON)):
+        assert service.pick_question(None, 1, TODAY) is None
 
 
 def test_the_other_stubs() -> None:

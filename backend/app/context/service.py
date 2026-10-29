@@ -1,24 +1,22 @@
-"""The context layer's §15 entry points (arch 15.1): S0 stubs with the exact signatures.
+"""The context layer's §15 entry points (arch 15.1), with the exact signatures.
 
-The real bodies come from C6 (`evaluate_transaction`), C7 (`pick_question`, `default_reading`), C4
-(`signatures_for_fact`), C9 (`on_fact_changed`), C8 (`learn_from_annotation`) and C10
-(`infer_hypotheses`). Until then the stubs give callers (bomboe's pipeline B8, A3's handlers) the
-documented shapes:
-- `evaluate_transaction`: `ask` with a provisional reading when `amount > 300`, else `auto`;
-- `pick_question`: the first `ask` transaction of the day, if no question was asked today;
-- `default_reading`: `unplanned_discretionary`, confidence 0.3, source `default` (5.3.6);
-- the others: `[]`, a no-op result, `None`.
+Real: `evaluate_transaction` (C6, `context.evaluate`), `pick_question` and `default_reading` (C7,
+`context.questions`). Still S0 stubs, until C4 (`signatures_for_fact`), C9 (`on_fact_changed`),
+C8 (`learn_from_annotation`) and C10 (`infer_hypotheses`): `[]`, a no-op result, `None`.
 
 `db` is typed `Any` until bomboe's session exists. The DB reads go through bomboe's services
 (arch 15.1 `services/`), looked up at call time because B3 isn't merged yet; tests replace them.
 """
 
 import importlib
-from datetime import date
-from decimal import Decimal
-from typing import Any, Final
+from datetime import date, timedelta
+from typing import Any
 
-from app.domain.enums import AnnotationSource, Beneficiary, Category, Decision, Purpose
+from app import clock
+from app.config import get_settings
+from app.context import questions
+from app.context.evaluate import evaluate, goal_impact
+from app.domain.enums import Decision
 from app.domain.models import LifeFact, LifeFactDraft, Signature, TxView
 from app.domain.results import (
     Evaluation,
@@ -27,12 +25,7 @@ from app.domain.results import (
     QuestionHint,
     RuleChange,
 )
-
-ASK_ABOVE: Final = Decimal("300")
-"""The stub's whole policy: a transaction above 300 lei is asked about (DGAdavid1 S0)."""
-DEFAULT_CONFIDENCE: Final = 0.3
-"""The confidence of the default reading (5.3.6, C7 step 2)."""
-
+from app.domain.user_context import UserContext
 
 # ── bomboe's services (B3), looked up at call time ───────────────────────────────────────────
 
@@ -51,62 +44,52 @@ def _transactions_of_day(db: Any, user_id: int, day: date) -> list[TxView]:
     return txs
 
 
-def _question_asked_today(db: Any, user_id: int, today: date) -> bool:
-    return bool(_service("agent_events").question_asked_today(db, user_id, today))
+def _context(db: Any, user_id: int, today: date) -> UserContext:
+    """bomboe's B4 read model. NOTE: WB B4 declares it `async`; this shell is sync (§15), so the
+    pipeline must hand over a sync loader or this shell becomes async (open point, C5-C7 report)."""
+    ctx: UserContext = _service("context").load_user_context(db, user_id, today)
+    return ctx
+
+
+def _candidate(ctx: UserContext, tx: TxView) -> QuestionCandidate:
+    hint = evaluate(ctx, tx).question_hint or QuestionHint(reason="large_amount")
+    return QuestionCandidate(
+        transaction_id=tx.id,
+        occurred_at=tx.occurred_at,
+        unexplained=tx.unexplained if tx.unexplained is not None else 0.0,
+        goal_impact=goal_impact(ctx, tx.amount),
+        question_hint=hint,
+    )
 
 
 # ── the §15 functions ────────────────────────────────────────────────────────────────────────
 
 
 def default_reading(tx: TxView) -> Evaluation:
-    """The reading used when nobody answered (5.3.6): the whole amount, `unplanned_discretionary`,
-    confidence 0.3, source `default`. Also the stub's provisional reading for a question."""
-    return Evaluation(
-        category=tx.category or Category.OTHER,
-        merchant_id=tx.merchant_id,
-        merchant=tx.merchant,
-        purpose=Purpose.UNPLANNED_DISCRETIONARY,
-        beneficiary=Beneficiary.SELF,
-        effective_amount=tx.amount,
-        annotation_source=AnnotationSource.DEFAULT,
-        confidence=DEFAULT_CONFIDENCE,
-        life_fit=0.0,
-        anomaly_score=0.0,
-        unexplained=0.0,
-        decision=Decision.AUTO,
-    )
+    """C7: the reading used when nobody answered (5.3.6 #7): the whole amount,
+    `unplanned_discretionary`, confidence 0.3, source `default`."""
+    return questions.default_reading(tx)
 
 
 def evaluate_transaction(db: Any, user_id: int, tx_id: int) -> Evaluation:
-    """Stub of C6: `ask` (with the default reading as the provisional one) above 300 lei, else
-    `auto`. Pure read + compute: the pipeline saves it (`transactions.save_evaluation`)."""
+    """C6: load the transaction and the context, then the pure `evaluate` (5.3.4). Pure read +
+    compute: the pipeline saves it (`transactions.save_evaluation`)."""
     tx = _transaction(db, user_id, tx_id)
-    reading = default_reading(tx)
-    if tx.amount > ASK_ABOVE:
-        return reading.replace(
-            decision=Decision.ASK,
-            unexplained=1.0,
-            goal_impact=1.0,
-            question_hint=QuestionHint(reason="stub_large_amount", ask_what_item=not tx.items),
-        )
-    return reading.replace(annotation_source=AnnotationSource.AUTO)
+    return evaluate(_context(db, user_id, clock.today()), tx)
 
 
 def pick_question(db: Any, user_id: int, today: date) -> QuestionCandidate | None:
-    """Stub of C7: the first `ask` transaction of `today`, or None if a question was already
-    asked today (the D25 budget of one question a day)."""
-    if _question_asked_today(db, user_id, today):
-        return None
-    for tx in _transactions_of_day(db, user_id, today):
-        if tx.decision == Decision.ASK:
-            return QuestionCandidate(
-                transaction_id=tx.id,
-                occurred_at=tx.occurred_at,
-                unexplained=tx.unexplained if tx.unexplained is not None else 1.0,
-                goal_impact=1.0,
-                question_hint=QuestionHint(reason="stub_large_amount", ask_what_item=not tx.items),
-            )
-    return None
+    """C7: the one question to ask now among the `ask` / `ask_later` transactions of the last
+    48 h (5.3.6), or None. The caller turns the others into ask_later / expired events."""
+    ctx = _context(db, user_id, today)
+    recent = [
+        *_transactions_of_day(db, user_id, today - timedelta(days=2)),
+        *_transactions_of_day(db, user_id, today - timedelta(days=1)),
+        *_transactions_of_day(db, user_id, today),
+    ]
+    waiting = {tx.id: tx for tx in recent if tx.decision in (Decision.ASK, Decision.ASK_LATER)}
+    candidates = [_candidate(ctx, tx) for tx in waiting.values()]
+    return questions.pick_question(candidates, ctx, clock.now(), get_settings().SIM_MODE)
 
 
 def signatures_for_fact(
