@@ -6,6 +6,7 @@ from decimal import Decimal
 from app.clock import FixedClock, use_clock
 from app.domain.enums import Direction
 from app.domain.models import TxView
+from app.domain.results import Forecast, PlanSummary, SimResult
 from app.engine import service
 
 
@@ -30,7 +31,7 @@ def test_ledger_delta_debit_and_credit() -> None:
 def test_recompute_plan_fixed_summary() -> None:
     with use_clock(FixedClock(datetime(2026, 6, 15, 9, 0, tzinfo=UTC))):
         plan = service.recompute_plan(None, 1, "new transactions")
-    assert isinstance(plan, service.PlanSummary)
+    assert isinstance(plan, PlanSummary)
     assert plan.version == 1
     assert plan.feasible is True
     assert plan.today_budget == Decimal("150.00")
@@ -40,14 +41,14 @@ def test_recompute_plan_fixed_summary() -> None:
 
 def test_forecast_goal_is_078() -> None:
     forecast = service.forecast_goal(None, 1, 1)
-    assert isinstance(forecast, service.Forecast)
+    assert isinstance(forecast, Forecast)
     assert forecast.probability == 0.78
     assert forecast.p10 <= forecast.p50 <= forecast.p90
 
 
 def test_simulate_plan_saves_nothing_and_has_a_probability() -> None:
     result = service.simulate_plan(None, 1, {"goal_amount": 12000})
-    assert isinstance(result, service.SimResult)
+    assert isinstance(result, SimResult)
     assert result.probability == 0.78
     assert result.diff_vs_current.today_budget == Decimal("0.00")
 

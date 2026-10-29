@@ -14,81 +14,24 @@ documented shapes:
 """
 
 import importlib
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
-from typing import Any, Final, Literal
+from typing import Any, Final
 
-from app.domain.enums import AnnotationSource, Beneficiary, Category, Decision, FactType, Purpose
-from app.domain.models import DomainModel, TxView
-from app.domain.money import Money
+from app.domain.enums import AnnotationSource, Beneficiary, Category, Decision, Purpose
+from app.domain.models import LifeFact, LifeFactDraft, Signature, TxView
+from app.domain.results import (
+    Evaluation,
+    PropagationResult,
+    QuestionCandidate,
+    QuestionHint,
+    RuleChange,
+)
 
 ASK_ABOVE: Final = Decimal("300")
 """The stub's whole policy: a transaction above 300 lei is asked about (DGAdavid1 S0)."""
 DEFAULT_CONFIDENCE: Final = 0.3
 """The confidence of the default reading (5.3.6, C7 step 2)."""
-
-
-# ── TODO(F2): placeholders with F2's planned names (F2.md steps 4, 5, 7). Replace each with the ──
-# ── import from app.domain (models / results) when F2 lands; the fields here are a subset. ──────
-
-
-class QuestionHint(DomainModel):  # TODO(F2): app.domain.results.QuestionHint
-    reason: str
-    ask_what_item: bool = False
-
-
-class Evaluation(DomainModel):  # TODO(F2): app.domain.results.Evaluation
-    category: Category
-    merchant_id: str | None = None
-    merchant: str | None = None
-    purpose: Purpose
-    beneficiary: Beneficiary
-    effective_amount: Money
-    annotation_source: AnnotationSource
-    confidence: float
-    life_fit: float = 0.0
-    anomaly_score: float = 0.0
-    unexplained: float = 0.0
-    decision: Decision
-    explanation: str | None = None
-    matched_fact_id: int | None = None
-    matched_rule_id: int | None = None
-    pot_id: int | None = None
-    goal_impact: float = 0.0
-    question_hint: QuestionHint | None = None
-
-
-class QuestionCandidate(DomainModel):  # TODO(F2): app.domain.results.QuestionCandidate
-    transaction_id: int
-    occurred_at: datetime
-    unexplained: float
-    goal_impact: float
-    question_hint: QuestionHint
-
-
-class LifeFactDraft(DomainModel):  # TODO(F2): app.domain.models.LifeFactDraft
-    type: FactType
-    text: str
-
-
-class LifeFact(LifeFactDraft):  # TODO(F2): app.domain.models.LifeFact
-    id: int
-
-
-class Signature(DomainModel):  # TODO(F2): app.domain.models.Signature
-    purpose: Purpose
-    category: Category | None = None
-
-
-class RuleChange(DomainModel):  # TODO(F2): app.domain.results.RuleChange (+ rule: PatternRule)
-    action: Literal["created", "updated", "deactivated"]
-    previous_confidence: float | None = None
-
-
-class PropagationResult(DomainModel):  # TODO(F2): app.domain.results.PropagationResult
-    fact_id: int
-    household_scale: Decimal | None = None
-    changed_transaction_ids: tuple[int, ...] = ()
 
 
 # ── bomboe's services (B3), looked up at call time ───────────────────────────────────────────
@@ -127,6 +70,9 @@ def default_reading(tx: TxView) -> Evaluation:
         effective_amount=tx.amount,
         annotation_source=AnnotationSource.DEFAULT,
         confidence=DEFAULT_CONFIDENCE,
+        life_fit=0.0,
+        anomaly_score=0.0,
+        unexplained=0.0,
         decision=Decision.AUTO,
     )
 

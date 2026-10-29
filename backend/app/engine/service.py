@@ -13,71 +13,17 @@ The pure `anomaly_features` / `household_scale` are not here: they live in `anom
 `baselines.py`. `db` is typed `Any` until bomboe's session exists.
 """
 
-from datetime import date
 from decimal import Decimal
 from typing import Any, Final
 
 from app import clock
-from app.domain.enums import Category, Direction
-from app.domain.models import DomainModel, TxView
-from app.domain.money import Money
+from app.domain.enums import Direction
+from app.domain.models import Baseline, Transfer, TxView
+from app.domain.results import DayBudget, Forecast, PlanSummary, SimDiff, SimResult
 
 STUB_TODAY_BUDGET: Final = Decimal("150.00")
 STUB_PROBABILITY: Final = 0.78
 """The demo's opening number (arch 16.2 Scene A: "78%")."""
-
-# ── TODO(F2): placeholders with F2's planned names (F2.md steps 6 and 7). Replace each with the ──
-# ── import from app.domain (models / results) when F2 lands; the fields here are a subset. ──────
-
-
-class DayBudget(DomainModel):  # TODO(F2): app.domain.results.DayBudget
-    date: date
-    budget: Money
-    pinned: bool = False
-
-
-class PlanSummary(DomainModel):  # TODO(F2): app.domain.results.PlanSummary
-    version: int
-    feasible: bool
-    today_budget: Money
-    previous_today_budget: Money | None = None
-    next_7_days: tuple[DayBudget, ...] = ()
-    reason: str | None = None
-
-
-class Forecast(DomainModel):  # TODO(F2): app.domain.results.Forecast
-    probability: float
-    previous_probability: float | None = None
-    last_week_probability: float | None = None
-    p10: Money
-    p50: Money
-    p90: Money
-    expected_reach_date: date | None = None
-
-
-class SimDiff(DomainModel):  # TODO(F2): app.domain.results.SimDiff
-    today_budget: Money
-    probability: float
-
-
-class SimResult(DomainModel):  # TODO(F2): app.domain.results.SimResult
-    feasible: bool
-    today_budget: Money
-    avg_daily_budget: Money
-    probability: float
-    diff_vs_current: SimDiff
-
-
-class Baseline(DomainModel):  # TODO(F2): app.domain.models.Baseline
-    category: Category
-    expected_median: Money
-    monthly_expected: Money
-
-
-class Transfer(DomainModel):  # TODO(F2): app.domain.models.Transfer
-    id: int
-    amount: Money
-
 
 # ── pure helper ──────────────────────────────────────────────────────────────────────────────
 

@@ -6,7 +6,7 @@ saving the message, marking the event asked). Until then it returns the template
 
 from typing import Final
 
-from app.agent.loop import AgentResult
+from app.domain.results import AgentResult
 
 TEMPLATE_QUESTION: Final = "Am văzut o plată nouă. Ce a fost?"
 QUICK_REPLIES: Final = ("Doar pentru mine", "Și pentru alții", "Ceva plănuit", "Prefer să nu spun")
