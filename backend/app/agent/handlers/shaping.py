@@ -25,6 +25,31 @@ def _pins(value: Any) -> dict[Any, Any]:
     return {item["date"]: item["amount"] for item in value}
 
 
+def _weights(value: Any) -> dict[str, Any]:
+    """`weekday_weights` as {"Mon": w}, from A2's [{weekday: 1-7 (ISO), weight}] or a mapping."""
+    if not value:
+        return {}
+    if isinstance(value, Mapping):
+        return dict(value)
+    return {WEEKDAY_NAMES[item["weekday"] - 1]: item["weight"] for item in value}
+
+
+def _caps(current: Mapping[Any, Any], value: Any) -> dict[Any, Any]:
+    """The caps after A2's [{category, amount_per_week}] (null removes that cap)."""
+    caps = dict(current)
+    items = (
+        value.items()
+        if isinstance(value, Mapping)
+        else [(item["category"], item["amount_per_week"]) for item in value or []]
+    )
+    for category, amount in items:
+        if amount is None:
+            caps.pop(category, None)
+        else:
+            caps[category] = amount
+    return caps
+
+
 def _save(ctx: ToolContext, data: Mapping[str, Any]) -> PlanPreferences:
     try:
         preferences = PlanPreferences.model_validate(dict(data))
@@ -45,9 +70,9 @@ def shape_budget(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> di
     saved = _save(
         ctx,
         {
-            "weekday_weights": {**current.weekday_weights, **(args.get("weekday_weights") or {})},
+            "weekday_weights": {**current.weekday_weights, **_weights(args.get("weekday_weights"))},
             "pinned_days": pinned,
-            "category_caps": {**current.category_caps, **(args.get("category_caps") or {})},
+            "category_caps": _caps(current.category_caps, args.get("category_caps")),
             "buffer_pct": current.buffer_pct
             if args.get("buffer_pct") is None
             else args["buffer_pct"],

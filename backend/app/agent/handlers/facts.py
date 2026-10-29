@@ -62,7 +62,7 @@ def add_life_fact(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> d
         }
     )
     fact = ctx.services.life_facts.create(ctx.user_id, draft)
-    return _propagate(ctx, fact, args.get("signatures"), active=True)
+    return _propagate(ctx, fact, list(args.get("signatures") or []) or None, active=True)
 
 
 def update_life_fact(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
@@ -71,7 +71,7 @@ def update_life_fact(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -
     need_changes(found, "life fact")
     draft = _draft({**old.model_dump(exclude={"id", "created_at"}), **found})
     fact = ctx.services.life_facts.update(ctx.user_id, old.id, draft)
-    return _propagate(ctx, fact, args.get("signatures"), active=True)
+    return _propagate(ctx, fact, None, active=True)
 
 
 def expire_life_fact(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:

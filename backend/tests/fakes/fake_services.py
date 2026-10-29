@@ -444,7 +444,7 @@ class FakeEngine:
 
     def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast:
         self.calls.append(("forecast_goal", (user_id, plan_version)))
-        previous, self.probability = self.probability, round(self.probability + 0.06, 2)
+        previous, self.probability = self.probability, min(1.0, round(self.probability + 0.06, 2))
         return Forecast(
             probability=self.probability,
             previous_probability=previous,
