@@ -26,3 +26,48 @@ try:
     from app.agent.proactive import run_proactive
 except ImportError:
     run_proactive = _fallbacks.run_proactive
+
+try:
+    from app.context.service import (
+        default_reading,
+        infer_hypotheses,
+        on_fact_changed,
+        signatures_for_fact,
+    )
+except ImportError:
+    default_reading = _fallbacks.default_reading
+    infer_hypotheses = _fallbacks.infer_hypotheses
+    on_fact_changed = _fallbacks.on_fact_changed
+    signatures_for_fact = _fallbacks.signatures_for_fact
+
+try:
+    from app.engine.service import recompute_baselines
+except ImportError:
+    recompute_baselines = _fallbacks.recompute_baselines
+
+try:
+    from app.agent.loop import run_agent
+except ImportError:
+    run_agent = _fallbacks.run_agent
+
+try:
+    from app.agent.language import detect_language
+except ImportError:
+    detect_language = _fallbacks.detect_language
+
+try:
+    from app.agent.templates import fallback_reply
+except ImportError:
+    fallback_reply = _fallbacks.fallback_reply
+
+try:
+    from app.agent.handlers.transactions import apply_annotation
+except ImportError:
+    apply_annotation = _fallbacks.apply_annotation
+
+try:
+    from app.i18n.format import format_money
+    from app.i18n.labels import label
+except ImportError:
+    format_money = _fallbacks.format_money
+    label = _fallbacks.label

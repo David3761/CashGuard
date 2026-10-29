@@ -12,8 +12,27 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.clock import local_date
 from app.domain import models as dm
-from app.domain.enums import AgentEventType, Category, Decision, Direction, Purpose
-from app.domain.results import Evaluation, Forecast, PlanResult, PlanSummary, QuestionCandidate
+from app.domain.enums import (
+    AgentEventType,
+    AnnotationSource,
+    Beneficiary,
+    Category,
+    Decision,
+    Direction,
+    Language,
+    Purpose,
+)
+from app.domain.models import LifeFact, LifeFactDraft, Signature, TxView
+from app.domain.money import split_share
+from app.domain.results import (
+    AgentResult,
+    Evaluation,
+    Forecast,
+    PlanResult,
+    PlanSummary,
+    PropagationResult,
+    QuestionCandidate,
+)
 from app.errors import DomainError
 from app.services import accounts, agent_events, forecasts, goals, ledger, plans, transactions
 
@@ -95,3 +114,175 @@ async def pick_question(db: AsyncSession, user_id: int, today: date) -> Question
 
 async def run_proactive(user_id: int, event_id: int) -> None:
     """S0 (David G.): would ask the question; does nothing here."""
+
+
+# ── more stand-ins (B6, B9, B10, B11, B12) ───────────────────────────────────────────────
+
+PURPOSE_LABELS = {
+    "ro": {
+        "essential_living": "Necesar",
+        "household_care": "Pentru casă și familie",
+        "work_tool": "Echipament de lucru",
+        "self_investment": "Investiție în tine",
+        "identity_joy": "Ce te bucură",
+        "social_connection": "Cu prietenii / colegii",
+        "planned_event": "Plănuit",
+        "on_behalf_of_others": "Pentru alții",
+        "unplanned_discretionary": "Neplanificat",
+        "emergency": "Urgență",
+        "unknown": "În așteptare",
+    },
+    "en": {
+        "essential_living": "Essentials",
+        "household_care": "Home & family",
+        "work_tool": "Work equipment",
+        "self_investment": "Self-investment",
+        "identity_joy": "Things you love",
+        "social_connection": "Social",
+        "planned_event": "Planned",
+        "on_behalf_of_others": "For others",
+        "unplanned_discretionary": "Unplanned",
+        "emergency": "Emergency",
+        "unknown": "Pending",
+    },
+}
+CATEGORY_LABELS = {
+    "ro": {
+        "groceries": "Cumpărături",
+        "restaurants": "Restaurante",
+        "food_delivery": "Livrări mâncare",
+        "transport": "Transport",
+        "fuel": "Carburant",
+        "electronics": "Electronice",
+        "clothing": "Haine",
+        "sport": "Sport",
+        "health_pharmacy": "Sănătate",
+        "kids": "Copii",
+        "education": "Educație",
+        "books": "Cărți",
+        "entertainment": "Distracție",
+        "subscriptions": "Abonamente",
+        "travel": "Călătorii",
+        "housing_rent": "Chirie",
+        "utilities": "Utilități",
+        "telecom": "Telefon & internet",
+        "gifts": "Cadouri",
+        "pets": "Animale",
+        "household_goods": "Casă",
+        "personal_care": "Îngrijire",
+        "transfers": "Transferuri",
+        "income": "Venit",
+        "savings": "Economii",
+        "other": "Altele",
+    },
+}
+
+
+def label(value: str | None, lang: str) -> str | None:
+    """C1 stand-in: RO/EN label of a purpose or category value (EN categories: Title case)."""
+    if value is None:
+        return None
+    if value in PURPOSE_LABELS["ro"]:
+        return PURPOSE_LABELS.get(lang, PURPOSE_LABELS["ro"])[value]
+    if lang == "ro":
+        return CATEGORY_LABELS["ro"].get(value, value)
+    return value.replace("_", " ").capitalize()
+
+
+def format_money(amount: Decimal | float | int, lang: str) -> str:
+    """C1 stand-in: RO "10.000 lei" / "30,40 lei"; EN "10,000 lei" / "1,234.50 lei"."""
+    value = Decimal(str(amount)).quantize(Decimal("0.01"))
+    whole = value == value.to_integral()
+    text = f"{value:,.0f}" if whole else f"{value:,.2f}"
+    if lang == "ro":
+        text = text.replace(",", "§").replace(".", ",").replace("§", ".")
+    return f"{text} lei"
+
+
+async def run_agent(
+    user_id: int, trigger: str, user_message: str | None, input_mode: str = "text"
+) -> AgentResult:
+    """S0 (David G.): echoes the message."""
+    return AgentResult(text=f"Am primit: {user_message}")
+
+
+def detect_language(text: str, current: Language) -> Language:
+    """S0 (David G.): keeps the current language."""
+    return current
+
+
+FALLBACK_REPLY = {
+    "ro": "Am o problemă acum, dar planul tău e în continuare la zi.",
+    "en": "I'm having trouble right now, your plan is still up to date.",
+}
+
+
+def fallback_reply(language: str) -> str:
+    """A5 stand-in: the arch §7 fallback text."""
+    return FALLBACK_REPLY.get(language, FALLBACK_REPLY["ro"])
+
+
+async def apply_annotation(
+    db: AsyncSession,
+    user_id: int,
+    tx_id: int,
+    purpose: Purpose,
+    beneficiary: Beneficiary,
+    own_amount: Decimal | None = None,
+    people_count: int | None = None,
+    others_will_repay: bool = False,
+    debtor_label: str | None = None,
+    source: AnnotationSource = AnnotationSource.USER_EDIT,
+) -> TxView:
+    """S0 (David G.'s shared annotate logic, A3): own_amount wins over people_count; the
+    ledger moves by the effective-amount delta (danutu's on_annotation_changed)."""
+    tx = await transactions.get(db, user_id, tx_id)
+    effective = tx.effective_amount
+    if own_amount is not None:
+        effective = own_amount
+    elif people_count is not None:
+        effective, _ = split_share(tx.amount, people_count)
+    new = await transactions.annotate(
+        db,
+        user_id,
+        tx_id,
+        purpose=purpose,
+        beneficiary=beneficiary,
+        effective_amount=effective,
+        source=source,
+    )
+    if tx.direction == Direction.DEBIT and new.effective_amount != tx.effective_amount:
+        await ledger.add_spent(
+            db, user_id, local_date(tx.occurred_at), new.effective_amount - tx.effective_amount
+        )
+    return new
+
+
+def default_reading(tx: TxView) -> tuple[Purpose, float]:
+    """S0 (David G., C7): unanswered for 24 h → unplanned, confidence 0.3."""
+    return Purpose.UNPLANNED_DISCRETIONARY, 0.3
+
+
+def signatures_for_fact(
+    fact: LifeFact, llm_signatures: list[dict[str, Any]] | None = None
+) -> list[Signature]:
+    """S0 (David G., C4): no library yet."""
+    return []
+
+
+async def on_fact_changed(db: AsyncSession, user_id: int, fact_id: int) -> PropagationResult:
+    """S0 (David G., C9): just re-plans."""
+    plan = await recompute_plan(
+        db, user_id, reason="life fact changed", trigger_ref={"fact_id": fact_id}
+    )
+    return PropagationResult(fact_id=fact_id, plan_version=plan.version if plan else None)
+
+
+async def infer_hypotheses(db: AsyncSession, user_id: int) -> list[LifeFactDraft]:
+    """S0 (David G., C10): nothing inferred."""
+    return []
+
+
+async def recompute_baselines(db: AsyncSession, user_id: int) -> dict[str, Any]:
+    """S0 (danutu, E6): keeps whatever is cached."""
+    return {}

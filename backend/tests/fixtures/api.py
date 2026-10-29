@@ -57,3 +57,25 @@ def as_user(
         return client
 
     return _as
+
+
+@pytest.fixture
+async def committed_client(
+    db_committed: AsyncSession, test_jwks: JWKSCache
+) -> AsyncIterator[httpx.AsyncClient]:
+    """An app on committed data: endpoints and background tasks see the same rows."""
+    transport = httpx.ASGITransport(app=create_app(), raise_app_exceptions=False)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test/api") as c:
+        yield c
+
+
+@pytest.fixture
+def as_committed_user(
+    committed_client: httpx.AsyncClient, make_token: Callable[..., str]
+) -> Callable[..., httpx.AsyncClient]:
+    def _as(user: Any, roles: tuple[str, ...] = (), **token_kw: Any) -> httpx.AsyncClient:
+        token = make_token(sub=subject(user), roles=roles, **token_kw)
+        committed_client.headers["Authorization"] = f"Bearer {token}"
+        return committed_client
+
+    return _as

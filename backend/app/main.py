@@ -1,6 +1,6 @@
 from fastapi import APIRouter, FastAPI
 
-from app.api import internal
+from app.api import chat, internal
 from app.config import Settings, get_settings
 from app.errors import install_error_handlers
 from app.logging import configure_logging
@@ -26,6 +26,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"status": "ok"}
 
     api.include_router(internal.router)
+    api.include_router(chat.router)
     app.include_router(api)
     app.include_router(ws_router)
     return app

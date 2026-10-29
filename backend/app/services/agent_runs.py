@@ -1,5 +1,6 @@
 """Agent run audit rows (B15 uses them; B9 uses `is_running` as the busy truth) (B3 step 3)."""
 
+from contextvars import ContextVar
 from datetime import timedelta
 
 from sqlalchemy import exists, select
@@ -13,6 +14,10 @@ from app.services._common import as_enum, invalid_transition, owned
 # A run still `running` after this long was lost (a crash, a restart): it no longer blocks
 # the user (B9's 409 agent_busy). Real runs take seconds.
 STALE_AFTER = timedelta(minutes=2)
+
+# The run the current agent call belongs to: set by POST /chat (B9) before `run_agent`, read by
+# the tool executor (A3) to log `tool_calls`.
+CURRENT_RUN: ContextVar[int | None] = ContextVar("current_agent_run", default=None)
 
 
 async def start(db: AsyncSession, user_id: int, *, trigger: AgentTrigger, model: str) -> int:
