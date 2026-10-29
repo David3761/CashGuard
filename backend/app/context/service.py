@@ -1,9 +1,9 @@
 """The context layer's §15 entry points (arch 15.1), with the exact signatures.
 
 Real: `evaluate_transaction` (C6, `context.evaluate`), `pick_question` and `default_reading` (C7,
-`context.questions`), `signatures_for_fact` (C4, `context.library`), `infer_hypotheses` (C10,
-`context.inference`). Still S0 stubs, until C9 (`on_fact_changed`) and C8
-(`learn_from_annotation`): a no-op result, `None`.
+`context.questions`), `signatures_for_fact` (C4, `context.library`), `learn_from_annotation` (C8,
+`context.rules`), `on_fact_changed` (C9, `context.propagate`) and `infer_hypotheses` (C10,
+`context.inference`).
 
 `db` is typed `Any` until bomboe's session exists. The DB reads go through bomboe's services
 (arch 15.1 `services/`), looked up at call time because B3 isn't merged yet; tests replace them.
@@ -15,10 +15,10 @@ from typing import Any
 
 from app import clock
 from app.config import get_settings
-from app.context import inference, library, questions
+from app.context import inference, library, questions, rules
 from app.context.evaluate import evaluate, goal_impact
 from app.domain.enums import Decision
-from app.domain.models import LifeFact, LifeFactDraft, Signature, TxView
+from app.domain.models import LifeFact, LifeFactDraft, PatternRule, Signature, TxView
 from app.domain.results import (
     Evaluation,
     PropagationResult,
@@ -101,13 +101,43 @@ def signatures_for_fact(
 
 
 def on_fact_changed(db: Any, user_id: int, fact_id: int) -> PropagationResult:
-    """Stub of C9: a no-op (nothing re-evaluated, the scale unchanged)."""
-    return PropagationResult(fact_id=fact_id)
+    """C9 (5.3.9): signatures → baselines → the last 30 days re-read → plan + forecast."""
+    from app.context import propagate  # it uses this module's loaders
+
+    return propagate.on_fact_changed(db, user_id, fact_id)
+
+
+def save_rule_change(
+    db: Any, user_id: int, old: PatternRule | None, change: RuleChange
+) -> RuleChange:
+    """Store what C8 decided through bomboe's `pattern_rules`: a new rule → `create`; else the
+    difference from `old` → `record_hit` / `record_miss` / `set_confidence` / `deactivate`.
+    Returns the change carrying the stored rule. Also used for `rules.decay`'s changes."""
+    store = _service("pattern_rules")
+    new = change.rule
+    if old is None or old.id is None:
+        return change.model_copy(update={"rule": store.create(db, user_id, new)})
+    saved = old
+    if new.hits > old.hits:
+        saved = store.record_hit(db, user_id, old.id)
+    if new.misses > old.misses:
+        saved = store.record_miss(db, user_id, old.id)
+    if new.confidence != old.confidence:
+        saved = store.set_confidence(db, user_id, old.id, new.confidence)
+    if old.active and not new.active:
+        saved = store.deactivate(db, user_id, old.id)
+    return change.model_copy(update={"rule": saved})
 
 
 def learn_from_annotation(db: Any, user_id: int, tx_id: int) -> RuleChange | None:
-    """Stub of C8: never learns a rule."""
-    return None
+    """C8 (5.3.7): what the user's explanation of `tx_id` teaches, stored; None when nothing."""
+    tx = _transaction(db, user_id, tx_id)
+    ctx = _context(db, user_id, clock.today())
+    change = rules.learn(tx, ctx.transactions, ctx.rules)
+    if change is None:
+        return None
+    old = next((r for r in ctx.rules if r.id is not None and r.id == change.rule.id), None)
+    return save_rule_change(db, user_id, old, change)
 
 
 def _rejected_facts(db: Any, user_id: int) -> list[LifeFact]:

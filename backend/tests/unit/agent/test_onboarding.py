@@ -21,6 +21,7 @@ from app.agent.style import find_banned
 from app.agent.wiring import AgentWiring
 from app.clock import FixedClock, use_clock
 from app.domain.enums import FactSource, FactType
+from app.domain.results import PropagationResult
 from app.domain.user_context import UserContext
 from tests.builders import ctx
 from tests.fakes.fake_llm import FakeLLM, end_turn, tool_round, tool_use
@@ -80,6 +81,13 @@ def _clock() -> Any:
         yield c
 
 
+class LibraryOnlyContext(LazyContext):
+    """The real C4 library; C9's propagation needs the DB, so it is a no-op here."""
+
+    def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> PropagationResult | None:
+        return PropagationResult(fact_id=fact_id)
+
+
 def fresh() -> UserContext:
     """The live demo account: a profile and an account, nothing else (D30)."""
     return ctx(user_id=1, as_of=date(2026, 10, 29))
@@ -96,7 +104,7 @@ def wiring_for(harness: Harness) -> AgentWiring:
 
     # the real C4 library behind add_life_fact (LazyContext), the fake engine for D18
     tool_ctx = ToolContext(
-        user_id=1, services=harness.services, engine=harness.engine, context=LazyContext()
+        user_id=1, services=harness.services, engine=harness.engine, context=LibraryOnlyContext()
     )
     return AgentWiring(
         load_context=load_context, tool_context=lambda user_id: tool_ctx, load_history=load_history

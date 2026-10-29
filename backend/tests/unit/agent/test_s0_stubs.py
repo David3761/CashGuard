@@ -4,15 +4,10 @@ from datetime import UTC, datetime
 
 import pytest
 
-from app.agent.language import detect_language
 from app.agent.snapshot import build_snapshot
 from app.clock import FixedClock, use_clock
-from app.domain.enums import Language
 
-
-@pytest.mark.parametrize("current", list(Language))
-def test_detect_language_keeps_current(current: Language) -> None:
-    assert detect_language("I bought it for my colleagues", current) == current
+# detect_language is A11's real one now (tests: test_language.py).
 
 
 async def test_build_snapshot_is_the_async_shell(monkeypatch: pytest.MonkeyPatch) -> None:

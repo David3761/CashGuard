@@ -7,11 +7,12 @@ from pydantic import ValidationError
 
 from app import clock
 from app.agent.handlers.common import RunState, ToolContext, to_jsonable
+from app.context.rules import EXPLICIT_CONFIDENCE
 from app.domain.enums import RuleSource
 from app.domain.models import PatternRule
 from app.errors import DomainError
 
-EXPLICIT_CONFIDENCE = 0.9
+__all__ = ["EXPLICIT_CONFIDENCE", "create_pattern_rule"]
 
 
 def create_pattern_rule(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
