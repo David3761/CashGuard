@@ -10,14 +10,19 @@ import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Annotated, Any
 
 import httpx
 import jwt
+from fastapi import Depends, Header
 from jwt import PyJWK
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
+from app.db.session import get_db
+from app.domain.models import UserProfile
 from app.errors import DomainError
+from app.services import users
 
 log = logging.getLogger(__name__)
 
@@ -157,3 +162,50 @@ async def verify_token(token: str) -> Claims:
 
     roles = raw.get("realm_access", {}).get("roles", [])
     return Claims(sub=str(raw["sub"]), azp=azp, roles=frozenset(roles), raw=raw)
+
+
+# ── FastAPI dependencies (B5 step 2) ─────────────────────────────────────────────────────
+
+
+def bearer_token(authorization: str | None) -> str:
+    """The token of an `Authorization: Bearer <token>` header (scheme case-insensitive)."""
+    scheme, _, token = (authorization or "").strip().partition(" ")
+    if scheme.lower() != "bearer" or not token.strip():
+        raise _unauthorized("missing_token", "Send `Authorization: Bearer <access token>`.")
+    return token.strip()
+
+
+async def current_claims(
+    authorization: Annotated[str | None, Header()] = None,
+) -> Claims:
+    return await verify_token(bearer_token(authorization))
+
+
+async def require_internal(claims: Annotated[Claims, Depends(current_claims)]) -> Claims:
+    """`/internal/*`: only tokens with the realm role `internal` (the cron client)."""
+    if "internal" not in claims.roles:
+        raise DomainError("forbidden", "This endpoint is for internal jobs only.", status=403)
+    return claims
+
+
+async def user_for_claims(db: AsyncSession, claims: Claims) -> UserProfile:
+    user = await users.get_by_sub(db, claims.sub)
+    if user is None:
+        raise _unauthorized("unknown_user", "No CashGuard user for this login.")
+    return user
+
+
+async def current_user(
+    claims: Annotated[Claims, Depends(current_claims)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> UserProfile:
+    """The user of the request: Bearer token → claims → `users.keycloak_sub`. The only user id
+    used anywhere (arch 5.1)."""
+    return await user_for_claims(db, claims)
+
+
+async def ws_user(db: AsyncSession, token: str | None) -> UserProfile:
+    """WebSocket auth (`/ws?token=`); raises DomainError, the route closes with 1008."""
+    if not token:
+        raise _unauthorized("missing_token", "Pass the access token as ?token=.")
+    return await user_for_claims(db, await verify_token(token))
