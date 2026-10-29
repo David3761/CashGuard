@@ -1,0 +1,3151 @@
+[
+  {
+    "amount": "3200.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3200.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "RATA CREDIT IPOTECAR",
+    "occurred_at": "2026-02-15T09:00:00+02:00",
+    "ref": "ioana-0001",
+    "stream": "fixed:Rată ipotecar"
+  },
+  {
+    "amount": "213.54",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "213.54",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-02-16T07:23:00+02:00",
+    "ref": "ioana-0002",
+    "stream": "fuel"
+  },
+  {
+    "amount": "252.56",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "252.56",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-02-16T17:36:00+02:00",
+    "ref": "ioana-0003",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "99.78",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "99.78",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-02-17T18:08:00+02:00",
+    "ref": "ioana-0004",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "120.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "120.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "ORANGE ROMANIA SA",
+    "occurred_at": "2026-02-18T09:11:00+02:00",
+    "ref": "ioana-0005",
+    "stream": "fixed:Internet și telefon"
+  },
+  {
+    "amount": "121.81",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "121.81",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-02-18T19:19:00+02:00",
+    "ref": "ioana-0006",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "237.90",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "237.90",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-02-19T08:37:00+02:00",
+    "ref": "ioana-0007",
+    "stream": "fuel"
+  },
+  {
+    "amount": "128.03",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "128.03",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-02-19T18:52:00+02:00",
+    "ref": "ioana-0008",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "662.58",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "662.58",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ELECTRICA FURNIZARE SA",
+    "occurred_at": "2026-02-20T09:42:00+02:00",
+    "ref": "ioana-0009",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "182.78",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "182.78",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-02-20T19:20:00+02:00",
+    "ref": "ioana-0010",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "331.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "331.49",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-02-21T11:00:00+02:00",
+    "ref": "ioana-0011",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "101.82",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "101.82",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-02-21T18:15:00+02:00",
+    "ref": "ioana-0012",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "78.43",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "78.43",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-02-23T18:22:00+02:00",
+    "ref": "ioana-0013",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "41.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "41.23",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "health_pharmacy",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5912,
+    "merchant_raw": "CATENA 45 CLUJ",
+    "occurred_at": "2026-02-24T12:01:00+02:00",
+    "ref": "ioana-0014",
+    "stream": "pharmacy"
+  },
+  {
+    "amount": "315.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "315.39",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-02-24T17:54:00+02:00",
+    "ref": "ioana-0015",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "138.78",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "138.78",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-02-25T18:06:00+02:00",
+    "ref": "ioana-0016",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "249.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "249.32",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-02-26T08:57:00+02:00",
+    "ref": "ioana-0017",
+    "stream": "fuel"
+  },
+  {
+    "amount": "200.66",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "200.66",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-02-26T17:18:00+02:00",
+    "ref": "ioana-0018",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "440.03",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "440.03",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-02-28T11:50:00+02:00",
+    "ref": "ioana-0019",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "204.96",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "204.96",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-02-28T18:51:00+02:00",
+    "ref": "ioana-0020",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "238.42",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "238.42",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-03-02T08:17:00+02:00",
+    "ref": "ioana-0021",
+    "stream": "fuel"
+  },
+  {
+    "amount": "194.82",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "194.82",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-03T19:21:00+02:00",
+    "ref": "ioana-0022",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "118.96",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "118.96",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-04T18:12:00+02:00",
+    "ref": "ioana-0023",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "300.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "300.00",
+      "label": null,
+      "purpose": "household_care",
+      "source": "auto"
+    },
+    "category": "kids",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "CLUB SPORTIV U CLUJ",
+    "occurred_at": "2026-03-05T10:24:00+02:00",
+    "ref": "ioana-0024",
+    "stream": "fixed:Club sportiv copii"
+  },
+  {
+    "amount": "111.34",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "111.34",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-05T17:47:00+02:00",
+    "ref": "ioana-0025",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "119.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "119.10",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "health_pharmacy",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5912,
+    "merchant_raw": "CATENA 45 CLUJ",
+    "occurred_at": "2026-03-06T17:18:00+02:00",
+    "ref": "ioana-0026",
+    "stream": "pharmacy"
+  },
+  {
+    "amount": "217.69",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "217.69",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-06T17:23:00+02:00",
+    "ref": "ioana-0027",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "412.54",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "412.54",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-03-07T11:17:00+02:00",
+    "ref": "ioana-0028",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "132.75",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "132.75",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-07T17:32:00+02:00",
+    "ref": "ioana-0029",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "199.26",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "199.26",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-09T19:57:00+02:00",
+    "ref": "ioana-0030",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "15500.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU CONTA EXPERT CLUJ SRL",
+    "occurred_at": "2026-03-10T08:05:00+02:00",
+    "ref": "ioana-0031",
+    "stream": "salary"
+  },
+  {
+    "amount": "400.29",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "400.29",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-10T17:17:00+02:00",
+    "ref": "ioana-0032",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "4000.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4000.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CONT ECONOMII",
+    "occurred_at": "2026-03-11T09:25:00+02:00",
+    "ref": "ioana-0033",
+    "stream": "savings"
+  },
+  {
+    "amount": "77.25",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "77.25",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-11T19:59:00+02:00",
+    "ref": "ioana-0034",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "206.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "206.23",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-12T18:56:00+02:00",
+    "ref": "ioana-0035",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "109.30",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "109.30",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-13T18:59:00+02:00",
+    "ref": "ioana-0036",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "346.06",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "346.06",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-03-14T10:27:00+02:00",
+    "ref": "ioana-0037",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "78.75",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "78.75",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-14T18:39:00+02:00",
+    "ref": "ioana-0038",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "3200.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3200.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "RATA CREDIT IPOTECAR",
+    "occurred_at": "2026-03-15T10:06:00+02:00",
+    "ref": "ioana-0039",
+    "stream": "fixed:Rată ipotecar"
+  },
+  {
+    "amount": "62.67",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "62.67",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-16T19:03:00+02:00",
+    "ref": "ioana-0040",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "212.50",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "212.50",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-17T18:54:00+02:00",
+    "ref": "ioana-0041",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "120.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "120.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "ORANGE ROMANIA SA",
+    "occurred_at": "2026-03-18T10:08:00+02:00",
+    "ref": "ioana-0042",
+    "stream": "fixed:Internet și telefon"
+  },
+  {
+    "amount": "299.94",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "299.94",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-18T17:27:00+02:00",
+    "ref": "ioana-0043",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "175.16",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "175.16",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-19T17:09:00+02:00",
+    "ref": "ioana-0044",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "602.41",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "602.41",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ELECTRICA FURNIZARE SA",
+    "occurred_at": "2026-03-20T09:12:00+02:00",
+    "ref": "ioana-0045",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "136.90",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "136.90",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-20T17:11:00+02:00",
+    "ref": "ioana-0046",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "363.59",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "363.59",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-03-21T11:50:00+02:00",
+    "ref": "ioana-0047",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "130.77",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "130.77",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-23T19:29:00+02:00",
+    "ref": "ioana-0048",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "65.63",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "65.63",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-24T19:15:00+02:00",
+    "ref": "ioana-0049",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "90.95",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "90.95",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-25T19:41:00+02:00",
+    "ref": "ioana-0050",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "102.87",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "102.87",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-26T17:31:00+02:00",
+    "ref": "ioana-0051",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "101.90",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "101.90",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-27T19:57:00+02:00",
+    "ref": "ioana-0052",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "318.69",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "318.69",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-03-28T11:52:00+02:00",
+    "ref": "ioana-0053",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "106.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "106.37",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-28T17:03:00+02:00",
+    "ref": "ioana-0054",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "201.41",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "201.41",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "RESTAURANT ROATA CLUJ",
+    "occurred_at": "2026-03-29T13:33:00+03:00",
+    "ref": "ioana-0055",
+    "stream": "family_restaurant"
+  },
+  {
+    "amount": "256.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "256.39",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-03-30T07:17:00+03:00",
+    "ref": "ioana-0056",
+    "stream": "fuel"
+  },
+  {
+    "amount": "150.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "150.62",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-03-30T18:40:00+03:00",
+    "ref": "ioana-0057",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "223.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "223.23",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-03-31T19:23:00+03:00",
+    "ref": "ioana-0058",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "123.56",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "123.56",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-01T18:52:00+03:00",
+    "ref": "ioana-0059",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "181.47",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "181.47",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-04-02T07:37:00+03:00",
+    "ref": "ioana-0060",
+    "stream": "fuel"
+  },
+  {
+    "amount": "271.01",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "271.01",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-02T19:02:00+03:00",
+    "ref": "ioana-0061",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "128.55",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "128.55",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-04-03T18:44:00+03:00",
+    "ref": "ioana-0062",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "397.05",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "397.05",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-04-04T11:43:00+03:00",
+    "ref": "ioana-0063",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "165.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "165.35",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-04T19:52:00+03:00",
+    "ref": "ioana-0064",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "300.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "300.00",
+      "label": null,
+      "purpose": "household_care",
+      "source": "auto"
+    },
+    "category": "kids",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "CLUB SPORTIV U CLUJ",
+    "occurred_at": "2026-04-05T10:14:00+03:00",
+    "ref": "ioana-0065",
+    "stream": "fixed:Club sportiv copii"
+  },
+  {
+    "amount": "440.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "440.32",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-06T17:40:00+03:00",
+    "ref": "ioana-0066",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "397.60",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "397.60",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-04-07T18:59:00+03:00",
+    "ref": "ioana-0067",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "466.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "466.32",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-04-08T18:10:00+03:00",
+    "ref": "ioana-0068",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "340.47",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "340.47",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-09T17:23:00+03:00",
+    "ref": "ioana-0069",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "260.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "260.00",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "gifts",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "NORIEL JUCARII CLUJ",
+    "occurred_at": "2026-04-09T18:31:00+03:00",
+    "ref": "ioana-0070",
+    "stream": "calendar"
+  },
+  {
+    "amount": "15500.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU CONTA EXPERT CLUJ SRL",
+    "occurred_at": "2026-04-10T08:59:00+03:00",
+    "ref": "ioana-0071",
+    "stream": "salary"
+  },
+  {
+    "amount": "640.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "640.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-04-10T11:44:00+03:00",
+    "ref": "ioana-0072",
+    "stream": "calendar"
+  },
+  {
+    "amount": "4000.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4000.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CONT ECONOMII",
+    "occurred_at": "2026-04-11T09:09:00+03:00",
+    "ref": "ioana-0073",
+    "stream": "savings"
+  },
+  {
+    "amount": "430.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "430.23",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-04-11T10:15:00+03:00",
+    "ref": "ioana-0074",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "519.74",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "519.74",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-11T17:50:00+03:00",
+    "ref": "ioana-0075",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "237.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "237.32",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "RESTAURANT ROATA CLUJ",
+    "occurred_at": "2026-04-12T13:54:00+03:00",
+    "ref": "ioana-0076",
+    "stream": "family_restaurant"
+  },
+  {
+    "amount": "231.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "231.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-04-13T07:53:00+03:00",
+    "ref": "ioana-0077",
+    "stream": "fuel"
+  },
+  {
+    "amount": "138.59",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "138.59",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-13T17:39:00+03:00",
+    "ref": "ioana-0078",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "131.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "131.15",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-04-14T18:19:00+03:00",
+    "ref": "ioana-0079",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "3200.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3200.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "RATA CREDIT IPOTECAR",
+    "occurred_at": "2026-04-15T09:11:00+03:00",
+    "ref": "ioana-0080",
+    "stream": "fixed:Rată ipotecar"
+  },
+  {
+    "amount": "109.93",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "109.93",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-15T19:42:00+03:00",
+    "ref": "ioana-0081",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "127.91",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "127.91",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-16T17:03:00+03:00",
+    "ref": "ioana-0082",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "120.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "120.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "ORANGE ROMANIA SA",
+    "occurred_at": "2026-04-18T09:00:00+03:00",
+    "ref": "ioana-0083",
+    "stream": "fixed:Internet și telefon"
+  },
+  {
+    "amount": "308.12",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "308.12",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-04-18T11:37:00+03:00",
+    "ref": "ioana-0084",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "32.19",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "32.19",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "health_pharmacy",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5912,
+    "merchant_raw": "CATENA 45 CLUJ",
+    "occurred_at": "2026-04-18T12:08:00+03:00",
+    "ref": "ioana-0085",
+    "stream": "pharmacy"
+  },
+  {
+    "amount": "156.14",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "156.14",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-04-18T18:19:00+03:00",
+    "ref": "ioana-0086",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "227.25",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "227.25",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "RESTAURANT ROATA CLUJ",
+    "occurred_at": "2026-04-19T14:24:00+03:00",
+    "ref": "ioana-0087",
+    "stream": "family_restaurant"
+  },
+  {
+    "amount": "206.01",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "206.01",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-04-20T07:20:00+03:00",
+    "ref": "ioana-0088",
+    "stream": "fuel"
+  },
+  {
+    "amount": "587.77",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "587.77",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ELECTRICA FURNIZARE SA",
+    "occurred_at": "2026-04-20T10:23:00+03:00",
+    "ref": "ioana-0089",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "107.30",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "107.30",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-20T19:04:00+03:00",
+    "ref": "ioana-0090",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "122.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "122.39",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-21T19:46:00+03:00",
+    "ref": "ioana-0091",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "193.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "193.36",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-04-22T18:08:00+03:00",
+    "ref": "ioana-0092",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "91.73",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "91.73",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-23T19:21:00+03:00",
+    "ref": "ioana-0093",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "91.83",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "91.83",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-24T17:31:00+03:00",
+    "ref": "ioana-0094",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "429.45",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "429.45",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-04-25T10:34:00+03:00",
+    "ref": "ioana-0095",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "185.52",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "185.52",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-04-25T18:42:00+03:00",
+    "ref": "ioana-0096",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "236.96",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "236.96",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "RESTAURANT ROATA CLUJ",
+    "occurred_at": "2026-04-26T13:16:00+03:00",
+    "ref": "ioana-0097",
+    "stream": "family_restaurant"
+  },
+  {
+    "amount": "227.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "227.35",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-04-27T07:56:00+03:00",
+    "ref": "ioana-0098",
+    "stream": "fuel"
+  },
+  {
+    "amount": "78.85",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "78.85",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-27T19:39:00+03:00",
+    "ref": "ioana-0099",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "138.34",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "138.34",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-28T19:21:00+03:00",
+    "ref": "ioana-0100",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "170.24",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "170.24",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-04-29T17:53:00+03:00",
+    "ref": "ioana-0101",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "182.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "182.62",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-04-30T08:46:00+03:00",
+    "ref": "ioana-0102",
+    "stream": "fuel"
+  },
+  {
+    "amount": "149.73",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "149.73",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-04-30T17:55:00+03:00",
+    "ref": "ioana-0103",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "389.92",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "389.92",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-05-02T11:34:00+03:00",
+    "ref": "ioana-0104",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "138.46",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "138.46",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-02T19:52:00+03:00",
+    "ref": "ioana-0105",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "251.45",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "251.45",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "RESTAURANT ROATA CLUJ",
+    "occurred_at": "2026-05-03T14:50:00+03:00",
+    "ref": "ioana-0106",
+    "stream": "family_restaurant"
+  },
+  {
+    "amount": "218.52",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "218.52",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-05-04T07:36:00+03:00",
+    "ref": "ioana-0107",
+    "stream": "fuel"
+  },
+  {
+    "amount": "117.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "117.49",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-04T19:56:00+03:00",
+    "ref": "ioana-0108",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "300.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "300.00",
+      "label": null,
+      "purpose": "household_care",
+      "source": "auto"
+    },
+    "category": "kids",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "CLUB SPORTIV U CLUJ",
+    "occurred_at": "2026-05-05T10:35:00+03:00",
+    "ref": "ioana-0109",
+    "stream": "fixed:Club sportiv copii"
+  },
+  {
+    "amount": "199.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "199.49",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-05T18:38:00+03:00",
+    "ref": "ioana-0110",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "101.01",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "101.01",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-05-06T19:48:00+03:00",
+    "ref": "ioana-0111",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "180.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "180.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-05-07T08:14:00+03:00",
+    "ref": "ioana-0112",
+    "stream": "fuel"
+  },
+  {
+    "amount": "213.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "213.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-08T18:33:00+03:00",
+    "ref": "ioana-0113",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "457.92",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "457.92",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-05-09T10:45:00+03:00",
+    "ref": "ioana-0114",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "15500.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU CONTA EXPERT CLUJ SRL",
+    "occurred_at": "2026-05-10T08:25:00+03:00",
+    "ref": "ioana-0115",
+    "stream": "salary"
+  },
+  {
+    "amount": "221.46",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "221.46",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-05-11T07:22:00+03:00",
+    "ref": "ioana-0116",
+    "stream": "fuel"
+  },
+  {
+    "amount": "4000.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4000.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CONT ECONOMII",
+    "occurred_at": "2026-05-11T09:21:00+03:00",
+    "ref": "ioana-0117",
+    "stream": "savings"
+  },
+  {
+    "amount": "256.55",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "256.55",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-05-11T18:16:00+03:00",
+    "ref": "ioana-0118",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "129.42",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "129.42",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-12T19:05:00+03:00",
+    "ref": "ioana-0119",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "154.11",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "154.11",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-13T18:02:00+03:00",
+    "ref": "ioana-0120",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "136.87",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "136.87",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-14T18:48:00+03:00",
+    "ref": "ioana-0121",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "29.92",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "29.92",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "health_pharmacy",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5912,
+    "merchant_raw": "CATENA 45 CLUJ",
+    "occurred_at": "2026-05-15T09:38:00+03:00",
+    "ref": "ioana-0122",
+    "stream": "pharmacy"
+  },
+  {
+    "amount": "3200.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3200.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "RATA CREDIT IPOTECAR",
+    "occurred_at": "2026-05-15T10:27:00+03:00",
+    "ref": "ioana-0123",
+    "stream": "fixed:Rată ipotecar"
+  },
+  {
+    "amount": "284.26",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "284.26",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-05-15T19:37:00+03:00",
+    "ref": "ioana-0124",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "437.26",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "437.26",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-05-16T10:11:00+03:00",
+    "ref": "ioana-0125",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "147.13",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "147.13",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-05-16T19:35:00+03:00",
+    "ref": "ioana-0126",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "190.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "190.37",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-05-18T08:41:00+03:00",
+    "ref": "ioana-0127",
+    "stream": "fuel"
+  },
+  {
+    "amount": "120.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "120.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "ORANGE ROMANIA SA",
+    "occurred_at": "2026-05-18T09:22:00+03:00",
+    "ref": "ioana-0128",
+    "stream": "fixed:Internet și telefon"
+  },
+  {
+    "amount": "359.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "359.62",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-18T18:19:00+03:00",
+    "ref": "ioana-0129",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "76.24",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "76.24",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-05-19T18:03:00+03:00",
+    "ref": "ioana-0130",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "671.81",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "671.81",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ELECTRICA FURNIZARE SA",
+    "occurred_at": "2026-05-20T10:01:00+03:00",
+    "ref": "ioana-0131",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "112.63",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "112.63",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-05-20T18:05:00+03:00",
+    "ref": "ioana-0132",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "203.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "203.10",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-05-21T07:21:00+03:00",
+    "ref": "ioana-0133",
+    "stream": "fuel"
+  },
+  {
+    "amount": "198.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "198.15",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-05-21T19:00:00+03:00",
+    "ref": "ioana-0134",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "116.02",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "116.02",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-22T17:07:00+03:00",
+    "ref": "ioana-0135",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "440.67",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "440.67",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-05-23T10:45:00+03:00",
+    "ref": "ioana-0136",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "80.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "80.10",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "health_pharmacy",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5912,
+    "merchant_raw": "CATENA 45 CLUJ",
+    "occurred_at": "2026-05-23T12:47:00+03:00",
+    "ref": "ioana-0137",
+    "stream": "pharmacy"
+  },
+  {
+    "amount": "102.64",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "102.64",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-05-23T19:46:00+03:00",
+    "ref": "ioana-0138",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "241.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "241.39",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "RESTAURANT ROATA CLUJ",
+    "occurred_at": "2026-05-24T13:21:00+03:00",
+    "ref": "ioana-0139",
+    "stream": "family_restaurant"
+  },
+  {
+    "amount": "184.54",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "184.54",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-05-25T08:34:00+03:00",
+    "ref": "ioana-0140",
+    "stream": "fuel"
+  },
+  {
+    "amount": "95.83",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "95.83",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-25T18:22:00+03:00",
+    "ref": "ioana-0141",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "93.77",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "93.77",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-26T17:50:00+03:00",
+    "ref": "ioana-0142",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "90.28",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "90.28",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-27T17:50:00+03:00",
+    "ref": "ioana-0143",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "156.84",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "156.84",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-28T17:18:00+03:00",
+    "ref": "ioana-0144",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "97.52",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "97.52",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-05-29T19:02:00+03:00",
+    "ref": "ioana-0145",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "424.59",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "424.59",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-05-30T10:18:00+03:00",
+    "ref": "ioana-0146",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "420.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "420.00",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "gifts",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "NORIEL JUCARII CLUJ",
+    "occurred_at": "2026-05-30T12:06:00+03:00",
+    "ref": "ioana-0147",
+    "stream": "calendar"
+  },
+  {
+    "amount": "102.13",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "102.13",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-05-30T17:05:00+03:00",
+    "ref": "ioana-0148",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "204.86",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "204.86",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "RESTAURANT ROATA CLUJ",
+    "occurred_at": "2026-05-31T14:02:00+03:00",
+    "ref": "ioana-0149",
+    "stream": "family_restaurant"
+  },
+  {
+    "amount": "122.44",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "122.44",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-06-01T18:58:00+03:00",
+    "ref": "ioana-0150",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "83.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "83.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-06-02T18:56:00+03:00",
+    "ref": "ioana-0151",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "177.73",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "177.73",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-06-04T18:52:00+03:00",
+    "ref": "ioana-0152",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "300.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "300.00",
+      "label": null,
+      "purpose": "household_care",
+      "source": "auto"
+    },
+    "category": "kids",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "CLUB SPORTIV U CLUJ",
+    "occurred_at": "2026-06-05T10:24:00+03:00",
+    "ref": "ioana-0153",
+    "stream": "fixed:Club sportiv copii"
+  },
+  {
+    "amount": "121.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "121.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-06-05T19:36:00+03:00",
+    "ref": "ioana-0154",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "349.51",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "349.51",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-06-06T10:22:00+03:00",
+    "ref": "ioana-0155",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "229.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "229.32",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-06-08T07:29:00+03:00",
+    "ref": "ioana-0156",
+    "stream": "fuel"
+  },
+  {
+    "amount": "131.19",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "131.19",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-06-08T17:19:00+03:00",
+    "ref": "ioana-0157",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "221.38",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "221.38",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-06-09T19:00:00+03:00",
+    "ref": "ioana-0158",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "15500.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU CONTA EXPERT CLUJ SRL",
+    "occurred_at": "2026-06-10T08:57:00+03:00",
+    "ref": "ioana-0159",
+    "stream": "salary"
+  },
+  {
+    "amount": "173.33",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "173.33",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-06-10T18:18:00+03:00",
+    "ref": "ioana-0160",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "201.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "201.97",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "fuel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5541,
+    "merchant_raw": "OMV 2210 CLUJ",
+    "occurred_at": "2026-06-11T08:00:00+03:00",
+    "ref": "ioana-0161",
+    "stream": "fuel"
+  },
+  {
+    "amount": "4000.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4000.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CONT ECONOMII",
+    "occurred_at": "2026-06-11T09:59:00+03:00",
+    "ref": "ioana-0162",
+    "stream": "savings"
+  },
+  {
+    "amount": "222.78",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "222.78",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 123 CLUJ",
+    "occurred_at": "2026-06-11T17:47:00+03:00",
+    "ref": "ioana-0163",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "103.94",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "103.94",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-06-12T17:53:00+03:00",
+    "ref": "ioana-0164",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "376.53",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "376.53",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 1203 CLUJ",
+    "occurred_at": "2026-06-13T10:04:00+03:00",
+    "ref": "ioana-0165",
+    "stream": "kaufland_saturday"
+  },
+  {
+    "amount": "126.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "126.15",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "SHOP&GO 087 CLUJ",
+    "occurred_at": "2026-06-13T18:18:00+03:00",
+    "ref": "ioana-0166",
+    "stream": "shopgo"
+  },
+  {
+    "amount": "245.65",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "245.65",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "RESTAURANT ROATA CLUJ",
+    "occurred_at": "2026-06-14T13:25:00+03:00",
+    "ref": "ioana-0167",
+    "stream": "family_restaurant"
+  }
+]

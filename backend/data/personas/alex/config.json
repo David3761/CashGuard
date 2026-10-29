@@ -1,0 +1,24 @@
+{
+  "id": "alex",
+  "seed": 505,
+  "user": {"name": "Alex", "age": 24, "city": "București", "language": "ro", "coach_style": "warm"},
+  "current_balance": "1200.00",
+  "income_sources": [],
+  "fixed_costs": [],
+  "goal": null,
+  "goal_pot": null,
+  "pots": [],
+  "plan_preferences": {},
+  "streams": [
+    {"name": "groceries", "kind": "weekly", "per_week": [2, 3], "weekdays": [1, 2, 3, 4, 5, 6, 7], "hours": [17, 21],
+     "median": 60, "sigma": 0.4, "merchant_raw": "LIDL 0518 BUCURESTI", "mcc": 5411, "category": "groceries"},
+    {"name": "food_delivery", "kind": "weekly", "per_week": [1, 2], "weekdays": [1, 2, 3, 4, 5, 6, 7], "hours": [19, 22],
+     "median": 55, "sigma": 0.3, "merchant_raw": "TAZZ*COMANDA 4410", "mcc": 5814, "category": "food_delivery"},
+    {"name": "transport", "kind": "weekly", "per_week": [1, 3], "weekdays": [1, 2, 3, 4, 5, 6, 7], "hours": [8, 23],
+     "median": 24, "sigma": 0.4, "merchant_raw": "UBER *TRIP", "mcc": 4121, "category": "transport"}
+  ],
+  "calendar": [],
+  "answered": [],
+  "receipt_share": 0.0,
+  "receipt_items": {}
+}

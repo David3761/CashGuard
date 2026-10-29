@@ -1,0 +1,203 @@
+{
+  "id": "andrei",
+  "seed": 202,
+  "user": {
+    "name": "Andrei",
+    "age": 31,
+    "city": "București",
+    "language": "ro",
+    "coach_style": "direct"
+  },
+  "current_balance": "7240.00",
+  "income_sources": [
+    {
+      "source": "Salariu",
+      "amount": "9000",
+      "day_of_month": 5,
+      "merchant_raw": "SALARIU SPORTDATA ANALYTICS SRL"
+    }
+  ],
+  "fixed_costs": [
+    {
+      "name": "Chirie",
+      "amount": "2600",
+      "day_of_month": 1,
+      "merchant_raw": "TRANSFER CHIRIE IONESCU M",
+      "category": "housing_rent"
+    },
+    {
+      "name": "Utilități",
+      "amount": "420",
+      "day_of_month": 15,
+      "merchant_raw": "ENGIE ROMANIA SA",
+      "mcc": 4900,
+      "category": "utilities",
+      "jitter_pct": 10
+    },
+    {
+      "name": "Internet",
+      "amount": "50",
+      "day_of_month": 18,
+      "merchant_raw": "DIGI ROMANIA SA",
+      "mcc": 4814,
+      "category": "telecom"
+    },
+    {
+      "name": "DAZN",
+      "amount": "45",
+      "day_of_month": 8,
+      "merchant_raw": "DAZN LIMITED",
+      "mcc": 5815,
+      "category": "subscriptions"
+    },
+    {
+      "name": "Voyo Sport",
+      "amount": "35",
+      "day_of_month": 12,
+      "merchant_raw": "VOYO.RO SPORT",
+      "mcc": 5815,
+      "category": "subscriptions"
+    }
+  ],
+  "goal": {
+    "amount": "15000",
+    "deadline": "2027-03-31",
+    "motivation": "Avans pentru mașină",
+    "hard_deadline": false
+  },
+  "goal_pot": {
+    "name": "Avans mașină",
+    "saved": "4100"
+  },
+  "pots": [],
+  "plan_preferences": {
+    "buffer_pct": "0.10"
+  },
+  "streams": [
+    {
+      "name": "groceries",
+      "kind": "weekly",
+      "per_week": [
+        2,
+        3
+      ],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "hours": [
+        17,
+        21
+      ],
+      "median": 150,
+      "sigma": 0.35,
+      "merchant_raw": [
+        "KAUFLAND 0812 BUCURESTI",
+        "LIDL 0233 BUCURESTI"
+      ],
+      "mcc": 5411,
+      "category": "groceries"
+    },
+    {
+      "name": "restaurants",
+      "kind": "weekly",
+      "per_week": [
+        1,
+        2
+      ],
+      "weekdays": [
+        5,
+        6,
+        7
+      ],
+      "hours": [
+        19,
+        22
+      ],
+      "median": 140,
+      "sigma": 0.3,
+      "merchant_raw": "TRATTORIA IL CALCIO",
+      "mcc": 5812,
+      "category": "restaurants"
+    },
+    {
+      "name": "football",
+      "kind": "every",
+      "weekdays": [
+        6
+      ],
+      "probability": 0.5,
+      "hours": [
+        16,
+        18
+      ],
+      "range": [
+        80,
+        150
+      ],
+      "merchant_raw": "BILET.RO FOTBAL",
+      "mcc": 7941,
+      "category": "entertainment"
+    },
+    {
+      "name": "bolt",
+      "kind": "weekly",
+      "per_week": [
+        1,
+        2
+      ],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "hours": [
+        9,
+        23
+      ],
+      "median": 30,
+      "sigma": 0.4,
+      "merchant_raw": "BOLT.EU/O/2603",
+      "mcc": 4121,
+      "category": "transport"
+    },
+    {
+      "name": "savings",
+      "kind": "monthly",
+      "day_of_month": 6,
+      "amount": "1500",
+      "hours": [
+        9,
+        10
+      ],
+      "merchant_raw": "TRANSFER CONT ECONOMII",
+      "category": "savings"
+    }
+  ],
+  "calendar": [
+    {
+      "date": "2026-03-21",
+      "amount": "349.99",
+      "merchant_raw": "ALTEX ROMANIA SRL",
+      "mcc": 5732,
+      "category": "electronics",
+      "description": "Căști wireless",
+      "hours": [
+        12,
+        14
+      ]
+    }
+  ],
+  "answered": [],
+  "receipt_share": 0.0,
+  "receipt_items": {}
+}

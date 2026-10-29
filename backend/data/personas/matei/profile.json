@@ -1,0 +1,67 @@
+{
+  "account": {
+    "current_balance": "4870.00"
+  },
+  "fixed_costs": [
+    {
+      "amount": "2000",
+      "day_of_month": 1,
+      "name": "Chirie"
+    },
+    {
+      "amount": "350",
+      "day_of_month": 15,
+      "name": "Utilități"
+    },
+    {
+      "amount": "60",
+      "day_of_month": 20,
+      "name": "Telefon"
+    },
+    {
+      "amount": "25",
+      "day_of_month": 5,
+      "name": "Spotify"
+    },
+    {
+      "amount": "180",
+      "day_of_month": 3,
+      "name": "Sală"
+    }
+  ],
+  "goal": {
+    "amount": "10000",
+    "deadline": "2026-12-31",
+    "hard_deadline": false,
+    "motivation": "Fond de siguranță"
+  },
+  "goal_pot": {
+    "name": "Fond 10.000",
+    "saved": "5200"
+  },
+  "history": {
+    "as_of": "2026-06-15",
+    "from": "2026-02-15",
+    "start_balance": "1756.98",
+    "to": "2026-06-14"
+  },
+  "id": "matei",
+  "income_sources": [
+    {
+      "amount": "7000",
+      "day_of_month": 10,
+      "source": "Salariu"
+    }
+  ],
+  "plan_preferences": {
+    "buffer_pct": "0.10"
+  },
+  "pots": [],
+  "user": {
+    "age": 26,
+    "city": "București",
+    "coach_style": "warm",
+    "language": "ro",
+    "name": "Matei"
+  }
+}

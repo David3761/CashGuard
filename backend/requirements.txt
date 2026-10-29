@@ -1,0 +1,10 @@
+# engine runtime (E1–E13): the standard library + numpy for the Monte Carlo forecast (E8)
+numpy==2.5.4
+
+# tests
+pytest==9.2.0
+hypothesis==6.170.13
+
+# checks (lint, format, types)
+ruff==0.17.3
+mypy==2.4.1

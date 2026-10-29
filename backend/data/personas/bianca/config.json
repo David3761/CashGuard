@@ -1,0 +1,166 @@
+{
+  "id": "bianca",
+  "seed": 303,
+  "user": {
+    "name": "Bianca",
+    "age": 22,
+    "city": "Iași",
+    "language": "ro",
+    "coach_style": "warm"
+  },
+  "current_balance": "1900.00",
+  "income_sources": [],
+  "irregular_income": {
+    "wage": {
+      "range": [
+        1500,
+        1900
+      ],
+      "days": [
+        8,
+        14
+      ],
+      "merchant_raw": "PLATA SALARIU CAFENEAUA VERDE",
+      "category": "income"
+    },
+    "tips": {
+      "range": [
+        120,
+        320
+      ],
+      "hours": [
+        21,
+        23
+      ],
+      "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+      "category": "income"
+    }
+  },
+  "fixed_costs": [
+    {
+      "name": "Chirie (partea mea)",
+      "amount": "700",
+      "day_of_month": 1,
+      "merchant_raw": "TRANSFER CHIRIE COLEG",
+      "category": "housing_rent"
+    },
+    {
+      "name": "Telefon",
+      "amount": "30",
+      "day_of_month": 22,
+      "merchant_raw": "VODAFONE ROMANIA",
+      "mcc": 4814,
+      "category": "telecom"
+    }
+  ],
+  "goal": {
+    "amount": "3000",
+    "deadline": "2026-08-31",
+    "motivation": "Vara la mare",
+    "hard_deadline": true
+  },
+  "goal_pot": {
+    "name": "Vara la mare",
+    "saved": "950"
+  },
+  "pots": [],
+  "plan_preferences": {
+    "buffer_pct": "0.05"
+  },
+  "streams": [
+    {
+      "name": "groceries",
+      "kind": "weekly",
+      "per_week": [
+        3,
+        5
+      ],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "hours": [
+        16,
+        21
+      ],
+      "median": 34,
+      "sigma": 0.45,
+      "merchant_raw": "PROFI 233 IASI",
+      "mcc": 5411,
+      "category": "groceries"
+    },
+    {
+      "name": "coffee",
+      "kind": "weekly",
+      "per_week": [
+        3,
+        5
+      ],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "hours": [
+        8,
+        18
+      ],
+      "median": 14,
+      "sigma": 0.3,
+      "merchant_raw": "TUCANO COFFEE IASI",
+      "mcc": 5814,
+      "category": "restaurants"
+    },
+    {
+      "name": "bus",
+      "kind": "weekly",
+      "per_week": [
+        2,
+        4
+      ],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hours": [
+        7,
+        9
+      ],
+      "range": [
+        3,
+        6
+      ],
+      "merchant_raw": "CTP IASI BILET",
+      "mcc": 4111,
+      "category": "transport"
+    },
+    {
+      "name": "savings",
+      "kind": "monthly",
+      "day_of_month": 15,
+      "amount": "650",
+      "hours": [
+        9,
+        10
+      ],
+      "merchant_raw": "TRANSFER PUSCULITA",
+      "category": "savings"
+    }
+  ],
+  "calendar": [],
+  "answered": [],
+  "receipt_share": 0.0,
+  "receipt_items": {}
+}
