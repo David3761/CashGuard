@@ -1,0 +1,69 @@
+# Hosted deployment (B14, D36/D38): docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d --build
+# Needs DOMAIN and the secrets in backend/.env (never committed). See docs/deploy.md.
+# Every secret is REQUIRED here (`${VAR:?}`): the base file's DEV-ONLY defaults never reach a
+# server, and a missing value stops `docker compose up` instead of starting with admin/admin.
+# Compose merges `environment` maps, so these entries replace the base ones.
+services:
+  caddy:
+    image: caddy:2.8
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN, e.g. cashguard.example.ro}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on:
+      - api
+      - keycloak
+    restart: unless-stopped
+
+  db:
+    ports: !reset []
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:?set KC_DB_PASSWORD}
+    restart: unless-stopped
+
+  db-test:
+    profiles: ["test"]
+
+  keycloak:
+    command: ["start", "--import-realm"]
+    ports: !reset []
+    environment:
+      KC_HOSTNAME: https://auth.${DOMAIN:?set DOMAIN}
+      KC_PROXY_HEADERS: xforwarded
+      KC_HTTP_ENABLED: "true"
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:?set KC_DB_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER:?set KC_ADMIN_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:?set KC_ADMIN_PASSWORD}
+      KC_CRON_CLIENT_SECRET: ${KC_CRON_CLIENT_SECRET:?set KC_CRON_CLIENT_SECRET}
+      # The persona password: at least 12 characters (the realm's password policy).
+      KC_DEMO_PASSWORD: ${KC_DEMO_PASSWORD:?set KC_DEMO_PASSWORD}
+    restart: unless-stopped
+
+  api:
+    ports: !reset []
+    environment:
+      KEYCLOAK_ISSUER: https://auth.${DOMAIN:?set DOMAIN}/realms/cashguard
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080/realms/cashguard
+      DATABASE_URL: postgresql+psycopg://cashguard:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/cashguard
+      # The hosted DEMO runs the simulator on purpose (the jury drives the days). /api/sim/*
+      # needs the realm role `sim` (the demo personas only) and is rate limited. A real
+      # deployment sets SIM_MODE=false: the routes are then not mounted at all.
+      SIM_MODE: ${SIM_MODE:-true}
+      API_DOCS_ENABLED: "false"
+      # Only Caddy reaches the api (no published port), so its X-Forwarded-* are trusted.
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-*}
+    restart: unless-stopped
+
+  cron:
+    environment:
+      CRON_ENABLED_JOBS: ${CRON_ENABLED_JOBS:-process recover}
+      CRON_CLIENT_SECRET: ${KC_CRON_CLIENT_SECRET:?set KC_CRON_CLIENT_SECRET}
+    restart: unless-stopped
+
+volumes:
+  caddy-data:

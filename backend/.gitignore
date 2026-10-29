@@ -1,0 +1,15 @@
+# Secrets: copy .env.example to .env (never commit any .env file except the example)
+.env
+.env.*
+!.env.example
+# Python / tooling
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/

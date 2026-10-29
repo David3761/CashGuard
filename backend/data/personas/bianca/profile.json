@@ -1,0 +1,46 @@
+{
+  "account": {
+    "current_balance": "1900.00"
+  },
+  "fixed_costs": [
+    {
+      "amount": "700",
+      "day_of_month": 1,
+      "name": "Chirie (partea mea)"
+    },
+    {
+      "amount": "30",
+      "day_of_month": 22,
+      "name": "Telefon"
+    }
+  ],
+  "goal": {
+    "amount": "3000",
+    "deadline": "2026-08-31",
+    "hard_deadline": true,
+    "motivation": "Vara la mare"
+  },
+  "goal_pot": {
+    "name": "Vara la mare",
+    "saved": "950"
+  },
+  "history": {
+    "as_of": "2026-06-15",
+    "from": "2026-02-15",
+    "start_balance": "140.22",
+    "to": "2026-06-14"
+  },
+  "id": "bianca",
+  "income_sources": [],
+  "plan_preferences": {
+    "buffer_pct": "0.05"
+  },
+  "pots": [],
+  "user": {
+    "age": 22,
+    "city": "Iași",
+    "coach_style": "warm",
+    "language": "ro",
+    "name": "Bianca"
+  }
+}

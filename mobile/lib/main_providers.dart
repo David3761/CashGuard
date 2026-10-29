@@ -46,8 +46,8 @@ Future<void> appStartup(Ref ref) async {
     // access to the internet connection state.
     ..watch(internetConnectionProvider);
 
-  // TODO(everyone): These lines should be uncommented once the project is
-  // forked. The auth token should be refreshed when the app loads.
+  // TODO(everyone): uncomment these lines once the backend has accounts, so
+  // that the auth token is refreshed when the app loads.
   //
   // Check if the user has previously signed, by looking at any locally saved
   // auth token.
@@ -91,9 +91,8 @@ class Auth extends _$Auth {
   /// the user to the login screen).
   Future<void> logout() async {
     state = const .loading();
-    // TODO(everyone): uncomment this after you fork the repository if the
-    // device token needs to be sent to the server. Otherwise, you may remove
-    // it.
+    // TODO(everyone): uncomment this once the backend stores the device
+    // tokens for push notifications. Otherwise, remove it.
     // await sendOrDeleteDeviceToken(deleteToken: true);
     await ref.read(userRepositoryProvider).logoutUserLocally();
     ref.invalidateSelf();

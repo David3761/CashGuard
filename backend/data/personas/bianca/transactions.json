@@ -1,0 +1,4151 @@
+[
+  {
+    "amount": "650.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "650.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER PUSCULITA",
+    "occurred_at": "2026-02-15T09:32:00+02:00",
+    "ref": "bianca-0001",
+    "stream": "savings"
+  },
+  {
+    "amount": "50.92",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "50.92",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-02-15T18:28:00+02:00",
+    "ref": "bianca-0002",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.02",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.02",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-02-16T07:31:00+02:00",
+    "ref": "bianca-0003",
+    "stream": "bus"
+  },
+  {
+    "amount": "62.82",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "62.82",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-02-16T17:24:00+02:00",
+    "ref": "bianca-0004",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.33",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.33",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-02-17T08:06:00+02:00",
+    "ref": "bianca-0005",
+    "stream": "bus"
+  },
+  {
+    "amount": "14.91",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.91",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-02-17T15:11:00+02:00",
+    "ref": "bianca-0006",
+    "stream": "coffee"
+  },
+  {
+    "amount": "29.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "29.39",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-02-17T19:40:00+02:00",
+    "ref": "bianca-0007",
+    "stream": "groceries"
+  },
+  {
+    "amount": "41.11",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "41.11",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-02-18T16:01:00+02:00",
+    "ref": "bianca-0008",
+    "stream": "groceries"
+  },
+  {
+    "amount": "7.58",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "7.58",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-02-19T08:23:00+02:00",
+    "ref": "bianca-0009",
+    "stream": "coffee"
+  },
+  {
+    "amount": "4.79",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.79",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-02-20T08:05:00+02:00",
+    "ref": "bianca-0010",
+    "stream": "bus"
+  },
+  {
+    "amount": "15.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.36",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-02-20T10:15:00+02:00",
+    "ref": "bianca-0011",
+    "stream": "coffee"
+  },
+  {
+    "amount": "39.52",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "39.52",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-02-20T18:08:00+02:00",
+    "ref": "bianca-0012",
+    "stream": "groceries"
+  },
+  {
+    "amount": "317.28",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-02-20T22:12:00+02:00",
+    "ref": "bianca-0013",
+    "stream": "tips"
+  },
+  {
+    "amount": "30.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "30.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "VODAFONE ROMANIA",
+    "occurred_at": "2026-02-22T09:11:00+02:00",
+    "ref": "bianca-0014",
+    "stream": "fixed:Telefon"
+  },
+  {
+    "amount": "10.48",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.48",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-02-22T16:40:00+02:00",
+    "ref": "bianca-0015",
+    "stream": "coffee"
+  },
+  {
+    "amount": "3.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.35",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-02-23T07:59:00+02:00",
+    "ref": "bianca-0016",
+    "stream": "bus"
+  },
+  {
+    "amount": "10.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.10",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-02-23T15:13:00+02:00",
+    "ref": "bianca-0017",
+    "stream": "coffee"
+  },
+  {
+    "amount": "26.80",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.80",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-02-23T20:23:00+02:00",
+    "ref": "bianca-0018",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.95",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.95",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-02-24T07:25:00+02:00",
+    "ref": "bianca-0019",
+    "stream": "bus"
+  },
+  {
+    "amount": "214.57",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-02-24T21:44:00+02:00",
+    "ref": "bianca-0020",
+    "stream": "tips"
+  },
+  {
+    "amount": "10.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.39",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-02-25T10:21:00+02:00",
+    "ref": "bianca-0021",
+    "stream": "coffee"
+  },
+  {
+    "amount": "5.43",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.43",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-02-26T07:20:00+02:00",
+    "ref": "bianca-0022",
+    "stream": "bus"
+  },
+  {
+    "amount": "7.94",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "7.94",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-02-26T09:32:00+02:00",
+    "ref": "bianca-0023",
+    "stream": "coffee"
+  },
+  {
+    "amount": "3.50",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.50",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-02-27T08:01:00+02:00",
+    "ref": "bianca-0024",
+    "stream": "bus"
+  },
+  {
+    "amount": "26.38",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.38",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-02-28T16:14:00+02:00",
+    "ref": "bianca-0025",
+    "stream": "groceries"
+  },
+  {
+    "amount": "700.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "700.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE COLEG",
+    "occurred_at": "2026-03-01T09:04:00+02:00",
+    "ref": "bianca-0026",
+    "stream": "fixed:Chirie (partea mea)"
+  },
+  {
+    "amount": "45.59",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "45.59",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-01T16:32:00+02:00",
+    "ref": "bianca-0027",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.03",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.03",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-02T07:38:00+02:00",
+    "ref": "bianca-0028",
+    "stream": "bus"
+  },
+  {
+    "amount": "15.01",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.01",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-02T13:59:00+02:00",
+    "ref": "bianca-0029",
+    "stream": "coffee"
+  },
+  {
+    "amount": "32.94",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "32.94",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-02T20:16:00+02:00",
+    "ref": "bianca-0030",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-03T08:24:00+02:00",
+    "ref": "bianca-0031",
+    "stream": "bus"
+  },
+  {
+    "amount": "17.73",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.73",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-03T09:45:00+02:00",
+    "ref": "bianca-0032",
+    "stream": "coffee"
+  },
+  {
+    "amount": "19.08",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "19.08",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-03T17:18:00+02:00",
+    "ref": "bianca-0033",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.49",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-05T08:12:00+02:00",
+    "ref": "bianca-0034",
+    "stream": "bus"
+  },
+  {
+    "amount": "10.56",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.56",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-05T10:54:00+02:00",
+    "ref": "bianca-0035",
+    "stream": "coffee"
+  },
+  {
+    "amount": "25.02",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "25.02",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-05T16:32:00+02:00",
+    "ref": "bianca-0036",
+    "stream": "groceries"
+  },
+  {
+    "amount": "3.66",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.66",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-06T07:37:00+02:00",
+    "ref": "bianca-0037",
+    "stream": "bus"
+  },
+  {
+    "amount": "11.21",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "11.21",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-06T09:16:00+02:00",
+    "ref": "bianca-0038",
+    "stream": "coffee"
+  },
+  {
+    "amount": "171.31",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-03-06T20:22:00+02:00",
+    "ref": "bianca-0039",
+    "stream": "tips"
+  },
+  {
+    "amount": "26.33",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.33",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-07T16:36:00+02:00",
+    "ref": "bianca-0040",
+    "stream": "groceries"
+  },
+  {
+    "amount": "16.20",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.20",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-08T12:53:00+02:00",
+    "ref": "bianca-0041",
+    "stream": "coffee"
+  },
+  {
+    "amount": "34.81",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "34.81",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-08T20:24:00+02:00",
+    "ref": "bianca-0042",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-09T07:26:00+02:00",
+    "ref": "bianca-0043",
+    "stream": "bus"
+  },
+  {
+    "amount": "1890.31",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "PLATA SALARIU CAFENEAUA VERDE",
+    "occurred_at": "2026-03-09T10:09:00+02:00",
+    "ref": "bianca-0044",
+    "stream": "wage"
+  },
+  {
+    "amount": "12.50",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.50",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-09T13:23:00+02:00",
+    "ref": "bianca-0045",
+    "stream": "coffee"
+  },
+  {
+    "amount": "3.98",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.98",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-10T08:38:00+02:00",
+    "ref": "bianca-0046",
+    "stream": "bus"
+  },
+  {
+    "amount": "21.09",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "21.09",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-10T14:31:00+02:00",
+    "ref": "bianca-0047",
+    "stream": "coffee"
+  },
+  {
+    "amount": "3.64",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.64",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-11T08:39:00+02:00",
+    "ref": "bianca-0048",
+    "stream": "bus"
+  },
+  {
+    "amount": "16.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.07",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-11T13:02:00+02:00",
+    "ref": "bianca-0049",
+    "stream": "coffee"
+  },
+  {
+    "amount": "88.77",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "88.77",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-11T18:54:00+02:00",
+    "ref": "bianca-0050",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.73",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.73",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-12T08:55:00+02:00",
+    "ref": "bianca-0051",
+    "stream": "bus"
+  },
+  {
+    "amount": "43.13",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "43.13",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-12T19:59:00+02:00",
+    "ref": "bianca-0052",
+    "stream": "groceries"
+  },
+  {
+    "amount": "74.50",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "74.50",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-13T19:35:00+02:00",
+    "ref": "bianca-0053",
+    "stream": "groceries"
+  },
+  {
+    "amount": "126.44",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-03-13T22:55:00+02:00",
+    "ref": "bianca-0054",
+    "stream": "tips"
+  },
+  {
+    "amount": "38.58",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "38.58",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-14T19:23:00+02:00",
+    "ref": "bianca-0055",
+    "stream": "groceries"
+  },
+  {
+    "amount": "650.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "650.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER PUSCULITA",
+    "occurred_at": "2026-03-15T09:34:00+02:00",
+    "ref": "bianca-0056",
+    "stream": "savings"
+  },
+  {
+    "amount": "12.85",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.85",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-15T10:33:00+02:00",
+    "ref": "bianca-0057",
+    "stream": "coffee"
+  },
+  {
+    "amount": "23.98",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "23.98",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-16T08:38:00+02:00",
+    "ref": "bianca-0058",
+    "stream": "coffee"
+  },
+  {
+    "amount": "14.12",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.12",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-16T18:42:00+02:00",
+    "ref": "bianca-0059",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.39",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-17T08:44:00+02:00",
+    "ref": "bianca-0060",
+    "stream": "bus"
+  },
+  {
+    "amount": "27.21",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "27.21",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-17T20:35:00+02:00",
+    "ref": "bianca-0061",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.04",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.04",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-18T07:26:00+02:00",
+    "ref": "bianca-0062",
+    "stream": "bus"
+  },
+  {
+    "amount": "13.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "13.32",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-18T13:37:00+02:00",
+    "ref": "bianca-0063",
+    "stream": "coffee"
+  },
+  {
+    "amount": "4.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.97",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-19T07:14:00+02:00",
+    "ref": "bianca-0064",
+    "stream": "bus"
+  },
+  {
+    "amount": "14.40",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.40",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-19T08:11:00+02:00",
+    "ref": "bianca-0065",
+    "stream": "coffee"
+  },
+  {
+    "amount": "32.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "32.97",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-19T16:43:00+02:00",
+    "ref": "bianca-0066",
+    "stream": "groceries"
+  },
+  {
+    "amount": "78.18",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "78.18",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-21T17:16:00+02:00",
+    "ref": "bianca-0067",
+    "stream": "groceries"
+  },
+  {
+    "amount": "16.02",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.02",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-21T17:52:00+02:00",
+    "ref": "bianca-0068",
+    "stream": "coffee"
+  },
+  {
+    "amount": "30.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "30.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "VODAFONE ROMANIA",
+    "occurred_at": "2026-03-22T10:12:00+02:00",
+    "ref": "bianca-0069",
+    "stream": "fixed:Telefon"
+  },
+  {
+    "amount": "15.01",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.01",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-22T16:24:00+02:00",
+    "ref": "bianca-0070",
+    "stream": "coffee"
+  },
+  {
+    "amount": "258.99",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-03-22T20:31:00+02:00",
+    "ref": "bianca-0071",
+    "stream": "tips"
+  },
+  {
+    "amount": "4.84",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.84",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-23T08:36:00+02:00",
+    "ref": "bianca-0072",
+    "stream": "bus"
+  },
+  {
+    "amount": "10.41",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.41",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-23T11:29:00+02:00",
+    "ref": "bianca-0073",
+    "stream": "coffee"
+  },
+  {
+    "amount": "15.42",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.42",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-24T19:04:00+02:00",
+    "ref": "bianca-0074",
+    "stream": "groceries"
+  },
+  {
+    "amount": "177.98",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-03-24T22:06:00+02:00",
+    "ref": "bianca-0075",
+    "stream": "tips"
+  },
+  {
+    "amount": "4.14",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.14",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-25T08:53:00+02:00",
+    "ref": "bianca-0076",
+    "stream": "bus"
+  },
+  {
+    "amount": "16.11",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.11",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-25T11:10:00+02:00",
+    "ref": "bianca-0077",
+    "stream": "coffee"
+  },
+  {
+    "amount": "40.74",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "40.74",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-25T16:22:00+02:00",
+    "ref": "bianca-0078",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.82",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.82",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-27T08:54:00+02:00",
+    "ref": "bianca-0079",
+    "stream": "bus"
+  },
+  {
+    "amount": "9.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "9.36",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-27T14:35:00+02:00",
+    "ref": "bianca-0080",
+    "stream": "coffee"
+  },
+  {
+    "amount": "13.95",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "13.95",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-28T11:34:00+02:00",
+    "ref": "bianca-0081",
+    "stream": "coffee"
+  },
+  {
+    "amount": "38.84",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "38.84",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-28T20:59:00+02:00",
+    "ref": "bianca-0082",
+    "stream": "groceries"
+  },
+  {
+    "amount": "24.70",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "24.70",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-29T18:51:00+03:00",
+    "ref": "bianca-0083",
+    "stream": "groceries"
+  },
+  {
+    "amount": "254.96",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-03-30T22:38:00+03:00",
+    "ref": "bianca-0084",
+    "stream": "tips"
+  },
+  {
+    "amount": "3.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.72",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-03-31T08:56:00+03:00",
+    "ref": "bianca-0085",
+    "stream": "bus"
+  },
+  {
+    "amount": "9.04",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "9.04",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-03-31T15:10:00+03:00",
+    "ref": "bianca-0086",
+    "stream": "coffee"
+  },
+  {
+    "amount": "15.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-03-31T19:21:00+03:00",
+    "ref": "bianca-0087",
+    "stream": "groceries"
+  },
+  {
+    "amount": "3.30",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.30",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-04-01T07:18:00+03:00",
+    "ref": "bianca-0088",
+    "stream": "bus"
+  },
+  {
+    "amount": "700.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "700.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE COLEG",
+    "occurred_at": "2026-04-01T09:30:00+03:00",
+    "ref": "bianca-0089",
+    "stream": "fixed:Chirie (partea mea)"
+  },
+  {
+    "amount": "12.69",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.69",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-01T11:44:00+03:00",
+    "ref": "bianca-0090",
+    "stream": "coffee"
+  },
+  {
+    "amount": "28.66",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "28.66",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-01T17:19:00+03:00",
+    "ref": "bianca-0091",
+    "stream": "groceries"
+  },
+  {
+    "amount": "21.52",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "21.52",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-03T16:10:00+03:00",
+    "ref": "bianca-0092",
+    "stream": "groceries"
+  },
+  {
+    "amount": "8.76",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "8.76",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-04T13:43:00+03:00",
+    "ref": "bianca-0093",
+    "stream": "coffee"
+  },
+  {
+    "amount": "18.22",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "18.22",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-04T18:11:00+03:00",
+    "ref": "bianca-0094",
+    "stream": "groceries"
+  },
+  {
+    "amount": "27.79",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "27.79",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-05T14:42:00+03:00",
+    "ref": "bianca-0095",
+    "stream": "coffee"
+  },
+  {
+    "amount": "23.30",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "23.30",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-05T18:19:00+03:00",
+    "ref": "bianca-0096",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.12",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.12",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-04-06T08:22:00+03:00",
+    "ref": "bianca-0097",
+    "stream": "bus"
+  },
+  {
+    "amount": "11.88",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "11.88",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-06T14:21:00+03:00",
+    "ref": "bianca-0098",
+    "stream": "coffee"
+  },
+  {
+    "amount": "25.74",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "25.74",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-06T17:23:00+03:00",
+    "ref": "bianca-0099",
+    "stream": "groceries"
+  },
+  {
+    "amount": "16.48",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.48",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-07T08:04:00+03:00",
+    "ref": "bianca-0100",
+    "stream": "coffee"
+  },
+  {
+    "amount": "5.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-04-08T08:25:00+03:00",
+    "ref": "bianca-0101",
+    "stream": "bus"
+  },
+  {
+    "amount": "12.33",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.33",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-08T14:02:00+03:00",
+    "ref": "bianca-0102",
+    "stream": "coffee"
+  },
+  {
+    "amount": "40.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "40.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-08T18:16:00+03:00",
+    "ref": "bianca-0103",
+    "stream": "groceries"
+  },
+  {
+    "amount": "165.84",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-04-08T20:09:00+03:00",
+    "ref": "bianca-0104",
+    "stream": "tips"
+  },
+  {
+    "amount": "5.21",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.21",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-04-09T07:39:00+03:00",
+    "ref": "bianca-0105",
+    "stream": "bus"
+  },
+  {
+    "amount": "1836.34",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "PLATA SALARIU CAFENEAUA VERDE",
+    "occurred_at": "2026-04-09T09:31:00+03:00",
+    "ref": "bianca-0106",
+    "stream": "wage"
+  },
+  {
+    "amount": "14.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.39",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-11T17:35:00+03:00",
+    "ref": "bianca-0107",
+    "stream": "coffee"
+  },
+  {
+    "amount": "27.34",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "27.34",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-12T18:42:00+03:00",
+    "ref": "bianca-0108",
+    "stream": "groceries"
+  },
+  {
+    "amount": "9.56",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "9.56",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-13T12:30:00+03:00",
+    "ref": "bianca-0109",
+    "stream": "coffee"
+  },
+  {
+    "amount": "3.17",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.17",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-04-14T08:41:00+03:00",
+    "ref": "bianca-0110",
+    "stream": "bus"
+  },
+  {
+    "amount": "17.88",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.88",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-14T16:47:00+03:00",
+    "ref": "bianca-0111",
+    "stream": "coffee"
+  },
+  {
+    "amount": "22.19",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "22.19",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-14T18:21:00+03:00",
+    "ref": "bianca-0112",
+    "stream": "groceries"
+  },
+  {
+    "amount": "650.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "650.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER PUSCULITA",
+    "occurred_at": "2026-04-15T09:14:00+03:00",
+    "ref": "bianca-0113",
+    "stream": "savings"
+  },
+  {
+    "amount": "15.27",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.27",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-15T16:22:00+03:00",
+    "ref": "bianca-0114",
+    "stream": "coffee"
+  },
+  {
+    "amount": "151.39",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-04-15T20:38:00+03:00",
+    "ref": "bianca-0115",
+    "stream": "tips"
+  },
+  {
+    "amount": "5.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.15",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-04-16T08:30:00+03:00",
+    "ref": "bianca-0116",
+    "stream": "bus"
+  },
+  {
+    "amount": "33.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.62",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-16T17:29:00+03:00",
+    "ref": "bianca-0117",
+    "stream": "groceries"
+  },
+  {
+    "amount": "19.79",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "19.79",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-17T16:49:00+03:00",
+    "ref": "bianca-0118",
+    "stream": "coffee"
+  },
+  {
+    "amount": "18.53",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "18.53",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-18T16:03:00+03:00",
+    "ref": "bianca-0119",
+    "stream": "coffee"
+  },
+  {
+    "amount": "41.87",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "41.87",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-18T19:36:00+03:00",
+    "ref": "bianca-0120",
+    "stream": "groceries"
+  },
+  {
+    "amount": "14.04",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.04",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-20T13:00:00+03:00",
+    "ref": "bianca-0121",
+    "stream": "coffee"
+  },
+  {
+    "amount": "3.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.72",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-04-21T07:13:00+03:00",
+    "ref": "bianca-0122",
+    "stream": "bus"
+  },
+  {
+    "amount": "14.77",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.77",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-21T13:37:00+03:00",
+    "ref": "bianca-0123",
+    "stream": "coffee"
+  },
+  {
+    "amount": "30.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "30.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "VODAFONE ROMANIA",
+    "occurred_at": "2026-04-22T10:19:00+03:00",
+    "ref": "bianca-0124",
+    "stream": "fixed:Telefon"
+  },
+  {
+    "amount": "5.67",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.67",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-04-23T07:29:00+03:00",
+    "ref": "bianca-0125",
+    "stream": "bus"
+  },
+  {
+    "amount": "23.86",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "23.86",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-23T16:36:00+03:00",
+    "ref": "bianca-0126",
+    "stream": "groceries"
+  },
+  {
+    "amount": "46.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "46.62",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-24T16:10:00+03:00",
+    "ref": "bianca-0127",
+    "stream": "groceries"
+  },
+  {
+    "amount": "279.13",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-04-24T21:15:00+03:00",
+    "ref": "bianca-0128",
+    "stream": "tips"
+  },
+  {
+    "amount": "12.86",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.86",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-25T14:14:00+03:00",
+    "ref": "bianca-0129",
+    "stream": "coffee"
+  },
+  {
+    "amount": "17.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.00",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-26T12:33:00+03:00",
+    "ref": "bianca-0130",
+    "stream": "coffee"
+  },
+  {
+    "amount": "37.47",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "37.47",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-26T18:48:00+03:00",
+    "ref": "bianca-0131",
+    "stream": "groceries"
+  },
+  {
+    "amount": "16.06",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.06",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-27T13:36:00+03:00",
+    "ref": "bianca-0132",
+    "stream": "coffee"
+  },
+  {
+    "amount": "4.83",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.83",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-04-28T07:14:00+03:00",
+    "ref": "bianca-0133",
+    "stream": "bus"
+  },
+  {
+    "amount": "14.68",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.68",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-04-28T10:33:00+03:00",
+    "ref": "bianca-0134",
+    "stream": "coffee"
+  },
+  {
+    "amount": "16.12",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.12",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-28T16:38:00+03:00",
+    "ref": "bianca-0135",
+    "stream": "groceries"
+  },
+  {
+    "amount": "40.44",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "40.44",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-04-30T17:09:00+03:00",
+    "ref": "bianca-0136",
+    "stream": "groceries"
+  },
+  {
+    "amount": "3.64",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.64",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-01T08:23:00+03:00",
+    "ref": "bianca-0137",
+    "stream": "bus"
+  },
+  {
+    "amount": "14.08",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.08",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-01T09:30:00+03:00",
+    "ref": "bianca-0138",
+    "stream": "coffee"
+  },
+  {
+    "amount": "700.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "700.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE COLEG",
+    "occurred_at": "2026-05-01T10:34:00+03:00",
+    "ref": "bianca-0139",
+    "stream": "fixed:Chirie (partea mea)"
+  },
+  {
+    "amount": "33.98",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.98",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-01T19:23:00+03:00",
+    "ref": "bianca-0140",
+    "stream": "groceries"
+  },
+  {
+    "amount": "20.55",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "20.55",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-02T20:19:00+03:00",
+    "ref": "bianca-0141",
+    "stream": "groceries"
+  },
+  {
+    "amount": "285.44",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-05-02T21:03:00+03:00",
+    "ref": "bianca-0142",
+    "stream": "tips"
+  },
+  {
+    "amount": "11.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "11.35",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-03T16:08:00+03:00",
+    "ref": "bianca-0143",
+    "stream": "coffee"
+  },
+  {
+    "amount": "58.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "58.37",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-03T17:09:00+03:00",
+    "ref": "bianca-0144",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.33",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.33",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-04T07:28:00+03:00",
+    "ref": "bianca-0145",
+    "stream": "bus"
+  },
+  {
+    "amount": "23.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "23.10",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-04T16:51:00+03:00",
+    "ref": "bianca-0146",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.15",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-05T08:12:00+03:00",
+    "ref": "bianca-0147",
+    "stream": "bus"
+  },
+  {
+    "amount": "53.80",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "53.80",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-05T20:12:00+03:00",
+    "ref": "bianca-0148",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.97",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-06T07:12:00+03:00",
+    "ref": "bianca-0149",
+    "stream": "bus"
+  },
+  {
+    "amount": "12.34",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.34",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-06T10:41:00+03:00",
+    "ref": "bianca-0150",
+    "stream": "coffee"
+  },
+  {
+    "amount": "87.93",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "87.93",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-06T19:52:00+03:00",
+    "ref": "bianca-0151",
+    "stream": "groceries"
+  },
+  {
+    "amount": "3.54",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.54",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-07T07:40:00+03:00",
+    "ref": "bianca-0152",
+    "stream": "bus"
+  },
+  {
+    "amount": "8.69",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "8.69",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-07T15:44:00+03:00",
+    "ref": "bianca-0153",
+    "stream": "coffee"
+  },
+  {
+    "amount": "16.08",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.08",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-08T09:56:00+03:00",
+    "ref": "bianca-0154",
+    "stream": "coffee"
+  },
+  {
+    "amount": "22.22",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "22.22",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-08T19:10:00+03:00",
+    "ref": "bianca-0155",
+    "stream": "groceries"
+  },
+  {
+    "amount": "250.63",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-05-09T22:14:00+03:00",
+    "ref": "bianca-0156",
+    "stream": "tips"
+  },
+  {
+    "amount": "27.91",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "27.91",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-10T16:02:00+03:00",
+    "ref": "bianca-0157",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.31",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.31",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-11T08:48:00+03:00",
+    "ref": "bianca-0158",
+    "stream": "bus"
+  },
+  {
+    "amount": "12.20",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.20",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-11T16:57:00+03:00",
+    "ref": "bianca-0159",
+    "stream": "coffee"
+  },
+  {
+    "amount": "66.43",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "66.43",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-11T17:04:00+03:00",
+    "ref": "bianca-0160",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.88",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.88",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-12T07:23:00+03:00",
+    "ref": "bianca-0161",
+    "stream": "bus"
+  },
+  {
+    "amount": "14.43",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.43",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-12T11:10:00+03:00",
+    "ref": "bianca-0162",
+    "stream": "coffee"
+  },
+  {
+    "amount": "5.31",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.31",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-13T08:16:00+03:00",
+    "ref": "bianca-0163",
+    "stream": "bus"
+  },
+  {
+    "amount": "12.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.62",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-13T11:26:00+03:00",
+    "ref": "bianca-0164",
+    "stream": "coffee"
+  },
+  {
+    "amount": "1821.95",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "PLATA SALARIU CAFENEAUA VERDE",
+    "occurred_at": "2026-05-13T11:44:00+03:00",
+    "ref": "bianca-0165",
+    "stream": "wage"
+  },
+  {
+    "amount": "48.64",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "48.64",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-13T18:41:00+03:00",
+    "ref": "bianca-0166",
+    "stream": "groceries"
+  },
+  {
+    "amount": "311.70",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-05-13T22:14:00+03:00",
+    "ref": "bianca-0167",
+    "stream": "tips"
+  },
+  {
+    "amount": "23.95",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "23.95",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-14T16:15:00+03:00",
+    "ref": "bianca-0168",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.71",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.71",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-15T08:08:00+03:00",
+    "ref": "bianca-0169",
+    "stream": "bus"
+  },
+  {
+    "amount": "650.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "650.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER PUSCULITA",
+    "occurred_at": "2026-05-15T09:54:00+03:00",
+    "ref": "bianca-0170",
+    "stream": "savings"
+  },
+  {
+    "amount": "14.26",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.26",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-16T08:00:00+03:00",
+    "ref": "bianca-0171",
+    "stream": "coffee"
+  },
+  {
+    "amount": "13.33",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "13.33",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-17T15:13:00+03:00",
+    "ref": "bianca-0172",
+    "stream": "coffee"
+  },
+  {
+    "amount": "32.93",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "32.93",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-18T16:11:00+03:00",
+    "ref": "bianca-0173",
+    "stream": "groceries"
+  },
+  {
+    "amount": "3.40",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.40",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-19T07:03:00+03:00",
+    "ref": "bianca-0174",
+    "stream": "bus"
+  },
+  {
+    "amount": "10.78",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.78",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-19T12:33:00+03:00",
+    "ref": "bianca-0175",
+    "stream": "coffee"
+  },
+  {
+    "amount": "17.45",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.45",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-20T13:43:00+03:00",
+    "ref": "bianca-0176",
+    "stream": "coffee"
+  },
+  {
+    "amount": "40.59",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "40.59",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-20T16:35:00+03:00",
+    "ref": "bianca-0177",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.47",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.47",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-21T07:46:00+03:00",
+    "ref": "bianca-0178",
+    "stream": "bus"
+  },
+  {
+    "amount": "29.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "29.36",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-21T17:12:00+03:00",
+    "ref": "bianca-0179",
+    "stream": "groceries"
+  },
+  {
+    "amount": "30.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "30.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "VODAFONE ROMANIA",
+    "occurred_at": "2026-05-22T09:33:00+03:00",
+    "ref": "bianca-0180",
+    "stream": "fixed:Telefon"
+  },
+  {
+    "amount": "15.86",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.86",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-22T15:43:00+03:00",
+    "ref": "bianca-0181",
+    "stream": "coffee"
+  },
+  {
+    "amount": "36.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "36.35",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-23T16:58:00+03:00",
+    "ref": "bianca-0182",
+    "stream": "groceries"
+  },
+  {
+    "amount": "22.65",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "22.65",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-24T09:52:00+03:00",
+    "ref": "bianca-0183",
+    "stream": "coffee"
+  },
+  {
+    "amount": "296.71",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-05-24T20:05:00+03:00",
+    "ref": "bianca-0184",
+    "stream": "tips"
+  },
+  {
+    "amount": "5.50",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.50",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-25T08:49:00+03:00",
+    "ref": "bianca-0185",
+    "stream": "bus"
+  },
+  {
+    "amount": "13.57",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "13.57",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-25T10:38:00+03:00",
+    "ref": "bianca-0186",
+    "stream": "coffee"
+  },
+  {
+    "amount": "26.65",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.65",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-25T18:22:00+03:00",
+    "ref": "bianca-0187",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.74",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.74",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-26T07:33:00+03:00",
+    "ref": "bianca-0188",
+    "stream": "bus"
+  },
+  {
+    "amount": "12.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.15",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-26T17:48:00+03:00",
+    "ref": "bianca-0189",
+    "stream": "coffee"
+  },
+  {
+    "amount": "59.48",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "59.48",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-26T18:18:00+03:00",
+    "ref": "bianca-0190",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.84",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.84",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-27T08:48:00+03:00",
+    "ref": "bianca-0191",
+    "stream": "bus"
+  },
+  {
+    "amount": "4.69",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.69",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-05-28T07:17:00+03:00",
+    "ref": "bianca-0192",
+    "stream": "bus"
+  },
+  {
+    "amount": "10.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.32",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-28T09:15:00+03:00",
+    "ref": "bianca-0193",
+    "stream": "coffee"
+  },
+  {
+    "amount": "26.13",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.13",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-28T18:37:00+03:00",
+    "ref": "bianca-0194",
+    "stream": "groceries"
+  },
+  {
+    "amount": "17.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.23",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-29T12:56:00+03:00",
+    "ref": "bianca-0195",
+    "stream": "coffee"
+  },
+  {
+    "amount": "17.18",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.18",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-30T19:36:00+03:00",
+    "ref": "bianca-0196",
+    "stream": "groceries"
+  },
+  {
+    "amount": "12.83",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.83",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-05-31T10:58:00+03:00",
+    "ref": "bianca-0197",
+    "stream": "coffee"
+  },
+  {
+    "amount": "21.51",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "21.51",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-05-31T17:35:00+03:00",
+    "ref": "bianca-0198",
+    "stream": "groceries"
+  },
+  {
+    "amount": "282.36",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-05-31T21:10:00+03:00",
+    "ref": "bianca-0199",
+    "stream": "tips"
+  },
+  {
+    "amount": "4.48",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.48",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-06-01T07:57:00+03:00",
+    "ref": "bianca-0200",
+    "stream": "bus"
+  },
+  {
+    "amount": "700.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "700.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE COLEG",
+    "occurred_at": "2026-06-01T09:24:00+03:00",
+    "ref": "bianca-0201",
+    "stream": "fixed:Chirie (partea mea)"
+  },
+  {
+    "amount": "4.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.49",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-06-02T08:15:00+03:00",
+    "ref": "bianca-0202",
+    "stream": "bus"
+  },
+  {
+    "amount": "23.46",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "23.46",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-06-02T17:02:00+03:00",
+    "ref": "bianca-0203",
+    "stream": "coffee"
+  },
+  {
+    "amount": "5.75",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.75",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-06-03T08:44:00+03:00",
+    "ref": "bianca-0204",
+    "stream": "bus"
+  },
+  {
+    "amount": "15.99",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.99",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-06-03T14:17:00+03:00",
+    "ref": "bianca-0205",
+    "stream": "coffee"
+  },
+  {
+    "amount": "35.85",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "35.85",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-06-03T19:15:00+03:00",
+    "ref": "bianca-0206",
+    "stream": "groceries"
+  },
+  {
+    "amount": "5.27",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "5.27",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-06-04T07:45:00+03:00",
+    "ref": "bianca-0207",
+    "stream": "bus"
+  },
+  {
+    "amount": "17.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.97",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-06-04T17:10:00+03:00",
+    "ref": "bianca-0208",
+    "stream": "groceries"
+  },
+  {
+    "amount": "13.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "13.23",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-06-05T10:58:00+03:00",
+    "ref": "bianca-0209",
+    "stream": "coffee"
+  },
+  {
+    "amount": "145.53",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-06-06T22:42:00+03:00",
+    "ref": "bianca-0210",
+    "stream": "tips"
+  },
+  {
+    "amount": "24.33",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "24.33",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-06-07T12:38:00+03:00",
+    "ref": "bianca-0211",
+    "stream": "coffee"
+  },
+  {
+    "amount": "20.44",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "20.44",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-06-07T19:46:00+03:00",
+    "ref": "bianca-0212",
+    "stream": "groceries"
+  },
+  {
+    "amount": "12.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.07",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-06-09T16:13:00+03:00",
+    "ref": "bianca-0213",
+    "stream": "coffee"
+  },
+  {
+    "amount": "8.93",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "8.93",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-06-10T08:27:00+03:00",
+    "ref": "bianca-0214",
+    "stream": "coffee"
+  },
+  {
+    "amount": "3.55",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.55",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-06-10T08:36:00+03:00",
+    "ref": "bianca-0215",
+    "stream": "bus"
+  },
+  {
+    "amount": "48.50",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "48.50",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-06-10T19:00:00+03:00",
+    "ref": "bianca-0216",
+    "stream": "groceries"
+  },
+  {
+    "amount": "4.78",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "4.78",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-06-11T08:52:00+03:00",
+    "ref": "bianca-0217",
+    "stream": "bus"
+  },
+  {
+    "amount": "1573.07",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "PLATA SALARIU CAFENEAUA VERDE",
+    "occurred_at": "2026-06-11T09:23:00+03:00",
+    "ref": "bianca-0218",
+    "stream": "wage"
+  },
+  {
+    "amount": "10.96",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.96",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-06-11T16:52:00+03:00",
+    "ref": "bianca-0219",
+    "stream": "coffee"
+  },
+  {
+    "amount": "3.68",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "3.68",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4111,
+    "merchant_raw": "CTP IASI BILET",
+    "occurred_at": "2026-06-12T08:05:00+03:00",
+    "ref": "bianca-0220",
+    "stream": "bus"
+  },
+  {
+    "amount": "9.70",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "9.70",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-06-12T14:25:00+03:00",
+    "ref": "bianca-0221",
+    "stream": "coffee"
+  },
+  {
+    "amount": "10.81",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.81",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TUCANO COFFEE IASI",
+    "occurred_at": "2026-06-13T10:30:00+03:00",
+    "ref": "bianca-0222",
+    "stream": "coffee"
+  },
+  {
+    "amount": "40.44",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "40.44",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-06-13T19:55:00+03:00",
+    "ref": "bianca-0223",
+    "stream": "groceries"
+  },
+  {
+    "amount": "44.18",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "44.18",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "PROFI 233 IASI",
+    "occurred_at": "2026-06-14T20:23:00+03:00",
+    "ref": "bianca-0224",
+    "stream": "groceries"
+  },
+  {
+    "amount": "134.39",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "DEPUNERE NUMERAR ATM IASI",
+    "occurred_at": "2026-06-14T21:30:00+03:00",
+    "ref": "bianca-0225",
+    "stream": "tips"
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "id": "matei_friday_lunch",
+  "scene": "D",
+  "acceptance": [
+    9
+  ],
+  "persona": "matei",
+  "merchant_raw": "BISTRO COTIDIAN SRL BUCURESTI",
+  "mcc": "5812",
+  "direction": "debit",
+  "amount": 95.00,
+  "items": null,
+  "day_offset": 4,
+  "time": "13:10",
+  "requires": [
+    "Matei's seeded Friday team-lunch rule (confidence 0.7, 2 hits)"
+  ],
+  "expected": {
+    "merchant_id": "bistro_cotidian",
+    "category": "restaurants",
+    "decision": "auto",
+    "outcome_label": "Prânz cu echipa"
+  },
+  "notes": "Scene D: after /sim/jump to Friday 2026-06-19; the rule explains it, no question."
+}

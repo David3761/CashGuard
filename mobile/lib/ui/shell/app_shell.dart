@@ -127,25 +127,31 @@ class _NavigationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      // borderRadius: .circular(8),
-      child: Column(
-        mainAxisSize: .min,
-        children: [
-          Image.asset(
-            isActive ? activeIconAsset : iconAsset,
-            color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyles.text10_5M.copyWith(
-              color: isActive ? AppColors.textPrimary : AppColors.textMuted,
+    // Tells screen readers that the tab is a button and whether it's the
+    // displayed one. The label below already names it.
+    return Semantics(
+      button: true,
+      selected: isActive,
+      child: GestureDetector(
+        onTap: onTap,
+        // borderRadius: .circular(8),
+        child: Column(
+          mainAxisSize: .min,
+          children: [
+            Image.asset(
+              isActive ? activeIconAsset : iconAsset,
+              color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
             ),
-            textAlign: .center,
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyles.text10_5M.copyWith(
+                color: isActive ? AppColors.textPrimary : AppColors.textMuted,
+              ),
+              textAlign: .center,
+            ),
+          ],
+        ),
       ),
     );
   }

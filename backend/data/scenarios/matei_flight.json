@@ -1,0 +1,25 @@
+{
+  "id": "matei_flight",
+  "scene": "C",
+  "acceptance": [
+    10
+  ],
+  "persona": "matei",
+  "merchant_raw": "WIZZ AIR WIZZAIR.COM",
+  "mcc": "4511",
+  "direction": "debit",
+  "amount": 900.00,
+  "items": null,
+  "day_offset": 0,
+  "time": "10:20",
+  "requires": [
+    "pot 'Vacanță august' active (created in Scene C)"
+  ],
+  "expected": {
+    "merchant_id": "wizz_air",
+    "category": "travel",
+    "decision": "auto",
+    "purpose": "planned_event"
+  },
+  "notes": "Scene C: drawn from the 'Vacanță august' pot, no question; the pot's saved amount drops by 900."
+}

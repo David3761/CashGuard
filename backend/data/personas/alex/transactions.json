@@ -1,0 +1,1997 @@
+[
+  {
+    "amount": "14.79",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "14.79",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-02-15T18:47:00+02:00",
+    "ref": "alex-0001",
+    "stream": "transport"
+  },
+  {
+    "amount": "18.24",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "18.24",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-02-17T18:46:00+02:00",
+    "ref": "alex-0002",
+    "stream": "transport"
+  },
+  {
+    "amount": "47.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "47.35",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-02-18T18:11:00+02:00",
+    "ref": "alex-0003",
+    "stream": "groceries"
+  },
+  {
+    "amount": "56.75",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "56.75",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-02-21T21:06:00+02:00",
+    "ref": "alex-0004",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "18.93",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "18.93",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-02-22T16:07:00+02:00",
+    "ref": "alex-0005",
+    "stream": "transport"
+  },
+  {
+    "amount": "88.06",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "88.06",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-02-22T19:16:00+02:00",
+    "ref": "alex-0006",
+    "stream": "groceries"
+  },
+  {
+    "amount": "37.06",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "37.06",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-02-23T18:43:00+02:00",
+    "ref": "alex-0007",
+    "stream": "groceries"
+  },
+  {
+    "amount": "42.11",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "42.11",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-02-23T20:18:00+02:00",
+    "ref": "alex-0008",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "19.98",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "19.98",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-02-26T09:50:00+02:00",
+    "ref": "alex-0009",
+    "stream": "transport"
+  },
+  {
+    "amount": "43.52",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "43.52",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-02-26T17:25:00+02:00",
+    "ref": "alex-0010",
+    "stream": "groceries"
+  },
+  {
+    "amount": "85.53",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "85.53",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-02-26T20:42:00+02:00",
+    "ref": "alex-0011",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "21.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "21.15",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-02-27T09:40:00+02:00",
+    "ref": "alex-0012",
+    "stream": "transport"
+  },
+  {
+    "amount": "79.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "79.36",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-02-27T20:11:00+02:00",
+    "ref": "alex-0013",
+    "stream": "groceries"
+  },
+  {
+    "amount": "47.81",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "47.81",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-02T18:15:00+02:00",
+    "ref": "alex-0014",
+    "stream": "groceries"
+  },
+  {
+    "amount": "58.87",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "58.87",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-03-02T21:53:00+02:00",
+    "ref": "alex-0015",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "68.08",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "68.08",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-03T18:11:00+02:00",
+    "ref": "alex-0016",
+    "stream": "groceries"
+  },
+  {
+    "amount": "21.41",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "21.41",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-03-06T16:31:00+02:00",
+    "ref": "alex-0017",
+    "stream": "transport"
+  },
+  {
+    "amount": "70.43",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "70.43",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-07T18:50:00+02:00",
+    "ref": "alex-0018",
+    "stream": "groceries"
+  },
+  {
+    "amount": "28.43",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "28.43",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-03-08T17:11:00+02:00",
+    "ref": "alex-0019",
+    "stream": "transport"
+  },
+  {
+    "amount": "33.27",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.27",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-03-09T14:49:00+02:00",
+    "ref": "alex-0020",
+    "stream": "transport"
+  },
+  {
+    "amount": "54.18",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "54.18",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-09T18:37:00+02:00",
+    "ref": "alex-0021",
+    "stream": "groceries"
+  },
+  {
+    "amount": "17.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.15",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-03-11T22:50:00+02:00",
+    "ref": "alex-0022",
+    "stream": "transport"
+  },
+  {
+    "amount": "25.73",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "25.73",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-03-12T09:53:00+02:00",
+    "ref": "alex-0023",
+    "stream": "transport"
+  },
+  {
+    "amount": "82.29",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "82.29",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-14T20:40:00+02:00",
+    "ref": "alex-0024",
+    "stream": "groceries"
+  },
+  {
+    "amount": "84.93",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "84.93",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-15T18:19:00+02:00",
+    "ref": "alex-0025",
+    "stream": "groceries"
+  },
+  {
+    "amount": "57.22",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "57.22",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-03-15T19:23:00+02:00",
+    "ref": "alex-0026",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "29.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "29.72",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-03-16T15:47:00+02:00",
+    "ref": "alex-0027",
+    "stream": "transport"
+  },
+  {
+    "amount": "27.41",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "27.41",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-03-19T19:53:00+02:00",
+    "ref": "alex-0028",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "51.22",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "51.22",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-19T20:51:00+02:00",
+    "ref": "alex-0029",
+    "stream": "groceries"
+  },
+  {
+    "amount": "71.57",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "71.57",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-21T20:25:00+02:00",
+    "ref": "alex-0030",
+    "stream": "groceries"
+  },
+  {
+    "amount": "33.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.10",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-03-24T11:24:00+02:00",
+    "ref": "alex-0031",
+    "stream": "transport"
+  },
+  {
+    "amount": "25.55",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "25.55",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-03-24T20:22:00+02:00",
+    "ref": "alex-0032",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "20.34",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "20.34",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-03-25T10:02:00+02:00",
+    "ref": "alex-0033",
+    "stream": "transport"
+  },
+  {
+    "amount": "36.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "36.49",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-25T17:02:00+02:00",
+    "ref": "alex-0034",
+    "stream": "groceries"
+  },
+  {
+    "amount": "80.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "80.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-26T17:40:00+02:00",
+    "ref": "alex-0035",
+    "stream": "groceries"
+  },
+  {
+    "amount": "71.47",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "71.47",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-03-28T09:51:00+02:00",
+    "ref": "alex-0036",
+    "stream": "transport"
+  },
+  {
+    "amount": "101.80",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "101.80",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-03-28T18:47:00+02:00",
+    "ref": "alex-0037",
+    "stream": "groceries"
+  },
+  {
+    "amount": "47.17",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "47.17",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-03-30T19:25:00+03:00",
+    "ref": "alex-0038",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "22.09",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "22.09",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-04-01T15:54:00+03:00",
+    "ref": "alex-0039",
+    "stream": "transport"
+  },
+  {
+    "amount": "39.54",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "39.54",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-03T18:26:00+03:00",
+    "ref": "alex-0040",
+    "stream": "groceries"
+  },
+  {
+    "amount": "43.70",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "43.70",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-04-03T20:20:00+03:00",
+    "ref": "alex-0041",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "40.60",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "40.60",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-05T17:17:00+03:00",
+    "ref": "alex-0042",
+    "stream": "groceries"
+  },
+  {
+    "amount": "15.71",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.71",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-04-08T17:54:00+03:00",
+    "ref": "alex-0043",
+    "stream": "transport"
+  },
+  {
+    "amount": "83.60",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "83.60",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-09T19:25:00+03:00",
+    "ref": "alex-0044",
+    "stream": "groceries"
+  },
+  {
+    "amount": "79.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "79.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-10T17:21:00+03:00",
+    "ref": "alex-0045",
+    "stream": "groceries"
+  },
+  {
+    "amount": "50.99",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "50.99",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-11T19:43:00+03:00",
+    "ref": "alex-0046",
+    "stream": "groceries"
+  },
+  {
+    "amount": "53.96",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "53.96",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-04-12T19:17:00+03:00",
+    "ref": "alex-0047",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "43.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "43.32",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-14T17:35:00+03:00",
+    "ref": "alex-0048",
+    "stream": "groceries"
+  },
+  {
+    "amount": "29.43",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "29.43",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-04-14T19:02:00+03:00",
+    "ref": "alex-0049",
+    "stream": "transport"
+  },
+  {
+    "amount": "39.45",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "39.45",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-04-14T20:39:00+03:00",
+    "ref": "alex-0050",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "29.94",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "29.94",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-17T19:46:00+03:00",
+    "ref": "alex-0051",
+    "stream": "groceries"
+  },
+  {
+    "amount": "17.45",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.45",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-04-17T20:37:00+03:00",
+    "ref": "alex-0052",
+    "stream": "transport"
+  },
+  {
+    "amount": "60.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.37",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-18T17:30:00+03:00",
+    "ref": "alex-0053",
+    "stream": "groceries"
+  },
+  {
+    "amount": "34.51",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "34.51",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-04-18T22:16:00+03:00",
+    "ref": "alex-0054",
+    "stream": "transport"
+  },
+  {
+    "amount": "79.42",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "79.42",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-20T20:26:00+03:00",
+    "ref": "alex-0055",
+    "stream": "groceries"
+  },
+  {
+    "amount": "30.20",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "30.20",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-04-23T15:44:00+03:00",
+    "ref": "alex-0056",
+    "stream": "transport"
+  },
+  {
+    "amount": "47.77",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "47.77",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-23T20:27:00+03:00",
+    "ref": "alex-0057",
+    "stream": "groceries"
+  },
+  {
+    "amount": "71.57",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "71.57",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-24T20:34:00+03:00",
+    "ref": "alex-0058",
+    "stream": "groceries"
+  },
+  {
+    "amount": "49.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "49.62",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-04-24T21:08:00+03:00",
+    "ref": "alex-0059",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "21.51",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "21.51",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-04-25T17:01:00+03:00",
+    "ref": "alex-0060",
+    "stream": "transport"
+  },
+  {
+    "amount": "20.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "20.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-04-27T16:41:00+03:00",
+    "ref": "alex-0061",
+    "stream": "transport"
+  },
+  {
+    "amount": "61.43",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "61.43",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-27T17:53:00+03:00",
+    "ref": "alex-0062",
+    "stream": "groceries"
+  },
+  {
+    "amount": "52.76",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "52.76",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-04-29T20:27:00+03:00",
+    "ref": "alex-0063",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "88.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "88.37",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-04-30T17:31:00+03:00",
+    "ref": "alex-0064",
+    "stream": "groceries"
+  },
+  {
+    "amount": "54.44",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "54.44",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-02T19:57:00+03:00",
+    "ref": "alex-0065",
+    "stream": "groceries"
+  },
+  {
+    "amount": "49.83",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "49.83",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-05-02T20:59:00+03:00",
+    "ref": "alex-0066",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "52.41",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "52.41",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-04T19:51:00+03:00",
+    "ref": "alex-0067",
+    "stream": "groceries"
+  },
+  {
+    "amount": "95.30",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "95.30",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-05-05T20:12:00+03:00",
+    "ref": "alex-0068",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "52.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "52.35",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-05-06T20:59:00+03:00",
+    "ref": "alex-0069",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "11.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "11.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-07T15:56:00+03:00",
+    "ref": "alex-0070",
+    "stream": "transport"
+  },
+  {
+    "amount": "26.56",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.56",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-08T09:47:00+03:00",
+    "ref": "alex-0071",
+    "stream": "transport"
+  },
+  {
+    "amount": "59.13",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "59.13",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-09T19:03:00+03:00",
+    "ref": "alex-0072",
+    "stream": "groceries"
+  },
+  {
+    "amount": "124.71",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "124.71",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-11T17:33:00+03:00",
+    "ref": "alex-0073",
+    "stream": "groceries"
+  },
+  {
+    "amount": "16.90",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.90",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-13T13:39:00+03:00",
+    "ref": "alex-0074",
+    "stream": "transport"
+  },
+  {
+    "amount": "90.38",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "90.38",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-14T17:02:00+03:00",
+    "ref": "alex-0075",
+    "stream": "groceries"
+  },
+  {
+    "amount": "55.45",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "55.45",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-05-14T19:58:00+03:00",
+    "ref": "alex-0076",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "46.42",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "46.42",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-15T20:56:00+03:00",
+    "ref": "alex-0077",
+    "stream": "groceries"
+  },
+  {
+    "amount": "17.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-16T17:48:00+03:00",
+    "ref": "alex-0078",
+    "stream": "transport"
+  },
+  {
+    "amount": "43.63",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "43.63",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-05-16T20:18:00+03:00",
+    "ref": "alex-0079",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "62.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "62.35",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-18T18:52:00+03:00",
+    "ref": "alex-0080",
+    "stream": "groceries"
+  },
+  {
+    "amount": "71.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "71.36",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-05-18T19:23:00+03:00",
+    "ref": "alex-0081",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "23.05",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "23.05",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-20T11:18:00+03:00",
+    "ref": "alex-0082",
+    "stream": "transport"
+  },
+  {
+    "amount": "26.38",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.38",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-21T17:32:00+03:00",
+    "ref": "alex-0083",
+    "stream": "transport"
+  },
+  {
+    "amount": "95.17",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "95.17",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-22T17:48:00+03:00",
+    "ref": "alex-0084",
+    "stream": "groceries"
+  },
+  {
+    "amount": "25.93",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "25.93",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-23T11:34:00+03:00",
+    "ref": "alex-0085",
+    "stream": "transport"
+  },
+  {
+    "amount": "43.50",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "43.50",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-23T17:33:00+03:00",
+    "ref": "alex-0086",
+    "stream": "groceries"
+  },
+  {
+    "amount": "33.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.10",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-05-23T20:34:00+03:00",
+    "ref": "alex-0087",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "37.89",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "37.89",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-25T16:59:00+03:00",
+    "ref": "alex-0088",
+    "stream": "transport"
+  },
+  {
+    "amount": "42.21",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "42.21",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-05-26T19:21:00+03:00",
+    "ref": "alex-0089",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "36.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "36.97",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-26T19:38:00+03:00",
+    "ref": "alex-0090",
+    "stream": "groceries"
+  },
+  {
+    "amount": "43.21",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "43.21",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-27T17:46:00+03:00",
+    "ref": "alex-0091",
+    "stream": "groceries"
+  },
+  {
+    "amount": "18.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "18.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-27T19:47:00+03:00",
+    "ref": "alex-0092",
+    "stream": "transport"
+  },
+  {
+    "amount": "49.05",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "49.05",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-05-29T19:18:00+03:00",
+    "ref": "alex-0093",
+    "stream": "groceries"
+  },
+  {
+    "amount": "18.92",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "18.92",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-05-30T15:33:00+03:00",
+    "ref": "alex-0094",
+    "stream": "transport"
+  },
+  {
+    "amount": "22.68",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "22.68",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-06-01T17:14:00+03:00",
+    "ref": "alex-0095",
+    "stream": "transport"
+  },
+  {
+    "amount": "33.25",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.25",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-06-02T22:01:00+03:00",
+    "ref": "alex-0096",
+    "stream": "transport"
+  },
+  {
+    "amount": "69.80",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "69.80",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-06-04T20:22:00+03:00",
+    "ref": "alex-0097",
+    "stream": "groceries"
+  },
+  {
+    "amount": "12.57",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "12.57",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-06-06T20:55:00+03:00",
+    "ref": "alex-0098",
+    "stream": "transport"
+  },
+  {
+    "amount": "43.57",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "43.57",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-06-06T21:26:00+03:00",
+    "ref": "alex-0099",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "116.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "116.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-06-07T17:02:00+03:00",
+    "ref": "alex-0100",
+    "stream": "groceries"
+  },
+  {
+    "amount": "48.09",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "48.09",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-06-10T18:43:00+03:00",
+    "ref": "alex-0101",
+    "stream": "groceries"
+  },
+  {
+    "amount": "170.85",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "170.85",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-06-13T19:16:00+03:00",
+    "ref": "alex-0102",
+    "stream": "groceries"
+  },
+  {
+    "amount": "13.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "13.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "UBER *TRIP",
+    "occurred_at": "2026-06-13T19:24:00+03:00",
+    "ref": "alex-0103",
+    "stream": "transport"
+  },
+  {
+    "amount": "66.22",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "66.22",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "TAZZ*COMANDA 4410",
+    "occurred_at": "2026-06-13T20:17:00+03:00",
+    "ref": "alex-0104",
+    "stream": "food_delivery"
+  },
+  {
+    "amount": "35.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "35.32",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0518 BUCURESTI",
+    "occurred_at": "2026-06-14T17:25:00+03:00",
+    "ref": "alex-0105",
+    "stream": "groceries"
+  }
+]

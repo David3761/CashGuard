@@ -1,0 +1,22 @@
+{
+  "id": "ioana_shopgo_350",
+  "scene": "E",
+  "acceptance": [
+    6
+  ],
+  "persona": "ioana",
+  "merchant_raw": "SHOP&GO 123 CLUJ-NAPOCA",
+  "mcc": "5411",
+  "direction": "debit",
+  "amount": 350.00,
+  "items": null,
+  "day_offset": 0,
+  "time": "17:20",
+  "requires": [],
+  "expected": {
+    "merchant_id": "shop_and_go",
+    "category": "groceries",
+    "decision": "auto"
+  },
+  "notes": "Scene E: normal for a family of four (household scale 2.1)."
+}

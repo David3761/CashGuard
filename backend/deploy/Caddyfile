@@ -1,0 +1,29 @@
+# Automatic HTTPS (Let's Encrypt) for both public hostnames. WebSocket upgrades pass through.
+# HSTS on both; no `Server` banner. The api adds its own security headers (app/security).
+
+(common) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+}
+
+api.{$DOMAIN} {
+	import common
+	# The app refuses bodies over 64 KiB too (413); this stops them at the edge.
+	request_body {
+		max_size 64KB
+	}
+	reverse_proxy api:8000
+}
+
+auth.{$DOMAIN} {
+	import common
+	# The Keycloak admin console and admin REST API are never public (reach it through an SSH
+	# tunnel to keycloak:8080). Login pages, tokens and JWKS under /realms/ stay public.
+	@admin path /admin /admin/*
+	respond @admin 404
+	reverse_proxy keycloak:8080
+}

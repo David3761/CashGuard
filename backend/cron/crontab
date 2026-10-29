@@ -1,0 +1,13 @@
+# Arch §10. Times are Europe/Bucharest (TZ in the container).
+# Output goes to the container log (docker compose logs cron).
+# m    h  dom mon dow  command
+*/5    *  *   *   *    /cron/run.sh process >> /proc/1/fd/1 2>&1
+*/5    *  *   *   *    /cron/run.sh recover >> /proc/1/fd/1 2>&1
+55     23 *   *   *    /cron/run.sh close-day >> /proc/1/fd/1 2>&1
+0      9  *   *   *    /cron/run.sh preemptive >> /proc/1/fd/1 2>&1
+0      18 *   *   0    /cron/run.sh weekly-reflection >> /proc/1/fd/1 2>&1
+0      3  *   *   *    /cron/run.sh expire-events >> /proc/1/fd/1 2>&1
+0      *  *   *   *    /cron/run.sh expire-questions >> /proc/1/fd/1 2>&1
+0      10 *   *   *    /cron/run.sh receivable-reminders >> /proc/1/fd/1 2>&1
+0      0  *   *   1    /cron/run.sh forecast-snapshot >> /proc/1/fd/1 2>&1
+0      20 *   *   0    /cron/run.sh infer-hypotheses >> /proc/1/fd/1 2>&1

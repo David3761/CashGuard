@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CashGuard demo scenario (backend/data/scenarios/<id>.json)",
+  "description": "One scripted transaction of the demo (arch 16.2) with the decision arch 16.3 expects. Read by /sim/transaction (B10, app/sim/scenarios.py) and the acceptance tests (D3). The time is relative to the sim date (2026-06-15, a Monday): day_offset days later, at time (Europe/Bucharest). Load strictly (Decimal, no duplicate keys, no NaN), as tests/unit/datafiles.py parse_json does.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "scene", "acceptance", "persona", "merchant_raw", "mcc", "direction", "amount", "items", "day_offset", "time", "requires", "expected", "notes"],
+  "properties": {
+    "id": { "description": "Equals the file name without .json (the scenario_id of POST /sim/transaction).", "type": "string", "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$", "maxLength": 40 },
+    "scene": { "description": "The demo scene of arch 16.2.", "enum": ["A", "B", "C", "D", "E"] },
+    "acceptance": { "description": "The arch 16.3 acceptance rows this scenario feeds.", "type": "array", "items": { "type": "integer", "minimum": 1, "maximum": 15 }, "uniqueItems": true },
+    "persona": { "enum": ["matei", "andrei", "bianca", "ioana", "alex"] },
+    "merchant_raw": { "description": "The bank's merchant text; C2's normalize resolves it through data/merchants.json aliases.", "type": "string", "minLength": 1, "maxLength": 200 },
+    "mcc": { "type": "string", "pattern": "^[0-9]{4}$" },
+    "direction": { "enum": ["debit", "credit"] },
+    "amount": { "description": "Lei, positive, at most 2 decimals.", "type": "number", "exclusiveMinimum": 0, "multipleOf": 0.01 },
+    "items": {
+      "description": "Receipt lines (D32), or null when the bank sent none.",
+      "oneOf": [
+        { "type": "null" },
+        { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/item" } }
+      ]
+    },
+    "day_offset": { "description": "Days after the sim date (0 = Monday 2026-06-15; Scene D jumps to Friday = 4).", "type": "integer", "minimum": 0, "maximum": 30 },
+    "time": { "description": "Local time of day in Europe/Bucharest, HH:MM.", "type": "string", "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
+    "requires": { "description": "State the expected decision depends on (set up by the seed or an earlier scene).", "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "expected": { "$ref": "#/$defs/expected" },
+    "notes": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "qty": { "type": "integer", "minimum": 1 },
+        "amount": { "type": "number", "minimum": 0, "multipleOf": 0.01 }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["merchant_id", "category", "decision"],
+      "properties": {
+        "merchant_id": { "description": "The data/merchants.json id merchant_raw resolves to.", "type": "string", "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$" },
+        "category": { "type": "string", "minLength": 1 },
+        "decision": { "description": "The arch 16.3 decision (app.domain.enums.Decision).", "enum": ["ignore", "auto", "inform", "ask", "ask_later"] },
+        "purpose": { "type": "string", "minLength": 1 },
+        "ask_what_item": { "type": "boolean" },
+        "outcome_label": { "description": "The matched rule's outcome label shown in the feed.", "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

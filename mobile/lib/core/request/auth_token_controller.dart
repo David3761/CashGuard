@@ -156,10 +156,13 @@ class AuthTokenController {
     if (user == null) {
       return null;
     }
-    final urlKey = AESHelper.instance.decrypt(user.key);
-    final body = {'mail': user.email, 'key': urlKey};
 
     try {
+      // Decrypting fails if the AES key was lost (e.g.: the app's data was
+      // restored on another device). It's handled like a failed request: no
+      // token is returned, so the user has to log in again.
+      final urlKey = await AESHelper.instance.decrypt(user.key);
+      final body = {'mail': user.email, 'key': urlKey};
       final json = await ref.read(apiServiceProvider).login(body);
       devPrint('Response refresh: $json}');
       final authDetails = AuthDetails.fromJson(json);

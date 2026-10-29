@@ -78,6 +78,7 @@
   "suggestionBalance": "What's my current balance?",
   "suggestionIncomingMoney": "Who sent me money recently?",
   "messageHint": "Write a message…",
+  "sendMessage": "Send message",
   "amountInLei": "{amount} lei",
   "@amountInLei": {
     "placeholders": {

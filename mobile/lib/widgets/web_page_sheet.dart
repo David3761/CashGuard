@@ -70,6 +70,7 @@ class _WebPageSheetState extends State<WebPageSheet> {
         IconButton(
           color: Colors.white,
           icon: const Icon(Icons.close, color: Colors.white),
+          tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
           onPressed: context.pop,
         ),
       ],

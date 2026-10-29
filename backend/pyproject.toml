@@ -1,0 +1,163 @@
+[project]
+name = "cashguard-api"
+version = "0.1.0"
+description = "CashGuard backend: FastAPI app with the platform, engine, context and agent modules"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "alembic>=1.20.1",
+    "anthropic[bedrock]>=2.3.0",
+    "fastapi>=0.162.0",
+    "httpx>=0.28.1",
+    "numpy>=2.5.4",
+    "psycopg[binary]>=3.3.6",
+    "pydantic>=2.14.1",
+    "pydantic-settings>=2.16.2",
+    "pyjwt[crypto]>=2.15.1",
+    "sqlalchemy[asyncio]>=2.1.6",
+    "tzdata>=2026.6",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.170.13",
+    "jsonschema>=4.26.0",
+    "mypy>=2.4.1",
+    "pytest>=9.2.0",
+    "pytest-asyncio>=1.4.1",
+    "pytest-cov>=7.1.0",
+    "respx>=0.23.1",
+    "ruff>=0.17.3",
+    "shellcheck-py>=0.11.0.1",
+    "types-jsonschema>=4.26.0.20261006",
+]
+
+# ── ruff: lint + format ──────────────────────────────────────────────────────────────────
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+# The docs hold pseudocode snippets, not code to format.
+extend-exclude = ["docs", "*.md"]  # ruff also formats code blocks in Markdown (bomboe)
+
+[tool.ruff.lint]
+select = [
+    "E", "W", "F", "I", "B", "UP", "SIM", "RUF",
+    "ASYNC",  # blocking calls inside async code
+    "S",      # bandit security checks
+    "DTZ",    # naive datetimes
+    "PT",     # pytest style
+    "TID",    # banned APIs (below)
+]
+
+# Romanian text and docs use – × − and typographic quotes on purpose (bomboe's setting).
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+# Time comes only from app.clock (work-breakdown 0.3 rule 3); that's what makes the simulator work.
+"datetime.datetime.now".msg = "Use app.clock.now() (cores receive `today` as a parameter)."
+"datetime.datetime.utcnow".msg = "Use app.clock.now()."
+"datetime.datetime.today".msg = "Use app.clock.today()."
+"datetime.date.today".msg = "Use app.clock.today()."
+"time.time".msg = "Use app.clock.now()."
+"time.time_ns".msg = "Use app.clock.now()."
+"time.localtime".msg = "Reads the wall clock: use app.clock.now()."
+"time.gmtime".msg = "Reads the wall clock: use app.clock.now()."
+"time.strftime".msg = "Reads the wall clock: use app.clock.now()."
+"time.ctime".msg = "Reads the wall clock: use app.clock.now()."
+"time.asctime".msg = "Reads the wall clock: use app.clock.now()."
+"time.clock_gettime".msg = "Reads the wall clock: use app.clock.now()."
+"time.clock_gettime_ns".msg = "Reads the wall clock: use app.clock.now()."
+
+[tool.ruff.lint.per-file-ignores]
+"app/clock.py" = ["TID251"]
+# Tests use plain asserts and fake credentials; UPPER_CASE settings fields look like constants
+# to SIM300, so `assert settings.X == value` would be flagged as a Yoda condition.
+"tests/**" = ["S101", "S105", "S106", "SIM300"]
+"migrations/versions/*" = ["E501"]  # generated: long CHECK (... IN (...)) strings (bomboe)
+# bomboe's platform code and tests, merged under our stricter rule set (INTEGRATION.md): his
+# type-narrowing asserts, his test style (composite asserts, subprocess calls of docker /
+# shellcheck, SQL built from table names in schema tests). Our own modules keep every rule.
+"app/{api,db,services}/*.py" = ["S101"]
+"tests/{api,db,ws,infra,fixtures}/*.py" = ["PT011", "PT012", "PT018", "S603", "S607", "S608"]
+"tests/unit/{test_cron,test_money,test_realm}.py" = ["PT011", "PT018", "S603", "S607"]
+
+# ── mypy ─────────────────────────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+check_untyped_defs = true
+no_implicit_optional = true
+strict_equality = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+# mypy's `strict` is global-only, so the strict flag set is listed here for the pure cores
+# (work-breakdown 0.1), the agent and the F1 foundation modules.
+[[tool.mypy.overrides]]
+module = [
+    "app.main", "app.config", "app.clock", "app.errors", "app.logging",
+    "app.domain.*", "app.engine.*", "app.context.*", "app.agent.*", "app.i18n.*",
+]
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+no_implicit_reexport = true
+warn_return_any = true
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+# bomboe's platform tests: his setup type-checked `app` only (`mypy app`). They run green; typing
+# them under our flags is TODO(INT) (INTEGRATION.md). Our own tests stay fully checked.
+[[tool.mypy.overrides]]
+module = [
+    "tests.api.test_auth_dependencies", "tests.api.test_chat", "tests.api.test_fixtures_api",
+    "tests.api.test_internal", "tests.api.test_rest_context", "tests.api.test_rest_core",
+    "tests.api.test_sim", "tests.db.*", "tests.ws.*", "tests.infra.*", "tests.unit.test_enums",
+    "tests.unit.test_cron", "tests.unit.test_realm", "tests.unit.test_money",
+    "tests.unit.test_auth_tokens", "tests.unit.test_service_contracts",
+]
+ignore_errors = true
+
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+
+# ── pytest ───────────────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = ["-ra", "--strict-markers", "--strict-config", "-m", "not live"]
+markers = [
+    "db: needs Postgres (make db-up)",
+    "api: HTTP endpoint tests (needs Postgres)",
+    "ws: WebSocket tests (needs Postgres)",
+    "live: calls the real Anthropic API and costs money; run on purpose only",
+    "slow: slower than ~1 s",
+]
+asyncio_mode = "auto"
+# One event loop for the whole session, so session-scoped async fixtures (bomboe's DB engine) work.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+xfail_strict = true
+# Warnings are errors. A third-party warning we can't fix gets an explicit, commented ignore here.
+filterwarnings = ["error"]
+
+# ── coverage (a hint, not the goal: how-we-work §7) ─────────────────────────────────────────
+[tool.coverage.run]
+source = ["app"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
