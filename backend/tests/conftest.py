@@ -1,5 +1,6 @@
 """Shared test config. bomboe's F3 adds the db / api / auth / ws fixtures here (HANDOFFS H-4)."""
 
+import logging
 import os
 from collections.abc import Iterator
 from typing import Protocol
@@ -43,7 +44,8 @@ def _restore_global_state(
     request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch
 ) -> Iterator[None]:
     """Isolate the settings, and undo process-wide state a test may change: the cached
-    settings, and the installed clock (every test starts and ends with a real clock)."""
+    settings, the installed clock (every test starts and ends with a real clock), and the
+    logging setup (create_app configures it)."""
     if request.node.get_closest_marker("live") is None:
         _isolate_environment(monkeypatch)
     get_settings.cache_clear()
@@ -52,7 +54,12 @@ def _restore_global_state(
     real_clock = clock.RealClock()
     clock.set_clock(real_clock)
     assert clock.get_clock() is real_clock, "a use_clock() block was entered and never left"
+    loggers = [logging.getLogger(name) for name in ("", "anthropic", "httpx", "httpx2", "httpcore")]
+    saved = [(logger, logger.level, list(logger.handlers)) for logger in loggers]
     yield
+    for logger, level, handlers in saved:
+        logger.setLevel(level)
+        logger.handlers[:] = handlers
     clock.set_clock(clock.RealClock())
     get_settings.cache_clear()
 
