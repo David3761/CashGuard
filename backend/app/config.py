@@ -96,7 +96,7 @@ class Settings(BaseSettings):
     # Rate limits (app.security.ratelimit), per principal (user, or the app API's "app").
     RATE_LIMIT_CHAT_PER_MINUTE: int = Field(default=10, ge=1)
     RATE_LIMIT_CHAT_PER_DAY: int = Field(default=200, ge=1)
-    RATE_LIMIT_SIM_PER_MINUTE: int = Field(default=5, ge=1)
+    RATE_LIMIT_SIM_PER_MINUTE: int = Field(default=30, ge=1)
     RATE_LIMIT_WS_CONNECT_PER_MINUTE: int = Field(default=10, ge=1)
     # The app API (David V.'s Flutter contract, API_SPEC.md): root routes, no auth, one demo user.
     APP_API_ENABLED: bool = False

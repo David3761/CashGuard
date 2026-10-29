@@ -902,7 +902,7 @@ The AI can **suggest** a change ("Want me to push the deadline 2 weeks? That get
 - one question, ≤ 18 words, spoken-friendly, open ("Ce a fost?"), with at most **one** hint from context ("A fost pentru echipă?") when a fact or precedent makes it likely;
 - if `ask_what_item` (multi-category merchant, no items, D32) → ask what it was ("Ce ți-ai luat de la eMAG?");
 - always offer 3–4 quick replies (`show_quick_replies`), e.g. "Doar pentru mine", "Și pentru alții", "Ceva plănuit", "Prefer să nu spun".
-- Template fallback (no LLM / timeout 5 s): `"Am văzut {amount} lei la {merchant}. A fost ceva diferit de obicei?"`.
+- Template fallback (no LLM / timeout 15 s, D54): `"Am văzut {amount} lei la {merchant}. A fost ceva diferit de obicei?"`.
 
 **Understanding answers and volunteered context:**
 - Life information (job, household, car, hobbies, plans) → `add_life_fact` **even when the user didn't mention it as a fact**; a plan with a cost → `add_life_event` + `create_pot`; a recurrence → `create_pattern_rule`.

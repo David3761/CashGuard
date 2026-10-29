@@ -2,7 +2,8 @@
 
 - Read-only tools (D22): the setup port returns them for `trigger="proactive"`, and the loop
   refuses any other tool Claude tries.
-- Claude gets 5 s (`asyncio.timeout`). A timeout or any LLM error → the template question
+- Claude gets 15 s (`asyncio.timeout`; D54: 5 s was too short for Bedrock). A timeout or any
+  LLM error → the template question
   (A5.3 `transaction_question`, "Ce ți-ai luat de la eMAG?" when `ask_what_item`) with the
   default chips. A non-question event without Claude is left pending (arch 11), to retry later.
 - The message is saved with `speak = true`, `speak_text`, `ref_transaction_id` and
@@ -33,7 +34,7 @@ from app.domain.results import ActionCard, AgentResult
 
 log = logging.getLogger(__name__)
 
-PROACTIVE_TIMEOUT_S: Final = 5.0
+PROACTIVE_TIMEOUT_S: Final = 15.0  # D54: Bedrock answers in 3-13 s (live, 2026-10-29)
 MAX_QUESTION_WORDS: Final = 18  # arch 6.9: longer is logged, not refused
 MIN_QUESTION_CHIPS: Final = 3
 QUESTION_EVENTS: Final = frozenset({"transaction_question"})

@@ -58,7 +58,7 @@ The full design is in
 **Abuse limits**
 
 - Rate limits per user (`app/security/ratelimit.py`): `/api/chat` 10/min and 200/day, `/api/sim`
-  5/min, WebSocket connects 10/min (`RATE_LIMIT_*`); 429 with `Retry-After`.
+  30/min, WebSocket connects 10/min (`RATE_LIMIT_*`); 429 with `Retry-After`.
 - One chat run at a time per user, claimed atomically (409 `agent_busy`).
 - Request bodies over 64 KiB → 413 (in the app and at Caddy); soft notes ≤ 2000 characters.
 - WebSocket: at most 3 sockets per user, inbound frames ≤ 4 KiB (uvicorn caps frames at 64 KiB),

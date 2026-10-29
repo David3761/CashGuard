@@ -5,7 +5,7 @@ handshake next. The state lives in the process; that's fine because the app runs
 uvicorn worker (arch 5.2).
 
 **Buckets** are named, each with its own limits (`Settings`): `chat` 10/min + 200/day, `sim`
-5/min, `ws_connect` 10/min. Every key gets one token bucket per limit; a hit passes only if every
+30/min, `ws_connect` 10/min. Every key gets one token bucket per limit; a hit passes only if every
 bucket has a token, and only a hit that passes takes them (a refused attempt costs nothing).
 
 **Keys are principals, not IPs:** behind Caddy every request comes from Caddy's address.

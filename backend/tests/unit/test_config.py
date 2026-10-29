@@ -171,7 +171,7 @@ def test_settings_defaults_match_the_documented_values(settings: Settings) -> No
         "LOG_LEVEL": "INFO",
         "RATE_LIMIT_CHAT_PER_MINUTE": 10,
         "RATE_LIMIT_CHAT_PER_DAY": 200,
-        "RATE_LIMIT_SIM_PER_MINUTE": 5,
+        "RATE_LIMIT_SIM_PER_MINUTE": 30,
         "RATE_LIMIT_WS_CONNECT_PER_MINUTE": 10,
         "APP_API_ENABLED": False,
         "APP_API_USER": "a0000000-0000-4000-8000-000000000001",

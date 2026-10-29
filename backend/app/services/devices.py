@@ -19,7 +19,7 @@ async def upsert(
     db: AsyncSession, user_sub: str, fcm_token: str, platform: m.DevicePlatform, *, keep: int
 ) -> m.Device:
     """Register `fcm_token` (idempotent: a known token is updated, also moved to this login),
-    then keep only the `keep` most recently updated devices of the login."""
+    then keep it and the `keep - 1` most recently updated other devices of the login."""
     now = clock.now()
     stmt = (
         insert(m.Device)
@@ -37,11 +37,13 @@ async def upsert(
         .returning(m.Device.id)
     )
     device_id = (await db.execute(stmt)).scalar_one()
+    # The token just registered always stays: after `/sim/reset` moves the sim clock back, its
+    # `updated_at` can be the oldest of the login's rows.
     stale = (
         select(m.Device.id)
-        .where(m.Device.user_sub == user_sub)
+        .where(m.Device.user_sub == user_sub, m.Device.id != device_id)
         .order_by(m.Device.updated_at.desc(), m.Device.id.desc())
-        .offset(keep)
+        .offset(max(keep - 1, 0))
     )
     await db.execute(delete(m.Device).where(m.Device.id.in_(stale.scalar_subquery())))
     await db.flush()

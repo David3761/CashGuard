@@ -990,7 +990,7 @@ async def test_a_retry_that_succeeds_returns_the_answer(make_llm: MakeLLM) -> No
 
 
 async def test_cancelling_the_call_is_not_turned_into_unavailable() -> None:
-    # A7's 5 s template relies on cancellation (asyncio.timeout) reaching the caller unchanged.
+    # A7's timeout template relies on cancellation (asyncio.timeout) reaching the caller unchanged.
     started = asyncio.Event()
 
     async def never_answer(request: httpx2.Request) -> httpx2.Response:

@@ -16,6 +16,7 @@ import pytest
 from fastapi import FastAPI
 from sqlalchemy import func, select
 
+from app import clock
 from app.app_api import chat
 from app.app_api.mapping import TRANSFER_ID_OFFSET
 from app.config import Settings
@@ -277,6 +278,25 @@ async def test_device_cap_prunes_the_oldest(make_app, user, db_committed, monkey
         select(m.Device.fcm_token).execution_options(populate_existing=True)
     )
     assert sorted(rows) == ["t1", "t2"]
+
+
+async def test_a_token_registered_after_the_sim_clock_moved_back_is_kept(
+    make_app, user, db_committed
+):
+    # /sim/reset moves the sim clock back: the new token is then the "oldest" row of the login.
+    application = make_app(APP_API_MAX_DEVICES=2)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=application), base_url="http://test"
+    ) as c:
+        for token in ("t0", "t1"):
+            await c.post("/devices", json={"fcm_token": token, "platform": "android"})
+        with clock.use_clock(clock.FixedClock(datetime(2026, 6, 1, 9, 0, tzinfo=UTC))):
+            r = await c.post("/devices", json={"fcm_token": "fresh", "platform": "android"})
+    assert r.status_code == 200
+    rows = await db_committed.scalars(
+        select(m.Device.fcm_token).execution_options(populate_existing=True)
+    )
+    assert sorted(rows) == ["fresh", "t1"]
 
 
 @pytest.mark.parametrize(

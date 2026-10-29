@@ -159,7 +159,7 @@ def test_never_more_hits_than_the_budget(count, gaps):
 def test_default_buckets():
     assert bucket_limits(Settings(_env_file=None)) == {
         "chat": (Limit(10, 60), Limit(200, 86_400)),
-        "sim": (Limit(5, 60),),
+        "sim": (Limit(30, 60),),
         "ws_connect": (Limit(10, 60),),
     }
 

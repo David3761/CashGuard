@@ -188,7 +188,7 @@
 - **What changed:**
   - `/api/sim/*` needs the Keycloak realm role **`sim`**. `realm-cashguard.json` gives it to the five demo personas, so a fresh local Keycloak just works.
   - WebSocket close codes: **1008** bad token (refresh, then reconnect, as before), **4401** token expired while open (refresh, then reconnect), **4409** more than 3 sockets for the user (close the old ones), **4429** too many connects (wait, then reconnect), **1009** inbound frame over 4 KiB (the app never sends one).
-  - REST: 429 `rate_limited` with `Retry-After` on `/api/chat` (10/min, 200/day) and `/api/sim/*` (5/min); 413 `payload_too_large` over 64 KiB; `PATCH /api/life-profile/{key}` values ≤ 2000 characters as JSON.
+  - REST: 429 `rate_limited` with `Retry-After` on `/api/chat` (10/min, 200/day) and `/api/sim/*` (30/min); 413 `payload_too_large` over 64 KiB; `PATCH /api/life-profile/{key}` values ≤ 2000 characters as JSON.
   - Only access tokens are accepted: sending an ID token now gives 401 `invalid_token`.
 - **Merge instruction:**
   - Mobile: on 4401, treat it like 1008 (refresh the token, reconnect); back off on 4429/4409.
