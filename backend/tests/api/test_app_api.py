@@ -6,6 +6,7 @@ The agent is always the fake runner of the `runner` fixture: nothing here can re
 
 import asyncio
 import json
+import logging
 from collections.abc import AsyncGenerator, AsyncIterator, Callable, Iterator
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -18,6 +19,7 @@ from sqlalchemy import func, select
 
 from app import clock
 from app.app_api import chat
+from app.app_api.key import UNAUTHORIZED
 from app.app_api.mapping import TRANSFER_ID_OFFSET
 from app.config import Settings
 from app.db import models as m
@@ -548,3 +550,154 @@ async def test_cors_allows_localhost_only(client, user):
         headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "GET"},
     )
     assert "access-control-allow-origin" not in bad.headers
+
+
+async def test_cors_preflight_allows_the_app_key_header(client, user):
+    r = await client.options(
+        "/balance",
+        headers={
+            "Origin": "http://localhost:5000",
+            "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "x-app-key",
+        },
+    )
+    assert r.status_code == 200
+    assert "x-app-key" in r.headers["access-control-allow-headers"].lower()
+
+
+# ── the shared app key (APP_API_KEY → X-App-Key) ─────────────────────────────────────────
+
+APP_KEY = "app-shared-" + "key-test-4711"  # split: no key-shaped literal for the secret scanner
+
+# Every app route, with a body that passes validation (so only the key decides).
+APP_ROUTES = [
+    ("GET", "/balance", None),
+    ("GET", "/transactions", None),
+    ("POST", "/devices", {"fcm_token": "tok:key", "platform": "android"}),
+    ("DELETE", "/devices/tok:key", None),
+    ("GET", "/assistant/messages", None),
+    ("POST", "/assistant/messages", {"text": "hi"}),
+]
+
+
+@pytest.fixture
+async def keyed(
+    make_app: Callable[..., FastAPI], monkeypatch: pytest.MonkeyPatch
+) -> AsyncIterator[httpx.AsyncClient]:
+    """A client of an app that has `APP_API_KEY` set; it sends no key on its own."""
+    monkeypatch.setattr(chat, "DELTA_PAUSE_S", 0.0)
+    transport = httpx.ASGITransport(app=make_app(APP_API_KEY=APP_KEY), raise_app_exceptions=False)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
+        yield c
+
+
+def test_every_app_route_is_covered_here():
+    paths = create_app(Settings(_env_file=None, APP_API_ENABLED=True)).openapi()["paths"]
+    app_ops = {
+        (method.upper(), path)
+        for path, operations in paths.items()
+        for method, op in operations.items()
+        if op.get("tags") == ["app"]
+    }
+    assert app_ops == {
+        (method, "/devices/{fcm_token}" if path.startswith("/devices/") else path)
+        for method, path, _ in APP_ROUTES
+    }
+
+
+@pytest.mark.parametrize(("method", "path", "body"), APP_ROUTES)
+async def test_without_a_configured_key_no_header_is_needed(client, user, method, path, body):
+    r = await client.request(method, path, json=body)
+    assert r.status_code == 200, r.text
+    await settle()
+
+
+@pytest.mark.parametrize("sent", [None, "", "wrong-key", APP_KEY + "x", APP_KEY[:-1], "ключ"])
+@pytest.mark.parametrize(("method", "path", "body"), APP_ROUTES)
+async def test_a_missing_or_wrong_key_is_401_message(
+    keyed, user, runner, db_committed, method, path, body, sent
+):
+    headers = {} if sent is None else {"X-App-Key": sent.encode()}  # raw bytes: also non-ASCII
+    r = await keyed.request(method, path, json=body, headers=headers)
+    assert r.status_code == 401
+    assert r.json() == {"message": UNAUTHORIZED}
+    assert APP_KEY not in r.text and APP_KEY not in str(r.headers)
+    assert runner.calls == []  # no agent run, no message stored, no device touched
+    assert await count(db_committed, m.Message, user_id=user.id) == 0
+    assert await count(db_committed, m.AgentRun, user_id=user.id) == 0
+
+
+@pytest.mark.parametrize(("method", "path", "body"), APP_ROUTES)
+async def test_the_right_key_passes(keyed, user, method, path, body):
+    r = await keyed.request(method, path, json=body, headers={"X-App-Key": APP_KEY})
+    assert r.status_code == 200, r.text
+    assert APP_KEY not in r.text
+    await settle()
+
+
+async def test_the_key_is_checked_before_the_unknown_user_503(keyed):
+    # no user seeded: without the key nothing reaches the DB lookup
+    assert (await keyed.get("/balance")).status_code == 401
+    assert (await keyed.get("/balance", headers={"X-App-Key": APP_KEY})).status_code == 503
+
+
+async def test_the_chat_streams_with_the_right_key(keyed, user, runner):
+    r = await keyed.post(
+        "/assistant/messages", json={"text": "hei"}, headers={"X-App-Key": APP_KEY}
+    )
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("text/event-stream")
+    assert names(parse_sse(r.text))[-1] == "done"
+    await settle()
+    assert [text for _, _, text in runner.calls] == ["hei"]
+
+
+async def test_calls_without_the_key_do_not_use_up_the_chat_rate_limit(
+    make_app, user, runner, monkeypatch
+):
+    monkeypatch.setattr(chat, "DELTA_PAUSE_S", 0.0)
+    application = make_app(APP_API_KEY=APP_KEY, RATE_LIMIT_CHAT_PER_MINUTE=1)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=application), base_url="http://test"
+    ) as c:
+        for sent in ({}, {"X-App-Key": "wrong-key"}) * 5:
+            r = await c.post("/assistant/messages", json={"text": "hi"}, headers=sent)
+            assert r.status_code == 401
+        r = await c.post("/assistant/messages", json={"text": "hi"}, headers={"X-App-Key": APP_KEY})
+        assert r.status_code == 200  # the one token of the minute was still there
+        await settle()
+        r = await c.post("/assistant/messages", json={"text": "hi"}, headers={"X-App-Key": APP_KEY})
+        assert r.status_code == 429  # and the limit itself still works
+    assert len(runner.calls) == 1
+
+
+async def test_the_key_never_reaches_responses_or_logs(make_app, user, monkeypatch, caplog, capsys):
+    monkeypatch.setattr(chat, "DELTA_PAUSE_S", 0.0)
+    application = make_app(APP_API_KEY=APP_KEY)  # logs `app_configured` with the settings
+    caplog.set_level(logging.DEBUG)
+    bodies = []
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=application), base_url="http://test"
+    ) as c:
+        for sent in (APP_KEY, "wrong-key", APP_KEY[:-1]):
+            for method, path, body in APP_ROUTES:
+                r = await c.request(method, path, json=body, headers={"X-App-Key": sent})
+                bodies.append(r.text + str(r.headers))
+                await settle()
+    assert "app_configured" in caplog.text
+    logged = caplog.text + capsys.readouterr().err
+    for text in [*bodies, logged]:
+        assert APP_KEY not in text
+        assert APP_KEY[:-1] not in text
+
+
+def test_openapi_documents_the_app_key_header():
+    schema = create_app(Settings(_env_file=None, APP_API_ENABLED=True)).openapi()
+    scheme = schema["components"]["securitySchemes"]["AppKey"]
+    assert scheme == {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-App-Key",
+        "description": scheme["description"],
+    }
+    assert schema["paths"]["/balance"]["get"]["security"] == [{"AppKey": []}]

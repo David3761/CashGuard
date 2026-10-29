@@ -20,6 +20,7 @@ PROD_SECRETS = {
     "KC_ADMIN_PASSWORD": "kc-admin-secret",
     "KC_CRON_CLIENT_SECRET": "cron-secret",
     "KC_DEMO_PASSWORD": "demo-password-long",
+    "APP_API_KEY": "app-key-secret",
 }
 
 
@@ -117,6 +118,7 @@ def test_prod_uses_the_given_secrets_never_the_dev_defaults(prod):
     assert s["api"]["environment"]["DATABASE_URL"] == (
         "postgresql+psycopg://cashguard:pg-secret@db:5432/cashguard"
     )
+    assert s["api"]["environment"]["APP_API_KEY"] == "app-key-secret"  # the app API's X-App-Key
 
 
 def test_prod_api_docs_off_sim_explicit_and_caddy_trusted(prod):
