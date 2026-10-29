@@ -67,6 +67,7 @@ FIELDS = frozenset(
         "RATE_LIMIT_WS_CONNECT_PER_MINUTE",
         # the app API (tests/unit/app_api/test_settings.py checks their defaults)
         "APP_API_ENABLED",
+        "APP_API_KEY",
         "APP_API_USER",
         "APP_API_MAX_TEXT_CHARS",
         "APP_API_REPLY_TIMEOUT_S",
@@ -88,6 +89,7 @@ OPTIONAL_FIELDS = (
     "KEYCLOAK_AUDIENCE",
     "KEYCLOAK_INTERNAL_URL",
     "KEYCLOAK_CRON_CLIENT_SECRET",
+    "APP_API_KEY",
 )
 
 
@@ -174,6 +176,7 @@ def test_settings_defaults_match_the_documented_values(settings: Settings) -> No
         "RATE_LIMIT_SIM_PER_MINUTE": 30,
         "RATE_LIMIT_WS_CONNECT_PER_MINUTE": 10,
         "APP_API_ENABLED": False,
+        "APP_API_KEY": None,
         "APP_API_USER": "a0000000-0000-4000-8000-000000000001",
         "APP_API_MAX_TEXT_CHARS": 2000,
         "APP_API_REPLY_TIMEOUT_S": 120.0,
@@ -253,6 +256,7 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         RATE_LIMIT_SIM_PER_MINUTE="2",
         RATE_LIMIT_WS_CONNECT_PER_MINUTE="4",
         APP_API_ENABLED="true",
+        APP_API_KEY="app-key-from-env",
         APP_API_USER="b0000000-0000-4000-8000-000000000002",
         APP_API_MAX_TEXT_CHARS="500",
         APP_API_REPLY_TIMEOUT_S="30",
@@ -292,6 +296,7 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         "RATE_LIMIT_SIM_PER_MINUTE": 2,
         "RATE_LIMIT_WS_CONNECT_PER_MINUTE": 4,
         "APP_API_ENABLED": True,
+        "APP_API_KEY": SecretStr("app-key-from-env"),
         "APP_API_USER": "b0000000-0000-4000-8000-000000000002",
         "APP_API_MAX_TEXT_CHARS": 500,
         "APP_API_REPLY_TIMEOUT_S": 30.0,
@@ -638,6 +643,7 @@ def test_every_value_may_have_surrounding_spaces(monkeypatch: pytest.MonkeyPatch
         "RATE_LIMIT_SIM_PER_MINUTE": "2",
         "RATE_LIMIT_WS_CONNECT_PER_MINUTE": "4",
         "APP_API_ENABLED": "true",
+        "APP_API_KEY": "app-key-spaced",
         "APP_API_USER": "42",
         "APP_API_MAX_TEXT_CHARS": "500",
         "APP_API_REPLY_TIMEOUT_S": "60",
@@ -667,6 +673,7 @@ SECRETS = {
     "AWS_BEARER_TOKEN_BEDROCK": "bedrock-" + "api-key-987",
     "AWS_SECRET_ACCESS_KEY": "aws-secret-" + "access-key-321",
     "AWS_SESSION_TOKEN": "aws-session-" + "token-654",
+    "APP_API_KEY": "app-shared-" + "key-852",
 }
 
 
@@ -731,6 +738,7 @@ def test_env_example_is_itself_valid() -> None:
 
     assert settings.ANTHROPIC_API_KEY is None
     assert settings.KEYCLOAK_CRON_CLIENT_SECRET is None
+    assert settings.APP_API_KEY is None  # the local demo: the app API is open
     assert settings.SIM_MODE is True
     assert settings.ANTHROPIC_REFUSAL_FALLBACK is False
     assert settings.KEYCLOAK_ISSUER == "http://localhost:8081/realms/cashguard"  # B1's port

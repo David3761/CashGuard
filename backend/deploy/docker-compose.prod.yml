@@ -55,6 +55,9 @@ services:
       # deployment sets SIM_MODE=false: the routes are then not mounted at all.
       SIM_MODE: ${SIM_MODE:-true}
       API_DOCS_ENABLED: "false"
+      # The app API (APP_API_ENABLED, on in .env.example) is public here: its routes then need
+      # this key in `X-App-Key`, and the app is built with --dart-define=APP_API_KEY=<same>.
+      APP_API_KEY: ${APP_API_KEY:?set APP_API_KEY, e.g. openssl rand -hex 32}
       # Only Caddy reaches the api (no published port), so its X-Forwarded-* are trusted.
       FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-*}
     restart: unless-stopped

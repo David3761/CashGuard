@@ -7,10 +7,12 @@
     GET    /assistant/messages      {"messages": [{id, text, sender, created_at}]}
     POST   /assistant/messages      {"text"} → SSE: message → delta* → done | error
 
-No auth (one demo user, `APP_API_USER`); errors are `{"message"}`. Mounted only when
-`APP_API_ENABLED` (off in code, on in `.env.example`). Abuse protection on the chat
-(app.security.ratelimit): the `chat` bucket keyed by the one principal "app" (behind Caddy the
-client IP says nothing), a text limit, and one reply at a time per user.
+One demo user (`APP_API_USER`), no login; errors are `{"message"}`. Mounted only when
+`APP_API_ENABLED` (off in code, on in `.env.example`). Access: when `APP_API_KEY` is set, every
+route needs the header `X-App-Key` (app.app_api.key), checked before anything else; unset (the
+local demo), the routes are open. Abuse protection on the chat (app.security.ratelimit): the
+`chat` bucket keyed by the one principal "app" (behind Caddy the client IP says nothing), a text
+limit, and one reply at a time per user.
 """
 
 from datetime import datetime
@@ -24,6 +26,7 @@ from sqlalchemy import select
 from app.api.deps import Db
 from app.app_api import chat, sse
 from app.app_api.errors import AppError, MessageErrorRoute
+from app.app_api.key import APP_KEY_HEADER, require_app_key
 from app.app_api.mapping import (
     SAVINGS_TITLE,
     TRANSFER_ID_OFFSET,
@@ -74,6 +77,8 @@ UserDep = Annotated[AppUser, Depends(_app_user)]
 router = APIRouter(
     route_class=MessageErrorRoute,
     tags=["app"],
+    # First in every route's dependencies: before the rate limit, the DB and the agent.
+    dependencies=[Depends(require_app_key)],
     responses={"default": {"model": AppError, "description": 'Any failure: {"message": "..."}'}},
 )
 
@@ -210,7 +215,7 @@ def install_app_api(app: FastAPI, settings: Settings) -> None:
     cors: dict[str, Any] = {
         "allow_origin_regex": settings.APP_API_CORS_ORIGIN_REGEX,
         "allow_methods": ["GET", "POST", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Accept", "Authorization"],
+        "allow_headers": ["Content-Type", "Accept", "Authorization", APP_KEY_HEADER],
         "expose_headers": ["Retry-After"],
         "allow_credentials": False,
     }

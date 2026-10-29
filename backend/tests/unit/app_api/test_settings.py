@@ -11,6 +11,7 @@ from app.config import BACKEND_DIR, Settings
 def test_defaults():
     s = Settings(_env_file=None)
     assert s.APP_API_ENABLED is False
+    assert s.APP_API_KEY is None  # no key: the routes are open
     assert s.APP_API_USER == "a0000000-0000-4000-8000-000000000001"  # Matei (realm + seed)
     assert s.APP_API_MAX_TEXT_CHARS == 2000
     assert s.APP_API_REPLY_TIMEOUT_S == 120
@@ -23,14 +24,21 @@ def test_defaults():
 def test_env_example_turns_the_app_api_on():
     s = Settings(_env_file=BACKEND_DIR / ".env.example")
     assert s.APP_API_ENABLED is True
+    assert s.APP_API_KEY is None  # blank = open (the local demo)
     assert s.APP_API_CORS_ORIGIN_REGEX == r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
     assert s.FCM_SERVICE_ACCOUNT_FILE is None  # blank = not set
 
 
 def test_blank_values_mean_the_default(monkeypatch: pytest.MonkeyPatch):
-    for name in ("APP_API_CORS_ORIGIN_REGEX", "FCM_SERVICE_ACCOUNT_FILE", "FCM_PROJECT_ID"):
+    for name in (
+        "APP_API_KEY",
+        "APP_API_CORS_ORIGIN_REGEX",
+        "FCM_SERVICE_ACCOUNT_FILE",
+        "FCM_PROJECT_ID",
+    ):
         monkeypatch.setenv(name, "")
     s = Settings(_env_file=None)
+    assert s.APP_API_KEY is None
     assert s.APP_API_CORS_ORIGIN_REGEX == r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
     assert s.FCM_SERVICE_ACCOUNT_FILE is None
     assert s.FCM_PROJECT_ID is None

@@ -98,8 +98,12 @@ class Settings(BaseSettings):
     RATE_LIMIT_CHAT_PER_DAY: int = Field(default=200, ge=1)
     RATE_LIMIT_SIM_PER_MINUTE: int = Field(default=30, ge=1)
     RATE_LIMIT_WS_CONNECT_PER_MINUTE: int = Field(default=10, ge=1)
-    # The app API (David V.'s Flutter contract, API_SPEC.md): root routes, no auth, one demo user.
+    # The app API (David V.'s Flutter contract, API_SPEC.md): root routes, one demo user, no login.
     APP_API_ENABLED: bool = False
+    # A shared key: set → every app route needs the header `X-App-Key` (app.app_api.key), and
+    # the app is built with --dart-define=APP_API_KEY. Unset → open (the local demo). Hosted:
+    # required (deploy/docker-compose.prod.yml).
+    APP_API_KEY: SecretStr | None = None
     # The demo user: a users.keycloak_sub, or a numeric users.id. Default: Matei (realm + seed).
     APP_API_USER: str = Field(default="a0000000-0000-4000-8000-000000000001", min_length=1)
     APP_API_MAX_TEXT_CHARS: int = Field(default=2000, ge=1, le=10_000)
@@ -124,6 +128,7 @@ class Settings(BaseSettings):
         "KEYCLOAK_AUDIENCE",
         "KEYCLOAK_INTERNAL_URL",
         "KEYCLOAK_CRON_CLIENT_SECRET",
+        "APP_API_KEY",
         "APP_API_CORS_ORIGIN_REGEX",
         "FCM_SERVICE_ACCOUNT_FILE",
         "FCM_PROJECT_ID",

@@ -26,7 +26,11 @@ class ApiClient {
     // backend has authentication. AuthTokenController already stores and
     // refreshes the tokens.
     interceptors: [
-      const HeadersInterceptor({'Content-Type': 'application/json'}),
+      // The app key (`--dart-define=APP_API_KEY`) goes on every request.
+      HeadersInterceptor({
+        'Content-Type': 'application/json',
+        ...appKeyHeaders(),
+      }),
       const _LoggingInterceptor(),
     ],
   );
