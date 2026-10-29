@@ -11,7 +11,7 @@ from app.context import library, service
 from app.context.evaluate import evaluate
 from app.domain.enums import AnnotationSource, Category, Decision, Direction, FactType, Purpose
 from app.domain.models import Item, TxView
-from app.domain.results import PropagationResult, QuestionCandidate
+from app.domain.results import QuestionCandidate
 from app.domain.user_context import UserContext
 from tests import builders
 from tests.builders import fact
@@ -90,7 +90,7 @@ def test_pick_question_asks_the_waiting_transaction(
 def test_the_other_stubs() -> None:
     occupation = fact(FactType.OCCUPATION, id=7)
     assert service.signatures_for_fact(occupation, None) == library.signatures_for_fact(occupation)
-    assert service.on_fact_changed(None, 1, 7) == PropagationResult(fact_id=7)
+    # on_fact_changed is C9's real shell now (tests: test_propagate.py)
     # learn_from_annotation is C8's real shell now (tests: test_rules.py)
     assert service.infer_hypotheses(None, 1) == []
 

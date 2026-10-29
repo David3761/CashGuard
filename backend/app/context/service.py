@@ -2,8 +2,8 @@
 
 Real: `evaluate_transaction` (C6, `context.evaluate`), `pick_question` and `default_reading` (C7,
 `context.questions`), `signatures_for_fact` (C4, `context.library`), `learn_from_annotation` (C8,
-`context.rules`). Still S0 stubs, until C9 (`on_fact_changed`) and C10 (`infer_hypotheses`): a
-no-op result, `[]`.
+`context.rules`) and `on_fact_changed` (C9, `context.propagate`). Still an S0 stub until C10:
+`infer_hypotheses` (`[]`).
 
 `db` is typed `Any` until bomboe's session exists. The DB reads go through bomboe's services
 (arch 15.1 `services/`), looked up at call time because B3 isn't merged yet; tests replace them.
@@ -101,8 +101,10 @@ def signatures_for_fact(
 
 
 def on_fact_changed(db: Any, user_id: int, fact_id: int) -> PropagationResult:
-    """Stub of C9: a no-op (nothing re-evaluated, the scale unchanged)."""
-    return PropagationResult(fact_id=fact_id)
+    """C9 (5.3.9): signatures → baselines → the last 30 days re-read → plan + forecast."""
+    from app.context import propagate  # it uses this module's loaders
+
+    return propagate.on_fact_changed(db, user_id, fact_id)
 
 
 def save_rule_change(

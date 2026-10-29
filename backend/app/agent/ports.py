@@ -291,8 +291,9 @@ class LazyContext:
         return list(fn(fact, llm_signatures))
 
     def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> PropagationResult | None:
+        # C9's tool-path shell: no plan recompute inside, the executor does it once (D18).
         fn = _first(
-            ("app.context.propagate", "on_fact_changed"),
+            ("app.context.propagate", "reevaluate_after_fact"),
             ("app.context.service", "on_fact_changed"),
         )
         result: PropagationResult | None = fn(db, user_id, fact_id)
