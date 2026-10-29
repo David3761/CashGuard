@@ -1205,6 +1205,18 @@ async def test_a_tool_input_split_over_many_chunks_is_put_back_together(
     assert call.input == {"amount": 500, "note": "căști 🎧"}
 
 
+@pytest.mark.parametrize("chunks", [[""], ["", ""]], ids=["one", "two"])
+async def test_a_tool_call_whose_deltas_are_empty_has_an_empty_input(
+    make_llm: MakeLLM, chunks: list[str]
+) -> None:
+    # Bedrock streams one empty `partial_json` for a tool without arguments (live, 2026-10-29).
+    reply = await make_llm(_Api(_tool_call_stream(*chunks))).create(SYSTEM, [USER])
+
+    call = reply.content[0]
+    assert call.type == "tool_use"
+    assert call.input == {}
+
+
 async def test_a_tool_call_without_input_deltas_keeps_its_empty_input(make_llm: MakeLLM) -> None:
     reply = await make_llm(_Api(_tool_call_stream())).create(SYSTEM, [USER])
 
