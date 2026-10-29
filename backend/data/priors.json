@@ -1,0 +1,30 @@
+{
+  "categories": {
+    "groceries":       {"monthly_mean":  900.00, "basket_median":   70.00, "basket_cv": 0.60, "cv": 0.35},
+    "restaurants":     {"monthly_mean":  200.00, "basket_median":   55.00, "basket_cv": 0.50, "cv": 0.62},
+    "food_delivery":   {"monthly_mean":  100.00, "basket_median":   55.00, "basket_cv": 0.40, "cv": 0.83},
+    "transport":       {"monthly_mean":  100.00, "basket_median":   25.00, "basket_cv": 0.80, "cv": 0.72},
+    "fuel":            {"monthly_mean":  450.00, "basket_median":  220.00, "basket_cv": 0.30, "cv": 0.75},
+    "electronics":     {"monthly_mean":   60.00, "basket_median":  250.00, "basket_cv": 1.00, "cv": 3.43},
+    "clothing":        {"monthly_mean":  120.00, "basket_median":  150.00, "basket_cv": 0.70, "cv": 1.51},
+    "sport":           {"monthly_mean":   50.00, "basket_median":  120.00, "basket_cv": 0.80, "cv": 2.25},
+    "health_pharmacy": {"monthly_mean":   60.00, "basket_median":   45.00, "basket_cv": 0.80, "cv": 1.26},
+    "kids":            {"monthly_mean":  350.00, "basket_median":  100.00, "basket_cv": 0.80, "cv": 0.77},
+    "education":       {"monthly_mean":  100.00, "basket_median":  300.00, "basket_cv": 0.80, "cv": 2.51},
+    "books":           {"monthly_mean":   25.00, "basket_median":   50.00, "basket_cv": 0.60, "cv": 1.78},
+    "entertainment":   {"monthly_mean":  100.00, "basket_median":   70.00, "basket_cv": 0.80, "cv": 1.21},
+    "travel":          {"monthly_mean":  120.00, "basket_median":  500.00, "basket_cv": 0.80, "cv": 2.96},
+    "gifts":           {"monthly_mean":   60.00, "basket_median":  100.00, "basket_cv": 0.70, "cv": 1.74},
+    "pets":            {"monthly_mean":  180.00, "basket_median":   90.00, "basket_cv": 0.60, "cv": 0.89},
+    "household_goods": {"monthly_mean":   50.00, "basket_median":   45.00, "basket_cv": 0.60, "cv": 1.19},
+    "personal_care":   {"monthly_mean":   60.00, "basket_median":   50.00, "basket_cv": 0.60, "cv": 1.15},
+    "other":           {"monthly_mean":   40.00, "basket_median":   50.00, "basket_cv": 0.80, "cv": 1.62}
+  },
+  "cities": [
+    {"id": "bucuresti", "names": ["București", "Bucharest"], "index": 1.00},
+    {"id": "cluj", "names": ["Cluj-Napoca", "Cluj"], "index": 1.00},
+    {"id": "iasi", "names": ["Iași"], "index": 0.85}
+  ],
+  "city_ignored_words": ["municipiul", "municipiu", "mun", "orasul", "oras", "judetul", "jud", "romania", "ro", "sector"],
+  "default_city_index": 1.00
+}
