@@ -1,0 +1,24 @@
+# gitleaks configuration (https://github.com/gitleaks/gitleaks).
+# Run locally: `gitleaks git .` (whole history) or via pre-commit (staged changes only).
+
+title = "CashGuard"
+
+# Start from gitleaks' built-in rules; only the allowlists below are ours.
+[extend]
+useDefault = true
+
+# The test suite deliberately plants FAKE secrets (Anthropic-shaped keys, a dummy JWT, test
+# signing keys) to prove that the code never logs, stores or returns them. None of them is a real
+# credential, so findings under backend/tests/ are not leaks.
+[[allowlists]]
+description = "Test fixtures: fake keys and tokens planted on purpose"
+paths = ['''^backend/tests/''']
+
+# The same fake Anthropic keys are quoted in the plans and reports under backend/docs/.
+# They contain the word SECRET and are not real keys.
+[[allowlists]]
+description = "Fake Anthropic keys used in tests and docs"
+regexes = [
+  '''sk-ant-test-SECRET[A-Za-z0-9_-]*''',
+  '''sk-ant-api03-SECRET[A-Za-z0-9_-]*''',
+]

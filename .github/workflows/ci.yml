@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least privilege: the jobs only read the code.
+permissions:
+  contents: read
+
+# One run per branch/PR: a new push cancels the run it replaces.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (ruff, mypy, pytest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      # Same as the compose `db-test` service (backend/docker-compose.yml): Postgres 16,
+      # user/password cashguard, database cashguard_test, host port 5435.
+      postgres:
+        # postgres:16, pinned by digest (refresh: docker buildx imagetools inspect postgres:16)
+        image: postgres:16@sha256:1beaa3084eee2676f20a9cd9928f0bf2c5bf674f8e49f81017912183d377c61c
+        env:
+          POSTGRES_USER: cashguard
+          POSTGRES_PASSWORD: cashguard
+          POSTGRES_DB: cashguard_test
+        ports:
+          - 5435:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U cashguard -d cashguard_test"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      # Throwaway CI database, not a secret. No ANTHROPIC_API_KEY: the `live` tests (real
+      # Claude) are excluded by default, everything else uses the fake LLM.
+      TEST_DATABASE_URL: postgresql+psycopg://cashguard:cashguard@localhost:5435/cashguard_test
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          working-directory: backend
+          python-version: "3.12"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install dependencies (exactly as locked)
+        run: uv sync --locked
+
+      - name: make check (lock, ruff format + lint, mypy, pytest with coverage; live tests excluded)
+        run: make check
+
+  mobile:
+    name: Mobile (flutter analyze, flutter test)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Stable ships Flutter 3.47 / Dart 3.13, which satisfies pubspec.yaml (sdk ^3.13.0) and
+      # pubspec.lock (flutter >=3.47.0).
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          cache: true
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      # Errors and warnings fail the build; style infos are reported but not fatal yet.
+      - name: flutter analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: flutter test
+        run: flutter test
