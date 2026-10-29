@@ -4,12 +4,14 @@ import 'package:cashctrl/core/database/app_database.dart';
 import 'package:cashctrl/core/repositories/user_repository.dart';
 import 'package:cashctrl/core/request/auth_token_controller.dart';
 import 'package:cashctrl/core/utils/logging.dart';
+import 'package:cashctrl/ui/assistant/assistant_screen.dart';
 import 'package:cashctrl/ui/forgot_password/forgot_password_screen.dart';
 import 'package:cashctrl/ui/login/login_screen.dart';
-import 'package:cashctrl/ui/main/main_screen.dart';
 import 'package:cashctrl/ui/main/user_provider.dart';
 import 'package:cashctrl/ui/register/register_screen.dart';
 import 'package:cashctrl/ui/settings/settings_screen.dart';
+import 'package:cashctrl/ui/shell/app_shell.dart';
+import 'package:cashctrl/ui/transactions/transactions_screen.dart';
 import 'package:cashctrl/utils/connection_util.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -134,18 +136,40 @@ class Router extends _$Router {
             ),
           ],
         ),
-        GoRoute(
-          path: '/${MainScreen.route}',
-          name: MainScreen.route,
-          builder: (context, state) {
-            final data = state.extra as String?;
-            return MainScreen(notificationData: data);
+        // The branches' order must match the order of the [ShellTab] values.
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return AppShell(navigationShell: navigationShell);
           },
-          routes: [
-            GoRoute(
-              path: SettingsScreen.route,
-              name: SettingsScreen.route,
-              builder: (context, state) => const SettingsScreen(),
+          branches: [
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/${TransactionsScreen.route}',
+                  name: TransactionsScreen.route,
+                  builder: (context, state) {
+                    final data = state.extra as String?;
+                    return TransactionsScreen(notificationData: data);
+                  },
+                  routes: [
+                    GoRoute(
+                      path: SettingsScreen.route,
+                      name: SettingsScreen.route,
+                      parentNavigatorKey: rootNavigatorKey,
+                      builder: (context, state) => const SettingsScreen(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/${AssistantScreen.route}',
+                  name: AssistantScreen.route,
+                  builder: (context, state) => const AssistantScreen(),
+                ),
+              ],
             ),
           ],
         ),
@@ -164,7 +188,7 @@ class Router extends _$Router {
 
         if (isLoggedIn.value.requireValue) {
           if (routePath == '/') {
-            return '/${MainScreen.route}';
+            return '/${TransactionsScreen.route}';
           } else if (!_routeExists(routePath) || !_requireAuth(routePath)) {
             // In case the app tries to load a page for which the route doesn't
             // exist or it corresponds to one of the unauthenticated screens,

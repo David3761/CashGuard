@@ -48,7 +48,7 @@ def _returning(value: Any) -> Any:
 @pytest.fixture
 def one_tx(monkeypatch: pytest.MonkeyPatch) -> Any:
     def install(tx: TxView) -> None:
-        monkeypatch.setattr(service.transactions_service, "get", _returning(tx))
+        monkeypatch.setattr("app.context.service.transactions_service.get", _returning(tx))
 
     return install
 
@@ -83,7 +83,9 @@ async def test_pick_question_asks_the_waiting_transaction(
     waiting = builders.tx(id=701, amount="500", effective_amount="500", decision="ask",
                           unexplained=0.8)  # fmt: skip
     recent = [waiting, builders.tx(id=702, decision="auto")]
-    monkeypatch.setattr(service.transactions_service, "list_effective", _returning(recent))
+    monkeypatch.setattr(
+        "app.context.service.transactions_service.list_effective", _returning(recent)
+    )
     with clock.use_clock(clock.FixedClock(NOON)):
         candidate = await service.pick_question(None, 1, TODAY)  # type: ignore[arg-type]
     assert isinstance(candidate, QuestionCandidate)

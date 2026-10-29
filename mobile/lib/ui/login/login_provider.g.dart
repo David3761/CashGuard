@@ -35,7 +35,7 @@ final class LoginProvider extends $AsyncNotifierProvider<Login, bool> {
   Login create() => Login();
 }
 
-String _$loginHash() => r'6737a596f5fbeaebe136f4e5e76a046614b53125';
+String _$loginHash() => r'c3fd03edd999a0c161786ebd0eb37678e385f379';
 
 /// The login provider that handles the login process.
 

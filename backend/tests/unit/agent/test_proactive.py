@@ -31,7 +31,7 @@ def _services(
         amount=Decimal(500),
         merchant=merchant,
         ask_what_item=ask_what_item,
-        reason="~6× coșul obișnuit la Mega",  # noqa: RUF001
+        reason="~6× coșul obișnuit la Mega",
     )
     return FakeAgentServices(
         language=lang,

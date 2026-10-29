@@ -193,7 +193,7 @@ final class RouterProvider extends $NotifierProvider<Router, GoRouter> {
   }
 }
 
-String _$routerHash() => r'980d168bad8e0852c5b7cbe032535ea6579959cb';
+String _$routerHash() => r'669c0f81755329fc2ab57ba9577c8ee003c2de44';
 
 /// The provider that is in charge with the app routing. Basically, every
 /// navigation is done through the `GoRouter`, by using this provider.

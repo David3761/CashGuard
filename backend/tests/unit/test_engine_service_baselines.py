@@ -5,9 +5,10 @@ import asyncio
 from datetime import date
 from decimal import Decimal
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, cast
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 pytest.importorskip("app.services.context_loader", reason="needs bomboe's services (B3/B4)")
 
@@ -17,6 +18,7 @@ from app.engine import service
 from tests.builders import fact, tx
 
 TODAY = date(2026, 6, 15)
+NO_DB = cast(AsyncSession, None)  # the shell only passes it to the (faked) services
 PRIORS = {
     "cities": [{"id": "cluj", "names": ["Cluj"], "index": Decimal("1.0")}],
     "categories": {"groceries": {"basket_median": 70, "monthly_mean": 800, "cv": 0.25}},
@@ -48,8 +50,9 @@ class FakeServices:
     async def replace_all(self, db: Any, user_id: int, baselines: list[Any]) -> None:
         self.saved.append((user_id, baselines))
 
-    async def update_household_scale(self, db: Any, user_id: int, scale: Decimal) -> None:
-        self.scales.append((user_id, scale))
+    async def update_user(self, db: Any, user_id: int, *, household_scale: Decimal) -> None:
+        """bomboe's `users.update(db, user_id, household_scale=...)`."""
+        self.scales.append((user_id, household_scale))
 
 
 @pytest.fixture
@@ -57,16 +60,14 @@ def fakes(monkeypatch: pytest.MonkeyPatch) -> FakeServices:
     f = FakeServices()
     monkeypatch.setattr("app.engine.service.load_user_context", f.load_user_context)
     monkeypatch.setattr("app.engine.service.baselines_service.replace_all", f.replace_all)
-    monkeypatch.setattr(
-        "app.engine.service.users_service.update_household_scale", f.update_household_scale
-    )
+    monkeypatch.setattr("app.engine.service.users_service.update", f.update_user)
     monkeypatch.setattr("app.engine.service.clock.today", lambda: TODAY)
     monkeypatch.setattr("app.engine.service.load_priors", lambda: PRIORS)
     return f
 
 
 def test_recompute_baselines_writes_baselines_and_household_scale(fakes: FakeServices) -> None:
-    result = asyncio.run(service.recompute_baselines(db=None, user_id=7))
+    result = asyncio.run(service.recompute_baselines(db=NO_DB, user_id=7))
     assert fakes.loaded == [(7, TODAY)]
     assert fakes.scales == [(7, Decimal("2.1"))]
     ((user_id, saved),) = fakes.saved
@@ -77,8 +78,8 @@ def test_recompute_baselines_writes_baselines_and_household_scale(fakes: FakeSer
 
 
 def test_recompute_baselines_is_idempotent(fakes: FakeServices) -> None:
-    first = asyncio.run(service.recompute_baselines(db=None, user_id=7))
-    second = asyncio.run(service.recompute_baselines(db=None, user_id=7))
+    first = asyncio.run(service.recompute_baselines(db=NO_DB, user_id=7))
+    second = asyncio.run(service.recompute_baselines(db=NO_DB, user_id=7))
     assert first == second
     assert fakes.saved[0] == fakes.saved[1]
     assert fakes.scales[0] == fakes.scales[1]

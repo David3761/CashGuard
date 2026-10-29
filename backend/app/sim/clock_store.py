@@ -6,7 +6,7 @@ from datetime import date, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.clock import BUCHAREST
+from app.clock import BUCHAREST, RealClock
 from app.db import models as m
 
 
@@ -18,8 +18,10 @@ class SimClock:
         return self._today
 
     def now(self) -> datetime:
-        real = datetime.now(BUCHAREST)  # only the time of day; the date is the sim's
-        return datetime.combine(self._today, real.timetz())
+        # only the time of day is real (H-6: from RealClock, never datetime.now); the date is
+        # the sim's, localised so the offset is right on DST days
+        real = RealClock().now()
+        return datetime.combine(self._today, real.time()).replace(tzinfo=BUCHAREST)
 
     async def load(self, db: AsyncSession, default: date) -> date:
         stored = await db.scalar(select(m.SimClock.today).where(m.SimClock.id == 1))

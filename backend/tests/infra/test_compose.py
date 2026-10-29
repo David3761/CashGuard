@@ -65,7 +65,7 @@ def test_compose_databases_have_healthchecks(compose):
 def test_compose_api_runs_exactly_one_uvicorn_worker(compose):
     # The WebSocket manager is in memory (arch 5.2): more workers would split the sockets.
     command = " ".join(compose["services"]["api"]["command"])
-    assert "uvicorn app.main:app" in command
+    assert "uvicorn app.main:create_app --factory" in command  # our factory (HANDOFFS H-2)
     assert "--workers 1" in command
 
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "101778499340",
+    "project_id": "cashctrl-6b66a",
+    "storage_bucket": "cashctrl-6b66a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101778499340:android:dfe7161072b57428a5cb29",
+        "android_client_info": {
+          "package_name": "com.cashctrl"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBj9uqni72ZIhTIbVTMRgc0_J1VpaTeiOI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

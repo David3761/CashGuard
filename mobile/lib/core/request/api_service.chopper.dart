@@ -103,8 +103,8 @@ final class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Map<String, dynamic>> postDeviceToken(Map<String, String> body) async {
-    final Uri $url = Uri.parse('/device_token');
+  Future<Map<String, dynamic>> registerDevice(Map<String, String> body) async {
+    final Uri $url = Uri.parse('/devices');
     final $body = body;
     final Request $request = Request('POST', $url, client.baseUrl, body: $body);
     final Response<Map<String, dynamic>> $response = await client
@@ -113,17 +113,36 @@ final class _$ApiService extends ApiService {
   }
 
   @override
-  Future<Map<String, dynamic>> deleteDeviceToken(
-    Map<String, String> body,
-  ) async {
-    final Uri $url = Uri.parse('/device_token');
-    final $body = body;
-    final Request $request = Request(
-      'DELETE',
-      $url,
-      client.baseUrl,
-      body: $body,
-    );
+  Future<Map<String, dynamic>> unregisterDevice(String fcmToken) async {
+    final Uri $url = Uri.parse('/devices/${fcmToken}');
+    final Request $request = Request('DELETE', $url, client.baseUrl);
+    final Response<Map<String, dynamic>> $response = await client
+        .send<Map<String, dynamic>, Map<String, dynamic>>($request);
+    return $response.bodyOrThrow;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getBalance() async {
+    final Uri $url = Uri.parse('/balance');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    final Response<Map<String, dynamic>> $response = await client
+        .send<Map<String, dynamic>, Map<String, dynamic>>($request);
+    return $response.bodyOrThrow;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getTransactions() async {
+    final Uri $url = Uri.parse('/transactions');
+    final Request $request = Request('GET', $url, client.baseUrl);
+    final Response<Map<String, dynamic>> $response = await client
+        .send<Map<String, dynamic>, Map<String, dynamic>>($request);
+    return $response.bodyOrThrow;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getChatMessages() async {
+    final Uri $url = Uri.parse('/assistant/messages');
+    final Request $request = Request('GET', $url, client.baseUrl);
     final Response<Map<String, dynamic>> $response = await client
         .send<Map<String, dynamic>, Map<String, dynamic>>($request);
     return $response.bodyOrThrow;

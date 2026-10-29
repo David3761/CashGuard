@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">api.develop.easy-p.de</domain>
-    </domain-config>
-    <!--<base-config cleartextTrafficPermitted="true" />-->
+    <!-- Only HTTPS is allowed. Debug builds also allow HTTP to the development machine, see
+         src/debug/res/xml/network_security_config.xml. -->
+    <base-config cleartextTrafficPermitted="false" />
 </network-security-config>
