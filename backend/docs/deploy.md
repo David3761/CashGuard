@@ -6,10 +6,16 @@
 1. A VM (2 vCPU, 4 GB RAM is plenty) with ports 80 and 443 open; Docker + Compose installed.
 2. DNS: two A records to the VM: `api.<domain>` and `auth.<domain>`.
 3. `git clone` the repo, `cd backend`, `cp .env.example .env` and set **real** values:
-   `DOMAIN`, the LLM credentials (`ANTHROPIC_API_KEY` or the Bedrock `AWS_*`), and the secrets the
+   `DOMAIN`, the LLM credentials, and the secrets the
    prod overlay **requires**: `POSTGRES_PASSWORD`, `KC_DB_PASSWORD`, `KC_ADMIN_USER`,
    `KC_ADMIN_PASSWORD`, `KC_CRON_CLIENT_SECRET`, `KC_DEMO_PASSWORD` (at least 12 characters: the
    realm's password policy). `.env` never leaves the server.
+   - **LLM credentials**, one provider: Amazon Bedrock with `LLM_PROVIDER=bedrock`,
+     `AWS_DEFAULT_REGION=us-west-2` and a Bedrock API key in `AWS_BEARER_TOKEN_BEDROCK` (or the
+     temporary `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_SESSION_TOKEN`, which expire);
+     the model runs as the inference profile `us.anthropic.claude-sonnet-5-5`. Or the Claude API
+     with `LLM_PROVIDER=anthropic` and `ANTHROPIC_API_KEY`. Without either, the agent answers with
+     templates.
    - The values in `docker-compose.yml` and `.env.example` (`admin`/`admin`, `cashguard`,
      `keycloak`, `dev-cron-secret`, `cashguard-dev`) are **DEV-ONLY defaults**. The prod overlay
      uses `${VAR:?}` for each secret, so `docker compose up` stops with "set VAR" instead of

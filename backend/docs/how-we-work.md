@@ -117,9 +117,9 @@ Not applicable: concurrency (pure function), …
 | Database | `tests/db/` | `db` | Postgres (`make db-up`) | 10–100 ms |
 | API | `tests/api/` | `api` | Postgres | 10–100 ms |
 | WebSocket | `tests/ws/` | `ws` | Postgres | 10–100 ms |
-| Acceptance (arch 16.3, demo numbers) | `tests/acceptance/` | `db` | seeded Postgres | 100 ms–1 s |
-| Live LLM eval | `tests/eval/` | `live` | `ANTHROPIC_API_KEY`, **costs money** | seconds |
-| End-to-end | `scripts/demo_client.py` | — | the running stack | seconds |
+| Acceptance (demo numbers) | `tests/acceptance/` | — | the committed persona files | < 1 s |
+| Live LLM eval | `tests/eval/` | `live` | Claude credentials (`ANTHROPIC_API_KEY` or Bedrock), **costs money** | seconds |
+| End-to-end | `scripts/smoke_local.sh` (stack + Scene A's transaction); `tests/unit/agent/test_scene_a.py` (the scene, scripted LLM) | — | the running stack / nothing | seconds |
 
 - **Determinism:** time via `FixedClock`; every random generator is seeded (never Python's `hash()`); no `sleep` in tests. A flaky test is a bug, fixed at once.
 - **The LLM in tests:** every test uses `FakeLLM` with a scripted response. Real Claude runs only with `-m live`, deliberately.
@@ -139,7 +139,7 @@ make check                      # ruff + mypy + make test
 uv run pytest tests/unit/test_money.py -q        # one file
 uv run pytest -m live tests/eval                 # real Claude: only on purpose
 uv run python -m app.db.seed --reset             # reseed the dev DB
-uv run python scripts/demo_client.py --scene A   # end-to-end scene
+scripts/smoke_local.sh                           # the whole stack + Scene A's transaction
 ```
 
 ## 9. Git

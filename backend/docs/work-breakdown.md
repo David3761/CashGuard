@@ -39,7 +39,7 @@ backend/
 │   ├── api/         schemas.py  me.py  state.py  chat.py  transactions.py  …  sim.py  internal.py
 │   ├── ws.py  events.py
 │   ├── pipeline/    processor.py  jobs.py  signals.py
-│   ├── engine/      calendar.py  budget.py  ledger.py  plans.py  simulate.py  baselines.py  anomaly.py
+│   ├── engine/      calendar.py  budget.py  ledger.py  stats.py  simulate.py  baselines.py  anomaly.py
 │   │                forecast.py  options.py  savings.py  service.py (DB shells)
 │   ├── context/     normalize.py  library.py  life_fit.py  evaluate.py  questions.py  rules.py
 │   │                propagate.py  inference.py  calendar_events.py  products.py  service.py (DB shells)
@@ -48,16 +48,16 @@ backend/
 │   └── sim/         clock_store.py  scenarios.py
 ├── data/            merchants.json  priors.json  products.json  signature_library.json  calendar.json
 │                    personas/<id>/{config,profile,facts,transactions}.json  scenarios/<scene>.json
-├── scripts/         generate_personas.py  demo_client.py  smoke_local.sh  smoke_remote.sh
+├── scripts/         generate_personas.py  placeholder_data.py  smoke_local.sh  smoke_remote.sh  (demo_client.py: planned, not written)
 └── tests/
     ├── conftest.py  builders.py  fakes/fake_llm.py  fixtures/{db,api,auth,ws}.py
     ├── unit/        (pure: domain, engine, context, agent pieces)   marker: none (default)
     ├── db/          (needs Postgres)                                 marker: db
     ├── api/         (HTTP endpoints)                                 marker: api
     ├── ws/          (WebSocket)                                      marker: ws
-    ├── acceptance/  (16.3 cases, demo numbers)                       marker: db
+    ├── acceptance/  (the demo numbers, pure: test_demo_numbers.py)   marker: none
     ├── golden/      (reviewed snapshots: prompts, snapshot text)
-    └── eval/        answers.jsonl  run_eval.py  reports/             marker: live (real Claude, costs money)
+    └── eval/        test_llm_live.py  test_tools_live.py  test_onboarding_live.py   marker: live (real Claude, costs money)
 ```
 
 ### 0.3 Rules every task follows
@@ -149,7 +149,7 @@ F1 ─► B1 ─► F3 ─► (all db/api tests)   B5, B7 ─┘   E12 + D1 + D2
 
 ### F3 · Test infrastructure (DB, API, auth, WS fixtures) · M 1h · P0 · deps: F1, B1, B2 · suggested: bomboe
 **Goal.** Writing a db/api/ws test takes one fixture.
-**Files.** `tests/conftest.py`, `tests/fixtures/{db,api,auth,ws}.py`, `tests/README.md`; `db-test` service in compose (port 5433, tmpfs).
+**Files.** `tests/conftest.py`, `tests/fixtures/{db,api,auth,ws}.py`, `tests/README.md`; `db-test` service in compose (port 5435, tmpfs).
 **Content.**
 - `db`: session-scoped async engine on `TEST_DATABASE_URL`; `drop_all` + `create_all` once per session; function-scoped session inside an outer transaction with a nested SAVEPOINT, rolled back after each test. `db_committed`: real commits, `TRUNCATE … CASCADE` afterwards (for pipeline concurrency tests).
 - `auth`: an RSA keypair per session; `make_token(sub, roles=(), exp_in=300, iss=…, azp=…, alg="RS256", kid=…)`; the app's JWKS fetcher overridden to return the test public key.
@@ -573,6 +573,7 @@ F1 ─► B1 ─► F3 ─► (all db/api tests)   B5, B7 ─┘   E12 + D1 + D2
 
 ### A10 · LLM eval set & runner · M 1h · P1 · deps: A6, A3, D1 · suggested: David G.
 **Files.** `tests/eval/answers.jsonl` (60–100 rows: persona, open question, utterance, expected tool calls + key args), `tests/eval/run_eval.py` (live; prints an accuracy table; writes `tests/eval/reports/<timestamp>.md`).
+> **Status (2026-10-29):** `answers.jsonl` and `run_eval.py` weren't written; the live evals are `tests/eval/test_llm_live.py`, `test_tools_live.py` and `test_onboarding_live.py` (marker `live`).
 **Tests.** The runner's scoring is unit-tested with FakeLLM (tool name match, key-arg match with tolerance, multi-intent order-insensitive); the dataset validates (persona exists, tools exist). **Targets:** ≥ 90% overall, 100% on the demo rows. It costs real money, so run it only after prompt changes.
 
 ### A11 · Language detection & `speak_text` · S 0.5h · P1 · deps: A5 · suggested: David G.
@@ -593,9 +594,11 @@ F1 ─► B1 ─► F3 ─► (all db/api tests)   B5, B7 ─┘   E12 + D1 + D2
 
 ### D3 · Acceptance suite (arch 16.3) · M 1h · P1 (cases #1–#7 are P0) · deps: C6, A3, E8, B12 · suggested: David G. (+ danutu for the engine cases)
 **Files.** `tests/acceptance/test_context_acceptance.py`: the 15 cases on the seeded DB, through services + pipeline, with FakeLLM scripting the tool calls for the answers (deterministic).
+> **Status (2026-10-29):** `test_context_acceptance.py` wasn't written; the cases are covered by `tests/unit/context/` and `tests/unit/agent/test_scene_a.py`, the demo numbers by `tests/acceptance/test_demo_numbers.py`.
 
 ### D4 · Demo client · S 0.75h · P0 · deps: B5, B7, B9, B10 · suggested: bomboe (David G. writes the scene scripts)
 **Files.** `scripts/demo_client.py` (httpx + websockets): logs in as a persona through `savings-dev`, resets, runs a scene, prints every WS event with its timing and **asserts the expected end state**; `--scene A --answer "Am luat și pentru colegi, suntem cinci"`; `--llm-off` uses the chip path.
+> **Status (2026-10-29):** `demo_client.py` wasn't written; `scripts/smoke_local.sh` brings the stack up and fires Scene A's transaction.
 **Tests.** It's the end-to-end test: Scene A asserts effective 100, receivable 400, probability 77 ± 1; run locally and against the hosted server.
 
 ### D5 · Demo runbook & rehearsal · S 0.5h · P1 · deps: D4 · suggested: everyone
