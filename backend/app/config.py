@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     SIM_MODE: bool = True
     SIM_START_DATE: date = date(2026, 6, 15)
     TZ: str = "Europe/Bucharest"
+    # Load the sim date from the DB at startup (off in tests).
+    SIM_CLOCK_FROM_DB: bool = True
 
     MAX_AGENT_ITERATIONS: int = 6
     QUESTIONS_PER_DAY: int = 1

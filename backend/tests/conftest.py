@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from pathlib import Path
 
@@ -5,6 +6,8 @@ import pytest
 
 from app import clock
 from app.clock import FixedClock
+
+os.environ.setdefault("SIM_CLOCK_FROM_DB", "false")  # no DB reads at app startup in tests
 
 pytest_plugins = [
     "tests.fixtures.db",
