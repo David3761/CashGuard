@@ -48,8 +48,12 @@
         </intent>
     </queries>-->
 
+    <!-- allowBackup is off because the AES key in flutter_secure_storage is wrapped by an Android
+         Keystore key, which is never backed up: restored data couldn't be decrypted. It also keeps
+         the user's financial data out of cloud backups. -->
     <application
         android:name="${applicationName}"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="CashCtrl"
         android:networkSecurityConfig="@xml/network_security_config">

@@ -81,7 +81,7 @@ class Login extends _$Login {
     }
 
     final user = User.fromJson(json).copyWith(
-      key: AESHelper.encrypt(password),
+      key: await AESHelper.instance.encrypt(password),
       authMethod: authMethod,
       loggedIn: true,
     );
