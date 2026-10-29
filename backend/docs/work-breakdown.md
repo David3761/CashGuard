@@ -2,9 +2,9 @@
 
 > **Scope:** the API only (`backend/`). The Flutter app is David V.'s and is separate for now (arch D39).
 > **Source of truth for *what* to build:** [`savings-coach-backend-architecture.md`](savings-coach-backend-architecture.md) (v0.8). This file says *how*: files, functions, steps, edge cases, tests and "done when" for every task.
-> **How we work on each task:** [`how-we-work.md`](how-we-work.md). **Short list for assigning:** [`../../TASKS.md`](../../TASKS.md).
+> **How we work on each task:** [`how-we-work.md`](how-we-work.md). **Short list for assigning:** [`../../TASKS.md`](../../docs/team/TASKS.md).
 > Written 2026-10-28 by David G. with Claude. Sizes are rough hours **with Claude Code, including tests and review**.
-> ✅ **Assigned 2026-10-28.** The working copies of these tasks, split into reviewable steps, are the per-person files [`Bomboe.md`](../../Bomboe.md), [`Danutu.md`](../../Danutu.md), [`DGAdavid1.md`](../../DGAdavid1.md). This file is the overview. If the two differ, the architecture doc wins, then the per-person file, and fix the other.
+> ✅ **Assigned 2026-10-28.** The working copies of these tasks, split into reviewable steps, are the per-person files [`Bomboe.md`](../../docs/team/Bomboe.md), [`Danutu.md`](../../docs/team/Danutu.md), [`DGAdavid1.md`](../../docs/team/DGAdavid1.md). This file is the overview. If the two differ, the architecture doc wins, then the per-person file, and fix the other.
 
 ---
 

@@ -51,12 +51,12 @@ uvx pre-commit install
 4. **No secrets.** Never commit `.env`, keys or real customer data. Report security problems
    privately (see [`SECURITY.md`](SECURITY.md)).
 5. **Contract changes** (an endpoint, the DB schema, an event, an agent tool) update the arch doc
-   and get a line in the [`DGAREADME1.md`](DGAREADME1.md) decision log in the same change.
+   and get a line in the [`DGAREADME1.md`](docs/team/DGAREADME1.md) decision log in the same change.
 
 ## Branches and commits
 
 - One branch per task, e.g. `api/c6-evaluate`; rebase on `main` often.
-- One small commit per step, prefixed with the task ID from [`TASKS.md`](TASKS.md):
+- One small commit per step, prefixed with the task ID from [`TASKS.md`](docs/team/TASKS.md):
 
   ```text
   [C6] step 2: evaluate hard filters + tests

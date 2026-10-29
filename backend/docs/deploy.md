@@ -51,7 +51,7 @@ scripts/smoke_remote.sh https://api.<domain> https://auth.<domain>
 - Cron runs only `process recover` (`CRON_ENABLED_JOBS`); the day jobs are driven by `/sim/next-day` during the demo (Q21).
 
 ## 3. After each deploy
-Run `scripts/smoke_remote.sh` and paste its output in the step report. Then write the public URLs into `DGAREADME1.md` (closes Q22).
+Run `scripts/smoke_remote.sh` and paste its output in the step report. Then write the public URLs into `docs/team/DGAREADME1.md` (closes Q22).
 
 ## 4. Rollback / reset
 - `POST /api/sim/reset` (a token with the realm role `sim`, e.g. a demo persona) puts every persona back to its seed state.

@@ -359,7 +359,7 @@ docs/team/        how the team worked: decision log, task split, hand-offs, agen
 - [AI safety: threat model, controls and proof](backend/docs/ai-safety.md) · [Security policy](SECURITY.md)
 - [Backend setup, settings, time and errors](backend/README.md) · [Deploying](backend/docs/deploy.md)
 - [Work breakdown](backend/docs/work-breakdown.md) · [How we work](backend/docs/how-we-work.md) · [Step reports](backend/docs/reports/)
-- How we worked as a team: the [decision log](DGAREADME1.md), the [task list](TASKS.md), the [hand-offs](HANDOFFS.md) and [how we ran parallel Claude agents](ORCHESTRATION.md)
+- [How we worked as a team](docs/team/README.md): the [decision log](docs/team/DGAREADME1.md), the [task list](docs/team/TASKS.md), the [hand-offs](docs/team/HANDOFFS.md) and [how we ran parallel Claude agents](docs/team/ORCHESTRATION.md)
 - [Contributing](CONTRIBUTING.md)
 
 ## License

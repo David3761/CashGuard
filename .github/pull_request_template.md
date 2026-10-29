@@ -11,4 +11,4 @@
 - [ ] `cd backend && make check` is green (paste the summary line), and/or `flutter analyze` + `flutter test` in `mobile/`
 - [ ] Tests were red for the right reason before the fix
 - [ ] No secrets, `.env` files or real customer data
-- [ ] Contract change (API, DB schema, event, tool)? The arch doc and `DGAREADME1.md` are updated
+- [ ] Contract change (API, DB schema, event, tool)? The arch doc and `docs/team/DGAREADME1.md` are updated

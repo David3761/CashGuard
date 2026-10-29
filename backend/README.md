@@ -5,7 +5,7 @@ One FastAPI app with every backend module: platform (bomboe), `engine/` (danutu)
 - **What we build:** [`docs/savings-coach-backend-architecture.md`](docs/savings-coach-backend-architecture.md) (source of truth)
 - **How (tasks, conventions, tests):** [`docs/work-breakdown.md`](docs/work-breakdown.md), with the folder layout in §0.2
 - **How we work (step loop, reports, reviews):** [`docs/how-we-work.md`](docs/how-we-work.md)
-- **Work done on someone else's behalf:** [`../HANDOFFS.md`](../HANDOFFS.md)
+- **Work done on someone else's behalf:** [`../HANDOFFS.md`](../docs/team/HANDOFFS.md)
 
 ## Setup
 

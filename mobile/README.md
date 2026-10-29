@@ -65,7 +65,7 @@ The CashCtrl mobile app.
 
 ### 5. Backend
 
-The API contract is in [`../api/API_SPEC.md`](../api/API_SPEC.md). The app uses mock data until
+The API contract is in [`backend/app/app_api/router.py`](../backend/app/app_api/router.py). The app uses mock data until
 `useMockApi` is set to `false` in `lib/core/request/api_config.dart`. By default it then calls
 `http://10.0.2.2:8000`, the development machine seen from the Android emulator. Debug builds are
 allowed to use plain HTTP for that address only.

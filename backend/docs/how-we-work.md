@@ -1,11 +1,11 @@
 # How we work (API)
 
-> Agreed 2026-10-28 (David G.). Applies to every API task in [`TASKS.md`](../../TASKS.md), whether it's done by a person alone or with Claude Code.
+> Agreed 2026-10-28 (David G.). Applies to every API task in [`TASKS.md`](../../docs/team/TASKS.md), whether it's done by a person alone or with Claude Code.
 > Detailed task specs: [`work-breakdown.md`](work-breakdown.md). Architecture (the *what*): [`savings-coach-backend-architecture.md`](savings-coach-backend-architecture.md).
 
 ## 1. The idea
 
-**Small steps, each one tested, explained and reviewed before the next.** A task from `TASKS.md` is split into steps. A **step** is one concern and about ≤ 150 changed lines of code (tests not counted), small enough that a human can review it in 5–10 minutes. Nothing moves on until the step is green and reviewed.
+**Small steps, each one tested, explained and reviewed before the next.** A task from `docs/team/TASKS.md` is split into steps. A **step** is one concern and about ≤ 150 changed lines of code (tests not counted), small enough that a human can review it in 5–10 minutes. Nothing moves on until the step is green and reviewed.
 
 ## 2. The loop for every step
 
@@ -20,7 +20,7 @@
 | 7 | **Explain** | The step report (§3): what changed, why, how it's tested, the real test output, known limits | report |
 | 8 | **Human review** | The owner (and, for a contract change, the people who depend on it) reads the diff + report and comments | comments |
 | 9 | **Fix & post-review report** | Fix every comment, re-run everything, and for each problem explain *what went wrong, why, how it was fixed, and how we prevent it next time* (§4). Usually the prevention is a new test | report |
-| 10 | **Close** | Commit (only when the owner says so), tick the step in the person's file, add a line to the `DGAREADME1.md` changelog when a decision changed, update the arch doc when a contract changed | commit + docs |
+| 10 | **Close** | Commit (only when the owner says so), tick the step in the person's file, add a line to the `docs/team/DGAREADME1.md` changelog when a decision changed, update the arch doc when a contract changed | commit + docs |
 
 **Rules**
 - A test that never failed proves nothing: step 3 must show red before step 4.
@@ -99,7 +99,7 @@ Not applicable: concurrency (pure function), …
 - [ ] The budgets in the arch doc are asserted (forecast < 100 ms, snapshot builder, query counts).
 
 **Docs**
-- [ ] The person's task file is updated; the arch doc is updated if a contract changed (marked 🆕, with a changelog line in `DGAREADME1.md`).
+- [ ] The person's task file is updated; the arch doc is updated if a contract changed (marked 🆕, with a changelog line in `docs/team/DGAREADME1.md`).
 
 ## 6. Definition of done (a whole task)
 
