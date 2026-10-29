@@ -3,8 +3,10 @@
 It returns the scripted responses in order, records a snapshot of every request, and fails
 loudly when the script runs out. The builders return real, validated SDK objects
 (`BetaMessage`) and reject shapes the API never sends (a `tool_use` stop without a call, repeated
-ids…). It doesn't check the conversation itself yet (tool_result pairing, tools changed mid-run):
-that's A1 step 4.
+ids…). In strict mode (the default) it also refuses every request the real API would answer with a
+400 (tool_result pairing, prefill), a tool list or system prompt that changes within a run (D46),
+and history edited before a replayed thinking block (preserved thinking). Not checked on purpose:
+a scripted call to a tool the request didn't offer (A3/A7 test that defence).
 
     script = [
         tool_round(thinking(), tool_use("get_plan_status", {}, tool_use_id="toolu_1")),
@@ -29,6 +31,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from anthropic.types.beta import BetaMessage, BetaMessageParam, BetaStopReason, BetaToolParam
+from pydantic import BaseModel
 
 from app.agent.llm import check_system
 
@@ -49,6 +52,10 @@ class ScriptExhausted(FakeLLMFailure):
     """More calls than scripted responses."""
 
 
+class FakeLLMProtocolError(FakeLLMFailure):
+    """A request the real API would reject (or that breaks D46). Nothing is served for it."""
+
+
 @dataclass
 class RecordedRequest:
     """One call to `FakeLLM.create`, deep-copied when it was made. Not hashable: it holds lists."""
@@ -65,12 +72,15 @@ class RecordedRequest:
 class FakeLLM:
     """Satisfies `app.agent.llm.LLMClient`. Script items are responses or exceptions to raise."""
 
-    def __init__(self, script: Iterable[BetaMessage | Exception]) -> None:
+    def __init__(self, script: Iterable[BetaMessage | Exception], *, strict: bool = True) -> None:
         self._script = list(script)
         _check_script(self._script)
+        self._strict = strict
         self._next = 0
         self._overruns = 0
+        self._served: list[tuple[RecordedRequest, BetaMessage]] = []  # (request, its response)
         self.requests: list[RecordedRequest] = []
+        self.violations: list[str] = []
 
     @property
     def remaining(self) -> int:
@@ -84,10 +94,13 @@ class FakeLLM:
     ) -> BetaMessage:
         parts = check_system(system)  # same guard as the real LLM: nothing is "sent" if it fails
         # A snapshot: the caller (A6) keeps appending to its own lists after the call.
-        self.requests.append(
-            RecordedRequest(parts, copy.deepcopy(list(messages)), copy.deepcopy(list(tools)))
-        )
+        request = RecordedRequest(parts, copy.deepcopy(list(messages)), copy.deepcopy(list(tools)))
+        self.requests.append(request)
         number = len(self.requests)
+        problems = self._problems(request) if self._strict else []
+        if problems:
+            self.violations.extend(problems)
+            raise FakeLLMProtocolError(f"request {number} would be refused: " + "; ".join(problems))
         item = self._script[self._next] if self.remaining else None  # the n-th call gets item n
         if item is None:
             self._overruns += 1
@@ -101,10 +114,37 @@ class FakeLLM:
             )
         if isinstance(item, Exception):
             raise item
+        self._served.append((request, item))
         return item
 
+    def _problems(self, request: RecordedRequest) -> list[str]:
+        problems = _conversation_problems(request.messages)
+        if self._served:  # D46: within a run, the tools and the system prompt stay as they were
+            previous, response = self._served[-1]
+            if _continues(request, previous, response):
+                if request.tools != previous.tools:
+                    problems.append(
+                        "the tool list changed within a run (D46: tools_for runs once per run; "
+                        "with thinking replayed, Sonnet 5.5 answers it with a 400)"
+                    )
+                if request.system != previous.system:
+                    problems.append("the system prompt changed within a run (arch 6.3)")
+        for producing, response in self._served:  # preserved thinking
+            if _has_thinking(response) and not _replays_faithfully(request, producing, response):
+                problems.append(
+                    "a thinking block is replayed after its history, system prompt or tool set "
+                    "changed (preserved thinking: a 400 for accounts created on or after "
+                    "2026-08-31)"
+                )
+        return problems
+
     def assert_consumed(self) -> None:
-        """Fail unless every scripted response was used and no call overran the script."""
+        """Fail unless every response was used, no call overran, and no request was refused."""
+        if self.violations:
+            raise AssertionError(
+                f"FakeLLM refused {len(self.violations)} violation(s): "
+                + "; ".join(self.violations)
+            )
         if self._overruns:
             raise AssertionError(f"FakeLLM script exhausted {self._overruns} time(s)")
         if self.remaining:
@@ -128,6 +168,109 @@ def _check_script(script: list[BetaMessage | Exception]) -> None:
                 if block.id in call_ids:
                     raise ValueError(f"tool_use id {block.id!r} appears in two scripted responses")
                 call_ids.add(block.id)
+
+
+# ── strict mode: the conversation rules of the real API ─────────────────────────────────────
+
+
+def _get(block: object, name: str) -> object:
+    """A field of a content block, whether it's a dict or an SDK model (an echoed response)."""
+    return block.get(name) if isinstance(block, Mapping) else getattr(block, name, None)
+
+
+def _blocks(message: BetaMessageParam) -> list[object]:
+    content: object = message["content"]
+    return list(content) if isinstance(content, list | tuple) else []
+
+
+def _ids(message: BetaMessageParam, kind: str, field: str) -> list[str]:
+    return [str(_get(block, field)) for block in _blocks(message) if _get(block, "type") == kind]
+
+
+def _leading_results(message: BetaMessageParam | None) -> list[str]:
+    """The ids of the tool_result blocks at the start of a user message."""
+    if message is None or message["role"] != "user":
+        return []
+    leading = []
+    for block in _blocks(message):
+        if _get(block, "type") != "tool_result":
+            break
+        leading.append(str(_get(block, "tool_use_id")))
+    return leading
+
+
+def _conversation_problems(messages: Sequence[BetaMessageParam]) -> list[str]:
+    """What the real API answers with a 400: the docs' tool-use rules, and prefill."""
+    if not messages:
+        return ["no messages"]
+    problems = []
+    if messages[0]["role"] != "user":
+        problems.append("the first message must be the user's")
+    if messages[-1]["role"] == "assistant":
+        problems.append("the last message is the assistant's (prefill: a 400 on Sonnet 5.5)")
+    for index, each in enumerate(messages):
+        after = messages[index + 1] if index + 1 < len(messages) else None
+        calls = _ids(each, "tool_use", "id") if each["role"] == "assistant" else []
+        if calls and sorted(_leading_results(after)) != sorted(calls):
+            problems.append(
+                f"messages[{index + 1}] must start with exactly one tool_result for each tool call "
+                f"of messages[{index}] {sorted(calls)}, got {_leading_results(after)}"
+            )
+        results = _ids(each, "tool_result", "tool_use_id") if each["role"] == "user" else []
+        if len(results) > len(_leading_results(each)):
+            problems.append(f"messages[{index}]: tool_result blocks must come first")
+        before = messages[index - 1] if index > 0 else None
+        if results and not (
+            before and before["role"] == "assistant" and _ids(before, "tool_use", "id")
+        ):
+            problems.append(
+                f"messages[{index}] has tool results, but messages[{index - 1}] called no tools"
+            )
+    return problems
+
+
+def _canon(value: object) -> object:
+    """A comparable form: SDK blocks as the JSON the API sent, dicts and lists recursively."""
+    if isinstance(value, BaseModel):
+        return _canon(value.model_dump(mode="json", exclude_unset=True))
+    if isinstance(value, Mapping):
+        return {key: _canon(item) for key, item in value.items()}
+    if isinstance(value, list | tuple):
+        return [_canon(item) for item in value]
+    return value
+
+
+def _assistant(response: BetaMessage) -> object:
+    return _canon({"role": "assistant", "content": response.content})
+
+
+def _continues(request: RecordedRequest, previous: RecordedRequest, response: BetaMessage) -> bool:
+    """Whether `request` is the next request of the same run (its history only appended to)."""
+    expected = [_canon(each) for each in previous.messages] + [_assistant(response)]
+    return _canon(request.messages[: len(expected)]) == expected
+
+
+def _has_thinking(response: BetaMessage) -> bool:
+    return any(block.type in ("thinking", "redacted_thinking") for block in response.content)
+
+
+def _replays_faithfully(
+    request: RecordedRequest, producing: RecordedRequest, response: BetaMessage
+) -> bool:
+    """A replayed thinking block is valid only after the very same history, system and tool set."""
+    turn = _assistant(response)
+    for index, each in enumerate(request.messages):
+        if _canon(each) == turn:
+            return (
+                _canon(request.messages[:index]) == _canon(producing.messages)
+                and request.system == producing.system
+                and _tool_set(request.tools) == _tool_set(producing.tools)
+            )
+    return True  # not replayed in this request
+
+
+def _tool_set(tools: Sequence[BetaToolParam]) -> object:
+    return _canon(sorted(tools, key=lambda tool: tool["name"]))  # the API binds it name-sorted
 
 
 # ── builders: content blocks as the API sends them ──────────────────────────────────────────
