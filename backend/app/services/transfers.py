@@ -10,7 +10,7 @@ from app.db import models as m
 from app.domain import models as dm
 from app.domain.enums import TransferKind
 from app.errors import DomainError
-from app.services._common import as_enum, invalid, owned, unique_or, view
+from app.services._common import as_enum, invalid, not_found, owned, unique_or, view
 
 
 async def get(db: AsyncSession, user_id: int, transfer_id: int) -> dm.Transfer:
@@ -46,6 +46,24 @@ async def create(
 
     already = DomainError("already_saved", "This salary was already auto-saved.", status=409)
     return view(dm.Transfer, await unique_or(db, insert, already))
+
+
+async def check_funds(db: AsyncSession, user_id: int, amount: Decimal) -> None:
+    """Refuse a transfer above the account balance → insufficient_funds (409). Locks the account
+    row (FOR UPDATE) until the caller's transaction ends, so the balance can't change between
+    this check and the caller's `accounts.adjust_balance`. No account → not_found."""
+    balance = await db.scalar(
+        select(m.Account.current_balance).where(m.Account.user_id == user_id).with_for_update()
+    )
+    if balance is None:
+        raise not_found("Account")
+    if amount > balance:
+        raise DomainError(
+            "insufficient_funds",
+            f"The balance is only {balance} lei: nothing was moved. Tell the user and offer a "
+            "smaller amount.",
+            status=409,
+        )
 
 
 async def for_income(
