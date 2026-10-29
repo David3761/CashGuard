@@ -50,12 +50,12 @@ mobile/ only. No conflicts. The backend tree was unchanged by the merge.
   - danutu's async `apply_transaction`, `auto_save`, `recompute_plan`, `forecast_goal`, `recompute_baselines`;
   - our async `run_agent` / `run_proactive` / `detect_language`.
 
-  Adapters where his callers expect another shape: `default_reading → (purpose, confidence)`, `fallback_reply(lang) → templates.fallback_reply("llm_down", lang)`, `label(str|None)`, `format_money(Decimal|float)`. Three stand-ins stay in `_fallbacks.py` (TODO(INT)): `apply_annotation`, `on_fact_changed` (now re-plans with danutu's engine), `rank_products`.
+  Adapters where his callers expect another shape: `default_reading → (purpose, confidence)`, `fallback_reply(lang) → templates.fallback_reply("llm_down", lang)`, `label(str|None)`, `format_money(Decimal|float)`. ~~Three stand-ins stay in `_fallbacks.py`~~ **Done ([PORTS], 2026-10-29):** `apply_annotation` is our A3 one over the Postgres ports, `on_fact_changed` is C9's (`app.context.service`), `rank_products` is C12's; `_fallbacks.py` is gone.
 - **Context shells are async** (H-12 settled: preferred option). `evaluate_transaction` / `pick_question` use bomboe's `transactions` service and `load_user_context`.
 - **Engine shells over bomboe's real names:** `fixed_costs.list_all`, `ledger.add_spent` (atomic), `plans.save` (assigns the version, fills `previous_today_budget`), `forecasts.save(forecast, goal_id=…)` with `plan_version`/`sim_date` on the Forecast, `users.update(household_scale=)`, `transfers.for_income`, `app.services.notify.notify`. danutu's 7331 advisory lock is kept around the whole recompute.
 - **`load_user_context` → our `UserContext`:** `user_id`, `as_of`, `agent_events`. Only confirmed facts go into `facts` (our validator). A missing account reads as zeros.
 - **Startup:** the app lifespan calls `app/agent/platform.install()`. It registers `set_agent_services` and `set_proactive_services`, both as `PlatformServices`: our `AgentWiring` plus bomboe's loader, message history, events, messages and notifications, each in its own unit of work, with WS pushes after commit. It also registers `set_services_factory`. `/api/chat`'s `run_agent` and the pipeline's `run_proactive` therefore run against Postgres. `/chat` owns the `agent_runs` row, so `record_run` stays None and the row isn't finished twice.
-  - **TODO(INT):** the tool-handler ports (`app/agent/ports.py`) are sync and bomboe's services are async. Until the async refactor (dga-next) lands, every tool call returns `is_error` `tools_unavailable` (503) and the agent still answers in text.
+  - **Done ([PORTS], 2026-10-29):** `app/agent/pg_ports.py` implements the 21 ports over bomboe's async services (`pg_services(db)`). `PlatformServices.execute_tool` gives each tool call its own `unit_of_work()`: commit on an ok result, rollback on an `is_error` one; the handler's WS pushes go out after the commit; `tool_calls` are logged in their own unit of work (an error is recorded even though its writes roll back). Live smoke on Bedrock: Scene A's answer annotated the 500-lei transaction (effective 100), created the 400-lei receivable and re-planned (plan v3).
 
 ## 4. Compatibility layer (additions only, our validation kept)
 
@@ -127,7 +127,7 @@ Script: `/tmp/claude-1000/-home-grosu-david-Documents-CashGuard/45aebd57-0050-44
 | danutu 6 (B3 names) | `fixed_costs.list_all`, `ledger.add_spent`, `plans.save`, `transfers.for_income`, `users.update(household_scale=)`, `app.services.notify.notify` |
 | danutu E3/E6 "household_member = others only", essentials floor | kept as he wrote them (our builders/facts agree) |
 | danutu 2 (who lowers pot.saved) | **open**. bomboe's `save_evaluation` doesn't touch pots and danutu's `apply_transaction` does. Today only one place moves it, but confirm with bomboe |
-| bomboe A1 (`_fallbacks.py`) | reduced to 3 stand-ins (TODO(INT)) |
+| bomboe A1 (`_fallbacks.py`) | removed: the real A3 / C9 / C12 functions ([PORTS]) |
 | bomboe A20/A21 (seed data) | real files replace the placeholders. Alex not onboarded |
 | bomboe A2 (`agent_runs` owned by /chat) | kept: `record_run=None` in the platform wiring |
 | bomboe §2 F3.2 `exp_in=-31` | unchanged (his tests) |
@@ -135,9 +135,9 @@ Script: `/tmp/claude-1000/-home-grosu-david-Documents-CashGuard/45aebd57-0050-44
 
 ## 8. Remaining TODOs
 
-1. **TODO(INT) D42 tool ports:** a Postgres implementation of `app/agent/ports.py`, after the async handler refactor (dga-next). Until then tools return `tools_unavailable`. `apply_annotation` in `ports.py` then switches to ours.
+1. ~~TODO(INT) D42 tool ports~~ **done** ([PORTS]: `app/agent/pg_ports.py`, DB tests in `tests/db/test_agent_pg_ports.py`). Still open: a proactive run has no `agent_runs` row (the pipeline calls `run_proactive(user_id, event_id)`), so its read-only tool calls aren't logged; and with Bedrock the 5 s proactive timeout (`PROACTIVE_TIMEOUT_S`) fired in the live smoke, so the template question was used.
 2. `load_user_context`: the Q6 extras (`recent_days`, `slips`, `reflections`, `life_notes`, `products`, `recent_questions`) aren't loaded yet. The agent's snapshot shows them empty.
-3. C9 `on_fact_changed` is still our stub (the pipeline uses bomboe's re-plan stand-in). C12 `rank_products` is missing.
+3. ~~C9 / C12 stand-ins~~ **done** ([PORTS]): the pipeline ports call C9's `on_fact_changed` and C12's `rank_products`.
 4. `Option.label` = the i18n key for now (danutu's E9 options need RO/EN texts).
 5. danutu's Q2 (pot drawn twice) and the E8 auto-save double count (needs the month's auto-save transfers in `UserContext`).
 6. E11 `signals.detect_signals` isn't called by bomboe's jobs yet (no DB shell).

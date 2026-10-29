@@ -3,15 +3,16 @@
 import pytest
 from sqlalchemy import delete, func, select
 
-from app.config import get_settings
 from app.db import models as m
 from app.db import session as s
 
 
 @pytest.fixture
 async def real_sessions(engine):
-    """The app's session factory on the test DB, with real commits cleaned up after."""
-    s.configure(get_settings().TEST_DATABASE_URL.get_secret_value())
+    """The app's session factory on the test DB, with real commits cleaned up after. The URL is
+    the `engine` fixture's (the shell's TEST_DATABASE_URL): the per-test isolation hides it from
+    get_settings(), which would fall back to the shared default database."""
+    s.configure(engine.url.render_as_string(hide_password=False))
     yield
     async with engine.begin() as conn:
         await conn.execute(delete(m.User).where(m.User.keycloak_sub.like("uow-%")))
