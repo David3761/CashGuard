@@ -33,6 +33,7 @@ from app.agent.llm import (
 )
 from tests.fakes.fake_llm import (
     FakeLLM,
+    FakeLLMProtocolError,
     RecordedRequest,
     RefusalCategory,
     ScriptExhausted,
@@ -545,3 +546,303 @@ def test_fake_llm_satisfies_the_llm_client_protocol() -> None:
     # The real check is static: mypy (in `make check`) verifies this assignment.
     llm: LLMClient = FakeLLM([])
     assert callable(llm.create)
+
+
+# ══ A1 step 4: the fake rejects what the real API would reject (strict by default) ═════════
+# The rules, verbatim from the tool-use docs ("Handle tool calls", 2026-10-29): "Tool result
+# blocks must immediately follow their corresponding tool use blocks in the message history.
+# You cannot include any messages between the assistant's tool use message and the user's tool
+# result message." · "the `tool_result` blocks must come FIRST in the content array. Any text
+# must come AFTER all tool results." Plus prefill (a 400 on Sonnet 5.5), D46 (the tool list is
+# fixed per run) and preserved thinking (a 400 for accounts created on or after 2026-08-31).
+
+SET_GOAL: BetaToolParam = {**TOOL, "name": "set_goal"}
+UPDATE_GOAL: BetaToolParam = {**TOOL, "name": "update_goal"}
+TOOLS = [TOOL, SET_GOAL]
+
+
+def _call(tool_use_id: str, name: str = "get_plan_status") -> dict[str, object]:
+    return {"type": "tool_use", "id": tool_use_id, "name": name, "input": {}}
+
+
+def _result(tool_use_id: str, *, is_error: bool = False) -> dict[str, object]:
+    return {
+        "type": "tool_result",
+        "tool_use_id": tool_use_id,
+        "content": "{}",
+        "is_error": is_error,
+    }
+
+
+def _turn(role: str, *blocks: object) -> BetaMessageParam:
+    return cast(BetaMessageParam, {"role": role, "content": list(blocks)})
+
+
+async def _round_trip(fake: FakeLLM, first: BetaMessage) -> list[BetaMessageParam]:
+    """Request 1, then the history request 2 would carry (the call answered)."""
+    await fake.create(SYSTEM, [USER], TOOLS)
+    calls = [block.id for block in first.content if block.type == "tool_use"]
+    return [
+        USER,
+        {"role": "assistant", "content": first.content},
+        _turn("user", *(_result(call) for call in calls)),
+    ]
+
+
+# ── happy path and the shapes the API allows ────────────────────────────────────────────
+
+
+async def test_a_correct_round_trip_with_parallel_calls_passes() -> None:
+    first = tool_round(
+        thinking(),
+        tool_use("get_plan_status", {}, tool_use_id="a"),
+        tool_use("set_goal", {"amount": 5000}, tool_use_id="b"),
+    )
+    fake = FakeLLM([first, end_turn("Gata.")])
+
+    history = await _round_trip(fake, first)
+    await fake.create(SYSTEM, history, TOOLS)
+
+    fake.assert_consumed()
+    assert fake.violations == []
+
+
+@pytest.mark.parametrize(
+    "results",
+    [
+        [_result("b"), _result("a")],  # any order
+        [_result("a"), _result("b", is_error=True), text("Și încă ceva.")],  # is_error, text after
+    ],
+    ids=["results in another order", "is_error and text after the results"],
+)
+async def test_legal_tool_result_shapes_pass(results: list[dict[str, object]]) -> None:
+    fake = FakeLLM([end_turn("ok")])
+    history = [USER, _turn("assistant", _call("a"), _call("b")), _turn("user", *results)]
+
+    await fake.create(SYSTEM, history, TOOLS)
+
+    assert fake.violations == []
+
+
+async def test_a_mid_conversation_system_message_after_a_user_turn_passes() -> None:
+    fake = FakeLLM([end_turn("ok")])
+    history = [USER, cast(BetaMessageParam, {"role": "system", "content": "Răspunde scurt."})]
+
+    await fake.create(SYSTEM, history, TOOLS)
+
+    assert fake.violations == []
+
+
+async def test_a_scripted_call_to_a_tool_that_was_not_offered_is_served() -> None:
+    # Allowed on purpose (review A1.1 #3): the real Sonnet 5.5 can return such a call, and A3/A7
+    # must script it to test the executor's defence (an unknown tool; a write tool proactively).
+    write_call = tool_round(tool_use("annotate_transaction", {}, tool_use_id="w"))
+    fake = FakeLLM([write_call])
+
+    got = await fake.create(SYSTEM, [USER], [TOOL])  # read-only tools offered
+
+    assert got is write_call
+    assert fake.violations == []
+
+
+# ── invalid conversations: what the real API answers with a 400 ─────────────────────────
+
+
+@pytest.mark.parametrize(
+    ("history", "complaint"),
+    [
+        ([], "no messages"),
+        ([_turn("assistant", text("hi")), USER], "first message"),
+        ([USER, _turn("assistant", text("Partea ta e"))], "prefill"),
+        (
+            [USER, _turn("assistant", _call("a")), _turn("user", text("și?"))],
+            "exactly one tool_result",
+        ),
+        (
+            [
+                USER,
+                _turn("assistant", _call("a"), _call("b")),
+                _turn("user", _result("a")),
+                _turn("user", _result("b")),
+            ],
+            "exactly one tool_result",
+        ),
+        (
+            [USER, _turn("assistant", _call("a")), _turn("user", _result("zzz"))],
+            "exactly one tool_result",
+        ),
+        (
+            [USER, _turn("assistant", _call("a")), _turn("user", _result("a"), _result("a"))],
+            "exactly one tool_result",
+        ),
+        (
+            [USER, _turn("assistant", _call("a")), _turn("user", text("Uite:"), _result("a"))],
+            "must come first",
+        ),
+        (
+            [
+                USER,
+                _turn("assistant", _call("a")),
+                cast(BetaMessageParam, {"role": "system", "content": "notă"}),
+                _turn("user", _result("a")),
+            ],
+            "exactly one tool_result",
+        ),
+        ([USER, _turn("user", _result("a"))], "called no tools"),
+    ],
+    ids=[
+        "no messages",
+        "starts with the assistant",
+        "ends with the assistant (prefill)",
+        "a call left unanswered",
+        "results split over two messages",
+        "a result for an unknown id",
+        "a duplicate result",
+        "text before the results",
+        "a message between the call and its results",
+        "a result that answers nothing",
+    ],
+)
+async def test_a_conversation_the_api_would_reject_is_refused(
+    history: list[BetaMessageParam], complaint: str
+) -> None:
+    fake = FakeLLM([end_turn("ok")])
+
+    with pytest.raises(FakeLLMProtocolError, match=complaint):
+        await fake.create(SYSTEM, history, TOOLS)
+
+    assert len(fake.requests) == 1  # recorded, for the test to inspect
+    assert fake.remaining == 1  # nothing served
+
+
+async def test_a_refused_request_cannot_be_swallowed() -> None:
+    fake = FakeLLM([end_turn("ok")])
+
+    async def careless_caller() -> str:
+        try:
+            await fake.create(SYSTEM, [USER, _turn("assistant", text("x"))], TOOLS)
+        except Exception:  # what an agent's "LLM failed → template" path looks like
+            return "template"
+        return "reply"
+
+    with pytest.raises(FakeLLMProtocolError):
+        await careless_caller()
+    with contextlib.suppress(BaseException):  # even a deliberate swallow…
+        await fake.create(SYSTEM, [USER, _turn("assistant", text("x"))], TOOLS)
+    with pytest.raises(AssertionError, match="violation"):  # …is caught at the end
+        fake.assert_consumed()
+
+
+# ── D46: the tool list (and the system prompt) are fixed for a whole run ────────────────
+
+
+async def test_changing_the_tool_list_within_a_run_is_refused() -> None:
+    # After set_goal, the old D21 swapped in update_goal mid-run: a 400 with thinking replayed.
+    first = tool_round(tool_use("set_goal", {"amount": 5000}, tool_use_id="g"))  # no thinking
+    fake = FakeLLM([first, end_turn("Gata.")])
+    history = await _round_trip(fake, first)
+
+    with pytest.raises(FakeLLMProtocolError, match="D46"):
+        await fake.create(SYSTEM, history, [TOOL, UPDATE_GOAL])
+
+
+async def test_reordering_the_tool_list_within_a_run_is_refused() -> None:
+    first = tool_round(tool_use("get_plan_status", {}, tool_use_id="p"))
+    fake = FakeLLM([first, end_turn("Gata.")])
+    history = await _round_trip(fake, first)
+
+    with pytest.raises(FakeLLMProtocolError, match="D46"):
+        await fake.create(SYSTEM, history, list(reversed(TOOLS)))
+
+
+async def test_rebuilding_the_system_prompt_within_a_run_is_refused() -> None:
+    first = tool_round(tool_use("get_plan_status", {}, tool_use_id="p"))
+    fake = FakeLLM([first, end_turn("Gata.")])
+    history = await _round_trip(fake, first)
+
+    with pytest.raises(FakeLLMProtocolError, match="system prompt changed within a run"):
+        await fake.create([SYSTEM[0], "Snapshot: recalculat."], history, TOOLS)
+
+
+async def test_a_run_echoing_the_content_as_dicts_is_still_recognised() -> None:
+    first = tool_round(tool_use("set_goal", {}, tool_use_id="g"))
+    fake = FakeLLM([first, end_turn("Gata.")])
+    await fake.create(SYSTEM, [USER], TOOLS)
+    as_dicts = [block.model_dump(mode="json", exclude_unset=True) for block in first.content]
+    history = [USER, _turn("assistant", *as_dicts), _turn("user", _result("g"))]
+
+    with pytest.raises(FakeLLMProtocolError, match="D46"):
+        await fake.create(SYSTEM, history, [TOOL, UPDATE_GOAL])
+
+
+async def test_a_new_run_may_use_another_tool_list() -> None:
+    # The next message starts a new run: tools_for runs again (update_goal now offered).
+    first = tool_round(tool_use("set_goal", {}, tool_use_id="g"))
+    fake = FakeLLM([first, end_turn("Gata.")])
+    await fake.create(SYSTEM, [USER], TOOLS)
+
+    await fake.create(
+        SYSTEM, [{"role": "user", "content": "Mai pun 100 lei."}], [TOOL, UPDATE_GOAL]
+    )
+
+    assert fake.violations == []
+
+
+# ── preserved thinking: what came before a replayed thinking block can't change ─────────
+
+
+async def test_editing_history_before_a_replayed_thinking_block_is_refused() -> None:
+    first = tool_round(thinking(), tool_use("get_plan_status", {}, tool_use_id="p"))
+    fake = FakeLLM([first, end_turn("Gata.")])
+    history = await _round_trip(fake, first)
+    history[0] = {"role": "user", "content": "Am luat ceva de la Mega Image. (editat)"}
+
+    with pytest.raises(FakeLLMProtocolError, match="preserved thinking"):
+        await fake.create(SYSTEM, history, TOOLS)
+
+
+async def test_a_retry_that_replays_thinking_with_other_tools_is_refused() -> None:
+    # Re-sending request 2 (not a continuation of it) still replays response 1's thinking.
+    first = tool_round(thinking(), tool_use("get_plan_status", {}, tool_use_id="p"))
+    fake = FakeLLM([first, end_turn("Gata."), end_turn("Gata, din nou.")])
+    history = await _round_trip(fake, first)
+    await fake.create(SYSTEM, history, TOOLS)
+
+    with pytest.raises(FakeLLMProtocolError, match="preserved thinking"):
+        await fake.create(SYSTEM, history, [TOOL, UPDATE_GOAL])
+
+
+async def test_a_retry_that_replays_thinking_with_reordered_tools_passes() -> None:
+    # The API binds the tool set name-sorted: only a different set is a 400 there.
+    first = tool_round(thinking(), tool_use("get_plan_status", {}, tool_use_id="p"))
+    fake = FakeLLM([first, end_turn("Gata."), end_turn("Gata, din nou.")])
+    history = await _round_trip(fake, first)
+    await fake.create(SYSTEM, history, TOOLS)
+
+    await fake.create(SYSTEM, history, list(reversed(TOOLS)))
+
+    assert fake.violations == []
+
+
+async def test_a_new_run_after_a_thinking_round_may_use_another_tool_list() -> None:
+    # Response 1's thinking isn't replayed in the new run, so nothing binds it.
+    first = tool_round(thinking(), tool_use("set_goal", {}, tool_use_id="g"))
+    fake = FakeLLM([first, end_turn("Gata.")])
+    await fake.create(SYSTEM, [USER], TOOLS)
+
+    await fake.create(
+        SYSTEM, [{"role": "user", "content": "Mai pun 100 lei."}], [TOOL, UPDATE_GOAL]
+    )
+
+    assert fake.violations == []
+
+
+# ── the escape hatch ────────────────────────────────────────────────────────────────────
+
+
+async def test_strict_false_checks_nothing() -> None:
+    fake = FakeLLM([end_turn("ok")], strict=False)
+
+    await fake.create(SYSTEM, [USER, _turn("assistant", _call("a"))], TOOLS)
+
+    assert fake.violations == []
