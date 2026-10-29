@@ -170,5 +170,6 @@
   - Romanian sentences use `app.i18n.format.format_money_in_sentence` ("80 de lei", "101 lei", "1 leu"); `format_money` is the compact display form ("500 lei").
   - B13 notification texts must pass `app.agent.style.find_banned` (every "iar"/"din nou"/"de ce", even neutral, D48). B9's error fallback is `app.agent.templates.fallback_reply("llm_down", lang)`.
   - The Claude API takes at most **20 strict tools** per request, so `tools_for` marks a priority subset strict, and the executor's Pydantic validation is the real guard.
-  - The live tests (`uv run pytest -m live tests/eval -q -rs`) haven't been run: no API key yet. Run them before enabling `ANTHROPIC_REFUSAL_FALLBACK`.
+  - **Claude runs on Amazon Bedrock (D53):** set `LLM_PROVIDER=bedrock`, `AWS_DEFAULT_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` (the hackathon's temporary credentials) in the server's env/`.env`, never in git. The model id becomes `us.anthropic.claude-sonnet-5-5` automatically, and the Docker image needs boto3/botocore (already in `requirements.txt` via `anthropic[bedrock]`).
+  - The A1 live tests (`uv run pytest -m live tests/eval -q -rs`) still assume an Anthropic API key; Bedrock was verified with a direct live call instead.
 

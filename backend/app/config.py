@@ -63,6 +63,13 @@ class Settings(BaseSettings):
     ANTHROPIC_MODEL: str = Field(default="claude-sonnet-5-5", min_length=1)
     ANTHROPIC_EFFORT: Effort = "low"
     ANTHROPIC_REFUSAL_FALLBACK: bool = False
+    # Who serves Claude: the Claude API (ANTHROPIC_API_KEY) or Amazon Bedrock (the hackathon's
+    # temporary AWS credentials below; ANTHROPIC_MODEL becomes `us.anthropic.<model>` there).
+    LLM_PROVIDER: Literal["anthropic", "bedrock"] = "anthropic"
+    AWS_DEFAULT_REGION: str | None = None
+    AWS_ACCESS_KEY_ID: SecretStr | None = None
+    AWS_SECRET_ACCESS_KEY: SecretStr | None = None
+    AWS_SESSION_TOKEN: SecretStr | None = None
     # Keycloak (arch 5.1)
     KEYCLOAK_ISSUER: str | None = None
     KEYCLOAK_AUDIENCE: str | None = None
@@ -76,6 +83,10 @@ class Settings(BaseSettings):
 
     @field_validator(
         "ANTHROPIC_API_KEY",
+        "AWS_DEFAULT_REGION",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_SESSION_TOKEN",
         "KEYCLOAK_ISSUER",
         "KEYCLOAK_AUDIENCE",
         "KEYCLOAK_CRON_CLIENT_SECRET",
@@ -100,7 +111,7 @@ class Settings(BaseSettings):
             raise ValueError("must name the database: postgresql+psycopg://…/db")
         return value
 
-    @field_validator("ANTHROPIC_EFFORT", mode="before")
+    @field_validator("ANTHROPIC_EFFORT", "LLM_PROVIDER", mode="before")
     @classmethod
     def _lower(cls, value: object) -> object:
         return value.lower() if isinstance(value, str) else value

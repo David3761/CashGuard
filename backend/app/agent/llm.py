@@ -19,12 +19,13 @@ import logging
 import math
 import os
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, field
 from types import MappingProxyType
-from typing import Final, Protocol
+from typing import Final, Protocol, cast
 
 import anthropic
 import httpx2
-from anthropic import AsyncAnthropic
+from anthropic import AsyncAnthropic, AsyncAnthropicBedrock
 from anthropic.types.beta import BetaMessage, BetaMessageParam, BetaToolParam
 from anthropic.types.beta.message_create_params import MessageCreateParamsBase
 from pydantic import BaseModel
@@ -51,6 +52,16 @@ REFUSAL_FALLBACK_BETA: Final = "server-side-fallback-2026-07-01"
 # One cache breakpoint per system part plus the automatic one on the conversation tail: the API
 # allows at most 4 per request (arch 6.8 prompt caching).
 MAX_SYSTEM_PARTS: Final = 3
+
+
+@dataclass(frozen=True)
+class BedrockAuth:
+    """Amazon Bedrock credentials (the hackathon's temporary AWS session); not in repr."""
+
+    region: str
+    access_key: str = field(repr=False)
+    secret_key: str = field(repr=False)
+    session_token: str | None = field(default=None, repr=False)
 
 
 class LLMError(Exception):
@@ -235,37 +246,73 @@ class LLM:
         refusal_fallback: bool,
         max_retries: int = MAX_RETRIES,
         http_client: httpx2.AsyncClient | None = None,
+        bedrock: BedrockAuth | None = None,
     ) -> None:
         self._model = model
         self._effort = effort
         self._refusal_fallback = refusal_fallback
         self._http_client = http_client
-        self._unavailable = _unavailable_reason(api_key)
-        self._client: AsyncAnthropic | None = None
+        self._client: AsyncAnthropic | AsyncAnthropicBedrock | None = None
+        if bedrock is not None:
+            # On-demand Bedrock calls need the cross-region inference profile id
+            # (`us.anthropic.claude-sonnet-5-5`); the server-side refusal fallback doesn't exist
+            # there (Claude API only), so it is always off.
+            self._model = bedrock_model_id(model, bedrock.region)
+            if refusal_fallback:
+                log.warning("ANTHROPIC_REFUSAL_FALLBACK is ignored on Bedrock (Claude API only)")
+            self._refusal_fallback = False
+            self._unavailable = _bedrock_unavailable_reason(bedrock)
+        else:
+            self._unavailable = _unavailable_reason(api_key)
         if self._unavailable is None:
             _neutralise_sdk_environment()
-            # An explicit key and base URL: the SDK would otherwise read them from the
-            # environment or an `ant auth login` profile.
-            self._client = AsyncAnthropic(
-                api_key=api_key,
-                base_url=API_BASE_URL,
-                timeout=TIMEOUT_S,
-                max_retries=max_retries,
-                http_client=http_client,
-            )
+            if bedrock is not None:
+                # Explicit credentials, region and endpoint: nothing comes from the environment.
+                # bedrock-runtime (InvokeModel): the hackathon account has no Mantle endpoint.
+                self._client = AsyncAnthropicBedrock(
+                    aws_access_key=bedrock.access_key,
+                    aws_secret_key=bedrock.secret_key,
+                    aws_session_token=bedrock.session_token,
+                    aws_region=bedrock.region,
+                    base_url=f"https://bedrock-runtime.{bedrock.region}.amazonaws.com",
+                    timeout=TIMEOUT_S,
+                    max_retries=max_retries,
+                    http_client=http_client,
+                )
+            else:
+                # An explicit key and base URL: the SDK would otherwise read them from the
+                # environment or an `ant auth login` profile.
+                self._client = AsyncAnthropic(
+                    api_key=api_key,
+                    base_url=API_BASE_URL,
+                    timeout=TIMEOUT_S,
+                    max_retries=max_retries,
+                    http_client=http_client,
+                )
 
     @classmethod
     def from_settings(
         cls, settings: Settings, *, http_client: httpx2.AsyncClient | None = None
     ) -> "LLM":
-        """The client the settings describe (arch §3). The key is unwrapped only here."""
+        """The client the settings describe (arch §3). Secrets are unwrapped only here."""
         secret = settings.ANTHROPIC_API_KEY
+        bedrock = None
+        if settings.LLM_PROVIDER == "bedrock":
+            access, key = settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
+            token = settings.AWS_SESSION_TOKEN
+            bedrock = BedrockAuth(
+                region=settings.AWS_DEFAULT_REGION or "",
+                access_key=access.get_secret_value() if access is not None else "",
+                secret_key=key.get_secret_value() if key is not None else "",
+                session_token=token.get_secret_value() if token is not None else None,
+            )
         return cls(
             api_key=secret.get_secret_value() if secret is not None else None,
             model=settings.ANTHROPIC_MODEL,
             effort=settings.ANTHROPIC_EFFORT,
             refusal_fallback=settings.ANTHROPIC_REFUSAL_FALLBACK,
             http_client=http_client,
+            bedrock=bedrock,
         )
 
     async def create(
@@ -371,6 +418,31 @@ def _unavailable_reason(api_key: str | None) -> str | None:
     return None
 
 
+def bedrock_model_id(model: str, region: str) -> str:
+    """`claude-sonnet-5-5` -> `us.anthropic.claude-sonnet-5-5` (a full Bedrock id is kept)."""
+    if "anthropic." in model:
+        return model
+    geo = {"us": "us", "eu": "eu", "ap": "apac"}.get(region.split("-", 1)[0], "us")
+    return f"{geo}.anthropic.{model}"
+
+
+def _bedrock_unavailable_reason(auth: BedrockAuth) -> str | None:
+    missing = [
+        name
+        for name, value in (
+            ("AWS_DEFAULT_REGION", auth.region),
+            ("AWS_ACCESS_KEY_ID", auth.access_key),
+            ("AWS_SECRET_ACCESS_KEY", auth.secret_key),
+        )
+        if not value
+    ]
+    if missing:
+        reason = f"{', '.join(missing)} not set (LLM_PROVIDER=bedrock)"
+        log.warning("Claude client disabled: %s; every agent reply will be a template", reason)
+        return reason
+    return _unavailable_reason("bedrock")  # the same ANTHROPIC_CUSTOM_HEADERS guard
+
+
 def _neutralise_sdk_environment() -> None:
     """Undo what the SDK takes from the environment that would leak the key or user data."""
     if os.environ.get("ANTHROPIC_BASE_URL"):
@@ -425,14 +497,19 @@ def _unusable_stream(reason: str) -> LLMUnavailable:
     return LLMUnavailable(f"Claude's stream couldn't be used: {reason}")
 
 
-async def _read_stream(client: AsyncAnthropic, params: MessageCreateParamsBase) -> BetaMessage:
+async def _read_stream(
+    client: AsyncAnthropic | AsyncAnthropicBedrock, params: MessageCreateParamsBase
+) -> BetaMessage:
     """Stream one response and return it whole, or raise `_BrokenStream`.
 
     Only a stream that started, reached `message_stop` and carries strict tool inputs is a message.
     """
     tool_json: dict[int, list[str]] = {}
     started = stopped = False
-    async with client.beta.messages.stream(**params) as stream:
+    # The Bedrock client exposes the same beta Messages surface under its own class, which mypy
+    # can't unify with AsyncAnthropic's; the call and the stream events are the same.
+    messages_api = cast("AsyncAnthropic", client).beta.messages
+    async with messages_api.stream(**params) as stream:
         async for event in stream:
             if event.type == "message_start":
                 started = True

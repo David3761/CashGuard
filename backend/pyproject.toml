@@ -5,7 +5,7 @@ description = "CashGuard backend: FastAPI app with the platform, engine, context
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "anthropic>=2.3.0",
+    "anthropic[bedrock]>=2.3.0",
     "fastapi>=0.162.0",
     "httpx>=0.28.1",
     "numpy>=2.5.4",
