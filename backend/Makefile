@@ -44,7 +44,7 @@ lock-check:  ## uv.lock matches pyproject and requirements.txt matches uv.lock
 
 check: lock-check lint typecheck test  ## Everything that must be green before a review
 
-db-up:  ## Start the test Postgres (port 5433, tmpfs)
+db-up:  ## Start the test Postgres (port 5435, tmpfs)
 	docker compose up -d --wait db-test
 
 db-down:  ## Stop and remove only the test Postgres (other compose services keep running)
