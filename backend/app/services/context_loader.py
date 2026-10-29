@@ -2,6 +2,7 @@
 
 from datetime import date, timedelta
 from decimal import Decimal
+from typing import Final
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,12 +19,15 @@ from app.services import (
     forecasts,
     goals,
     income_sources,
+    ledger,
     life_events,
     life_facts,
+    life_profile,
     pattern_rules,
     plan_preferences,
     plans,
     pots,
+    products,
     receivables,
     signatures,
     transactions,
@@ -33,6 +37,59 @@ from app.services._common import view
 from app.services.agent_events import QUESTION_EVENT_TYPES
 from app.services.transactions import day_start
 
+RECENT_DAYS: Final = 14
+"""Day-ledger rows loaded: the snapshot's RECENT SPENDING block (`snapshot.RECENT_DAYS`)."""
+MAX_HISTORY: Final = 5
+"""Slips and reflections loaded, the latest: what the snapshot prints (`snapshot.MAX_HISTORY`)."""
+
+
+def _text(value: str | None, limit: int) -> str | None:
+    """A free-text column as the domain's TextN: None when blank, cut to `limit` characters."""
+    return value[:limit] if value is not None and value.strip() else None
+
+
+async def _slips(db: AsyncSession, user_id: int, today: date) -> tuple[dm.Slip, ...]:
+    """The latest `MAX_HISTORY` slips up to `today` with a reason (the domain needs one), oldest
+    first."""
+    rows = await db.scalars(
+        select(m.Slip)
+        .where(m.Slip.user_id == user_id, m.Slip.date <= today, m.Slip.reason.is_not(None))
+        .order_by(m.Slip.date.desc(), m.Slip.id.desc())
+        .limit(MAX_HISTORY)
+    )
+    slips = [
+        dm.Slip(
+            date=r.date,
+            amount_over=r.amount_over,
+            reason=reason,
+            detail=_text(r.detail, 500),
+            recurring=r.recurring,
+        )
+        for r in rows
+        if (reason := _text(r.reason, 300)) is not None
+    ]
+    return tuple(reversed(slips))
+
+
+async def _reflections(db: AsyncSession, user_id: int, today: date) -> tuple[dm.Reflection, ...]:
+    """The latest `MAX_HISTORY` weekly reflections up to `today`, oldest first."""
+    rows = await db.scalars(
+        select(m.Reflection)
+        .where(m.Reflection.user_id == user_id, m.Reflection.week_start <= today)
+        .order_by(m.Reflection.week_start.desc(), m.Reflection.id.desc())
+        .limit(MAX_HISTORY)
+    )
+    reflections = [
+        dm.Reflection(
+            week_start=r.week_start,
+            motivation=r.motivation,
+            answer=_text(r.answer, 500),
+            reason=_text(r.reason, 300),
+        )
+        for r in rows
+    ]
+    return tuple(reversed(reflections))
+
 
 async def load_user_context(
     db: AsyncSession, user_id: int, today: date, history_days: int = 180
@@ -41,7 +98,9 @@ async def load_user_context(
     costs, planned events, active pots, open receivables, confirmed facts active on `today`,
     hypotheses, active signatures (of today's facts) and rules, plan preferences, baselines,
     resolved transactions of the last `history_days`, latest plan, latest + last weekly forecast,
-    pending/asked events, and how many questions were asked today."""
+    pending/asked events, how many questions were asked today, and the snapshot's extras: the
+    last `RECENT_DAYS` ledger days, the latest `MAX_HISTORY` slips and reflections, the
+    life-profile notes and the product catalogue."""
     profile = await users.get(db, user_id)
     try:
         account = await accounts.get(db, user_id)
@@ -66,8 +125,10 @@ async def load_user_context(
             m.AgentEvent.asked_at < day_start(today + timedelta(days=1)),
         )
     )
-    # TODO(INT): the Q6 extras of our UserContext (recent_days, slips, reflections, life_notes,
-    # products, recent_questions; HANDOFFS H-12) aren't loaded yet: they default to empty.
+    # The Q6 extras (HANDOFFS H-12) feed only the agent's snapshot; no engine core reads them.
+    # `recent_questions` stays empty on purpose: the snapshot doesn't print it, and C7's weekly
+    # cap and back-off (`app.context.questions`) read it, so loading it would change which
+    # questions get asked; today the question budget is the daily cap (`questions_asked_today`).
     return UserContext(
         user_id=user_id,
         as_of=today,
@@ -98,4 +159,11 @@ async def load_user_context(
         last_weekly_forecast=await forecasts.last_weekly_snapshot(db, user_id),
         agent_events=tuple(view(dm.AgentEventView, e) for e in events),
         questions_asked_today=asked_today or 0,
+        recent_days=tuple(
+            await ledger.between(db, user_id, today - timedelta(days=RECENT_DAYS - 1), today)
+        ),
+        slips=await _slips(db, user_id, today),
+        reflections=await _reflections(db, user_id, today),
+        life_notes=await life_profile.get(db, user_id),
+        products=tuple(await products.list_all(db)),  # the mock catalogue (3 rows, not per user)
     )
