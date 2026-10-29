@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CashGuard signature library (backend/data/signature_library.json)",
+  "description": "Hand-written fact -> spending signatures (arch 5.3.3, C4). Each entry matches facts of its types by synonyms (folded, token contains-match), by role + age band (household_member) or any value; its signatures are validated with F2's Signature (origin library is added by app/context/library.py). No household multiplier here: that is E6's (D50).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["entries"],
+  "properties": {
+    "entries": { "type": "array", "minItems": 30, "items": { "$ref": "#/$defs/entry" } }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "types", "signatures"],
+      "properties": {
+        "key": { "type": "string", "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$" },
+        "types": { "type": "array", "minItems": 1, "items": { "enum": ["occupation", "employment", "household_member", "pet", "vehicle", "commute", "activity", "social_pattern", "life_event", "rhythm", "priority", "custom", "housing", "city", "income_pattern"] } },
+        "synonyms": { "type": "array", "items": { "type": "string", "minLength": 2, "maxLength": 80 } },
+        "any_value": { "type": "boolean" },
+        "role": { "enum": ["adult", "child"] },
+        "age_min": { "type": "integer", "minimum": 0, "maximum": 120 },
+        "age_max": { "type": "integer", "minimum": 0, "maximum": 120 },
+        "levels": { "type": "array", "items": { "enum": ["protected", "reduce"] } },
+        "window_from_fact": { "type": "boolean" },
+        "signatures": { "type": "array", "minItems": 1, "items": { "type": "object", "not": { "anyOf": [{ "required": ["origin"] }, { "required": ["fact_id"] }, { "required": ["multiplier"] }] } } }
+      }
+    }
+  }
+}

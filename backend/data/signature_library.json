@@ -1,0 +1,224 @@
+{
+  "entries": [
+    {"key": "sports_analyst", "types": ["occupation"],
+     "synonyms": ["sports analyst", "analist sportiv", "analistă sportivă", "jurnalist sportiv", "jurnalistă sportivă", "comentator sportiv", "sports journalist", "sports commentator"],
+     "signatures": [
+       {"effect": "explains", "category": "electronics", "merchant_hints": ["eMAG", "Altex", "Flanco"], "item_keywords": ["televizor", "TV", "monitor", "soundbar"], "amount_min": 1500, "amount_max": 9000, "replacement_cycle_days": 900, "purpose": "work_tool", "strength": 0.9},
+       {"effect": "explains", "category": "subscriptions", "merchant_hints": ["Digi Sport", "Prima Sport", "DAZN", "Voyo"], "purpose": "work_tool", "strength": 0.9}
+     ]},
+    {"key": "developer", "types": ["occupation"],
+     "synonyms": ["developer", "programator", "programatoare", "programmer", "software engineer", "software developer", "inginer software", "dezvoltator", "web developer"],
+     "signatures": [
+       {"effect": "explains", "category": "electronics", "merchant_hints": ["eMAG", "Altex", "Flanco"], "item_keywords": ["laptop", "monitor", "tastatură", "keyboard", "mouse", "docking"], "amount_min": 150, "amount_max": 12000, "replacement_cycle_days": 1095, "purpose": "work_tool", "strength": 0.8},
+       {"effect": "explains", "category": "subscriptions", "item_keywords": ["github", "jetbrains", "copilot", "hosting", "domeniu", "cloud"], "purpose": "work_tool", "strength": 0.7}
+     ]},
+    {"key": "designer", "types": ["occupation"],
+     "synonyms": ["designer", "grafician", "graficiană", "graphic designer", "designer grafic", "ux designer", "ui designer"],
+     "signatures": [
+       {"effect": "explains", "category": "electronics", "merchant_hints": ["eMAG", "Altex", "Flanco"], "item_keywords": ["tabletă grafică", "monitor", "laptop", "ipad"], "amount_min": 300, "amount_max": 12000, "replacement_cycle_days": 1095, "purpose": "work_tool", "strength": 0.8},
+       {"effect": "explains", "category": "subscriptions", "item_keywords": ["adobe", "figma", "creative cloud", "canva"], "purpose": "work_tool", "strength": 0.8}
+     ]},
+    {"key": "photographer", "types": ["occupation"],
+     "synonyms": ["fotograf", "fotografă", "photographer", "videograf", "videographer"],
+     "signatures": [
+       {"effect": "explains", "category": "electronics", "merchant_hints": ["eMAG", "Altex", "Flanco"], "item_keywords": ["aparat foto", "obiectiv", "cameră", "camera", "lens", "trepied", "card memorie"], "amount_min": 200, "amount_max": 20000, "replacement_cycle_days": 1460, "purpose": "work_tool", "strength": 0.85},
+       {"effect": "explains", "category": "subscriptions", "item_keywords": ["adobe", "lightroom", "photoshop"], "purpose": "work_tool", "strength": 0.8}
+     ]},
+    {"key": "driver", "types": ["occupation"],
+     "synonyms": ["șofer", "driver", "taximetrist", "curier", "courier", "livrator"],
+     "signatures": [
+       {"effect": "explains", "category": "fuel", "merchant_hints": ["Petrom", "OMV", "MOL", "Rompetrol"], "purpose": "work_tool", "strength": 0.85},
+       {"effect": "explains", "category": "transport", "item_keywords": ["service", "revizie", "anvelope", "ulei", "spălătorie"], "purpose": "work_tool", "strength": 0.7}
+     ]},
+    {"key": "teacher", "types": ["occupation"],
+     "synonyms": ["profesor", "profesoară", "teacher", "învățător", "învățătoare", "educatoare", "educator"],
+     "signatures": [
+       {"effect": "explains", "category": "books", "merchant_hints": ["Libris", "Cărturești", "Diverta"], "item_keywords": ["carte", "manual", "rechizite", "papetărie", "markere"], "purpose": "work_tool", "strength": 0.7}
+     ]},
+    {"key": "student", "types": ["occupation", "employment"],
+     "synonyms": ["student", "studentă", "masterand", "masterandă", "doctorand", "doctorandă"],
+     "signatures": [
+       {"effect": "explains", "category": "books", "merchant_hints": ["Libris", "Cărturești", "Diverta"], "item_keywords": ["carte", "manual", "curs"], "purpose": "self_investment", "strength": 0.8},
+       {"effect": "explains", "category": "education", "item_keywords": ["taxă", "școlarizare", "curs", "examen"], "purpose": "self_investment", "strength": 0.8}
+     ]},
+    {"key": "freelancer", "types": ["employment", "occupation"],
+     "synonyms": ["freelancer", "pfa", "liber profesionist", "independent"],
+     "signatures": [
+       {"effect": "explains", "category": "electronics", "merchant_hints": ["eMAG", "Altex", "Flanco"], "item_keywords": ["laptop", "monitor", "imprimantă"], "amount_min": 150, "amount_max": 10000, "replacement_cycle_days": 1095, "purpose": "work_tool", "strength": 0.7},
+       {"effect": "explains", "category": "subscriptions", "item_keywords": ["software", "contabilitate", "hosting", "cloud"], "purpose": "work_tool", "strength": 0.6}
+     ]},
+
+    {"key": "child", "types": ["household_member"], "role": "child", "age_min": 0, "age_max": 18,
+     "signatures": [
+       {"effect": "explains", "category": "kids", "merchant_hints": ["Noriel"], "item_keywords": ["jucărie", "jucării", "lego", "scutece", "haine copii"], "purpose": "household_care", "strength": 0.85},
+       {"effect": "explains", "category": "clothing", "item_keywords": ["copii", "kids", "bebe", "junior"], "purpose": "household_care", "strength": 0.7}
+     ]},
+    {"key": "child_school", "types": ["household_member"], "role": "child", "age_min": 6, "age_max": 18,
+     "signatures": [
+       {"effect": "expects_event", "category": "books", "merchant_hints": ["Libris", "Diverta", "Carrefour", "Auchan"], "item_keywords": ["rechizite", "ghiozdan", "caiete", "manuale"], "time_window": {"months": [8, 9]}, "expected_amount": 300, "purpose": "household_care", "strength": 0.8}
+     ]},
+    {"key": "child_1_iunie", "types": ["household_member"], "role": "child", "age_min": 0, "age_max": 13,
+     "signatures": [
+       {"effect": "expects_event", "category": "kids", "merchant_hints": ["Noriel"], "item_keywords": ["jucărie", "cadou", "1 iunie"], "time_window": {"months": [6]}, "expected_amount": 150, "purpose": "household_care", "strength": 0.7}
+     ]},
+
+    {"key": "cat", "types": ["pet"], "synonyms": ["pisică", "pisici", "cat", "cats", "motan"],
+     "signatures": [
+       {"effect": "explains", "category": "pets", "merchant_hints": ["Animax"], "item_keywords": ["hrană", "nisip", "litieră", "veterinar"], "purpose": "household_care", "strength": 0.9}
+     ]},
+    {"key": "dog", "types": ["pet"], "synonyms": ["câine", "câini", "dog", "dogs", "cățel", "cățea"],
+     "signatures": [
+       {"effect": "explains", "category": "pets", "merchant_hints": ["Animax"], "item_keywords": ["hrană", "lesă", "zgardă", "veterinar"], "purpose": "household_care", "strength": 0.9}
+     ]},
+    {"key": "pet", "types": ["pet"], "any_value": true,
+     "signatures": [
+       {"effect": "explains", "category": "pets", "merchant_hints": ["Animax"], "purpose": "household_care", "strength": 0.8}
+     ]},
+
+    {"key": "vehicle", "types": ["vehicle"], "any_value": true,
+     "signatures": [
+       {"effect": "explains", "category": "fuel", "merchant_hints": ["Petrom", "OMV", "MOL", "Rompetrol"], "purpose": "essential_living", "strength": 0.85},
+       {"effect": "explains", "category": "other", "item_keywords": ["rca", "asigurare auto", "casco"], "replacement_cycle_days": 330, "purpose": "essential_living", "strength": 0.8},
+       {"effect": "explains", "category": "transport", "item_keywords": ["itp", "parcare", "parking", "service auto", "revizie", "anvelope", "rovinietă"], "purpose": "essential_living", "strength": 0.75}
+     ]},
+
+    {"key": "public_transport", "types": ["commute"],
+     "synonyms": ["public transport", "transport public", "transport în comun", "metrou", "autobuz", "tramvai"],
+     "signatures": [
+       {"effect": "explains", "category": "transport", "merchant_hints": ["STB", "Metrorex", "CTP Iași"], "purpose": "essential_living", "strength": 0.9}
+     ]},
+    {"key": "commute_car", "types": ["commute"], "synonyms": ["car", "mașină", "mașina", "auto", "driving"],
+     "signatures": [
+       {"effect": "explains", "category": "fuel", "merchant_hints": ["Petrom", "OMV", "MOL", "Rompetrol"], "purpose": "essential_living", "strength": 0.8}
+     ]},
+    {"key": "commute_bike", "types": ["commute"], "synonyms": ["bicicletă", "bike", "trotinetă", "scooter"],
+     "signatures": [
+       {"effect": "explains", "category": "sport", "merchant_hints": ["Decathlon"], "item_keywords": ["bicicletă", "trotinetă", "cască", "lacăt"], "purpose": "essential_living", "strength": 0.6}
+     ]},
+
+    {"key": "running", "types": ["activity"],
+     "synonyms": ["running", "alergare", "alergări", "alerg", "jogging", "maraton", "semimaraton", "trail"],
+     "signatures": [
+       {"effect": "explains", "category": "sport", "merchant_hints": ["Decathlon"], "item_keywords": ["pantofi alergare", "adidași", "running", "încălțăminte sport", "ceas sport"], "amount_min": 100, "amount_max": 1200, "replacement_cycle_days": 180, "purpose": "self_investment", "strength": 0.85}
+     ]},
+    {"key": "gym", "types": ["activity"], "synonyms": ["sală", "gym", "fitness", "sală de forță", "crossfit"],
+     "signatures": [
+       {"effect": "explains", "category": "sport", "merchant_hints": ["World Class", "Decathlon"], "item_keywords": ["abonament", "gantere", "echipament"], "purpose": "self_investment", "strength": 0.85}
+     ]},
+    {"key": "cycling", "types": ["activity"], "synonyms": ["ciclism", "bicicletă", "cycling", "bike", "mtb"],
+     "signatures": [
+       {"effect": "explains", "category": "sport", "merchant_hints": ["Decathlon"], "item_keywords": ["bicicletă", "cască", "anvelopă", "lanț"], "amount_min": 50, "amount_max": 8000, "purpose": "self_investment", "strength": 0.8}
+     ]},
+    {"key": "gaming", "types": ["activity"], "synonyms": ["gaming", "jocuri video", "jocuri", "gamer", "video games", "games"],
+     "signatures": [
+       {"effect": "explains", "category": "entertainment", "merchant_hints": ["Steam"], "item_keywords": ["joc", "game", "dlc"], "purpose": "identity_joy", "strength": 0.8},
+       {"effect": "explains", "category": "electronics", "merchant_hints": ["eMAG", "Altex", "Flanco"], "item_keywords": ["consolă", "playstation", "xbox", "controller", "căști gaming", "placă video"], "amount_min": 150, "amount_max": 6000, "replacement_cycle_days": 1460, "purpose": "identity_joy", "strength": 0.7}
+     ]},
+    {"key": "photography", "types": ["activity"], "synonyms": ["fotografie", "photography", "fotografiez", "foto"],
+     "signatures": [
+       {"effect": "explains", "category": "electronics", "merchant_hints": ["eMAG", "Altex", "Flanco"], "item_keywords": ["aparat foto", "obiectiv", "trepied", "camera"], "amount_min": 200, "amount_max": 15000, "replacement_cycle_days": 1460, "purpose": "identity_joy", "strength": 0.8}
+     ]},
+    {"key": "festivals", "types": ["activity"], "synonyms": ["festivaluri", "festival", "festivals", "untold", "electric castle", "neversea"],
+     "signatures": [
+       {"effect": "explains", "category": "entertainment", "merchant_hints": ["iaBilet", "Eventim"], "item_keywords": ["festival", "abonament", "bilet"], "purpose": "identity_joy", "strength": 0.85}
+     ]},
+    {"key": "football", "types": ["activity"], "synonyms": ["fotbal", "football", "soccer", "meciuri", "suporter"],
+     "signatures": [
+       {"effect": "explains", "category": "entertainment", "merchant_hints": ["iaBilet", "Eventim"], "item_keywords": ["meci", "bilet", "abonament stadion"], "purpose": "identity_joy", "strength": 0.75},
+       {"effect": "explains", "category": "sport", "merchant_hints": ["Decathlon"], "item_keywords": ["minge", "ghete", "tricou"], "purpose": "self_investment", "strength": 0.6}
+     ]},
+    {"key": "concerts", "types": ["activity"], "synonyms": ["concerte", "concert", "concerts", "muzică live", "live music"],
+     "signatures": [
+       {"effect": "explains", "category": "entertainment", "merchant_hints": ["iaBilet", "Eventim"], "item_keywords": ["concert", "bilet"], "purpose": "identity_joy", "strength": 0.8}
+     ]},
+    {"key": "reading", "types": ["activity"], "synonyms": ["citit", "lectură", "reading", "cărți", "books", "citesc"],
+     "signatures": [
+       {"effect": "explains", "category": "books", "merchant_hints": ["Libris", "Cărturești", "Diverta"], "purpose": "identity_joy", "strength": 0.8}
+     ]},
+    {"key": "swimming", "types": ["activity"], "synonyms": ["înot", "swimming", "piscină"],
+     "signatures": [
+       {"effect": "explains", "category": "sport", "merchant_hints": ["World Class", "Decathlon"], "item_keywords": ["abonament", "costum de baie", "ochelari înot"], "purpose": "self_investment", "strength": 0.8}
+     ]},
+
+    {"key": "trip", "types": ["life_event"], "window_from_fact": true,
+     "synonyms": ["vacanță", "vacation", "holiday", "concediu", "excursie", "trip", "city break", "călătorie", "la mare", "la munte"],
+     "signatures": [
+       {"effect": "explains", "category": "travel", "merchant_hints": ["Wizz Air", "Ryanair", "Booking.com", "CFR Călători"], "purpose": "planned_event", "strength": 0.9}
+     ]},
+    {"key": "wedding", "types": ["life_event"], "window_from_fact": true, "synonyms": ["nuntă", "wedding", "cununie"],
+     "signatures": [
+       {"effect": "explains", "category": "gifts", "merchant_hints": ["Florăria Bujor"], "item_keywords": ["dar", "cadou", "flori"], "purpose": "social_connection", "strength": 0.8}
+     ]},
+    {"key": "baptism", "types": ["life_event"], "window_from_fact": true, "synonyms": ["botez", "baptism", "christening"],
+     "signatures": [
+       {"effect": "explains", "category": "gifts", "merchant_hints": ["Florăria Bujor", "Noriel"], "item_keywords": ["dar", "cadou", "lumânare"], "purpose": "social_connection", "strength": 0.8}
+     ]},
+    {"key": "moving", "types": ["life_event"], "window_from_fact": true,
+     "synonyms": ["mutare", "mutat", "moving", "relocare", "casă nouă", "apartament nou"],
+     "signatures": [
+       {"effect": "explains", "category": "household_goods", "merchant_hints": ["Dedeman"], "item_keywords": ["mobilă", "saltea", "vopsea", "cutii"], "purpose": "planned_event", "strength": 0.8}
+     ]},
+    {"key": "christmas", "types": ["life_event"], "window_from_fact": true, "synonyms": ["crăciun", "christmas", "sărbători de iarnă"],
+     "signatures": [
+       {"effect": "explains", "category": "gifts", "item_keywords": ["cadou", "brad", "decorațiuni"], "time_window": {"months": [12]}, "purpose": "social_connection", "strength": 0.8}
+     ]},
+    {"key": "birthday", "types": ["life_event"], "window_from_fact": true, "synonyms": ["zi de naștere", "ziua de naștere", "aniversare", "birthday"],
+     "signatures": [
+       {"effect": "explains", "category": "gifts", "merchant_hints": ["Florăria Bujor"], "item_keywords": ["cadou", "tort", "flori"], "purpose": "social_connection", "strength": 0.75}
+     ]},
+
+    {"key": "team_lunch", "types": ["social_pattern"], "window_from_fact": true,
+     "synonyms": ["team lunch", "prânz cu echipa", "prânz cu colegii", "masa cu colegii", "lunch with the team"],
+     "signatures": [
+       {"effect": "explains", "category": "restaurants", "amount_min": 30, "amount_max": 200, "purpose": "social_connection", "strength": 0.8}
+     ]},
+    {"key": "friends_out", "types": ["social_pattern"], "window_from_fact": true,
+     "synonyms": ["ieșiri cu prietenii", "ieșit cu prietenii", "going out", "friends", "prietenii"],
+     "signatures": [
+       {"effect": "explains", "category": "restaurants", "purpose": "social_connection", "strength": 0.7},
+       {"effect": "explains", "category": "entertainment", "purpose": "social_connection", "strength": 0.6}
+     ]},
+
+    {"key": "protect_concerts", "types": ["priority"], "levels": ["protected"],
+     "synonyms": ["concerts", "concerte", "concert", "muzică live", "live music"],
+     "signatures": [
+       {"effect": "protects", "category": "entertainment", "merchant_hints": ["iaBilet", "Eventim"], "item_keywords": ["concert"], "purpose": "identity_joy", "strength": 0.9}
+     ]},
+    {"key": "protect_travel", "types": ["priority"], "levels": ["protected"],
+     "synonyms": ["travel", "travelling", "călătorii", "vacanțe", "excursii"],
+     "signatures": [
+       {"effect": "protects", "category": "travel", "merchant_hints": ["Wizz Air", "Ryanair", "Booking.com"], "purpose": "identity_joy", "strength": 0.9}
+     ]},
+    {"key": "protect_books", "types": ["priority"], "levels": ["protected"], "synonyms": ["books", "cărți", "citit", "lectură"],
+     "signatures": [
+       {"effect": "protects", "category": "books", "merchant_hints": ["Libris", "Cărturești", "Diverta"], "purpose": "identity_joy", "strength": 0.9}
+     ]},
+    {"key": "protect_sport", "types": ["priority"], "levels": ["protected"],
+     "synonyms": ["sport", "sports", "sală", "gym", "fitness", "alergare", "running"],
+     "signatures": [
+       {"effect": "protects", "category": "sport", "merchant_hints": ["World Class", "Decathlon"], "purpose": "identity_joy", "strength": 0.9}
+     ]},
+    {"key": "protect_gaming", "types": ["priority"], "levels": ["protected"], "synonyms": ["gaming", "jocuri", "jocuri video", "games"],
+     "signatures": [
+       {"effect": "protects", "category": "entertainment", "merchant_hints": ["Steam"], "item_keywords": ["joc", "game"], "purpose": "identity_joy", "strength": 0.9}
+     ]},
+    {"key": "protect_eating_out", "types": ["priority"], "levels": ["protected"],
+     "synonyms": ["restaurante", "restaurants", "eating out", "ieșiri în oraș", "mâncat în oraș"],
+     "signatures": [
+       {"effect": "protects", "category": "restaurants", "purpose": "social_connection", "strength": 0.85}
+     ]},
+    {"key": "protect_gifts", "types": ["priority"], "levels": ["protected"], "synonyms": ["gifts", "cadouri"],
+     "signatures": [
+       {"effect": "protects", "category": "gifts", "purpose": "social_connection", "strength": 0.85}
+     ]},
+    {"key": "protect_kids", "types": ["priority"], "levels": ["protected"],
+     "synonyms": ["copii", "copiii", "kids", "children", "activitățile copiilor"],
+     "signatures": [
+       {"effect": "protects", "category": "kids", "purpose": "household_care", "strength": 0.9}
+     ]},
+    {"key": "protect_pets", "types": ["priority"], "levels": ["protected"], "synonyms": ["pets", "animale", "animalul meu"],
+     "signatures": [
+       {"effect": "protects", "category": "pets", "purpose": "household_care", "strength": 0.9}
+     ]}
+  ]
+}

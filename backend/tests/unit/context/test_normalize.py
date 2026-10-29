@@ -115,7 +115,12 @@ def test_no_alias_is_only_noise() -> None:
             assert set(tokens(alias)) - NOISE_TOKENS, alias
 
 
-@given(st.text(max_size=300), st.one_of(st.none(), st.text(max_size=6)))
+# Any code point (surrogates included), built from integers: st.text() would build Hypothesis's
+# Unicode charmap, a big heap that slows the timing test of test_models_transactions under GC.
+ANY_TEXT = st.lists(st.integers(0, 0x10FFFF).map(chr), max_size=300).map("".join)
+
+
+@given(ANY_TEXT, st.one_of(st.none(), ANY_TEXT))
 def test_never_raises_on_arbitrary_unicode(raw: str, mcc: str | None) -> None:
     result = normalize(raw, mcc, None)
     assert isinstance(result.category, Category)
