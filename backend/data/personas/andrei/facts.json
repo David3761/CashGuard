@@ -1,0 +1,52 @@
+[
+  {
+    "type": "occupation",
+    "value": {
+      "title": "analist sportiv",
+      "work_mode": "remote"
+    },
+    "text": "Sunt analist sportiv, lucrez de acasă",
+    "signatures": [
+      {
+        "effect": "explains",
+        "category": "electronics",
+        "merchant_hints": [
+          "eMAG",
+          "Altex",
+          "Flanco"
+        ],
+        "item_keywords": [
+          "televizor",
+          "TV",
+          "monitor",
+          "soundbar"
+        ],
+        "amount_min": 1500,
+        "amount_max": 9000,
+        "replacement_cycle_days": 900,
+        "purpose": "work_tool",
+        "strength": 0.9
+      },
+      {
+        "effect": "explains",
+        "category": "subscriptions",
+        "merchant_hints": [
+          "Digi Sport",
+          "Prima Sport",
+          "DAZN",
+          "Voyo"
+        ],
+        "purpose": "work_tool",
+        "strength": 0.9
+      }
+    ]
+  },
+  {
+    "type": "household_member",
+    "value": {
+      "role": "adult",
+      "relation": "partener"
+    },
+    "text": "Stau cu partenera mea"
+  }
+]

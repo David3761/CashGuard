@@ -1,0 +1,35 @@
+[
+  {
+    "type": "occupation",
+    "value": {
+      "title": "junior developer",
+      "work_mode": "hybrid"
+    },
+    "text": "Sunt junior developer, la birou marți–joi"
+  },
+  {
+    "type": "housing",
+    "value": {
+      "kind": "rent",
+      "lives_alone": true
+    },
+    "text": "Stau singur"
+  },
+  {
+    "type": "priority",
+    "value": {
+      "category": "entertainment",
+      "label": "concerte",
+      "priority": "protected"
+    },
+    "text": "Concertele nu le tai"
+  },
+  {
+    "type": "priority",
+    "value": {
+      "category": "food_delivery",
+      "priority": "reduce"
+    },
+    "text": "Aș vrea să comand mai rar"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "id": "matei_friday_lunch",
+  "persona": "matei",
+  "merchant_raw": "TRATTORIA IL CALCIO",
+  "mcc": "5812",
+  "amount": 95,
+  "category": "restaurants",
+  "day_offset": 0,
+  "time": "13:10",
+  "items": null
+}

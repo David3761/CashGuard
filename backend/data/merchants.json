@@ -1,0 +1,161 @@
+[
+  {
+    "id": "mega_image",
+    "canonical_name": "Mega Image",
+    "aliases": [
+      "MEGA IMAGE"
+    ],
+    "category": "groceries",
+    "mcc": "5411",
+    "typical_basket": 85,
+    "multi_category": false
+  },
+  {
+    "id": "shop_go",
+    "canonical_name": "Shop&Go",
+    "aliases": [
+      "SHOP&GO",
+      "SHOP & GO"
+    ],
+    "category": "groceries",
+    "mcc": "5411",
+    "typical_basket": 60,
+    "multi_category": false
+  },
+  {
+    "id": "kaufland",
+    "canonical_name": "Kaufland",
+    "aliases": [
+      "KAUFLAND"
+    ],
+    "category": "groceries",
+    "mcc": "5411",
+    "typical_basket": 250,
+    "multi_category": true
+  },
+  {
+    "id": "profi",
+    "canonical_name": "Profi",
+    "aliases": [
+      "PROFI"
+    ],
+    "category": "groceries",
+    "mcc": "5411",
+    "typical_basket": 45,
+    "multi_category": false
+  },
+  {
+    "id": "carrefour",
+    "canonical_name": "Carrefour",
+    "aliases": [
+      "CARREFOUR"
+    ],
+    "category": "groceries",
+    "mcc": "5411",
+    "typical_basket": 180,
+    "multi_category": true
+  },
+  {
+    "id": "emag",
+    "canonical_name": "eMAG",
+    "aliases": [
+      "PAYU*EMAG.RO",
+      "EMAG"
+    ],
+    "category": "electronics",
+    "mcc": "5732",
+    "typical_basket": 400,
+    "multi_category": true
+  },
+  {
+    "id": "altex",
+    "canonical_name": "Altex",
+    "aliases": [
+      "ALTEX"
+    ],
+    "category": "electronics",
+    "mcc": "5732",
+    "typical_basket": 600,
+    "multi_category": true
+  },
+  {
+    "id": "flanco",
+    "canonical_name": "Flanco",
+    "aliases": [
+      "FLANCO"
+    ],
+    "category": "electronics",
+    "mcc": "5732",
+    "typical_basket": 500,
+    "multi_category": true
+  },
+  {
+    "id": "glovo",
+    "canonical_name": "Glovo",
+    "aliases": [
+      "GLOVO*ORDER",
+      "GLOVO"
+    ],
+    "category": "food_delivery",
+    "mcc": "5814",
+    "typical_basket": 60,
+    "multi_category": false
+  },
+  {
+    "id": "trattoria",
+    "canonical_name": "Trattoria Il Calcio",
+    "aliases": [
+      "TRATTORIA IL CALCIO"
+    ],
+    "category": "restaurants",
+    "mcc": "5812",
+    "typical_basket": 90,
+    "multi_category": false
+  },
+  {
+    "id": "wizz_air",
+    "canonical_name": "Wizz Air",
+    "aliases": [
+      "WIZZ AIR",
+      "WIZZAIR"
+    ],
+    "category": "travel",
+    "mcc": "4511",
+    "typical_basket": 450,
+    "multi_category": false
+  },
+  {
+    "id": "dr_max",
+    "canonical_name": "Dr.Max",
+    "aliases": [
+      "DR.MAX",
+      "DR MAX"
+    ],
+    "category": "health_pharmacy",
+    "mcc": "5912",
+    "typical_basket": 70,
+    "multi_category": false
+  },
+  {
+    "id": "spotify",
+    "canonical_name": "Spotify",
+    "aliases": [
+      "SPOTIFY"
+    ],
+    "category": "subscriptions",
+    "mcc": "5815",
+    "typical_basket": 25,
+    "multi_category": false
+  },
+  {
+    "id": "decathlon",
+    "canonical_name": "Decathlon",
+    "aliases": [
+      "DECATHLON"
+    ],
+    "category": "sport",
+    "mcc": "5941",
+    "typical_basket": 150,
+    "multi_category": true
+  }
+]

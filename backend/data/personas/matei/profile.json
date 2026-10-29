@@ -1,0 +1,54 @@
+{
+  "name": "Matei",
+  "age": 26,
+  "city": "București",
+  "language": "ro",
+  "tagline": "Junior developer, stă singur, strânge 10.000 lei",
+  "household_scale": 1.0,
+  "onboarded": true,
+  "account": {
+    "current_balance": 2850
+  },
+  "income_sources": [
+    {
+      "source": "Salariu",
+      "amount": 7000,
+      "day_of_month": 10
+    }
+  ],
+  "fixed_costs": [
+    {
+      "name": "Chirie",
+      "amount": 2000,
+      "day_of_month": 1
+    },
+    {
+      "name": "Utilități",
+      "amount": 350,
+      "day_of_month": 15
+    },
+    {
+      "name": "Telefon",
+      "amount": 60,
+      "day_of_month": 20
+    },
+    {
+      "name": "Spotify",
+      "amount": 25,
+      "day_of_month": 5
+    },
+    {
+      "name": "Sală",
+      "amount": 180,
+      "day_of_month": 3
+    }
+  ],
+  "goal": {
+    "amount": 10000,
+    "deadline": "2026-12-31",
+    "motivation": "Fond 10.000",
+    "soft": true,
+    "saved": 5200
+  },
+  "last_week_probability": 0.72
+}

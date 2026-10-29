@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "classify",
+    "source": "answer",
+    "confidence": 0.7,
+    "hits": 2,
+    "match": {
+      "category": "restaurants",
+      "weekdays": [
+        5
+      ],
+      "from": "12:00",
+      "to": "15:00",
+      "amount_min": 60,
+      "amount_max": 130
+    },
+    "outcome": {
+      "purpose": "social_connection",
+      "label": "Prânz cu echipa"
+    }
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "name": "Alex",
+  "age": 24,
+  "city": "București",
+  "language": "ro",
+  "tagline": "Cont nou: onboarding live",
+  "household_scale": 1.0,
+  "onboarded": false,
+  "account": {
+    "current_balance": 1200
+  }
+}

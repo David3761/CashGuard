@@ -1,0 +1,11 @@
+{
+  "id": "matei_shopgo_350",
+  "persona": "matei",
+  "merchant_raw": "SHOP&GO 123 BUCURESTI",
+  "mcc": "5411",
+  "amount": 350,
+  "category": "groceries",
+  "day_offset": 0,
+  "time": "18:30",
+  "items": null
+}

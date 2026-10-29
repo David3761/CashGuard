@@ -1,0 +1,11 @@
+{
+  "id": "ioana_shopgo_350",
+  "persona": "ioana",
+  "merchant_raw": "SHOP&GO 77 CLUJ",
+  "mcc": "5411",
+  "amount": 350,
+  "category": "groceries",
+  "day_offset": 0,
+  "time": "10:30",
+  "items": null
+}

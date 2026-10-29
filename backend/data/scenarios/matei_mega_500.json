@@ -1,0 +1,11 @@
+{
+  "id": "matei_mega_500",
+  "persona": "matei",
+  "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+  "mcc": "5411",
+  "amount": 500,
+  "category": "groceries",
+  "day_offset": 0,
+  "time": "13:05",
+  "items": null
+}

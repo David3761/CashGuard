@@ -1,0 +1,11 @@
+{
+  "id": "matei_flight",
+  "persona": "matei",
+  "merchant_raw": "WIZZ AIR WIZZAIR.COM",
+  "mcc": "4511",
+  "amount": 900,
+  "category": "travel",
+  "day_offset": 0,
+  "time": "21:15",
+  "items": null
+}

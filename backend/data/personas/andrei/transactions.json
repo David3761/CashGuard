@@ -1,0 +1,16 @@
+[
+  {
+    "occurred_at": "2026-06-05T08:00:00+03:00",
+    "merchant_raw": "SALARIU MEDIA SRL",
+    "amount": 9000,
+    "category": "income",
+    "direction": "credit"
+  },
+  {
+    "occurred_at": "2026-06-13T18:20:00+03:00",
+    "merchant_raw": "MEGA IMAGE 0112 BUCURESTI",
+    "amount": 118,
+    "category": "groceries",
+    "purpose": "household_care"
+  }
+]

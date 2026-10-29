@@ -1,0 +1,33 @@
+[
+  {
+    "type": "occupation",
+    "value": {
+      "title": "contabilă"
+    },
+    "text": "Sunt contabilă"
+  },
+  {
+    "type": "household_member",
+    "value": {
+      "role": "adult",
+      "relation": "partener"
+    },
+    "text": "Suntem 4 acasă"
+  },
+  {
+    "type": "household_member",
+    "value": {
+      "role": "child",
+      "age": 7
+    },
+    "text": "Fiica, 7 ani"
+  },
+  {
+    "type": "household_member",
+    "value": {
+      "role": "child",
+      "age": 11
+    },
+    "text": "Fiul, 11 ani"
+  }
+]

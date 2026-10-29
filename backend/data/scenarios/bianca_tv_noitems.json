@@ -1,0 +1,11 @@
+{
+  "id": "bianca_tv_noitems",
+  "persona": "bianca",
+  "merchant_raw": "PAYU*EMAG.RO",
+  "mcc": "5732",
+  "amount": 4500,
+  "category": "electronics",
+  "day_offset": 0,
+  "time": "11:20",
+  "items": null
+}

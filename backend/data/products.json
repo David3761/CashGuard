@@ -1,0 +1,35 @@
+[
+  {
+    "id": "pusculita_flexibila",
+    "name": "Pușculiță flexibilă",
+    "kind": "flexible_pot",
+    "rate": 0.035,
+    "liquidity": "instant",
+    "min_months": 0,
+    "max_months": 12,
+    "mock": true,
+    "description": "Bani disponibili oricând; dobândă mică."
+  },
+  {
+    "id": "cont_economii",
+    "name": "Cont de economii",
+    "kind": "savings_account",
+    "rate": 0.045,
+    "liquidity": "notice",
+    "min_months": 3,
+    "max_months": 24,
+    "mock": true,
+    "description": "Retragere cu preaviz de câteva zile."
+  },
+  {
+    "id": "depozit_6_luni",
+    "name": "Depozit 6 luni",
+    "kind": "term_deposit",
+    "rate": 0.055,
+    "liquidity": "locked",
+    "min_months": 6,
+    "max_months": 6,
+    "mock": true,
+    "description": "Dobânda cea mai bună; banii stau blocați 6 luni."
+  }
+]

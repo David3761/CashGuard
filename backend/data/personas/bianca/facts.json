@@ -1,0 +1,25 @@
+[
+  {
+    "type": "occupation",
+    "value": {
+      "title": "studentă"
+    },
+    "text": "Sunt studentă"
+  },
+  {
+    "type": "employment",
+    "value": {
+      "job": "barista",
+      "part_time": true
+    },
+    "text": "Lucrez part-time ca barista"
+  },
+  {
+    "type": "income_pattern",
+    "value": {
+      "irregular": true,
+      "tips": true
+    },
+    "text": "Câștig din bacșiș, variază"
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "name": "Bianca",
+  "age": 22,
+  "city": "Iași",
+  "language": "ro",
+  "tagline": "Studentă și barista part-time",
+  "household_scale": 1.0,
+  "onboarded": true,
+  "account": {
+    "current_balance": 740
+  },
+  "income_sources": [
+    {
+      "source": "Barista",
+      "amount": 2800,
+      "day_of_month": 15
+    }
+  ],
+  "fixed_costs": [
+    {
+      "name": "Chirie (partea mea)",
+      "amount": 700,
+      "day_of_month": 1
+    }
+  ],
+  "goal": {
+    "amount": 3000,
+    "deadline": "2026-08-31",
+    "motivation": "Vara la mare",
+    "soft": false,
+    "saved": 900
+  }
+}

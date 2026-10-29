@@ -1,0 +1,33 @@
+{
+  "name": "Andrei",
+  "age": 31,
+  "city": "București",
+  "language": "ro",
+  "tagline": "Analist sportiv, lucrează de acasă",
+  "household_scale": 1.5,
+  "onboarded": true,
+  "account": {
+    "current_balance": 6400
+  },
+  "income_sources": [
+    {
+      "source": "Salariu",
+      "amount": 9000,
+      "day_of_month": 5
+    }
+  ],
+  "fixed_costs": [
+    {
+      "name": "Chirie",
+      "amount": 2600,
+      "day_of_month": 1
+    }
+  ],
+  "goal": {
+    "amount": 15000,
+    "deadline": "2027-03-31",
+    "motivation": "Avans apartament",
+    "soft": true,
+    "saved": 6100
+  }
+}

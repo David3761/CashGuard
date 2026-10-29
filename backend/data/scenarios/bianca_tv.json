@@ -1,0 +1,17 @@
+{
+  "id": "bianca_tv",
+  "persona": "bianca",
+  "merchant_raw": "PAYU*EMAG.RO",
+  "mcc": "5732",
+  "amount": 4500,
+  "category": "electronics",
+  "day_offset": 0,
+  "time": "11:20",
+  "items": [
+    {
+      "name": "Televizor 65\"",
+      "qty": 1,
+      "amount": 4500
+    }
+  ]
+}

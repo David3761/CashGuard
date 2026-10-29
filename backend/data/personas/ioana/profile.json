@@ -1,0 +1,33 @@
+{
+  "name": "Ioana",
+  "age": 38,
+  "city": "Cluj-Napoca",
+  "language": "ro",
+  "tagline": "Contabilă, familie de 4",
+  "household_scale": 2.1,
+  "onboarded": true,
+  "account": {
+    "current_balance": 9800
+  },
+  "income_sources": [
+    {
+      "source": "Venit gospodărie",
+      "amount": 15500,
+      "day_of_month": 10
+    }
+  ],
+  "fixed_costs": [
+    {
+      "name": "Rată credit",
+      "amount": 3200,
+      "day_of_month": 15
+    }
+  ],
+  "goal": {
+    "amount": 12000,
+    "deadline": "2026-12-31",
+    "motivation": "Fond de urgență",
+    "soft": true,
+    "saved": 4300
+  }
+}

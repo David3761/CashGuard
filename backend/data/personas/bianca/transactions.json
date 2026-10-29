@@ -1,0 +1,9 @@
+[
+  {
+    "occurred_at": "2026-06-14T17:45:00+03:00",
+    "merchant_raw": "PROFI 112 IASI",
+    "amount": 38,
+    "category": "groceries",
+    "purpose": "essential_living"
+  }
+]
