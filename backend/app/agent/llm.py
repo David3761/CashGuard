@@ -9,22 +9,29 @@ response type whether the refusal fallback is on or off (plan A1, D1).
 The call is streamed internally (`get_final_message()`), so the read timeout bounds the silence
 between two chunks, not the whole generation, and a stream that breaks midway is not re-generated
 by the SDK's retries. The caller (A6/A7/B9) owns the overall deadline (`asyncio.timeout`).
+
+Every failure becomes `LLMUnavailable` (transient, or no usable configuration) or `LLMBadRequest`
+(Claude rejected our request), logged without the key or anything the user or Claude said.
 """
 
+import json
 import logging
+import math
 import os
 from collections.abc import Mapping, Sequence
 from types import MappingProxyType
-from typing import Final, Literal, Protocol
+from typing import Final, Protocol
 
+import anthropic
 import httpx2
 from anthropic import AsyncAnthropic
 from anthropic.types.beta import BetaMessage, BetaMessageParam, BetaToolParam
 from anthropic.types.beta.message_create_params import MessageCreateParamsBase
+from pydantic import BaseModel
+
+from app.config import Effort
 
 log = logging.getLogger(__name__)
-
-Effort = Literal["low", "medium", "high", "xhigh", "max"]
 
 # Arch 6.8. Never sent: temperature/top_p/top_k (a 400 on API version 2026-10-21) and tool_choice
 # (the default "auto" is what we want; a forced "any"/"tool" is a 400 on Sonnet 5.5).
@@ -47,17 +54,10 @@ MAX_SYSTEM_PARTS: Final = 3
 
 
 class LLMError(Exception):
-    """A Claude call failed. The caller answers with a template instead (arch §11)."""
+    """A Claude call failed. The caller answers with a template instead (arch §11).
 
-
-class LLMUnavailable(LLMError):
-    """Transient or not configured: rate limit, overload, 5xx, timeout, no network, no API key."""
-
-
-class LLMBadRequest(LLMError):
-    """Claude rejected our request (a 4xx other than 408/409/429): a bug or a config error.
-
-    Not retried. The API's error details are kept so the log says what to fix.
+    It carries only safe metadata, never request or response content: no cause or context is
+    attached (the SDK's exceptions hold the response body or the streamed tool JSON).
     """
 
     def __init__(
@@ -72,6 +72,34 @@ class LLMBadRequest(LLMError):
         self.status_code = status_code
         self.error_type = error_type
         self.request_id = request_id
+
+
+class LLMUnavailable(LLMError):
+    """Transient or not configured: rate limit, overload, 5xx, timeout, no network, a broken or
+    incomplete stream, no API key (or headers from the environment)."""
+
+
+class LLMBadRequest(LLMError):
+    """Claude rejected our request: a bug or a config error, not retried.
+
+    A 4xx other than 408/409/429, or a request-error event inside the stream (`status_code` 200).
+    The request id finds the details in the Anthropic Console. The API's own message can quote the
+    request, so it's only on `_api_message`, for a debugger: never in `str()` or a log.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        status_code: int | None = None,
+        error_type: str | None = None,
+        request_id: str | None = None,
+        api_message: str | None = None,
+    ) -> None:
+        super().__init__(
+            message, status_code=status_code, error_type=error_type, request_id=request_id
+        )
+        self._api_message = api_message
 
 
 class LLMClient(Protocol):
@@ -103,6 +131,31 @@ def check_system(system: Sequence[str]) -> tuple[str, ...]:
         if not part.strip():
             raise ValueError(f"system part {index} is empty (the API rejects blank text blocks)")
     return parts
+
+
+_TRANSIENT_4XX: Final = frozenset({408, 409, 429})  # the SDK retries these, like every 5xx
+_REQUEST_ERROR_TYPES: Final = frozenset(
+    {
+        "invalid_request_error",
+        "authentication_error",
+        "billing_error",
+        "permission_error",
+        "not_found_error",
+        "request_too_large",
+    }
+)
+
+
+def classify(status: int, error_type: str | None) -> type[LLMUnavailable] | type[LLMBadRequest]:
+    """Which error an API failure becomes. Pure.
+
+    An HTTP error maps by its status: 408/409/429 and every 5xx are transient (and were already
+    retried by the SDK); any other 4xx means our request was wrong. An `error` event inside a
+    stream that opened with HTTP 200 maps by its type: only a request-error type is our fault.
+    """
+    if status >= 400:
+        return LLMUnavailable if status in _TRANSIENT_4XX or status >= 500 else LLMBadRequest
+    return LLMBadRequest if error_type in _REQUEST_ERROR_TYPES else LLMUnavailable
 
 
 def build_params(
@@ -209,8 +262,9 @@ class LLM:
     ) -> BetaMessage:
         """One Messages API call, streamed internally; returns the whole `BetaMessage`.
 
-        No usable configuration (no key, environment headers) → `LLMUnavailable`, nothing sent.
-        Other failures still surface as the SDK's own exceptions (mapped in A1 step 3).
+        Raises `LLMUnavailable` (rate limit, overload, 5xx, timeout, no network, a broken or
+        incomplete stream, or no usable configuration, in which case nothing is sent) or
+        `LLMBadRequest` (Claude rejected the request). Cancellation reaches the caller unchanged.
         """
         params = build_params(
             system,
@@ -220,13 +274,49 @@ class LLM:
             effort=self._effort,
             refusal_fallback=self._refusal_fallback,
         )  # an invalid prompt is reported even without a key
+        _check_json(params, "request")  # our bugs stay loud: nothing is sent (review A1.3 R3)
         if self._client is None:
             raise LLMUnavailable(self._unavailable or "the Claude client is not configured")
-        async with self._client.beta.messages.stream(**params) as stream:
-            final = await stream.get_final_message()
-        # The stream helper builds Parsed* subclasses; hand out the plain types, exactly what a
-        # non-streamed response (and FakeLLM) gives, built just as leniently.
-        return BetaMessage.construct(None, **final.to_dict())  # None: fields set from the dict
+        failure: LLMError
+        try:
+            reply = await _read_stream(self._client, params)
+        except anthropic.APIStatusError as err:  # before the stream, or an `error` event in it
+            failure = _status_error(err)
+        except (anthropic.APIConnectionError, httpx2.HTTPError) as err:  # incl. timeouts
+            log.warning("Claude unreachable: %s", type(err).__name__)
+            failure = LLMUnavailable("Claude API unreachable (connection error or timeout)")
+        except _BrokenStream as err:
+            failure = _unusable_stream(err.reason)
+        except Exception as err:  # anything else the SDK raises while reading a malformed stream
+            failure = _unusable_stream(f"the SDK couldn't read it ({type(err).__name__})")
+        else:
+            self._log_reply(reply)
+            return reply
+        # Raised outside the except blocks, so neither __cause__ nor __context__ holds the SDK's
+        # exception (review A1.3 R1).
+        raise failure
+
+    def _log_reply(self, reply: BetaMessage) -> None:
+        """Usage for every call (arch 6.8: check the cache hits); a warning for a refusal (R5)."""
+        usage = reply.usage
+        log.info(
+            "Claude call: model=%s stop_reason=%s input_tokens=%s output_tokens=%s "
+            "cache_read=%s cache_write=%s",
+            reply.model,
+            reply.stop_reason,
+            usage.input_tokens,
+            usage.output_tokens,
+            usage.cache_read_input_tokens,
+            usage.cache_creation_input_tokens,
+        )
+        if reply.stop_reason == "refusal":
+            category = reply.stop_details.category if reply.stop_details else None
+            log.warning(
+                "Claude declined: category=%s model=%s refusal_fallback=%s",
+                category,
+                reply.model,
+                "on" if self._refusal_fallback else "off",
+            )
 
     async def aclose(self) -> None:
         """Close the HTTP connections (on app shutdown)."""
@@ -238,7 +328,9 @@ class LLM:
 
 def _unavailable_reason(api_key: str | None) -> str | None:
     if not api_key:
-        return "ANTHROPIC_API_KEY is not set"
+        reason = "ANTHROPIC_API_KEY is not set"
+        log.warning("Claude client disabled: %s; every agent reply will be a template", reason)
+        return reason
     if os.environ.get("ANTHROPIC_CUSTOM_HEADERS") is not None:
         # The SDK merges these into every request (an auth header, a beta, even
         # anthropic-version) and they can't be stripped safely, so the client fails closed.
@@ -259,3 +351,124 @@ def _neutralise_sdk_environment() -> None:
             if sdk_logger.getEffectiveLevel() < logging.WARNING:
                 sdk_logger.setLevel(logging.WARNING)
         log.warning("ANTHROPIC_LOG is ignored: the SDK's debug logs would contain user data")
+
+
+def _status_error(err: anthropic.APIStatusError) -> LLMError:
+    """The `LLMError` for an API error response (or an `error` event inside the stream)."""
+    status, error_type, request_id = err.status_code, err.type, err.request_id
+    where = f"HTTP {status}" if status >= 400 else "inside the stream"
+    kind = error_type or "no error type"
+    if classify(status, error_type) is LLMBadRequest:
+        log.error("Claude rejected the request: %s, %s, request_id=%s", where, kind, request_id)
+        return LLMBadRequest(
+            f"Claude rejected the request ({where}, {kind}, request_id={request_id})",
+            status_code=status,
+            error_type=error_type,
+            request_id=request_id,
+            api_message=_api_message(err.body),
+        )
+    log.warning("Claude unavailable: %s, %s, request_id=%s", where, kind, request_id)
+    return LLMUnavailable(
+        f"Claude is unavailable ({where}, {kind})",
+        status_code=status,
+        error_type=error_type,
+        request_id=request_id,
+    )
+
+
+def _api_message(body: object) -> str | None:
+    """The API's own error message (it can quote the request: never log it), or None."""
+    error = body.get("error") if isinstance(body, Mapping) else None
+    message = error.get("message") if isinstance(error, Mapping) else None
+    return message if isinstance(message, str) else None
+
+
+class _BrokenStream(Exception):  # internal: always becomes LLMUnavailable
+    def __init__(self, reason: str) -> None:
+        super().__init__(reason)
+        self.reason = reason
+
+
+def _unusable_stream(reason: str) -> LLMUnavailable:
+    log.warning("Claude's stream couldn't be used: %s", reason)
+    return LLMUnavailable(f"Claude's stream couldn't be used: {reason}")
+
+
+async def _read_stream(client: AsyncAnthropic, params: MessageCreateParamsBase) -> BetaMessage:
+    """Stream one response and return it whole, or raise `_BrokenStream`.
+
+    Only a stream that started, reached `message_stop` and carries strict tool inputs is a message.
+    """
+    tool_json: dict[int, list[str]] = {}
+    started = stopped = False
+    async with client.beta.messages.stream(**params) as stream:
+        async for event in stream:
+            if event.type == "message_start":
+                started = True
+            elif event.type == "message_stop":
+                stopped = True
+            elif event.type == "content_block_delta" and event.delta.type == "input_json_delta":
+                tool_json.setdefault(event.index, []).append(event.delta.partial_json)
+        if not started:
+            raise _BrokenStream("no message in it")
+        if not stopped:
+            raise _BrokenStream("it ended before message_stop")
+        final: BetaMessage | None = await stream.get_final_message()
+    if final is None or final.stop_reason is None:  # `python -O` strips the SDK's own assert
+        raise _BrokenStream("it ended before the message was complete")
+    _check_tool_inputs(final, tool_json)
+    # The stream helper builds Parsed* subclasses; hand out the plain types, exactly what a
+    # non-streamed response (and FakeLLM) gives, built just as leniently.
+    return BetaMessage.construct(None, **final.to_dict())  # None: fields set from the dict
+
+
+def _check_tool_inputs(message: BetaMessage, tool_json: Mapping[int, list[str]]) -> None:
+    """Refuse a tool call whose streamed input isn't complete, strict JSON (review A1.3 R8).
+
+    The SDK parses streamed tool input leniently: a cut-off `{"amount": 50` (from 500) comes back
+    as `{"amount": 50}`. Each input is re-parsed strictly from the raw chunks and must be exactly
+    the object the SDK built; anything else would run a money tool on a guess.
+    """
+    calls = {index for index, block in enumerate(message.content) if block.type == "tool_use"}
+    if not set(tool_json) <= calls:
+        raise _BrokenStream("tool input JSON for a block that isn't a tool call")
+    for index, block in enumerate(message.content):
+        if block.type != "tool_use" or index not in tool_json:
+            continue  # no deltas: the input came whole with the block's start
+        if _strict_object("".join(tool_json[index])) != block.input:
+            raise _BrokenStream(f"the input of tool call {index} isn't complete, strict JSON")
+
+
+def _strict_object(text: str) -> dict[str, object] | None:
+    """A JSON object, parsed strictly (no NaN or Infinity, nothing after it), or None."""
+
+    def no_constants(name: str) -> object:
+        raise ValueError(f"{name} isn't JSON")
+
+    try:
+        value = json.loads(text, parse_constant=no_constants)
+    except ValueError:  # incl. json.JSONDecodeError
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _check_json(value: object, path: str) -> None:
+    """Only strict JSON values may be sent: what's checked here is exactly what goes out.
+
+    The SDK would quietly turn a `date` into a string and an int key into "7", and fail on NaN
+    only once the stream is opening. `path` says where (never what) the bad value is.
+    """
+    if isinstance(value, BaseModel):  # a response block echoed back (A6)
+        value = value.model_dump(mode="python", exclude_unset=True)
+    if isinstance(value, Mapping):
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise TypeError(f"{path} has a {type(key).__name__} key: JSON keys are strings")
+            _check_json(item, f"{path}.{key}")
+    elif isinstance(value, list | tuple):
+        for index, item in enumerate(value):
+            _check_json(item, f"{path}[{index}]")
+    elif isinstance(value, float) and not math.isfinite(value):
+        raise ValueError(f"{path} is {value}: JSON has no NaN or Infinity")
+    elif not (value is None or isinstance(value, str | int | float)):  # bool is an int
+        raise TypeError(f"{path} is a {type(value).__name__}: not a JSON value")

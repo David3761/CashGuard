@@ -1,4 +1,4 @@
-"""A1 step 2: the real `LLM`: the request it builds (arch 6.8) and the call through the SDK.
+"""A1 steps 2 and 3: the real `LLM`: the request (arch 6.8), the streamed call, failures and logs.
 
 No network: the SDK runs for real, but its HTTP client is an `httpx2.MockTransport` that records
 every request and answers with a server-sent-event stream built from `tests/fakes/fake_llm.py`
@@ -8,10 +8,18 @@ our own code. (respx can't be used: it patches `httpx`, and anthropic 2.x is bui
 
 import asyncio
 import copy
+import inspect
 import json
 import logging
+import os
+import subprocess
+import sys
+import traceback
 import typing
 from collections.abc import AsyncIterator, Callable, Iterator
+from datetime import date
+from decimal import Decimal
+from pathlib import Path
 from typing import Any, cast
 
 import httpx2
@@ -25,17 +33,21 @@ from anthropic.types.beta import (
 from hypothesis import given
 from hypothesis import strategies as st
 
+import app.agent.llm
 from app.agent.llm import (
     API_BASE_URL,
     LLM,
     MAX_TOKENS_BY_EFFORT,
     REFUSAL_FALLBACK_BETA,
     TIMEOUT_S,
-    Effort,
+    LLMBadRequest,
     LLMClient,
+    LLMError,
     LLMUnavailable,
     build_params,
+    classify,
 )
+from app.config import Effort
 from tests.fakes.fake_llm import (
     end_turn,
     message,
@@ -91,12 +103,15 @@ def wire(reply: BetaMessage) -> dict[str, Any]:
     return reply.model_dump(mode="json", exclude_unset=True)
 
 
+def sse(data: dict[str, Any]) -> bytes:
+    """One server-sent event, as the Messages API writes it."""
+    return f"event: {data['type']}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n".encode()
+
+
 def sse_events(reply: BetaMessage) -> Iterator[bytes]:
     """The Messages API stream for this response, one server-sent event per item."""
     whole = wire(reply)
-
-    def event(data: dict[str, Any]) -> bytes:
-        return f"event: {data['type']}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n".encode()
+    event = sse
 
     start = {k: v for k, v in whole.items() if k not in ("stop_reason", "stop_details")}
     start |= {"content": [], "stop_reason": None, "stop_sequence": None, "stop_details": None}
@@ -134,7 +149,9 @@ class _Api:
     """An in-memory Messages API behind `httpx2.MockTransport`; records every HTTP request."""
 
     def __init__(
-        self, *replies: BetaMessage, answer: Callable[[dict[str, Any]], BetaMessage] | None = None
+        self,
+        *replies: BetaMessage | httpx2.Response,
+        answer: Callable[[dict[str, Any]], BetaMessage] | None = None,
     ) -> None:
         self.requests: list[httpx2.Request] = []
         self._replies = list(replies)
@@ -142,10 +159,13 @@ class _Api:
 
     def _handle(self, request: httpx2.Request) -> httpx2.Response:
         self.requests.append(request)
+        reply: BetaMessage | httpx2.Response
         if self._answer is not None:
             reply = self._answer(json.loads(request.content))
         else:
             reply = self._replies[len(self.requests) - 1]
+        if isinstance(reply, httpx2.Response):
+            return reply
         return httpx2.Response(200, headers=SSE_HEADERS, content=b"".join(sse_events(reply)))
 
     def http_client(self) -> httpx2.AsyncClient:
@@ -171,12 +191,14 @@ async def make_llm() -> AsyncIterator[MakeLLM]:
         model: str = MODEL,
         effort: Effort = "low",
         refusal_fallback: bool = False,
+        max_retries: int = 2,
     ) -> LLM:
         llm = LLM(
             api_key=api_key,
             model=model,
             effort=effort,
             refusal_fallback=refusal_fallback,
+            max_retries=max_retries,
             http_client=api.http_client(),
         )
         made.append(llm)
@@ -589,9 +611,11 @@ class _BrokenStream(httpx2.AsyncByteStream):
         raise httpx2.ReadTimeout("no chunk within the read timeout")
 
 
-async def test_a_stream_that_breaks_midway_is_not_retried(make_llm: MakeLLM) -> None:
-    # A retry would pay for a whole new generation; the caller falls back instead (step 3 maps
-    # the error to LLMUnavailable).
+async def test_a_stream_that_breaks_midway_is_not_retried(
+    make_llm: MakeLLM, caplog: pytest.LogCaptureFixture
+) -> None:
+    # A retry would pay for a whole new generation; the caller falls back instead (A1.3: the raw
+    # httpx2 error from inside the stream becomes LLMUnavailable).
     calls: list[httpx2.Request] = []
 
     def handle(request: httpx2.Request) -> httpx2.Response:
@@ -606,12 +630,18 @@ async def test_a_stream_that_breaks_midway_is_not_retried(make_llm: MakeLLM) -> 
         http_client=httpx2.AsyncClient(transport=httpx2.MockTransport(handle)),
     )
     try:
-        with pytest.raises(httpx2.ReadTimeout):
+        with (
+            caplog.at_level(logging.WARNING, logger="app.agent.llm"),
+            pytest.raises(LLMUnavailable, match="unreachable") as raised,
+        ):
             await llm.create(SYSTEM, [USER])
     finally:
         await llm.aclose()
 
     assert len(calls) == 1
+    # Review A1.3 R1: no cause attached (SDK errors can hold content); the log names the failure.
+    assert raised.value.__cause__ is None
+    assert "Claude unreachable: ReadTimeout" in caplog.text
 
 
 # ── concurrency ──────────────────────────────────────────────────────────────────────────
@@ -730,3 +760,707 @@ def test_build_params_keeps_its_shape_for_any_input(
     assert ("tools" in params) is (n_tools > 0)
     assert params["messages"] == [USER]
     assert params["max_tokens"] == MAX_TOKENS_BY_EFFORT[effort]
+
+
+# ══ A1 step 3: failures → LLMUnavailable / LLMBadRequest, and the logs ════════════════════
+
+
+def _api_error(status: int, error_type: str | None, message: str = "details") -> httpx2.Response:
+    body = {"type": "error", "error": {"type": error_type, "message": message}}
+    return httpx2.Response(status, json=body, headers={"request-id": f"req_{status}"})
+
+
+def _error_event(error_type: str) -> httpx2.Response:
+    """A stream that opens fine (HTTP 200), then carries an `error` event."""
+    first = next(sse_events(end_turn("x")))
+    error = {"type": "error", "error": {"type": error_type, "message": "mid-stream"}}
+    event = f"event: error\ndata: {json.dumps(error)}\n\n".encode()
+    return httpx2.Response(200, headers=SSE_HEADERS, content=first + event)
+
+
+REQUEST_ERRORS = [
+    (400, "invalid_request_error"),
+    (401, "authentication_error"),
+    (403, "permission_error"),
+    (404, "not_found_error"),
+    (413, "request_too_large"),
+    (422, "invalid_request_error"),
+]
+TRANSIENT_ERRORS = [
+    (408, "timeout_error"),
+    (409, "conflict_error"),
+    (429, "rate_limit_error"),
+    (500, "api_error"),
+    (503, "api_error"),
+    (504, "timeout_error"),
+    (529, "overloaded_error"),
+]
+
+
+@pytest.mark.parametrize(("status", "error_type"), REQUEST_ERRORS)
+async def test_a_rejected_request_is_a_bad_request_and_is_not_retried(
+    make_llm: MakeLLM, caplog: pytest.LogCaptureFixture, status: int, error_type: str
+) -> None:
+    api = _Api(_api_error(status, error_type, "messages.1: bad"))
+
+    with (
+        caplog.at_level(logging.WARNING, logger="app.agent.llm"),
+        pytest.raises(LLMBadRequest) as raised,
+    ):
+        await make_llm(api).create(SYSTEM, [USER])
+
+    assert (raised.value.status_code, raised.value.error_type) == (status, error_type)
+    assert raised.value.request_id == f"req_{status}"
+    # Review A1.3 R6: the API's free text can quote the request: kept only for a debugger.
+    assert "messages.1: bad" not in str(raised.value)
+    assert raised.value._api_message == "messages.1: bad"
+    assert len(api.requests) == 1  # not retried
+    assert [r.levelno for r in caplog.records] == [logging.ERROR]
+    assert "messages.1: bad" not in caplog.text
+    assert f"req_{status}" in caplog.text  # the request id finds the details in the Console
+
+
+@pytest.mark.parametrize(("status", "error_type"), TRANSIENT_ERRORS)
+async def test_a_transient_failure_is_unavailable(
+    make_llm: MakeLLM, caplog: pytest.LogCaptureFixture, status: int, error_type: str
+) -> None:
+    api = _Api(_api_error(status, error_type))
+
+    with (
+        caplog.at_level(logging.WARNING, logger="app.agent.llm"),
+        pytest.raises(LLMUnavailable, match=f"HTTP {status}"),
+    ):
+        await make_llm(api, max_retries=0).create(SYSTEM, [USER])
+
+    assert [r.levelno for r in caplog.records] == [logging.WARNING]
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [httpx2.ConnectError("refused"), httpx2.ReadTimeout("silence")],
+    ids=["connection refused", "timeout before the stream"],
+)
+async def test_no_connection_is_unavailable(make_llm: MakeLLM, failure: Exception) -> None:
+    def fail(request: httpx2.Request) -> httpx2.Response:
+        raise failure
+
+    api = _Api()
+    api._handle = fail  # type: ignore[method-assign]
+
+    with pytest.raises(LLMUnavailable, match="unreachable"):
+        await make_llm(api, max_retries=0).create(SYSTEM, [USER])
+
+
+async def test_an_overload_inside_the_stream_is_unavailable(make_llm: MakeLLM) -> None:
+    # The stream opened with HTTP 200: only the event's error type says what failed.
+    api = _Api(_error_event("overloaded_error"))
+
+    with pytest.raises(LLMUnavailable, match="overloaded_error"):
+        await make_llm(api).create(SYSTEM, [USER])
+
+    assert len(api.requests) == 1
+
+
+async def test_a_request_error_inside_the_stream_is_a_bad_request(make_llm: MakeLLM) -> None:
+    api = _Api(_error_event("invalid_request_error"))
+
+    with pytest.raises(LLMBadRequest) as raised:
+        await make_llm(api).create(SYSTEM, [USER])
+
+    assert raised.value.error_type == "invalid_request_error"
+
+
+async def test_a_stream_that_ends_early_never_hands_out_half_a_message(
+    make_llm: MakeLLM,
+) -> None:
+    # Without message_stop the SDK returns the partial snapshot (stop_reason None).
+    events = list(sse_events(end_turn("Am văzut 500 lei la")))
+    api = _Api(httpx2.Response(200, headers=SSE_HEADERS, content=b"".join(events[:3])))
+
+    with pytest.raises(LLMUnavailable, match="ended before"):
+        await make_llm(api).create(SYSTEM, [USER])
+
+
+async def test_malformed_streamed_tool_input_is_unavailable(make_llm: MakeLLM) -> None:
+    good = b"".join(sse_events(tool_round_one_call()))
+    broken = good.replace(b'"partial_json": "{\\"n\\": 1}"', b'"partial_json": "{\\"n\\": oops"')
+    assert broken != good
+    api = _Api(httpx2.Response(200, headers=SSE_HEADERS, content=broken))
+
+    with pytest.raises(LLMUnavailable, match="stream couldn't be used"):
+        await make_llm(api).create(SYSTEM, [USER])
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        httpx2.Response(
+            200, headers=SSE_HEADERS, content=b"".join(list(sse_events(end_turn("x")))[1:])
+        ),
+        httpx2.Response(200, json=wire(end_turn("x"))),
+        httpx2.Response(200, headers=SSE_HEADERS, content=b""),
+    ],
+    ids=["no message_start", "a JSON body instead of a stream", "an empty stream"],
+)
+async def test_a_malformed_stream_is_unavailable(
+    make_llm: MakeLLM, response: httpx2.Response
+) -> None:
+    # The SDK signals these with a bare `assert` / RuntimeError inside its stream helper.
+    with pytest.raises(LLMUnavailable, match="stream couldn't be used"):
+        await make_llm(_Api(response), max_retries=0).create(SYSTEM, [USER])
+
+
+def tool_round_one_call() -> BetaMessage:
+    return message(tool_use("get_plan_status", {"n": 1}, tool_use_id="t1"), stop_reason="tool_use")
+
+
+async def test_the_sdk_retries_twice_before_giving_up(make_llm: MakeLLM) -> None:
+    overloaded = [_api_error(529, "overloaded_error") for _ in range(3)]
+    for response in overloaded:
+        response.headers["retry-after-ms"] = "1"  # the SDK honours it: no real backoff in tests
+    api = _Api(*overloaded)
+
+    with pytest.raises(LLMUnavailable):
+        await make_llm(api).create(SYSTEM, [USER])
+
+    assert len(api.requests) == 3  # max_retries=2 really reaches the SDK
+
+
+async def test_a_retry_that_succeeds_returns_the_answer(make_llm: MakeLLM) -> None:
+    first, second = _api_error(529, "overloaded_error"), _api_error(529, "overloaded_error")
+    first.headers["retry-after-ms"] = second.headers["retry-after-ms"] = "1"
+    api = _Api(first, second, end_turn("Am revenit."))
+
+    reply = await make_llm(api).create(SYSTEM, [USER])
+
+    assert len(api.requests) == 3
+    assert reply.stop_reason == "end_turn"
+
+
+async def test_cancelling_the_call_is_not_turned_into_unavailable() -> None:
+    # A7's 5 s template relies on cancellation (asyncio.timeout) reaching the caller unchanged.
+    started = asyncio.Event()
+
+    async def never_answer(request: httpx2.Request) -> httpx2.Response:
+        started.set()
+        await asyncio.Event().wait()
+        raise AssertionError("unreachable")
+
+    llm = LLM(
+        api_key=KEY,
+        model=MODEL,
+        effort="low",
+        refusal_fallback=False,
+        http_client=httpx2.AsyncClient(transport=httpx2.MockTransport(never_answer)),
+    )
+    call = asyncio.create_task(llm.create(SYSTEM, [USER]))
+    await started.wait()
+    call.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await call
+    await llm.aclose()
+
+
+@pytest.mark.parametrize(
+    ("status", "expected"),
+    [(428, LLMBadRequest), (429, LLMUnavailable), (499, LLMBadRequest), (500, LLMUnavailable)],
+)
+def test_the_edges_of_the_status_rules(status: int, expected: type[LLMError]) -> None:
+    assert classify(status, None) is expected
+
+
+async def test_an_html_error_page_is_still_classified_by_status(make_llm: MakeLLM) -> None:
+    html = httpx2.Response(502, headers={"content-type": "text/html"}, content=b"<html>502</html>")
+
+    with pytest.raises(LLMUnavailable, match="HTTP 502"):
+        await make_llm(_Api(html), max_retries=0).create(SYSTEM, [USER])
+
+
+async def test_a_bad_request_without_a_body_has_no_error_type(make_llm: MakeLLM) -> None:
+    with pytest.raises(LLMBadRequest) as raised:
+        await make_llm(_Api(httpx2.Response(400, content=b""))).create(SYSTEM, [USER])
+
+    assert raised.value.error_type is None
+    assert raised.value.status_code == 400
+
+
+# ── security: the key and the user's words stay out of errors and logs ──────────────────
+
+
+async def test_the_key_never_appears_in_errors_tracebacks_or_any_log(
+    make_llm: MakeLLM, caplog: pytest.LogCaptureFixture
+) -> None:
+    caplog.set_level(logging.DEBUG)  # every logger, the SDK's included
+    failures: list[httpx2.Response] = [
+        _api_error(400, "invalid_request_error"),
+        _api_error(401, "authentication_error"),
+        _api_error(529, "overloaded_error"),
+        _error_event("overloaded_error"),
+    ]
+    raised: list[LLMError] = []
+    for failure in failures:
+        with pytest.raises(LLMError) as caught:
+            await make_llm(_Api(failure), max_retries=0).create(SYSTEM, [USER])
+        raised.append(caught.value)
+
+    for error in raised:
+        assert KEY not in str(error)
+        assert KEY not in repr(error)
+        assert KEY not in "".join(traceback.format_exception(error))  # the chained SDK error too
+    assert KEY not in caplog.text
+
+
+async def test_our_logs_never_contain_what_the_user_or_claude_said(
+    make_llm: MakeLLM, caplog: pytest.LogCaptureFixture
+) -> None:
+    private: BetaMessageParam = {"role": "user", "content": "PRIVATE-USER-TEXT 500 lei"}
+    refused = message(
+        text("PRIVATE-PARTIAL-REPLY"), stop_reason="refusal", refusal_category="general_harms"
+    )
+    api = _Api(end_turn("PRIVATE-REPLY"), refused, _api_error(400, "invalid_request_error"))
+    llm = make_llm(api)
+
+    with caplog.at_level(logging.DEBUG, logger="app.agent.llm"):
+        await llm.create(SYSTEM, [private])
+        await llm.create(SYSTEM, [private])
+        with pytest.raises(LLMBadRequest):
+            await llm.create(SYSTEM, [private])
+
+    ours = " ".join(r.getMessage() for r in caplog.records if r.name == "app.agent.llm")
+    assert ours  # something was logged
+    assert "PRIVATE" not in ours
+
+
+# ── the logs that help (arch 6.8 caching, R5 refusals) ──────────────────────────────────
+
+
+async def test_a_successful_call_logs_its_usage_once(
+    make_llm: MakeLLM, caplog: pytest.LogCaptureFixture
+) -> None:
+    reply = message(text("ok"), input_tokens=40, output_tokens=7, cache_read=1200, cache_write=300)
+
+    with caplog.at_level(logging.INFO, logger="app.agent.llm"):
+        await make_llm(_Api(reply)).create(SYSTEM, [USER])
+
+    records = [r for r in caplog.records if r.name == "app.agent.llm"]
+    assert [r.levelno for r in records] == [logging.INFO]
+    line = records[0].getMessage()
+    for part in (
+        "model=claude-sonnet-5-5",
+        "stop_reason=end_turn",
+        "input_tokens=40",
+        "output_tokens=7",
+        "cache_read=1200",
+        "cache_write=300",
+    ):
+        assert part in line
+
+
+@pytest.mark.parametrize("fallback", [False, True], ids=["fallback off", "fallback on"])
+async def test_a_refusal_is_logged_as_a_warning_with_its_category(
+    make_llm: MakeLLM, caplog: pytest.LogCaptureFixture, fallback: bool
+) -> None:
+    # Review R5: a refusal the fallback didn't rescue must be visible, without the content.
+    refused = message(stop_reason="refusal", output_tokens=0, refusal_category="general_harms")
+
+    with caplog.at_level(logging.INFO, logger="app.agent.llm"):
+        got = await make_llm(_Api(refused), refusal_fallback=fallback).create(SYSTEM, [USER])
+
+    assert got.stop_reason == "refusal"  # handed to the caller: A6 answers with its template
+    warnings = [r.getMessage() for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warnings) == 1
+    assert "category=general_harms" in warnings[0]
+    assert "model=claude-sonnet-5-5" in warnings[0]
+    assert f"refusal_fallback={'on' if fallback else 'off'}" in warnings[0]
+
+
+# ── idempotency, invariants, regression ─────────────────────────────────────────────────
+
+
+async def test_a_failure_leaves_the_client_usable(make_llm: MakeLLM) -> None:
+    api = _Api(_api_error(529, "overloaded_error"), end_turn("Am revenit."))
+    llm = make_llm(api, max_retries=0)
+
+    with pytest.raises(LLMUnavailable):
+        await llm.create(SYSTEM, [USER])
+    reply = await llm.create(SYSTEM, [USER])
+
+    assert reply.stop_reason == "end_turn"
+
+
+ERROR_TYPES = [
+    None,
+    "invalid_request_error",
+    "authentication_error",
+    "billing_error",
+    "permission_error",
+    "not_found_error",
+    "request_too_large",
+    "rate_limit_error",
+    "api_error",
+    "overloaded_error",
+    "timeout_error",
+    "some_future_error",
+]
+REQUEST_ERROR_TYPES = {
+    "invalid_request_error",
+    "authentication_error",
+    "billing_error",
+    "permission_error",
+    "not_found_error",
+    "request_too_large",
+}
+
+
+@given(status=st.integers(min_value=400, max_value=599), error_type=st.sampled_from(ERROR_TYPES))
+def test_every_http_error_status_maps_by_status(status: int, error_type: str | None) -> None:
+    transient = status in (408, 409, 429) or status >= 500
+    assert classify(status, error_type) is (LLMUnavailable if transient else LLMBadRequest)
+
+
+@given(error_type=st.sampled_from(ERROR_TYPES))
+def test_an_error_inside_a_stream_maps_by_its_type(error_type: str | None) -> None:
+    # HTTP 200: the request was accepted, so only a request-error type means "our bug".
+    expected = LLMBadRequest if error_type in REQUEST_ERROR_TYPES else LLMUnavailable
+    assert classify(200, error_type) is expected
+
+
+def test_effort_is_defined_once_in_app_config() -> None:
+    # Review R6: the agent imports the settings' Effort instead of keeping its own copy.
+    assert "Effort = Literal" not in inspect.getsource(app.agent.llm)
+    assert set(typing.get_args(Effort)) == {"low", "medium", "high", "xhigh", "max"}
+
+
+# ══ Review of A1.3 ═════════════════════════════════════════════════════════════════════════
+
+PRIVATE = "PRIVATE"  # a marker for anything the user or Claude said
+
+
+def _tool_call_stream(*chunks: str) -> httpx2.Response:
+    """A `record_expense` tool call whose input arrives as these `input_json_delta` chunks."""
+    shell = message(tool_use("record_expense", {}, tool_use_id="toolu_m"), stop_reason="tool_use")
+    start, block_start, _delta, *rest = sse_events(shell)
+    deltas = [
+        sse(
+            {
+                "type": "content_block_delta",
+                "index": 0,
+                "delta": {"type": "input_json_delta", "partial_json": chunk},
+            }
+        )
+        for chunk in chunks
+    ]
+    return httpx2.Response(
+        200, headers=SSE_HEADERS, content=start + block_start + b"".join(deltas) + b"".join(rest)
+    )
+
+
+# ── R8: a tool input is used only if it is complete, strict JSON (money-critical) ───────
+
+
+@pytest.mark.parametrize(
+    "chunks",
+    [
+        ['{"amount": 50'],  # cut inside a number: the lenient parse would say 50, not 500
+        ['{"amount": 500'],  # cut before the closing brace
+        ['{"amount": 500, "note": "PRIVATE" oops'],  # trailing garbage
+        ['{"amount": 500} {"amount": 5}'],  # two objects
+        ['{"amount": NaN}'],  # not JSON
+        ['{"amount": Infinity}'],
+        ["[500]"],  # JSON, but not an object
+    ],
+    ids=[
+        "truncated number",
+        "truncated object",
+        "trailing garbage",
+        "two objects",
+        "NaN",
+        "Infinity",
+        "not an object",
+    ],
+)
+async def test_a_tool_call_with_an_incomplete_or_lenient_input_is_never_returned(
+    make_llm: MakeLLM, chunks: list[str]
+) -> None:
+    with pytest.raises(LLMUnavailable, match="stream couldn't be used") as raised:
+        await make_llm(_Api(_tool_call_stream(*chunks))).create(SYSTEM, [USER])
+
+    assert PRIVATE not in str(raised.value)
+
+
+async def test_a_tool_input_split_over_many_chunks_is_put_back_together(
+    make_llm: MakeLLM,
+) -> None:
+    chunks = ['{"amo', 'unt": 5', '00, "note": "căști', ' 🎧"}']
+
+    reply = await make_llm(_Api(_tool_call_stream(*chunks))).create(SYSTEM, [USER])
+
+    call = reply.content[0]
+    assert call.type == "tool_use"
+    assert call.input == {"amount": 500, "note": "căști 🎧"}
+
+
+async def test_a_tool_call_without_input_deltas_keeps_its_empty_input(make_llm: MakeLLM) -> None:
+    reply = await make_llm(_Api(_tool_call_stream())).create(SYSTEM, [USER])
+
+    call = reply.content[0]
+    assert call.type == "tool_use"
+    assert call.input == {}
+
+
+async def test_tool_json_for_a_text_block_is_a_corrupt_stream(make_llm: MakeLLM) -> None:
+    # The SDK silently ignores an input_json_delta aimed at a text block; we don't.
+    start, *rest = sse_events(end_turn("ok"))
+    stray = sse(
+        {
+            "type": "content_block_delta",
+            "index": 0,
+            "delta": {"type": "input_json_delta", "partial_json": '{"amount": 500}'},
+        }
+    )
+    body = start + rest[0] + stray + b"".join(rest[1:])
+    api = _Api(httpx2.Response(200, headers=SSE_HEADERS, content=body))
+
+    with pytest.raises(LLMUnavailable, match="isn't a tool call"):
+        await make_llm(api).create(SYSTEM, [USER])
+
+
+# ── R4, R5: only a complete stream is a message ─────────────────────────────────────────
+
+
+async def test_a_stream_cut_after_message_delta_is_not_complete(make_llm: MakeLLM) -> None:
+    # message_delta carries the stop reason, but without message_stop the stream was cut.
+    events = list(sse_events(end_turn("Am văzut")))
+    api = _Api(httpx2.Response(200, headers=SSE_HEADERS, content=b"".join(events[:-1])))
+
+    with pytest.raises(LLMUnavailable, match="ended before message_stop"):
+        await make_llm(api).create(SYSTEM, [USER])
+
+
+async def test_a_missing_final_message_is_caught_even_without_the_sdks_assert(
+    make_llm: MakeLLM, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Under `python -O` the SDK's own `assert` is gone and get_final_message() returns None.
+    from anthropic.lib.streaming._beta_messages import BetaAsyncMessageStream
+
+    async def none(self: object) -> None:
+        return None
+
+    monkeypatch.setattr(BetaAsyncMessageStream, "get_final_message", none)
+
+    # The explicit guard, not an AttributeError caught by the catch-all.
+    with pytest.raises(LLMUnavailable, match="ended before the message was complete"):
+        await make_llm(_Api(end_turn("ok"))).create(SYSTEM, [USER])
+
+
+@pytest.mark.slow
+def test_an_empty_stream_is_unavailable_under_python_O() -> None:
+    script = """
+import asyncio, httpx2
+from app.agent.llm import LLM, LLMUnavailable
+async def main():
+    empty = httpx2.Response(200, headers={"content-type": "text/event-stream"}, content=b"")
+    client = httpx2.AsyncClient(transport=httpx2.MockTransport(lambda request: empty))
+    llm = LLM(api_key="k", model="m", effort="low", refusal_fallback=False, max_retries=0,
+              http_client=client)
+    try:
+        await llm.create(["rules"], [{"role": "user", "content": "hi"}])
+    except LLMUnavailable:
+        print("LLMUnavailable")
+    finally:
+        await llm.aclose()
+asyncio.run(main())
+"""
+    backend = Path(__file__).resolve().parents[2]
+    done = subprocess.run(  # noqa: S603 - our own interpreter, a fixed script
+        [sys.executable, "-O", "-c", script],
+        cwd=backend,
+        env={**os.environ, "PYTHONPATH": str(backend), "PYTHONDONTWRITEBYTECODE": "1"},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert done.stdout.strip() == "LLMUnavailable", done.stderr[-500:]
+
+
+# ── R2: whatever the SDK raises while reading a malformed stream is "unavailable" ───────
+
+
+def _malformed(reply: BetaMessage, old: bytes, new: bytes) -> httpx2.Response:
+    body = b"".join(sse_events(reply))
+    assert old in body
+    return httpx2.Response(200, headers=SSE_HEADERS, content=body.replace(old, new, 1))
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        _malformed(end_turn("PRIVATE"), b'"index": 0, "delta"', b'"index": 5, "delta"'),
+        _malformed(
+            end_turn("PRIVATE"), b'"type": "text_delta", "text"', b'"type": "text_delta", "t"'
+        ),
+        httpx2.Response(
+            200,
+            headers=SSE_HEADERS,
+            content=next(sse_events(end_turn("x")))
+            + sse(
+                {
+                    "type": "content_block_start",
+                    "index": 0,
+                    "content_block": {"type": "fallback", "from": {"model": "claude-sonnet-5-5"}},
+                }
+            ),
+        ),
+        httpx2.Response(
+            200,
+            headers=SSE_HEADERS,
+            content=next(sse_events(end_turn("x")))
+            + b"event: content_block_start\ndata: {not json PRIVATE\n\n",
+        ),
+    ],
+    ids=["delta for a missing block", "text_delta without text", "fallback without to", "bad JSON"],
+)
+async def test_a_stream_the_sdk_cannot_read_is_unavailable(
+    make_llm: MakeLLM, response: httpx2.Response
+) -> None:
+    # IndexError, TypeError, AttributeError, JSONDecodeError… from inside the SDK.
+    with pytest.raises(LLMUnavailable, match="stream couldn't be used"):
+        await make_llm(_Api(response)).create(SYSTEM, [USER])
+
+
+# ── R3: a request that isn't strict JSON is our bug, reported before anything is sent ───
+
+
+def _with_tool_input(value: object) -> list[BetaMessageParam]:
+    call = {"type": "tool_use", "id": "toolu_1", "name": "record_expense", "input": {"a": value}}
+    result = {"type": "tool_result", "tool_use_id": "toolu_1", "content": "ok"}
+    return cast(
+        list[BetaMessageParam],
+        [USER, {"role": "assistant", "content": [call]}, {"role": "user", "content": [result]}],
+    )
+
+
+@pytest.mark.parametrize(
+    ("value", "error"),
+    [
+        (float("nan"), ValueError),
+        (float("inf"), ValueError),
+        (Decimal("1.5"), TypeError),
+        (date(2026, 6, 15), TypeError),
+        (b"\xff", TypeError),
+        ({1, 2}, TypeError),
+    ],
+    ids=["NaN", "Infinity", "Decimal", "date", "bytes", "set"],
+)
+async def test_a_request_that_is_not_strict_json_is_rejected_before_anything_is_sent(
+    make_llm: MakeLLM, caplog: pytest.LogCaptureFixture, value: object, error: type[Exception]
+) -> None:
+    api = _Api(end_turn("ok"))
+
+    with caplog.at_level(logging.WARNING, logger="app.agent.llm"), pytest.raises(error) as raised:
+        await make_llm(api).create(SYSTEM, _with_tool_input(value))
+
+    assert api.requests == []
+    assert "messages[1].content[0].input.a" in str(raised.value)  # says where
+    assert caplog.records == []  # a programming error, not "Claude is unavailable"
+
+
+async def test_a_non_string_key_is_rejected_before_anything_is_sent(make_llm: MakeLLM) -> None:
+    api = _Api(end_turn("ok"))
+    messages = _with_tool_input("ok")
+    cast(dict[Any, Any], cast(list[Any], messages[1]["content"])[0]["input"])[7] = "x"
+
+    with pytest.raises(TypeError, match="key"):
+        await make_llm(api).create(SYSTEM, messages)
+
+    assert api.requests == []
+
+
+# ── R1, R6, R9: no content from the request or the response in any error ──────────────
+
+
+def _leaky_failures() -> list[httpx2.Response]:
+    private_body = {"type": "error", "error": {"type": "invalid_request_error", "message": PRIVATE}}
+    return [
+        httpx2.Response(400, json=private_body),
+        httpx2.Response(529, json={**private_body, "error": {"type": "overloaded_error"}}),
+        httpx2.Response(502, headers={"content-type": "text/html"}, content=PRIVATE.encode()),
+        _error_event_with(PRIVATE),
+        _tool_call_stream('{"note": "PRIVATE" oops'),
+        _malformed(end_turn("PRIVATE"), b'"index": 0, "delta"', b'"index": 5, "delta"'),
+        httpx2.Response(
+            200, headers=SSE_HEADERS, content=b"".join(list(sse_events(end_turn(PRIVATE)))[:-1])
+        ),
+    ]
+
+
+def _error_event_with(text: str) -> httpx2.Response:
+    first = next(sse_events(end_turn("x")))
+    error = {"type": "error", "error": {"type": "invalid_request_error", "message": text}}
+    return httpx2.Response(200, headers=SSE_HEADERS, content=first + sse(error))
+
+
+@pytest.mark.parametrize(
+    "index",
+    range(7),
+    ids=[
+        "400 body",
+        "529 body",
+        "502 HTML",
+        "error event",
+        "bad tool JSON",
+        "unreadable stream",
+        "cut stream",
+    ],
+)
+async def test_no_failure_carries_request_or_response_content(
+    make_llm: MakeLLM, caplog: pytest.LogCaptureFixture, index: int
+) -> None:
+    private_user: BetaMessageParam = {"role": "user", "content": f"{PRIVATE} 500 lei"}
+    api = _Api(_leaky_failures()[index])
+
+    with caplog.at_level(logging.DEBUG, logger="app.agent.llm"), pytest.raises(LLMError) as raised:
+        await make_llm(api, max_retries=0).create(SYSTEM, [private_user])
+
+    error = raised.value
+    assert PRIVATE not in str(error)
+    assert PRIVATE not in repr(error)
+    assert PRIVATE not in "".join(traceback.format_exception(error))
+    # The SDK's exception (holding the response body or the tool JSON buffer) isn't attached.
+    assert error.__cause__ is None
+    assert error.__context__ is None
+    ours = " ".join(r.getMessage() for r in caplog.records if r.name == "app.agent.llm")
+    assert PRIVATE not in ours
+
+
+async def test_an_unavailable_error_keeps_only_safe_metadata(make_llm: MakeLLM) -> None:
+    response = _api_error(529, "overloaded_error", PRIVATE)
+
+    with pytest.raises(LLMUnavailable) as raised:
+        await make_llm(_Api(response), max_retries=0).create(SYSTEM, [USER])
+
+    error = raised.value
+    assert (error.status_code, error.error_type, error.request_id) == (
+        529,
+        "overloaded_error",
+        "req_529",
+    )
+
+
+# ── R7: a missing key is said once, loudly, not on every call ───────────────────────────
+
+
+async def test_a_missing_key_is_logged_once_not_on_every_call(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    with caplog.at_level(logging.WARNING, logger="app.agent.llm"):
+        llm = LLM(api_key=None, model=MODEL, effort="low", refusal_fallback=False)
+        for _ in range(3):
+            with pytest.raises(LLMUnavailable):
+                await llm.create(SYSTEM, [USER])
+
+    warnings = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert len(warnings) == 1
+    assert "ANTHROPIC_API_KEY is not set" in warnings[0].getMessage()
