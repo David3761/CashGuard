@@ -43,9 +43,8 @@ Matei is a junior developer who lives alone in București and is saving 10,000 l
 | 7 | The reply: *"Am înțeles! Cheltuiala ta reală e 100 de lei. Ai 400 de lei de recuperat de la colegi."* ("Got it! Your real expense is 100 lei. You have 400 lei to get back from your colleagues.") | `backend/app/agent/loop.py` |
 
 The whole scene runs through the real snapshot, tool schemas, executor and agent loop with a scripted LLM in [`backend/tests/unit/agent/test_scene_a.py`](backend/tests/unit/agent/test_scene_a.py), where the transaction id is 918. The goal probabilities come from the real engine on the committed persona data and are pinned in [`backend/tests/acceptance/test_demo_numbers.py`](backend/tests/acceptance/test_demo_numbers.py): **79 %** before the purchase, **70 %** right after it, and **76 %** once the answer is in (0.7879 → 0.6982 → 0.7590).
-<!-- PORTS -->
-On the running stack the same tool calls write to Postgres: the transaction's effective amount, the receivable, the new plan version and the forecast. The app receives them as WebSocket events (`plan.updated`, `forecast.updated`).
-<!-- /PORTS -->
+
+On the running stack the same tool calls write to Postgres: the transaction's effective amount, the receivable, the new plan version and the forecast. The app receives them as WebSocket events (`plan.updated`, `forecast.updated`). The same flow on Postgres is tested in [`backend/tests/db/test_agent_pg_ports.py`](backend/tests/db/test_agent_pg_ports.py), and it was run live on Amazon Bedrock on 2026-10-29: Matei's 500 lei became 100 lei, with a 400-lei receivable from 5 colleagues.
 
 **More scenes** (all in [`backend/data/scenarios/`](backend/data/scenarios/)):
 
@@ -290,9 +289,8 @@ See also [`SECURITY.md`](SECURITY.md).
 | The context layer, the engine maths, the Monte Carlo forecast and the question policy | The clock. With `SIM_MODE=true`, a simulator day starts on 2026-06-15 (`/api/sim/next-day`, `/api/sim/jump`, `/api/sim/reset`) |
 | Postgres persistence, Keycloak auth, the WebSocket push, the cron jobs and the app API with SSE | Five fictional personas with 4 months of generated history (`backend/data/personas/`, `backend/scripts/generate_personas.py`). `alex` is a fresh account for onboarding |
 | Merchant normalisation over 62 Romanian brands (`backend/data/merchants.json`) | The savings products, which are a mock catalogue (`backend/data/products.json`) |
-| <!-- PORTS -->Claude's tool calls write to Postgres through the agent's ports, and every call is logged in `tool_calls`<!-- /PORTS --> | Transfers and payment requests, which are only ledger rows and notifications |
+| Claude's tool calls write to Postgres through the agent's ports, and every call is logged in `tool_calls` | Transfers and payment requests, which are only ledger rows and notifications |
 
-<!-- If the ports branch doesn't land, put this sentence where the PORTS blocks were: "On the merged stack, Claude's tool calls still return tools_unavailable (backend/app/agent/platform.py). The agent answers in text, and the tool path is proven by the unit suite." -->
 
 ## API overview
 

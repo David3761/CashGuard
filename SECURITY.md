@@ -107,9 +107,8 @@ not only in the prompt:
   snapshot carries no IBANs, card numbers or addresses.
 - **Bounded runs:** a maximum number of agent iterations per run (`MAX_AGENT_ITERATIONS`, default
   6), `max_tokens` per call, timeouts on every model call, and a templated fallback reply when a
-  limit, an API error, a refusal or a cut-off reply is hit. <!-- PORTS -->Every tool call is logged in the
-  `tool_calls` table.<!-- /PORTS -->
-- **Rate limits** on the chat, simulator and WebSocket endpoints (see Abuse limits above).
+  limit, an API error, a refusal or a cut-off reply is hit. Every tool call is logged in the
+  `tool_calls` table.- **Rate limits** on the chat, simulator and WebSocket endpoints (see Abuse limits above).
 
 ## Development-only defaults
 
