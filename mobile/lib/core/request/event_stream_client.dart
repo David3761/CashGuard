@@ -41,6 +41,7 @@ class EventStreamClient {
       ..headers.addAll({
         'Content-Type': 'application/json',
         'Accept': 'text/event-stream',
+        ...appKeyHeaders(),
       })
       ..body = jsonEncode(body);
     devPrint('--> POST ${request.url}');
