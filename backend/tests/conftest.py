@@ -9,6 +9,7 @@ import pytest
 from fastapi import FastAPI
 from hypothesis import settings
 
+from app import clock
 from app.config import Settings, get_settings
 
 # Determinism (how-we-work §7): the same examples on every run and machine, so a failure is
@@ -41,11 +42,18 @@ def _isolate_environment(monkeypatch: pytest.MonkeyPatch) -> None:
 def _restore_global_state(
     request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch
 ) -> Iterator[None]:
-    """Isolate the settings, and undo process-wide state a test may change (cached settings)."""
+    """Isolate the settings, and undo process-wide state a test may change: the cached
+    settings, and the installed clock (every test starts and ends with a real clock)."""
     if request.node.get_closest_marker("live") is None:
         _isolate_environment(monkeypatch)
     get_settings.cache_clear()
+    # A fresh real clock, not "whatever is installed": a clock installed at import/collection
+    # time (a module-level set_clock, or an app built in SIM_MODE) must not leak into tests.
+    real_clock = clock.RealClock()
+    clock.set_clock(real_clock)
+    assert clock.get_clock() is real_clock, "a use_clock() block was entered and never left"
     yield
+    clock.set_clock(clock.RealClock())
     get_settings.cache_clear()
 
 
