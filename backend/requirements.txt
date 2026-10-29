@@ -94,7 +94,7 @@ pydantic-settings==2.16.2
     # via cashguard-api
 pyjwt==2.15.1
     # via cashguard-api
-python-dateutil==2.9.0.post0
+python-dateutil==3.0.0
     # via botocore
 python-dotenv==1.2.4
     # via
