@@ -46,8 +46,33 @@ The full design is in
 - `/internal/*` (the scheduled jobs): only tokens with the `internal` realm role, which only
   the confidential `savings-cron` client (client-credentials grant) has. The mobile app never calls
   these endpoints.
-- `/sim/*` (the demo simulator, which moves the clock and feeds synthetic transactions): enabled
-  **only when `SIM_MODE=true`**.
+- `/sim/*` (the demo simulator, which moves the clock and feeds synthetic transactions): mounted
+  **only when `SIM_MODE=true`**, and every route also needs the realm role **`sim`** (the demo
+  operator; a plain login gets 403).
+- Only **access tokens** are accepted (`typ: Bearer`): a Keycloak ID or refresh token is refused.
+  RS256 only (`alg: none` and HS256-with-the-public-key are rejected and tested); `iss`,
+  `exp`/`nbf` (30 s leeway) and `azp`/`aud` are checked.
+- Keycloak: brute-force detection on, password policy `length(12)`, no self-registration; the
+  admin console is not reachable on the public site (Caddy answers 404 for `/admin`).
+
+**Abuse limits**
+
+- Rate limits per user (`app/security/ratelimit.py`): `/api/chat` 10/min and 200/day, `/api/sim`
+  5/min, WebSocket connects 10/min (`RATE_LIMIT_*`); 429 with `Retry-After`.
+- One chat run at a time per user, claimed atomically (409 `agent_busy`).
+- Request bodies over 64 KiB → 413 (in the app and at Caddy); soft notes ≤ 2000 characters.
+- WebSocket: at most 3 sockets per user, inbound frames ≤ 4 KiB (uvicorn caps frames at 64 KiB),
+  and the token's `exp` is re-checked on every message and ping (close 4401).
+
+**HTTP and containers**
+
+- Every response: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+  `Referrer-Policy: no-referrer`, `Content-Security-Policy: default-src 'none'`,
+  `Cache-Control: no-store` on `/api/*`, and HSTS (app outside the simulator, and Caddy).
+- No CORS: the only client is the mobile app, so no browser origin is allowed.
+- `/api/docs` and `/api/openapi.json` only with `API_DOCS_ENABLED=true` (off when hosted).
+- The api container runs as an unprivileged user with a HEALTHCHECK; uvicorn trusts
+  `X-Forwarded-*` only from the proxy and sends no `server` banner.
 
 **Secrets**
 
@@ -83,7 +108,7 @@ not only in the prompt:
 - **Bounded runs:** a maximum number of agent iterations per run (`MAX_AGENT_ITERATIONS`, default
   6), `max_tokens` per call, timeouts on every model call, and a templated fallback reply when a
   limit, an API error, a refusal or a cut-off reply is hit. Every tool call is logged.
-- **Rate limits** on the chat endpoints (being added).
+- **Rate limits** on the chat, simulator and WebSocket endpoints (see Abuse limits above).
 
 ## Development-only defaults
 
@@ -99,8 +124,10 @@ not only in the prompt:
 - `SIM_MODE=true` (turn it off), Keycloak in `start-dev` mode over plain HTTP, and the database and
   Keycloak ports published on the host.
 
-The hosted setup (`backend/deploy/`) puts everything behind HTTPS and publishes only the reverse
-proxy.
+The hosted overlay (`backend/deploy/docker-compose.prod.yml`) **requires** every one of these
+secrets (`${VAR:?}`: compose refuses to start without them), puts everything behind HTTPS and
+publishes only the reverse proxy. The cron container still runs as root (busybox crond can't run
+jobs unprivileged); it has no port and no data, and runs with `no-new-privileges`.
 
 ## Not secrets, by design
 
@@ -110,3 +137,6 @@ proxy.
   the Google Cloud console.
 - **`mobile/android/app/debug.keystore`** is an Android *debug* signing key (well-known password),
   used only for local debug builds; release builds are not signed with it.
+- `.gitleaks.toml` allowlists exactly these values plus the fake test credentials, each by file
+  **and** value, so a real secret in the same file is still reported. CI runs gitleaks over the
+  whole history and `pip-audit` on the locked dependencies.

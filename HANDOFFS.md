@@ -173,3 +173,16 @@
   - **Claude runs on Amazon Bedrock (D53):** set `LLM_PROVIDER=bedrock`, `AWS_DEFAULT_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` (the hackathon's temporary credentials) in the server's env/`.env`, never in git. The model id becomes `us.anthropic.claude-sonnet-5-5` automatically, and the Docker image needs boto3/botocore (already in `requirements.txt` via `anthropic[bedrock]`).
   - The A1 live tests (`uv run pytest -m live tests/eval -q -rs`) still assume an Anthropic API key; Bedrock was verified with a direct live call instead.
 
+### H-15 · mobile (David V.) + whoever runs the hosted Keycloak · security changes to know · 🟢
+- **By:** DGAdavid1 (platform-security agent), 2026-10-29
+- **What changed:**
+  - `/api/sim/*` needs the Keycloak realm role **`sim`**. `realm-cashguard.json` gives it to the five demo personas, so a fresh local Keycloak just works.
+  - WebSocket close codes: **1008** bad token (refresh, then reconnect, as before), **4401** token expired while open (refresh, then reconnect), **4409** more than 3 sockets for the user (close the old ones), **4429** too many connects (wait, then reconnect), **1009** inbound frame over 4 KiB (the app never sends one).
+  - REST: 429 `rate_limited` with `Retry-After` on `/api/chat` (10/min, 200/day) and `/api/sim/*` (5/min); 413 `payload_too_large` over 64 KiB; `PATCH /api/life-profile/{key}` values ≤ 2000 characters as JSON.
+  - Only access tokens are accepted: sending an ID token now gives 401 `invalid_token`.
+- **Merge instruction:**
+  - Mobile: on 4401, treat it like 1008 (refresh the token, reconnect); back off on 4429/4409.
+  - Hosted Keycloak seeded before this change (`--import-realm` skips an existing realm): in the admin console add the realm role `sim` and assign it to the personas; turn on brute force detection; set the password policy `length(12)`. Check: `POST /api/sim/reset` with a persona token → 204.
+  - The prod overlay now refuses to start without `POSTGRES_PASSWORD`, `KC_DB_PASSWORD`, `KC_ADMIN_USER`, `KC_ADMIN_PASSWORD`, `KC_CRON_CLIENT_SECRET`, `KC_DEMO_PASSWORD` (≥ 12 chars) in `backend/.env`. An existing DB volume keeps its old password (`ALTER USER cashguard PASSWORD …`).
+  - If the demo presenter clicks the simulator faster than 5 calls a minute, raise `RATE_LIMIT_SIM_PER_MINUTE`.
+
