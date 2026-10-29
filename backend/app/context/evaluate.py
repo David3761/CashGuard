@@ -24,8 +24,9 @@ from pydantic import JsonValue
 
 from app.clock import APP_TZ
 from app.config import BACKEND_DIR
-from app.context.life_fit import best_rule, explain, fit_purpose, life_fit
+from app.context.life_fit import explain, fit_purpose, life_fit
 from app.context.normalize import normalize
+from app.context.rules import best_rule
 from app.domain.enums import (
     AnnotationSource,
     Beneficiary,

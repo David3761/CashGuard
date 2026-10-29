@@ -91,7 +91,7 @@ def test_the_other_stubs() -> None:
     occupation = fact(FactType.OCCUPATION, id=7)
     assert service.signatures_for_fact(occupation, None) == library.signatures_for_fact(occupation)
     assert service.on_fact_changed(None, 1, 7) == PropagationResult(fact_id=7)
-    assert service.learn_from_annotation(None, 1, 1) is None
+    # learn_from_annotation is C8's real shell now (tests: test_rules.py)
     assert service.infer_hypotheses(None, 1) == []
 
 

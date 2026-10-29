@@ -12,7 +12,8 @@ For every active `explains` signature s:
 The other sources: `expects_event` (window + category + amount within ±50% of expected, scored
 strength · confidence), a partial classify rule (< 0.9: its confidence) and a precedent (a
 user-answered transaction at the same merchant, or the same category within ±30%:
-0.8 · (1 - |Δ| / amount)). life_fit = the best; ties: higher score, then a confirmed fact over a
+0.8 · (1 - |Δ| / amount); not when a rule matches, since the rule sums up those answers, 5.3.2).
+life_fit = the best; ties: higher score, then a confirmed fact over a
 hypothesis, then the most recent fact. Pots are C6's hard filter.
 
 The winner carries `explanation_key` + `params`; `explain()` renders them from the RO / EN
@@ -28,8 +29,10 @@ from typing import Final
 from pydantic import JsonValue
 
 from app.clock import APP_TZ
+from app.context.rules import best_rule
 from app.domain.enums import (
     AnnotationSource,
+    Category,
     Direction,
     FactStatus,
     Language,
@@ -37,7 +40,7 @@ from app.domain.enums import (
     RuleKind,
     SignatureEffect,
 )
-from app.domain.models import LifeFact, PatternRule, Signature, TxView
+from app.domain.models import LifeFact, Signature, TxView
 from app.domain.results import FitResult
 from app.domain.user_context import UserContext
 from app.engine.anomaly import merchant_key
@@ -53,7 +56,6 @@ PRECEDENT_WEIGHT: Final = 0.8
 SIMILAR_AMOUNT: Final = Decimal("0.30")
 EVENT_AMOUNT: Final = Decimal("0.50")
 AUTO_RULE_CONFIDENCE: Final = 0.9  # a classify rule at ≥ 0.9 is C6's hard filter, not a fit
-RULE_AMOUNT_LIMIT: Final = 2  # 5.3.7: a rule doesn't apply above 2x its max amount
 _ANSWERED: Final = (AnnotationSource.ANSWER, AnnotationSource.USER_EDIT)
 
 NO_FIT: Final = FitResult(score=0.0, source="none")
@@ -164,36 +166,6 @@ def saturation(tx: TxView, signature: Signature, history: Iterable[TxView]) -> f
     return 1.0 if days is None else min(1.0, days / cycle)
 
 
-# ── rules ────────────────────────────────────────────────────────────────────────────────────
-
-
-def rule_matches(rule: PatternRule, tx: TxView) -> bool:
-    """Minimal C8 `rule_matches` (C6 needs it now): merchant, category, amount (≤ 2x max) and
-    the weekday / hour window, in Bucharest time."""
-    match = rule.match
-    if not rule.active:
-        return False
-    if match.merchant_id is not None and match.merchant_id != tx.merchant_id:
-        return False
-    if match.category is not None and match.category != tx.category:
-        return False
-    if match.amount_min is not None and tx.amount < match.amount_min:
-        return False
-    if match.amount_max is not None and tx.amount > RULE_AMOUNT_LIMIT * match.amount_max:
-        return False
-    local = tx.occurred_at.astimezone(APP_TZ)
-    if match.weekdays and local.isoweekday() not in match.weekdays:
-        return False
-    if match.from_ is not None and match.to is not None:
-        return match.from_ <= local.time().replace(tzinfo=None) < match.to
-    return True
-
-
-def best_rule(rules: Iterable[PatternRule], tx: TxView, kind: RuleKind) -> PatternRule | None:
-    matching = [r for r in rules if r.kind is kind and rule_matches(r, tx)]
-    return max(matching, key=lambda r: (r.confidence, r.id or 0), default=None)
-
-
 # ── the sources ──────────────────────────────────────────────────────────────────────────────
 
 _Ranked = tuple[float, int, float, FitResult]  # score, confirmed (1/0), fact recency, result
@@ -271,6 +243,8 @@ def _rule_fit(tx: TxView, ctx: UserContext) -> list[_Ranked]:
     if rule is None or rule.confidence >= AUTO_RULE_CONFIDENCE:
         return []
     params: dict[str, JsonValue] = {"label": rule.outcome.label or ""}
+    if tx.category is not None:
+        params["category"] = tx.category.value  # the label when the rule has none (learned)
     if rule.outcome.purpose is not None:
         params["purpose"] = rule.outcome.purpose.value
     result = FitResult(
@@ -309,10 +283,11 @@ def _precedent_fit(tx: TxView, ctx: UserContext) -> list[_Ranked]:
 
 def life_fit(tx: TxView, ctx: UserContext) -> FitResult:
     """The best explanation the person's life gives for `tx` (score 0 with source "none")."""
+    rule = _rule_fit(tx, ctx)
     ranked = [
         *_signature_fits(tx, ctx),
-        *_rule_fit(tx, ctx),
-        *_precedent_fit(tx, ctx),
+        *rule,
+        *([] if rule else _precedent_fit(tx, ctx)),  # a learned rule sums up its precedents
     ]
     ranked = [r for r in ranked if r[0] > 0]
     if not ranked:
@@ -334,4 +309,7 @@ def explain(fit: FitResult, lang: Language | str) -> str | None:
     purpose = fit_purpose(fit)
     values = {k: str(v) for k, v in fit.params.items()}
     values["purpose"] = label(purpose, lang) if purpose is not None else ""
+    category = fit.params.get("category")
+    if not values.get("label") and isinstance(category, str):
+        values["label"] = label(Category(category), lang)
     return template.format_map(values)

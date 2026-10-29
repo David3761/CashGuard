@@ -15,7 +15,7 @@ from datetime import date, datetime, time, timedelta
 from typing import Final
 
 from app.clock import APP_TZ
-from app.context.life_fit import best_rule
+from app.context.rules import best_rule
 from app.domain.enums import (
     QUESTION_EVENT_TYPES,
     AgentEventStatus,
