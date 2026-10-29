@@ -1,10 +1,11 @@
 """Response shapes of arch 9.3. Money is a JSON number (2 dp), dates YYYY-MM-DD, timestamps ISO
 UTC with Z, labels already in the user's language."""
 
+import json
 from datetime import UTC, date, datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Final
 
-from pydantic import AwareDatetime, BaseModel, PlainSerializer
+from pydantic import AwareDatetime, BaseModel, JsonValue, PlainSerializer, field_validator
 
 from app.domain.base import Money
 from app.domain.enums import CoachStyle, Language
@@ -318,8 +319,21 @@ class LifeFactPatch(BaseModel):
     valid_to: date | None = None
 
 
+NOTE_MAX_JSON_CHARS: Final = 2000
+
+
 class NoteIn(BaseModel):
-    value: Any
+    """A soft note (`what_works`, …): any small JSON value, e.g. a string or a list of strings.
+    Stored as JSONB, so it is bounded: at most NOTE_MAX_JSON_CHARS characters as JSON."""
+
+    value: JsonValue
+
+    @field_validator("value")
+    @classmethod
+    def _small(cls, value: JsonValue) -> JsonValue:
+        if len(json.dumps(value, ensure_ascii=False)) > NOTE_MAX_JSON_CHARS:
+            raise ValueError(f"must be at most {NOTE_MAX_JSON_CHARS} characters as JSON")
+        return value
 
 
 class LifeProfileOut(BaseModel):

@@ -40,7 +40,8 @@ def get_engine() -> AsyncEngine:
 def session_factory() -> async_sessionmaker[AsyncSession]:
     if _sessions is None:
         configure()
-    assert _sessions is not None
+    if _sessions is None:
+        raise RuntimeError("the session factory is not configured")
     return _sessions
 
 

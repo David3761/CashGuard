@@ -75,6 +75,7 @@ FIELDS = frozenset(
         "APP_API_CORS_ORIGIN_REGEX",
         "FCM_SERVICE_ACCOUNT_FILE",
         "FCM_PROJECT_ID",
+        "API_DOCS_ENABLED",
     }
 )
 OPTIONAL_FIELDS = (
@@ -181,6 +182,7 @@ def test_settings_defaults_match_the_documented_values(settings: Settings) -> No
         "APP_API_CORS_ORIGIN_REGEX": r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
         "FCM_SERVICE_ACCOUNT_FILE": None,
         "FCM_PROJECT_ID": None,
+        "API_DOCS_ENABLED": False,
     }
 
 
@@ -258,6 +260,7 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         APP_API_MAX_DEVICES="2",
         APP_API_CORS_ORIGIN_REGEX="^https://app\\.example\\.com$",
         FCM_PROJECT_ID="demo-project",
+        API_DOCS_ENABLED="true",
     )
 
     assert settings.model_dump() == {
@@ -297,6 +300,7 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         "APP_API_CORS_ORIGIN_REGEX": "^https://app\\.example\\.com$",
         "FCM_SERVICE_ACCOUNT_FILE": None,
         "FCM_PROJECT_ID": "demo-project",
+        "API_DOCS_ENABLED": True,
     }
 
 
@@ -642,6 +646,7 @@ def test_every_value_may_have_surrounding_spaces(monkeypatch: pytest.MonkeyPatch
         "APP_API_CORS_ORIGIN_REGEX": "^http://localhost$",
         "FCM_SERVICE_ACCOUNT_FILE": "/run/secrets/firebase.json",
         "FCM_PROJECT_ID": "cashctrl-6b66a",
+        "API_DOCS_ENABLED": "true",
     }
     assert set(values) == FIELDS
     plain = _from_env(monkeypatch, **values)

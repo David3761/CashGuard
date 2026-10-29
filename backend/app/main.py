@@ -26,6 +26,8 @@ from app.api import (
 from app.config import Settings, get_settings
 from app.errors import ERROR_RESPONSES, install_error_handlers, outermost_first
 from app.logging import configure_logging
+from app.security import ratelimit
+from app.security.http_hardening import HardeningMiddleware
 from app.ws import router as ws_router
 
 logger = logging.getLogger(__name__)
@@ -92,18 +94,26 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     """
     settings = get_settings() if settings is None else settings
     configure_logging(settings.LOG_LEVEL)
+    ratelimit.configure(settings)  # fresh buckets per app (chat, sim, ws_connect)
+    docs = settings.API_DOCS_ENABLED
     # Every route documents the arch 9.1 error envelope (instead of FastAPI's own 422 shape).
     app = _App(
         title="CashGuard API",
         version="0.1.0",
         responses=ERROR_RESPONSES,
         lifespan=_lifespan(settings),
-        openapi_url="/api/openapi.json",
-        docs_url="/api/docs",
+        openapi_url="/api/openapi.json" if docs else None,
+        docs_url="/api/docs" if docs else None,
         redoc_url=None,
     )
     app.state.settings = settings
     install_error_handlers(app)
+    # Security headers + the 64 KiB body limit (pure ASGI: SSE and the WebSocket pass through).
+    # HSTS always outside the simulator (= a real deployment), and on HTTPS requests in any mode.
+    app.add_middleware(HardeningMiddleware, hsts=not settings.SIM_MODE)
+    # No CORSMiddleware, on purpose: the only client is the mobile app (no browser origin), so
+    # browsers get no Access-Control-Allow-* header and cross-origin reads stay blocked. If a
+    # web client ever comes: list its exact origins, never "*" together with credentials.
     api = APIRouter(prefix="/api")
     api.include_router(_health_router())
     # bomboe's platform routers (B6a/B6b/B8/B9/B10/B11).

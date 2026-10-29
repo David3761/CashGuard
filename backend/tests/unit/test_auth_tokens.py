@@ -89,6 +89,18 @@ async def test_signed_by_another_key_with_our_kid_rejected(test_jwks):
     await rejected(sign(new_keys(), claims()), "invalid_token")
 
 
+@pytest.mark.parametrize("typ", ["ID", "Refresh", "Logout", "bearer", ""])
+async def test_only_access_tokens_are_accepted(make_token, test_jwks, typ):
+    # A Keycloak ID token has the same iss/sub/azp and signature as an access token: refuse it.
+    await rejected(make_token(typ=typ), "invalid_token")
+
+
+async def test_token_without_typ_is_rejected(test_keys, test_jwks):
+    body = claims()
+    del body["typ"]
+    await rejected(sign(test_keys, body), "invalid_token")
+
+
 @pytest.mark.parametrize("token", ["", "garbage", "a.b.c", "Bearer x.y.z"])
 async def test_malformed_token(test_jwks, token):
     await rejected(token, "invalid_token")

@@ -572,7 +572,8 @@ async def test_a_huge_client_key_is_not_reflected(
     settings: Settings, make_client: MakeClient
 ) -> None:
     async with make_client(_app(settings)) as client:
-        response = await client.post("/test/secrets", json={"counts": {"K" * 1_000_000: "x"}})
+        # 60 000 chars: huge, but under the 64 KiB body limit (a bigger body is 413 up front)
+        response = await client.post("/test/secrets", json={"counts": {"K" * 60_000: "x"}})
 
     assert_envelope(response, 422, "validation_error")
     assert len(response.content) < 300

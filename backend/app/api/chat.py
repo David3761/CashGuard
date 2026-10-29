@@ -2,7 +2,7 @@
 
 import logging
 
-from fastapi import APIRouter, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Depends
 from pydantic import BaseModel, Field, field_validator
 
 from app import events
@@ -14,6 +14,7 @@ from app.errors import DomainError
 from app.logging import redact
 from app.pipeline import ports
 from app.pipeline.processor import process_user
+from app.security.ratelimit import one_at_a_time, rate_limited
 from app.services import agent_runs, forecasts, messages, plans, users
 from app.ws import manager, push_after_commit
 
@@ -21,6 +22,7 @@ log = logging.getLogger(__name__)
 router = APIRouter(tags=["chat"])
 
 _busy: set[int] = set()  # fast path; agent_runs.is_running is the truth after a restart
+BUSY_MESSAGE = "The assistant is still answering your previous message."
 
 
 class ChatIn(BaseModel):
@@ -38,27 +40,29 @@ class ChatAccepted(BaseModel):
     run_id: int
 
 
-@router.post("/chat", status_code=202)
+@router.post("/chat", status_code=202, dependencies=[Depends(rate_limited("chat"))])
 async def chat(
     body: ChatIn, user: CurrentUser, db: Db, background: BackgroundTasks
 ) -> ChatAccepted:
-    if user.id in _busy or await agent_runs.is_running(db, user.id):
-        raise DomainError(
-            "agent_busy", "The assistant is still answering your previous message.", 409
-        )
-    _busy.add(user.id)
-    try:
-        msg = await messages.save_user(db, user.id, body.text, body.input_mode)
-        language = ports.detect_language(body.text, user.language)
-        if language != user.language:
-            await users.update(db, user.id, language=language)
-        run_id = await agent_runs.start(
-            db, user.id, trigger=AgentTrigger.CHAT, model=get_settings().ANTHROPIC_MODEL
-        )
-        await db.commit()
-    except BaseException:
-        _busy.discard(user.id)
-        raise
+    # One run at a time per user (security review P1-1). `one_at_a_time` claims the user
+    # atomically (no await between test and set), so two parallel POSTs can't both pass the
+    # checks below; `_busy` then holds the claim until the background run ends.
+    async with one_at_a_time(("chat", user.id), code="agent_busy", message=BUSY_MESSAGE):
+        if user.id in _busy or await agent_runs.is_running(db, user.id):
+            raise DomainError("agent_busy", BUSY_MESSAGE, 409)
+        _busy.add(user.id)
+        try:
+            msg = await messages.save_user(db, user.id, body.text, body.input_mode)
+            language = ports.detect_language(body.text, user.language)
+            if language != user.language:
+                await users.update(db, user.id, language=language)
+            run_id = await agent_runs.start(
+                db, user.id, trigger=AgentTrigger.CHAT, model=get_settings().ANTHROPIC_MODEL
+            )
+            await db.commit()
+        except BaseException:
+            _busy.discard(user.id)
+            raise
     background.add_task(run_chat, user.id, run_id, body.text, body.input_mode)
     return ChatAccepted(message_id=msg.id, run_id=run_id)
 

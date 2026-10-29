@@ -1,11 +1,11 @@
-"""B5 step 2: current_user, require_internal, ws_user."""
+"""B5 step 2: current_user, require_internal, require_sim, ws_user."""
 
 from typing import Annotated
 
 import pytest
 from fastapi import Depends
 
-from app.auth import Claims, current_user, require_internal
+from app.auth import Claims, current_user, require_internal, require_sim
 from app.domain.models import UserProfile
 from tests import factories as f
 
@@ -19,6 +19,10 @@ def routes(app):
     @app.post("/api/_test/internal")
     async def internal(claims: Annotated[Claims, Depends(require_internal)]) -> dict[str, str]:
         return {"azp": claims.azp or ""}
+
+    @app.post("/api/_test/sim")
+    async def sim(claims: Annotated[Claims, Depends(require_sim)]) -> dict[str, str]:
+        return {"sub": claims.sub}
 
     return app
 
@@ -64,3 +68,14 @@ async def test_internal_needs_the_role(routes, as_user, db):
     assert r.status_code == 403 and await code(r) == "forbidden"
     r = await as_user("cron-sa", roles=("internal",), azp="savings-cron").post("/_test/internal")
     assert r.status_code == 200 and r.json() == {"azp": "savings-cron"}
+
+
+@pytest.mark.parametrize("roles", [(), ("internal",), ("simulator",)])
+async def test_require_sim_refuses_without_the_sim_role(routes, as_user, roles):
+    r = await as_user("anyone", roles=roles).post("/_test/sim")
+    assert r.status_code == 403 and await code(r) == "forbidden"
+
+
+async def test_require_sim_accepts_the_sim_role(routes, as_user):
+    r = await as_user("operator", roles=("sim",)).post("/_test/sim")
+    assert r.status_code == 200 and r.json() == {"sub": "operator"}
