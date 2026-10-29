@@ -24,7 +24,7 @@ from app.db.models import Base
 async def engine() -> AsyncIterator[AsyncEngine]:
     # Session-scoped, so it's built before the per-test isolation (tests/conftest.py): read the
     # settings without backend/.env here too (a developer's .env may point at another DB).
-    url = Settings(_env_file=None).TEST_DATABASE_URL.get_secret_value()  # type: ignore[call-arg]
+    url = Settings(_env_file=None).TEST_DATABASE_URL.get_secret_value()
     eng = create_async_engine(url)
     async with eng.begin() as conn:
         await drop_all(conn)

@@ -52,9 +52,11 @@ FIELDS = frozenset(
         "AWS_SESSION_TOKEN",
         "KEYCLOAK_ISSUER",
         "KEYCLOAK_AUDIENCE",
+        "KEYCLOAK_INTERNAL_URL",
         "KEYCLOAK_CRON_CLIENT_SECRET",
         "SIM_MODE",
         "SIM_START_DATE",
+        "SIM_CLOCK_FROM_DB",
         "MAX_AGENT_ITERATIONS",
         "QUESTIONS_PER_DAY",
         "LOG_LEVEL",
@@ -68,6 +70,7 @@ OPTIONAL_FIELDS = (
     "AWS_SESSION_TOKEN",
     "KEYCLOAK_ISSUER",
     "KEYCLOAK_AUDIENCE",
+    "KEYCLOAK_INTERNAL_URL",
     "KEYCLOAK_CRON_CLIENT_SECRET",
 )
 
@@ -124,10 +127,10 @@ def test_settings_defaults_match_the_documented_values(settings: Settings) -> No
     # SecretStr compares by its secret value, so the whole model is checked in one go.
     assert settings.model_dump() == {
         "DATABASE_URL": SecretStr(
-            "postgresql+psycopg://cashguard:cashguard@localhost:5432/cashguard"
+            "postgresql+psycopg://cashguard:cashguard@localhost:5434/cashguard"
         ),
         "TEST_DATABASE_URL": SecretStr(
-            "postgresql+psycopg://cashguard_test:cashguard_test@localhost:5433/cashguard_test"
+            "postgresql+psycopg://cashguard:cashguard@localhost:5435/cashguard_test"
         ),
         "ANTHROPIC_API_KEY": None,
         "ANTHROPIC_MODEL": "claude-sonnet-5-5",
@@ -141,9 +144,11 @@ def test_settings_defaults_match_the_documented_values(settings: Settings) -> No
         "AWS_SESSION_TOKEN": None,
         "KEYCLOAK_ISSUER": None,
         "KEYCLOAK_AUDIENCE": None,
+        "KEYCLOAK_INTERNAL_URL": None,
         "KEYCLOAK_CRON_CLIENT_SECRET": None,
         "SIM_MODE": False,
         "SIM_START_DATE": date(2026, 6, 15),
+        "SIM_CLOCK_FROM_DB": True,
         "MAX_AGENT_ITERATIONS": 6,
         "QUESTIONS_PER_DAY": 1,
         "LOG_LEVEL": "INFO",
@@ -203,6 +208,8 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         AWS_SESSION_TOKEN="aws-token",
         KEYCLOAK_ISSUER="https://auth.example.com/realms/cashguard",
         KEYCLOAK_AUDIENCE="savings-api",
+        KEYCLOAK_INTERNAL_URL="http://keycloak:8080/realms/cashguard",
+        SIM_CLOCK_FROM_DB="false",
         KEYCLOAK_CRON_CLIENT_SECRET="cron-secret",
         SIM_MODE="true",
         SIM_START_DATE="2026-07-01",
@@ -226,6 +233,8 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         "AWS_SESSION_TOKEN": SecretStr("aws-token"),
         "KEYCLOAK_ISSUER": "https://auth.example.com/realms/cashguard",
         "KEYCLOAK_AUDIENCE": "savings-api",
+        "KEYCLOAK_INTERNAL_URL": "http://keycloak:8080/realms/cashguard",
+        "SIM_CLOCK_FROM_DB": False,
         "KEYCLOAK_CRON_CLIENT_SECRET": SecretStr("cron-secret"),
         "SIM_MODE": True,
         "SIM_START_DATE": date(2026, 7, 1),
@@ -540,6 +549,8 @@ def test_every_value_may_have_surrounding_spaces(monkeypatch: pytest.MonkeyPatch
         "AWS_SESSION_TOKEN": "aws-token",
         "KEYCLOAK_ISSUER": "https://auth.example.com/realms/cashguard",
         "KEYCLOAK_AUDIENCE": "savings-api",
+        "KEYCLOAK_INTERNAL_URL": "http://keycloak:8080/realms/cashguard",
+        "SIM_CLOCK_FROM_DB": "false",
         "KEYCLOAK_CRON_CLIENT_SECRET": "cron-secret",
         "SIM_MODE": "true",
         "SIM_START_DATE": "2026-07-01",
@@ -631,7 +642,7 @@ def test_env_example_is_itself_valid() -> None:
     assert settings.KEYCLOAK_CRON_CLIENT_SECRET is None
     assert settings.SIM_MODE is True
     assert settings.ANTHROPIC_REFUSAL_FALLBACK is False
-    assert settings.KEYCLOAK_ISSUER == "http://localhost:8080/realms/cashguard"
+    assert settings.KEYCLOAK_ISSUER == "http://localhost:8081/realms/cashguard"  # B1's port
 
 
 # ── get_settings ────────────────────────────────────────────────────────

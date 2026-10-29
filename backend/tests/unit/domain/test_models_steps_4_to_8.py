@@ -177,7 +177,7 @@ def test_plan_preferences_default_and_fill_missing_weekdays() -> None:
 
 
 def test_a_product_needs_min_below_max_months() -> None:
-    raw = {"id": 1, "name": "Depozit 6 luni", "kind": "term_deposit", "rate": "0.05",
+    raw = {"id": "depozit_6_luni", "name": "Depozit 6 luni", "kind": "term_deposit", "rate": "0.05",
            "liquidity": "locked", "min_months": 6, "max_months": 12}  # fmt: skip
 
     assert Product.model_validate(raw).mock is True

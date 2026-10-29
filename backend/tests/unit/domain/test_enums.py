@@ -28,6 +28,8 @@ from app.domain.enums import (
     QUESTION_EVENT_TYPES,
     AgentEventStatus,
     AgentEventType,
+    AgentRunStatus,
+    AgentTrigger,
     AnnotationSource,
     Beneficiary,
     Category,
@@ -57,6 +59,7 @@ from app.domain.enums import (
     RuleSource,
     SignatureEffect,
     SignatureOrigin,
+    ToolCallStatus,
     TransferKind,
     TxSource,
     TxStatus,
@@ -182,6 +185,15 @@ DOC_LISTS: list[tuple[type[StrEnum], Parser, Path, str]] = [
     (LifeEventType, life_event_types, ARCH_DOC, "arch 6.2 add_life_event schema"),
     (LedgerStatus, ledger_statuses, ARCH_DOC, "arch 4.1 day_ledger"),
     (MessageRole, message_roles, ARCH_DOC, "arch 9.3 Message"),
+    # bomboe's B2 CHECK lists (the arch names the columns, not their values): pinned literally.
+    (AgentTrigger, lambda _: ["chat", "proactive"], ARCH_DOC, "bomboe B2 agent_runs.trigger"),
+    (
+        AgentRunStatus,
+        lambda _: ["running", "completed", "failed"],
+        ARCH_DOC,
+        "bomboe B2 agent_runs.status",
+    ),
+    (ToolCallStatus, lambda _: ["ok", "error"], ARCH_DOC, "arch 6.3 tool_calls.log status"),
     (HouseholdRole, household_roles, WORK_BREAKDOWN, "work-breakdown F2 validation rules"),
     (PriorityLevel, priority_levels, ARCH_DOC, "arch 4.4 life_facts.value examples"),
 ]
@@ -225,13 +237,16 @@ KNOWN_OVERLAPS: dict[str, set[str]] = {
     "emergency": {"Purpose", "PotKind"},
     "expired": {"FactStatus", "AgentEventStatus"},
     "active": {"PotStatus", "GoalStatus"},
-    "completed": {"PotStatus", "GoalStatus"},
+    "completed": {"PotStatus", "GoalStatus", "AgentRunStatus"},
     "cancelled": {"ReceivableStatus", "LifeEventStatus"},
     "voice": {"FactSource", "InputMode"},
     "warning": {"AgentEventType", "LedgerStatus"},
     "other": {"Category", "LifeEventType"},
     "education": {"Category", "LifeEventType"},
     "seed": {"FactSource", "TxSource"},
+    "chat": {"FactSource", "AgentTrigger"},
+    "failed": {"TxStatus", "AgentRunStatus"},
+    "ok": {"LedgerStatus", "ToolCallStatus"},
 }
 
 # Belt and braces behind the FactType allow-list: stems of the special categories (arch 4.5 + the

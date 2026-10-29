@@ -80,7 +80,7 @@ def test_importing_main_reads_no_settings() -> None:
     # key, no PYTHONWARNINGS), so only the import decides the result.
     code = "import app.main, app.config; assert app.config.get_settings.cache_info().currsize == 0"
     env = {"PATH": os.environ.get("PATH", ""), "SIM_MODE": "maybe", "MAX_AGENT_ITERATIONS": "0"}
-    result = subprocess.run(  # noqa: S603 - our own interpreter and a fixed snippet
+    result = subprocess.run(
         [sys.executable, "-c", code],
         cwd=BACKEND_DIR,
         env=env,

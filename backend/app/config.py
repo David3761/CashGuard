@@ -73,9 +73,9 @@ class Settings(BaseSettings):
     AWS_ACCESS_KEY_ID: SecretStr | None = None
     AWS_SECRET_ACCESS_KEY: SecretStr | None = None
     AWS_SESSION_TOKEN: SecretStr | None = None
-    # Keycloak (arch 5.1). Defaults = bomboe's local compose (Keycloak on host port 8081, B5).
-    KEYCLOAK_ISSUER: str | None = "http://localhost:8081/realms/cashguard"
-    KEYCLOAK_AUDIENCE: str | None = "cashguard-api"
+    # Keycloak (arch 5.1); local values (host port 8081, B1/B5) are in .env.example.
+    KEYCLOAK_ISSUER: str | None = None
+    KEYCLOAK_AUDIENCE: str | None = None
     # Where the API fetches discovery/JWKS when it differs from the issuer (inside docker:
     # http://keycloak:8080/realms/cashguard).
     KEYCLOAK_INTERNAL_URL: str | None = None

@@ -181,7 +181,8 @@ class PlanSummary(DomainModel):
     previous_today_budget: Money | None = None
     next_7_days: tuple[DayBudget, ...] = ()
     reason: Text300 | None = None
-    created_at: Timestamp | None = None  # bomboe's plans.created_at (the saved row)
+    # bomboe's plans.created_at (the saved row); not dumped, so the 6.7 tool result keeps its shape
+    created_at: Timestamp | None = Field(default=None, exclude=True)
 
 
 class Driver(DomainModel):
