@@ -2,6 +2,7 @@
 
 Error codes (arch 9.1 envelope): missing_token, invalid_token, token_expired, invalid_issuer,
 invalid_audience, unknown_user (401); forbidden (403); auth_unavailable (503).
+Only access tokens are accepted (`typ: Bearer`): a Keycloak ID or refresh token is refused.
 Token times are checked against the real clock: tokens come from Keycloak, not the simulator.
 """
 
@@ -27,6 +28,9 @@ from app.services import users
 log = logging.getLogger(__name__)
 
 ACCEPTED_CLIENTS = frozenset({"savings-frontend", "savings-dev", "savings-cron"})
+# Keycloak's `typ` claim: "Bearer" (access), "ID", "Refresh". A token type, not a password.
+ACCESS_TOKEN_TYPE = "Bearer"  # noqa: S105
+SIM_ROLE = "sim"  # realm role of the demo operator: may drive /api/sim/*
 LEEWAY_SECONDS = 30
 REFETCH_INTERVAL_SECONDS = 60.0
 
@@ -130,7 +134,8 @@ def set_jwks(cache: JWKSCache | None) -> None:
 
 
 async def verify_token(token: str) -> Claims:
-    """Check signature (RS256 only), `iss`, `exp`/`nbf` (30 s leeway) and `azp`/`aud`."""
+    """Check signature (RS256 only), `iss`, `exp`/`nbf` (30 s leeway), `typ` (access tokens
+    only) and `azp`/`aud`."""
     try:
         header = jwt.get_unverified_header(token)
     except jwt.PyJWTError as exc:
@@ -148,7 +153,10 @@ async def verify_token(token: str) -> Claims:
             algorithms=["RS256"],
             issuer=settings.KEYCLOAK_ISSUER,
             leeway=LEEWAY_SECONDS,
-            options={"verify_aud": False, "require": ["exp", "iat", "iss", "sub"]},
+            # The audience IS checked, by hand below: Keycloak names our client in `azp` and
+            # often leaves `aud` out (or sets it to "account"), so "azp in ACCEPTED_CLIENTS OR
+            # KEYCLOAK_AUDIENCE in aud" can't be expressed with PyJWT's `audience=`.
+            options={"verify_aud": False, "require": ["exp", "iat", "iss", "sub", "typ"]},
         )
     except jwt.ExpiredSignatureError as exc:
         raise _unauthorized("token_expired", "The token expired. Refresh it and retry.") from exc
@@ -156,6 +164,9 @@ async def verify_token(token: str) -> Claims:
         raise _unauthorized("invalid_issuer", "The token was issued by another server.") from exc
     except jwt.PyJWTError as exc:
         raise _unauthorized("invalid_token", "The token is not valid.") from exc
+
+    if raw.get("typ") != ACCESS_TOKEN_TYPE:
+        raise _unauthorized("invalid_token", "Send an access token, not an ID or refresh token.")
 
     azp = raw.get("azp")
     aud = raw.get("aud")
@@ -191,6 +202,14 @@ async def require_internal(claims: Annotated[Claims, Depends(current_claims)]) -
     return claims
 
 
+async def require_sim(claims: Annotated[Claims, Depends(current_claims)]) -> Claims:
+    """`/sim/*`: only the demo operator (realm role `sim`). The simulator writes into any
+    persona, moves the global clock and reseeds every user, so a plain login is not enough."""
+    if SIM_ROLE not in claims.roles:
+        raise DomainError("forbidden", "The simulator is for the demo operator only.", status=403)
+    return claims
+
+
 async def user_for_claims(db: AsyncSession, claims: Claims) -> UserProfile:
     user = await users.get_by_sub(db, claims.sub)
     if user is None:
@@ -207,8 +226,16 @@ async def current_user(
     return await user_for_claims(db, claims)
 
 
-async def ws_user(db: AsyncSession, token: str | None) -> UserProfile:
-    """WebSocket auth (`/ws?token=`); raises DomainError, the route closes with 1008."""
+async def ws_auth(db: AsyncSession, token: str | None) -> tuple[UserProfile, Claims]:
+    """WebSocket auth (`/ws?token=`): the user and the token's claims (the socket re-checks
+    `exp` while it is open). Raises DomainError; the route closes with 1008."""
     if not token:
         raise _unauthorized("missing_token", "Pass the access token as ?token=.")
-    return await user_for_claims(db, await verify_token(token))
+    claims = await verify_token(token)
+    return await user_for_claims(db, claims), claims
+
+
+async def ws_user(db: AsyncSession, token: str | None) -> UserProfile:
+    """WebSocket auth, the user only (see `ws_auth`)."""
+    user, _ = await ws_auth(db, token)
+    return user
