@@ -1,11 +1,12 @@
 """B3 step 4: life context & savings services (facts, signatures, rules, receivables, pots,
 forecasts, baselines)."""
 
-from datetime import date
+from datetime import UTC, date, datetime
 from decimal import Decimal
 
 import pytest
 
+from app import clock
 from app.domain import models as dm
 from app.domain.enums import Category, FactStatus, PotKind, ReceivableStatus, SignatureEffect
 from app.domain.results import Driver, Forecast
@@ -528,6 +529,19 @@ async def test_forecast_latest_previous_and_last_week(db):
     assert latest.drivers[0].category == Category.FOOD_DELIVERY
     assert (await forecasts.last_weekly_snapshot(db, u.id)).probability == 0.78
     assert [x.probability for x in await forecasts.weekly_history(db, u.id)] == [0.7, 0.72, 0.78]
+
+
+async def test_the_latest_forecast_is_the_last_saved_even_when_the_clock_moved_back(db):
+    # /sim/reset puts the sim clock below the seeded forecast's computed_at (live, 2026-10-29)
+    u = await f.user(db)
+    g = await goals.create(db, u.id, amount=D("10000"), deadline=date(2026, 12, 31))
+    with clock.use_clock(clock.FixedClock(datetime(2026, 6, 15, 9, 0, tzinfo=UTC))):
+        await forecasts.save(db, u.id, fc(0.79, date(2026, 6, 15), weekly=True), goal_id=g.id)
+    with clock.use_clock(clock.FixedClock(datetime(2026, 6, 15, 5, 34, tzinfo=UTC))):
+        await forecasts.save(db, u.id, fc(0.70, date(2026, 6, 15), version=2), goal_id=g.id)
+    latest = await forecasts.latest(db, u.id)
+    assert latest is not None
+    assert (latest.probability, latest.previous_probability) == (0.70, 0.79)
 
 
 async def test_forecast_needs_a_plan_version(db):

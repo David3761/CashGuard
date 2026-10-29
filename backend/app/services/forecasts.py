@@ -65,12 +65,13 @@ async def save(
 
 async def latest(db: AsyncSession, user_id: int) -> Forecast | None:
     """The newest forecast, with `previous_probability` from the one before and
-    `last_week_probability` from the last weekly snapshot."""
+    `last_week_probability` from the last weekly snapshot. Newest = the last one saved (id):
+    `computed_at` is the sim clock, which `/sim/reset` moves back below the seeded forecast's."""
     rows = list(
         await db.scalars(
             select(m.GoalForecast)
             .where(m.GoalForecast.user_id == user_id)
-            .order_by(m.GoalForecast.computed_at.desc(), m.GoalForecast.id.desc())
+            .order_by(m.GoalForecast.id.desc())
             .limit(2)
         )
     )
