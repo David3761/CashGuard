@@ -7,20 +7,11 @@ import pytest
 
 from app.agent.handlers import transactions as handlers
 from app.agent.language import detect_language
-from app.agent.proactive import run_proactive
 from app.agent.snapshot import build_snapshot
 from app.clock import FixedClock, use_clock
 from app.domain.enums import AnnotationSource, Beneficiary, Direction, Language, Purpose
 from app.domain.models import TxView
-from app.domain.results import AgentResult
 from app.errors import DomainError
-
-
-def test_run_proactive_template_question() -> None:
-    result = run_proactive(1, 9)
-    assert isinstance(result, AgentResult)
-    assert result.speak_text
-    assert len(result.quick_replies) >= 3
 
 
 @pytest.mark.parametrize("current", list(Language))

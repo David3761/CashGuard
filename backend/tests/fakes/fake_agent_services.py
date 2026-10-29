@@ -6,6 +6,7 @@ a receivable for the others' share. Every call is recorded. TODO(A3): swap the t
 A3's `execute_tool` over fake services once it lands.
 """
 
+import dataclasses
 import itertools
 import json
 from collections.abc import Callable, Sequence
@@ -22,6 +23,7 @@ from anthropic.types.beta import (
 
 from app.agent.fallbacks import OpenQuestion, PotRef
 from app.agent.loop import RunSetup, RunStatus
+from app.agent.proactive import ProactiveEvent
 
 SNAPSHOT = "SNAPSHOT: Matei, goal 10.000 lei, OPEN QUESTION [tx 918] Mega Image 500 lei"
 
@@ -78,6 +80,7 @@ class FakeAgentServices:
     pots: Sequence[PotRef] = ()
     tool_names: Sequence[str] = CHAT_TOOLS
     stored_history: list[BetaMessageParam] = field(default_factory=list)
+    events: dict[int, ProactiveEvent] = field(default_factory=dict)
 
     # state
     transactions: dict[int, Tx] = field(
@@ -90,6 +93,9 @@ class FakeAgentServices:
     history_limits: list[int] = field(default_factory=list)
     executed: list[tuple[str, dict[str, Any]]] = field(default_factory=list)
     runs: list[tuple[int | None, RunStatus, str | None]] = field(default_factory=list)
+    saved_messages: list[dict[str, Any]] = field(default_factory=list)
+    asked_events: list[int] = field(default_factory=list)
+    notifications: list[dict[str, Any]] = field(default_factory=list)
     overrides: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = field(default_factory=dict)
     _ids: "itertools.count[int]" = field(default_factory=lambda: itertools.count(9))
 
@@ -134,6 +140,21 @@ class FakeAgentServices:
 
     async def finish_run(self, run_id: int | None, status: RunStatus, reason: str | None) -> None:
         self.runs.append((run_id, status, reason))
+
+    # ── ProactiveServices ──
+    async def get_event(self, user_id: int, event_id: int) -> ProactiveEvent | None:
+        return self.events.get(event_id)
+
+    async def save_assistant_message(self, user_id: int, **fields: Any) -> int:
+        self.saved_messages.append(fields)
+        return len(self.saved_messages)
+
+    async def mark_event_asked(self, event_id: int) -> None:
+        self.asked_events.append(event_id)
+        self.events[event_id] = dataclasses.replace(self.events[event_id], status="asked")
+
+    async def create_notification(self, user_id: int, **fields: Any) -> None:
+        self.notifications.append(fields)
 
     # ── tiny handlers (the D18 "plan" key marks a money tool) ──
     def _h_get_plan_status(self, args: dict[str, Any]) -> dict[str, Any]:
