@@ -3,7 +3,7 @@
 from datetime import date
 from typing import Any, Literal
 
-from pydantic import Field
+from pydantic import AwareDatetime, Field
 
 from app.domain.base import Frozen, Money, NonNegativeMoney, Score
 from app.domain.enums import (
@@ -115,6 +115,7 @@ class PlanSummary(Frozen):
     previous_today_budget: Money | None = None
     next_7_days: tuple[DayBudget, ...] = ()
     reason: str | None = None
+    created_at: AwareDatetime | None = None
 
 
 class Driver(Frozen):

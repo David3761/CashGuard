@@ -23,6 +23,7 @@ def _summary(row: m.Plan, previous: m.Plan | None) -> PlanSummary:
         previous_today_budget=prev,
         next_7_days=result.next_7_days,
         reason=row.reason,
+        created_at=row.created_at,
     )
 
 
