@@ -127,15 +127,33 @@ How to use them: **`backend/tests/README.md`** (one example per fixture, how to 
 | `verify_token(token) -> Claims(sub, azp, roles, raw)` | `backend/app/auth.py` | RS256 only; `iss == KEYCLOAK_ISSUER`; `exp`/`nbf` with 30 s leeway **against real time** (tokens come from Keycloak's clock, not the simulator's); `azp` ∈ {savings-frontend, savings-dev, savings-cron} or `aud` ∋ `KEYCLOAK_AUDIENCE`. Errors: `invalid_token`, `token_expired`, `invalid_issuer`, `invalid_audience` (401), `auth_unavailable` (503) |
 | `JWKSCache`, `get_jwks()`, `set_jwks()` | same | keys by `kid` from `<KEYCLOAK_INTERNAL_URL or KEYCLOAK_ISSUER>/.well-known/openid-configuration`; encryption keys ignored; an unknown `kid` refetches at most once per 60 s; Keycloak down → 503 only when the key isn't cached. Verified live against the running Keycloak (a Matei token and a cron token) |
 
-### Service contract (stubs for danutu and David G.) ✅ signatures · bodies in B3/B4
+### Service contract + B3 CRUD services ✅ (only `load_user_context` is still a stub, B4)
 
 | What | Where | Notes for others |
 |---|---|---|
-| Every service of arch 15.1 + Bomboe.md B3 | `backend/app/services/<group>.py` (25 modules) | **code against these now.** Bodies raise `NotImplementedError("B3 step n")` until B3 fills them; the signatures won't change |
+| Every service of arch 15.1 + Bomboe.md B3 | `backend/app/services/<group>.py` (25 modules) | **implemented and tested** (`tests/db/test_services_*.py`: CRUD, state machines, isolation, Bucharest-day bounds, concurrency) |
 | The full list (names + parameters) | `backend/tests/unit/test_service_contracts.py::CONTRACT` | read this first; changing it is a contract change (tell the others) |
 | Rules | `app/services/__init__.py` docstring | every function takes `db, user_id` and only sees that user's rows (except `products`, `merchants`); another user's id → `DomainError("not_found", 404)`; bad state change → `invalid_transition` (409); returns `app.domain` objects, never ORM rows; **functions flush, the caller commits** |
 | `load_user_context(db, user_id, today, history_days=180)` | `app/services/context_loader.py` | **stub returns `tests.builders.matei_ctx(today=today)` for any user** until B4 |
 | Domain additions for the services | `app/domain/models.py` | `Product`, `LedgerDay`, `MessageView`, `NotificationView` |
+
+**Behaviour decisions in B3 (read these if you call the services):**
+
+| Where | Decision | Who should confirm |
+|---|---|---|
+| `agent_events.QUESTION_EVENT_TYPES` | the D25 "1 question a day" budget counts `transaction_question`, `overspend`, `underspend_week`, `weekly_reflection`, `preemptive_checkin`; **not** `goal_completed`, `hypothesis_check`, `warning`, `category_cap`, `receivable_reminder`, `life_change`, `infeasible_plan` | David G. (C7) |
+| `agent_events.create` | dedup returns the existing event (same day-level type + date, or same transaction question) instead of failing; a `transaction_question` without `ref_transaction_id` → `missing_transaction` (422) | — |
+| `agent_events` states | pending → asked → answered; pending/asked → handled/expired; `mark_answered` needs `asked` first | David G. (A3 marks the open question answered) |
+| `agent_runs.is_running` | a run still `running` after **2 minutes** is treated as lost (crash/restart), so it never blocks the user forever | — |
+| `receivables.update_status` | `open → paid` is allowed (paid back before any request), besides `open → requested → paid` and `open/requested → cancelled` | — |
+| `forecasts.latest().last_week_probability` | the newest weekly snapshot **before this week's Monday** (on Mon 15 Jun → the 8 Jun snapshot: "78%, față de 72%") | danutu (E8) |
+| `pots.add_saved` | atomic; below 0 → `insufficient_pot_balance` (409); a goal pot also updates `accounts.savings_pot` | danutu (E10) |
+| `goals.create` | also creates the goal pot (name = motivation, or "Obiectiv" until i18n exists); deadline before `clock.today()` → `deadline_passed`; one active goal → `goal_already_active` | — |
+| `plans.save` | takes a `PlanResult`, assigns the next version under `pg_advisory_xact_lock(1, user_id)`; `PlanSummary.previous_today_budget` comes from the version before | danutu (E4) |
+| `ledger.add_spent` | atomic upsert; `spent` never goes below 0; creates a missing (past) day | danutu (E3) |
+| `transactions.bump_attempts` | the 3rd failure → `failed` (arch §11) | — |
+| Error codes (422 unless noted) | `not_found` (404), `invalid_transition` (409), `conflict` (409), `goal_already_active` (409), `already_undone` (409), `already_saved` (409), `insufficient_pot_balance` (409), `invalid_amount`, `invalid_day_of_month`, `deadline_passed`, `invalid_effective_amount`, `invalid_preferences`, `invalid_fact`, `invalid_confidence`, `invalid_forecast`, `invalid_baselines`, `missing_transaction`, `invalid_language` / `invalid_coach_style` / `invalid_household_scale` / `invalid_input_mode` / `invalid_event_type` / `invalid_status` | — |
+| Products / merchants order | by `id` (no catalogue-order column; C12 ranks products per user) | — |
 
 Differences from the names in Bomboe.md / arch 15.1:
 - `list(…)` → **`list_all(…)`** everywhere (a module function named `list` shadows the builtin inside the module); `ledger.range` → `ledger.between`.
@@ -175,3 +193,4 @@ Differences from the names in Bomboe.md / arch 15.1:
 | `c548bd1` | service contract: stubs of every B3 service + `load_user_context` stub; contract test |
 | `c2d0ddd` | B5.1 `verify_token` + JWKS cache; F3 auth helpers |
 | `34f1687` | F3.2–3 API + WS fixtures, `tests/README.md`; `make check` → 481 passed |
+| `f22171e`, `5ac8c5c`, `306c337`, `94528ea` | B3 steps 1–4: every CRUD service; `make check` → 625 passed |
