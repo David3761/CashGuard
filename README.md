@@ -229,13 +229,13 @@ make check       # lock check + ruff + mypy + every non-live test, with coverage
 make test-all    # also the live tests against real Claude (costs money)
 ```
 
-The tree collects **4,157 tests**, plus 6 live tests that run only when asked:
+**4,167 tests pass** (94 % coverage), plus 6 live tests that run only when asked:
 
 | Suite | Tests | Needs |
 |---|---|---|
-| `tests/unit` + `tests/infra` | **3,587 passed** in 24 s (`uv run pytest -q --no-cov tests/unit tests/infra`) | nothing |
+| `tests/unit` + `tests/infra` | **3,589 passed** in ~25 s (`uv run pytest -q --no-cov tests/unit tests/infra`) | nothing |
 | `tests/acceptance` (the demo numbers) | 6 passed | nothing |
-| `tests/db` · `tests/api` · `tests/ws` | 344 · 206 · 14 | Postgres (`make db-up`); CI starts it as a service |
+| `tests/db` · `tests/api` · `tests/ws` | 351 · 207 · 14 passed | Postgres (`make db-up`); CI starts it as a service |
 | `tests/eval` (live) | 6, opt-in (`-m live`) | a real Claude key |
 
 What the suites cover:
