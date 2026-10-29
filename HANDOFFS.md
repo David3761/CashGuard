@@ -95,3 +95,17 @@
   - `merchants.id` is TEXT (the slug).
   - **Loaders must reject duplicate keys, NaN and Infinity, and read numbers as `Decimal`.** Use `tests/unit/datafiles.py`'s strict parser or the same rules. Plain `json.load` silently keeps the last duplicate key.
 - **Merge instruction:** keep ours. B12 maps `id` → `merchants.id` (TEXT PK). E12 builds `merchant_raw` from an alias plus realistic noise (store numbers, city, `POS`/`PAYU*` prefixes, `BOLT.EU/O/…`), and its "every merchant_raw resolves" test then exercises C2. Check: the B12 seed counts 62 merchants; `pytest tests/unit/test_data_merchants.py` passes.
+
+### H-8 · danutu E2–E10 + bomboe B3/B6 · the shared money helpers (`app/domain/money.py`) · 🟢
+- **Date / by:** 2026-10-29, DGAdavid1 (F2.2, merged cb6161e)
+- **Why it was needed:** every engine function and every service that touches money must round and split the same way.
+- **What was done:**
+  - `to_money(x)`: half-up to the cent, via `str()`, never -0.00; NaN, Infinity, |x| ≥ 10^10 (NUMERIC(12,2)) and non-machine strings → `ValueError`.
+  - `quantize_cents(d)`: the same rounding, with no range limit (display uses it).
+  - `to_decimal(x)`: exact, bounded.
+  - `split_share(total, people) -> Split(own, others)` with `own + others == total` exactly; `share_each` is display only.
+  - The `Money` pydantic field: `Decimal` in Python, a JSON number in JSON, so 31.20 is written `31.2`.
+  - `parse_json(text)`: `json.loads` with `parse_float=Decimal`, NaN/Infinity rejected.
+- **Decisions taken on the owner's behalf:** all arithmetic runs in the module's own decimal context, so a caller's context changes nothing. Scores are `float`, money is `Decimal` (D48).
+- **Merge instruction:** keep ours, and never re-implement rounding. bomboe: read JSON request bodies that carry money with `parse_json` (pydantic and the stdlib parse long JSON numbers as floats first; 2-dp amounts are exact either way). danutu: use `split_share` / `to_money` in the engine and keep Monte Carlo internals in float/numpy. Check: `pytest tests/unit/domain/test_money.py`.
+

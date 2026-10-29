@@ -467,7 +467,7 @@ Thresholds (0.5 / 0.6 / 0.55) are starting values. Tune them on the personas so 
 
 #### 5.3.5 Context-adjusted baselines ("a family of 4 spends more at Shop&Go")
 - **Household scale** (OECD-modified): first adult 1.0, each other person 14+ 0.5, each child under 14 0.3. 2 adults + 2 kids = **2.1**. Stored as `users.household_scale`.
-- **Prior** for household-scaled categories = `single_adult_prior × household_scale × city_index` (`data/priors.json`; Bucharest 1.0, Cluj 1.0, Iași 0.85).
+- **Prior** for household-scaled categories = `single_adult_prior × household_scale × city_index` (`data/priors.json`; Bucharest 1.0, Cluj 1.0, Iași 0.85). 🆕 **Exception (D50):** `kids` is a **per-child** prior × the number of children in the household facts (0 children → 0), not × household_scale. 🆕 **(D51)** Priors cover **variable** spending only. Rent, utilities, telecom and subscriptions come from each person's fixed costs / recurring detection and have no prior.
 - **Blend** personal history with the prior: `expected = (n · personal_median + 5 · prior_median) / (n + 5)`, n = transactions in that category in the last 180 days. A new user starts from the prior; after ~20 transactions their own history dominates.
 - **Instant rescale** when the household changes (baby, partner moves in, mother stays a month): `expected_new = expected_old × (scale_new / scale_old)`, inside the fact's validity window only. We don't wait months for history to catch up.
 - **Clean inputs:** baselines use `effective_amount`; the others' share, pot-funded spending and "not me" transactions are excluded. Otherwise one shared purchase would inflate "normal" and hide the next real anomaly.
@@ -886,8 +886,9 @@ The AI can **suggest** a change ("Want me to push the deadline 2 weeks? That get
 **Role.** A calm, warm, curious money companion for young people in Romania. Replies in `users.language`. When the reply will be spoken (`speak = true`), at most 2 short sentences in `speak_text`; the screen text may be up to 4.
 
 **Never judge (D33).** No moralising, no comparisons with other people, no "should have". Banned phrases, also **checked in code** (regex; a hit → regenerate once, then the template):
-- RO: "de ce" (use "ce a fost"), "prea mult", "risipă", "ar fi trebuit", "iar", "din nou", "iresponsabil", "nu-ți permiți".
+- RO: "de ce" (use "ce a fost"), "prea mult", "risipă", "ar fi trebuit", "iar", "din nou", "iresponsabil", "nu-ți permiți", 🆕 "irosi…" (D48).
 - EN: "why did you", "too much", "waste", "should have", "again", "irresponsible", "can't afford".
+- 🆕 **Policy (D48, `app/agent/style.py`):** every occurrence is flagged, even the neutral senses ("iar" as "and", "try again"), because a missed hit shows judgement to the user and a false hit only costs one regeneration. Inflections and contractions are matched (e.g. risipit, wasted, should've, nu ți-ai permis), and so are bypasses: markdown or emoji inside a phrase, invisible characters, Cyrillic/Greek look-alikes, soft hyphens. `lang=None` checks both languages. A filled template is final: data inside it (a merchant name) is not re-checked.
 
 **The question** (proactive run for a `transaction_question`):
 - one question, ≤ 18 words, spoken-friendly, open ("Ce a fost?"), with at most **one** hint from context ("A fost pentru echipă?") when a fact or precedent makes it likely;

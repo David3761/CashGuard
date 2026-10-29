@@ -13,8 +13,8 @@
 | Order | ID | Task | P | h | Status |
 |---|---|---|---|---|---|
 | 1 | F1 | Repo skeleton, tooling, config, clock, error envelope | P0 | 0.5 | ◐ F1.1–F1.3 ✅ ([report](backend/docs/reports/F1.md)) |
-| 2 | F2 | Shared domain types, enums, money helpers, test builders | P0 | 1 | ◐ 1a, 1b ✅ ([report](backend/docs/reports/F2.md)) |
-| 3 | C1 | Fixed lists, RO/EN labels & formats, data files | P0 | 1 | ◐ C1.1 ✅ ([report](backend/docs/reports/C1.md)) |
+| 2 | F2 | Shared domain types, enums, money helpers, test builders | P0 | 1 | ◐ 1a, 1b, 2 ✅ ([report](backend/docs/reports/F2.md)) |
+| 3 | C1 | Fixed lists, RO/EN labels & formats, data files | P0 | 1 | ◐ C1.1, C1.2 ✅ ([report](backend/docs/reports/C1.md)) |
 | 4 | C2 | Merchant normalisation | P0 | 0.5 | ☐ |
 | 5 | S0 | Stubs of your §15 functions | P0 | 0.25 | ☐ |
 | 6 | C4 | Signature library + `signatures_for_fact` | P0 | 1.5 | ☐ |
@@ -24,7 +24,7 @@
 | 10 | C7 | Question policy | P0 | 1 | ☐ |
 | 11 | A1 | Claude client wrapper + `FakeLLM` | P0 | 0.5 | ◐ steps 1–2 ✅ ([report](backend/docs/reports/A1.md)) |
 | 12 | A2 | Tool schemas, registry, `tools_for` | P0 | 1 | ☐ |
-| 13 | A5 | Prompts, banned-phrase checker, templates | P0 | 0.75 | ☐ |
+| 13 | A5 | Prompts, banned-phrase checker, templates | P0 | 0.75 | ◐ A5.1 ✅ ([report](backend/docs/reports/A5.md)) |
 | 14 | A4 | Snapshot builder | P0 | 1 | ☐ |
 | 15 | A3 | Tool executor + every handler | P0 | 2 | ☐ |
 | 16 | A6 | Agent loop | P0 | 1 | ☐ |

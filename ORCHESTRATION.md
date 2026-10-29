@@ -51,10 +51,10 @@
 
 | Task | Agent | Worktree / branch | Needs (from) | Status |
 |---|---|---|---|---|
-| F1 (F1.2–F1.5) | f1 | `.worktrees/f1` · `dga-task/f1-skeleton` | — | F1.2, F1.3 ✅ merged · building F1.4 |
-| F2 | f2 | `.worktrees/f2` · `dga-task/f2-domain` | — | 1a, 1b ✅ merged · building step 2 (money) |
-| C1 | c1 | `.worktrees/c1` · `dga-task/c1-lists` | C1.4 `to_money`: F2 step 2 (f2) | C1.1 + fix ✅ merged · C1.2 in review |
-| A1 | a1 | `.worktrees/a1` · `dga-task/a1-llm` | — | steps 1–2 ✅ merged · building step 3 |
-| A5 | a5 | `.worktrees/a5` · `dga-task/a5-prompts` | — | A5.1 in review fixes |
+| F1 (F1.2–F1.5) | f1 | `.worktrees/f1` · `dga-task/f1-skeleton` | — | F1.2, F1.3 ✅ merged · F1.4 review fixes |
+| F2 | f2 | `.worktrees/f2` · `dga-task/f2-domain` | — | 1a, 1b, 2 ✅ merged · building step 3 |
+| C1 | c1 | `.worktrees/c1` · `dga-task/c1-lists` | — | C1.1, C1.2 ✅ merged · C1.3 recalibration (D50/D51) |
+| A1 | a1 | `.worktrees/a1` · `dga-task/a1-llm` | — | steps 1–2 ✅ merged · step 3 review fixes |
+| A5 | a5 | `.worktrees/a5` · `dga-task/a5-prompts` | — | A5.1 ✅ merged · building A5.2 |
 
 **Next waves** (an agent starts as soon as its inputs are merged): S0, C2, C4, A2 (after F2) → D1, C5, A4 → C6, A3 → C7, A6 → A7, D2 → D4 → ★ checkpoint (Scene A) → the P1 / P2 tasks. Dependencies: [`DGAdavid1.md`](DGAdavid1.md) §1–§2 and [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) §1.
