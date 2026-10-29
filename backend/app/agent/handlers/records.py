@@ -34,10 +34,10 @@ def record_id(args: Mapping[str, Any], *names: str) -> int:
 
 
 def adder(port: PortOf, what: str, check: Callable[[Mapping[str, Any]], None]) -> Handler:
-    def handler(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+    async def handler(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
         data = changes(args)
         check(data)
-        row = port(ctx.services).create(ctx.user_id, data)
+        row = await port(ctx.services).create(ctx.user_id, data)
         return {what: row, "_trigger_ref": {f"{what}_id": row["id"]}}
 
     return handler
@@ -46,25 +46,25 @@ def adder(port: PortOf, what: str, check: Callable[[Mapping[str, Any]], None]) -
 def updater(
     port: PortOf, what: str, ids: tuple[str, ...], check: Callable[[Mapping[str, Any]], None]
 ) -> Handler:
-    def handler(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+    async def handler(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
         rid = record_id(args, *ids)
         records = port(ctx.services)
-        records.get(ctx.user_id, rid)  # not_found for another user's row
+        await records.get(ctx.user_id, rid)  # not_found for another user's row
         found = changes(args, *ids)
         need_changes(found, what.replace("_", " "))
         check(found)
-        row = records.update(ctx.user_id, rid, found)
+        row = await records.update(ctx.user_id, rid, found)
         return {what: row, "_trigger_ref": {f"{what}_id": rid}}
 
     return handler
 
 
 def remover(port: PortOf, what: str, ids: tuple[str, ...]) -> Handler:
-    def handler(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+    async def handler(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
         rid = record_id(args, *ids)
         records = port(ctx.services)
-        records.get(ctx.user_id, rid)
-        records.remove(ctx.user_id, rid)
+        await records.get(ctx.user_id, rid)
+        await records.remove(ctx.user_id, rid)
         return {f"removed_{what}_id": rid, "_trigger_ref": {f"{what}_id": rid}}
 
     return handler

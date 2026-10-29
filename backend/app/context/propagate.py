@@ -11,7 +11,7 @@ Pure core:
 - `scale_windows(before, after, start, end)`: the days where the household scale differs with
   the fact as it is now vs without it ("mama stă la noi în iulie" → 2.1 → 2.6 in July only).
 
-Shells (DB through bomboe's services and danutu's engine, looked up at call time):
+Shells (`async`; DB through bomboe's services and danutu's engine, looked up at call time):
 - `reevaluate_after_fact(db, user_id, fact_id)`: the fact's signatures (the library's + the
   Claude ones it already has; none when it's no longer confirmed) → `recompute_baselines` →
   re-evaluate → `save_evaluation` + `on_annotation_changed` for each change. The tool handlers
@@ -168,28 +168,30 @@ def _engine(name: str) -> Any:
     return getattr(importlib.import_module("app.engine.service"), name)
 
 
-def _context(db: Any, user_id: int, today: date) -> UserContext:
+async def _context(db: Any, user_id: int, today: date) -> UserContext:
     from app.context import service  # the one B4 loader the other shells use
 
-    return service._context(db, user_id, today)
+    return await service._context(db, user_id, today)
 
 
-def reevaluate_after_fact(db: Any, user_id: int, fact_id: int) -> PropagationResult:
+async def reevaluate_after_fact(db: Any, user_id: int, fact_id: int) -> PropagationResult:
     """Signatures → baselines → the last 30 days re-read and saved (+ ledger deltas). No plan:
     the tool executor recomputes it once after the tool (D18)."""
     today = clock.today()
-    fact: LifeFact = _service("life_facts").get(db, user_id, fact_id)
+    fact: LifeFact = await _service("life_facts").get(db, user_id, fact_id)
     signatures = _service("signatures")
-    stored = signatures.list_for_fact(db, user_id, fact_id)
-    signatures.replace_for_fact(db, user_id, fact_id, fact_signatures(fact, stored))
-    _engine("recompute_baselines")(db, user_id)
-    ctx = _context(db, user_id, today)
+    stored = await signatures.list_for_fact(db, user_id, fact_id)
+    await signatures.replace_for_fact(db, user_id, fact_id, fact_signatures(fact, stored))
+    await _engine("recompute_baselines")(db, user_id)
+    ctx = await _context(db, user_id, today)
     transactions = _service("transactions")
-    recent = transactions.list_effective(db, user_id, today - timedelta(days=WINDOW_DAYS), today)
+    since = today - timedelta(days=WINDOW_DAYS)
+    recent = await transactions.list_effective(db, user_id, since, today)
     changes = reevaluate(ctx, recent, today)
     for change in changes:
-        saved = transactions.save_evaluation(db, user_id, change.transaction_id, change.evaluation)
-        _engine("on_annotation_changed")(db, user_id, change.transaction_id, change.old, saved)
+        tx_id = change.transaction_id
+        saved = await transactions.save_evaluation(db, user_id, tx_id, change.evaluation)
+        await _engine("on_annotation_changed")(db, user_id, tx_id, change.old, saved)
     return PropagationResult(
         fact_id=fact_id,
         household_scale=household_scale(ctx.facts, today),
@@ -197,11 +199,13 @@ def reevaluate_after_fact(db: Any, user_id: int, fact_id: int) -> PropagationRes
     )
 
 
-def on_fact_changed(db: Any, user_id: int, fact_id: int) -> PropagationResult:
+async def on_fact_changed(db: Any, user_id: int, fact_id: int) -> PropagationResult:
     """§15 (5.3.9): `reevaluate_after_fact`, then `recompute_plan(reason="fact: …")` and
-    `forecast_goal` on the new plan version."""
-    result = reevaluate_after_fact(db, user_id, fact_id)
-    fact: LifeFact = _service("life_facts").get(db, user_id, fact_id)
-    plan = _engine("recompute_plan")(db, user_id, plan_reason(fact), {"fact_id": fact_id})
-    forecast = _engine("forecast_goal")(db, user_id, plan.version)
+    `forecast_goal` on the new plan version (neither when there is no plan: no goal, E4)."""
+    result = await reevaluate_after_fact(db, user_id, fact_id)
+    fact: LifeFact = await _service("life_facts").get(db, user_id, fact_id)
+    plan = await _engine("recompute_plan")(db, user_id, plan_reason(fact), {"fact_id": fact_id})
+    if plan is None:
+        return result
+    forecast = await _engine("forecast_goal")(db, user_id, plan.version)
     return result.model_copy(update={"plan": plan, "forecast": forecast})

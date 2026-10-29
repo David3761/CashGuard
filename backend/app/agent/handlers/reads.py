@@ -20,7 +20,9 @@ MAX_DAYS = 92
 MAX_ROWS = 50
 
 
-def get_transactions(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def get_transactions(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
     until = pick(args, "to_date", "to", "until", default=clock.today())
     since = pick(
         args, "from_date", "from_", "from", "since", default=until - timedelta(DEFAULT_DAYS)
@@ -29,7 +31,7 @@ def get_transactions(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -
         raise DomainError("invalid_input", "from must not be after to.", 422)
     if (until - since).days > MAX_DAYS:
         raise DomainError("invalid_input", f"Ask for at most {MAX_DAYS} days at a time.", 422)
-    txs = ctx.services.transactions.list(ctx.user_id, since, until, args.get("category"))
+    txs = await ctx.services.transactions.list(ctx.user_id, since, until, args.get("category"))
     txs = sorted(txs, key=lambda t: t.occurred_at, reverse=True)
     return {
         "from": since.isoformat(),
@@ -40,7 +42,7 @@ def get_transactions(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -
     }
 
 
-def get_spending_summary(
+async def get_spending_summary(
     ctx: ToolContext, run: RunState, args: Mapping[str, Any]
 ) -> dict[str, Any]:
     days = int(args.get("period_days") or 30)
@@ -49,7 +51,7 @@ def get_spending_summary(
     until = clock.today()
     since = until - timedelta(days=days - 1)
     by_category: dict[str, Decimal] = defaultdict(lambda: Decimal("0.00"))
-    for tx in ctx.services.transactions.list(ctx.user_id, since, until):
+    for tx in await ctx.services.transactions.list(ctx.user_id, since, until):
         if tx.direction is Direction.DEBIT:
             by_category[str(tx.category or "other")] += tx.effective_amount
     ranked = sorted(by_category.items(), key=lambda kv: (-kv[1], kv[0]))
@@ -61,38 +63,42 @@ def get_spending_summary(
     }
 
 
-def get_plan_status(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
-    return {"plan": to_jsonable(ctx.services.plans.latest(ctx.user_id))}
+async def get_plan_status(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
+    return {"plan": to_jsonable(await ctx.services.plans.latest(ctx.user_id))}
 
 
-def get_goal_forecast(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def get_goal_forecast(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
     return {
-        "goal": to_jsonable(ctx.services.goals.active(ctx.user_id)),
-        "forecast": to_jsonable(ctx.services.forecasts.latest(ctx.user_id)),
+        "goal": to_jsonable(await ctx.services.goals.active(ctx.user_id)),
+        "forecast": to_jsonable(await ctx.services.forecasts.latest(ctx.user_id)),
     }
 
 
-def simulate_plan(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def simulate_plan(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
     found = changes(args)
     if not found:
         raise DomainError("nothing_to_simulate", "Give at least one change to simulate.", 422)
-    result = ctx.engine.simulate_plan(ctx.db, ctx.user_id, found)
+    result = await ctx.engine.simulate_plan(ctx.db, ctx.user_id, found)
     return {"simulation": to_jsonable(result), "saved": False}
 
 
-def suggest_savings_products(
+async def suggest_savings_products(
     ctx: ToolContext, run: RunState, args: Mapping[str, Any]
 ) -> dict[str, Any]:
     """The mock products ranked for this person by C12 (`context.products`): the goal horizon,
     the set amount and how steady the income is; `why_for_you` in the user's language."""
     s, uid = ctx.services, ctx.user_id
     needs = products.needs_from(
-        s.goals.active(uid),
-        s.income_sources.list(uid),
-        s.life_facts.list_active(uid),
+        await s.goals.active(uid),
+        await s.income_sources.list(uid),
+        await s.life_facts.list_active(uid),
         clock.today(),
     )
-    ranked = products.rank_offers(needs, s.products.list())
+    ranked = products.rank_offers(needs, await s.products.list())
     return {
         "horizon_months": needs.horizon_months,
         "stable_income": needs.stable_income,

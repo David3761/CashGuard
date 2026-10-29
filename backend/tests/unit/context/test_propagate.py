@@ -232,21 +232,23 @@ class _World:
         self.signatures: list[Any] = []
 
     # life_facts / signatures / transactions
-    def get(self, db: Any, user_id: int, fact_id: int) -> LifeFact:
+    async def get(self, db: Any, user_id: int, fact_id: int) -> LifeFact:
         return self.job
 
-    def list_for_fact(self, db: Any, user_id: int, fact_id: int) -> list[Any]:
+    async def list_for_fact(self, db: Any, user_id: int, fact_id: int) -> list[Any]:
         return list(self.signatures)
 
-    def replace_for_fact(self, db: Any, user_id: int, fact_id: int, sigs: list[Any]) -> list[Any]:
+    async def replace_for_fact(
+        self, db: Any, user_id: int, fact_id: int, sigs: list[Any]
+    ) -> list[Any]:
         self.calls.append("replace_for_fact")
         self.signatures = list(sigs)
         return sigs
 
-    def list_effective(self, db: Any, user_id: int, since: date, until: date) -> list[TxView]:
+    async def list_effective(self, db: Any, user_id: int, since: date, until: date) -> list[TxView]:
         return list(self.txs.values())
 
-    def save_evaluation(self, db: Any, user_id: int, tx_id: int, ev: Any) -> TxView:
+    async def save_evaluation(self, db: Any, user_id: int, tx_id: int, ev: Any) -> TxView:
         self.calls.append(f"save_evaluation {tx_id}")
         self.txs[tx_id] = self.txs[tx_id].replace(
             **ev.model_dump(
@@ -263,21 +265,23 @@ class _World:
         return self.txs[tx_id]
 
     # engine
-    def recompute_baselines(self, db: Any, user_id: int) -> dict[str, Any]:
+    async def recompute_baselines(self, db: Any, user_id: int) -> dict[str, Any]:
         self.calls.append("recompute_baselines")
         return {}
 
-    def on_annotation_changed(self, db: Any, user_id: int, tx_id: int, old: Any, new: Any) -> None:
+    async def on_annotation_changed(
+        self, db: Any, user_id: int, tx_id: int, old: Any, new: Any
+    ) -> None:
         self.calls.append(f"on_annotation_changed {tx_id} {old.effective_amount}->"
                           f"{new.effective_amount}")  # fmt: skip
 
-    def recompute_plan(self, db: Any, user_id: int, reason: str, ref: Any) -> PlanSummary:
+    async def recompute_plan(self, db: Any, user_id: int, reason: str, ref: Any) -> PlanSummary:
         self.version += 1
         self.calls.append(f"recompute_plan {reason}")
         return PlanSummary(version=self.version, feasible=True, today_budget=Decimal(150),
                            next_7_days=(), reason=reason)  # fmt: skip
 
-    def forecast_goal(self, db: Any, user_id: int, version: int) -> Forecast:
+    async def forecast_goal(self, db: Any, user_id: int, version: int) -> Forecast:
         self.calls.append(f"forecast_goal {version}")
         return Forecast(probability=0.7, p10=Decimal(1), p50=Decimal(2), p90=Decimal(3))
 
@@ -287,13 +291,17 @@ def world(monkeypatch: pytest.MonkeyPatch) -> _World:
     w = _World(andrei_ctx(), [asked_tv()], andrei_ctx().facts[0])
     monkeypatch.setattr(propagate, "_service", lambda name: w)
     monkeypatch.setattr(propagate, "_engine", lambda name: getattr(w, name))
-    monkeypatch.setattr(service, "_context", lambda db, user_id, today: w.ctx)
+
+    async def context(db: Any, user_id: int, today: date) -> UserContext:
+        return w.ctx  # read at call time: a test may replace it
+
+    monkeypatch.setattr(service, "_context", context)
     return w
 
 
-def test_on_fact_changed_runs_the_whole_chain(world: _World) -> None:
+async def test_on_fact_changed_runs_the_whole_chain(world: _World) -> None:
     with clock.use_clock(clock.FixedClock(at(TODAY, 10))):
-        result = service.on_fact_changed(None, 2, 11)
+        result = await service.on_fact_changed(None, 2, 11)
     assert result.changed_transaction_ids == (500,)
     assert result.household_scale == Decimal("1.5")
     assert result.plan is not None
@@ -311,27 +319,27 @@ def test_on_fact_changed_runs_the_whole_chain(world: _World) -> None:
     assert world.txs[500].purpose is Purpose.WORK_TOOL
     assert any(s.category == "electronics" for s in world.signatures)
     with clock.use_clock(clock.FixedClock(at(TODAY, 10))):  # twice: nothing more to re-read
-        again = service.on_fact_changed(None, 2, 11)
+        again = await service.on_fact_changed(None, 2, 11)
     assert again.changed_transaction_ids == ()
     assert again.plan is not None
     assert again.plan.version == 9
 
 
-def test_the_tool_path_leaves_the_plan_to_the_executor(world: _World) -> None:
+async def test_the_tool_path_leaves_the_plan_to_the_executor(world: _World) -> None:
     from app.agent.ports import LazyContext
 
     with clock.use_clock(clock.FixedClock(at(TODAY, 10))):
-        result = LazyContext().on_fact_changed(None, 2, 11)
+        result = await LazyContext().on_fact_changed(None, 2, 11)
     assert result is not None
     assert result.changed_transaction_ids == (500,)
     assert result.plan is None
     assert not any(call.startswith("recompute_plan") for call in world.calls)
 
 
-def test_an_expired_fact_loses_its_signatures(world: _World) -> None:
+async def test_an_expired_fact_loses_its_signatures(world: _World) -> None:
     world.job = world.job.replace(status=FactStatus.EXPIRED)
     world.ctx = without_job(world.ctx)
     with clock.use_clock(clock.FixedClock(at(TODAY, 10))):
-        result = propagate.reevaluate_after_fact(None, 2, 11)
+        result = await propagate.reevaluate_after_fact(None, 2, 11)
     assert world.signatures == []
     assert result.changed_transaction_ids == ()  # the TV was still a waiting question

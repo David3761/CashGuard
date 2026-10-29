@@ -84,7 +84,9 @@ def _clock() -> Any:
 class LibraryOnlyContext(LazyContext):
     """The real C4 library; C9's propagation needs the DB, so it is a no-op here."""
 
-    def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> PropagationResult | None:
+    async def on_fact_changed(
+        self, db: Any, user_id: int, fact_id: int
+    ) -> PropagationResult | None:
         return PropagationResult(fact_id=fact_id)
 
 
@@ -157,16 +159,16 @@ async def test_the_rich_message_onboards_in_one_turn_then_completes() -> None:
 
     # D46: the motivation was saved with the goal, in the same call
     s = harness.services
-    goal = s.goals.active(1)
+    goal = await s.goals.active(1)
     assert goal is not None
     assert goal.motivation == "la mare cu prietenii"
     assert goal.amount == Decimal("3000")
     income, costs = s.income_sources, s.fixed_costs
     assert isinstance(income, FakeRecords)
     assert isinstance(costs, FakeRecords)
-    assert [r["amount"] for r in income.list(1)] == [Decimal("2400"), Decimal("500")]
-    assert [r["name"] for r in costs.list(1)] == ["Chirie", "Telefon"]
-    facts = s.life_facts.list_active(1)
+    assert [r["amount"] for r in await income.list(1)] == [Decimal("2400"), Decimal("500")]
+    assert [r["name"] for r in await costs.list(1)] == ["Chirie", "Telefon"]
+    facts = await s.life_facts.list_active(1)
     assert [f.type for f in facts] == [
         FactType.OCCUPATION,
         FactType.EMPLOYMENT,
@@ -231,4 +233,4 @@ async def test_onboarding_facts_keep_the_chat_source_outside_onboarding() -> Non
     await run_agent(1, "chat", "Sunt barista.", llm=fake, services=wiring_for(harness))
     life_facts = harness.services.life_facts
     assert isinstance(life_facts, FakeLifeFacts)
-    assert [f.source for f in life_facts.list_active(1)] == [FactSource.CHAT]
+    assert [f.source for f in await life_facts.list_active(1)] == [FactSource.CHAT]

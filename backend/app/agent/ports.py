@@ -13,12 +13,16 @@ bomboe implements them with Postgres (`app/services/*`); the tests use the in-me
   `PatternRule`, `Pot`, `Goal`, `PlanPreferences`); the plain records (income sources, fixed
   costs, life events, slips, reflections, …) are `Row` dicts with the arch 4.x column names.
 
+Every port method is `async` (bomboe's services run on SQLAlchemy's `AsyncSession`, danutu's
+engine is async too), so the handlers and the executor `await` them.
+
 The engine (danutu, arch 15.1) and the context layer (C4, C8, C9) are behind ports too, with lazy
 adapters that call the real functions: their modules are landing in parallel, so nothing here
 imports them at import time.
 """
 
 import importlib
+import inspect
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date
@@ -73,104 +77,104 @@ class ReceivableDraft:
 
 
 class TransactionsPort(Protocol):
-    def get(self, user_id: int, tx_id: int) -> TxView: ...
-    def list(
+    async def get(self, user_id: int, tx_id: int) -> TxView: ...
+    async def list(
         self, user_id: int, since: date, until: date, category: str | None = None
     ) -> list[TxView]: ...
-    def annotate(self, user_id: int, tx_id: int, annotation: Annotation) -> TxView: ...
-    def set_pot(self, user_id: int, tx_id: int, pot_id: int) -> TxView: ...
+    async def annotate(self, user_id: int, tx_id: int, annotation: Annotation) -> TxView: ...
+    async def set_pot(self, user_id: int, tx_id: int, pot_id: int) -> TxView: ...
 
 
 class ReceivablesPort(Protocol):
-    def create(self, user_id: int, draft: ReceivableDraft) -> Receivable: ...
-    def get(self, user_id: int, receivable_id: int) -> Receivable: ...
-    def cancel(self, user_id: int, receivable_id: int) -> Receivable: ...
-    def mark_paid(self, user_id: int, receivable_id: int) -> Receivable: ...
-    def list_open(self, user_id: int) -> list[Receivable]: ...  # open + requested
-    def open_for_transaction(self, user_id: int, tx_id: int) -> Receivable | None: ...
+    async def create(self, user_id: int, draft: ReceivableDraft) -> Receivable: ...
+    async def get(self, user_id: int, receivable_id: int) -> Receivable: ...
+    async def cancel(self, user_id: int, receivable_id: int) -> Receivable: ...
+    async def mark_paid(self, user_id: int, receivable_id: int) -> Receivable: ...
+    async def list_open(self, user_id: int) -> list[Receivable]: ...  # open + requested
+    async def open_for_transaction(self, user_id: int, tx_id: int) -> Receivable | None: ...
 
 
 class LifeFactsPort(Protocol):
-    def create(self, user_id: int, draft: LifeFactDraft) -> LifeFact: ...
-    def get(self, user_id: int, fact_id: int) -> LifeFact: ...
-    def update(self, user_id: int, fact_id: int, draft: LifeFactDraft) -> LifeFact: ...
-    def expire(self, user_id: int, fact_id: int, valid_to: date) -> LifeFact: ...
-    def confirm(self, user_id: int, fact_id: int) -> LifeFact: ...
-    def reject(self, user_id: int, fact_id: int) -> LifeFact: ...
-    def list_active(self, user_id: int) -> list[LifeFact]: ...  # confirmed, valid today
+    async def create(self, user_id: int, draft: LifeFactDraft) -> LifeFact: ...
+    async def get(self, user_id: int, fact_id: int) -> LifeFact: ...
+    async def update(self, user_id: int, fact_id: int, draft: LifeFactDraft) -> LifeFact: ...
+    async def expire(self, user_id: int, fact_id: int, valid_to: date) -> LifeFact: ...
+    async def confirm(self, user_id: int, fact_id: int) -> LifeFact: ...
+    async def reject(self, user_id: int, fact_id: int) -> LifeFact: ...
+    async def list_active(self, user_id: int) -> list[LifeFact]: ...  # confirmed, valid today
 
 
 class SignaturesPort(Protocol):
-    def replace_for_fact(
+    async def replace_for_fact(
         self, user_id: int, fact_id: int, signatures: Sequence[Signature]
     ) -> None: ...
 
 
 class PatternRulesPort(Protocol):
-    def create(self, user_id: int, rule: PatternRule) -> PatternRule: ...
+    async def create(self, user_id: int, rule: PatternRule) -> PatternRule: ...
 
 
 class PotsPort(Protocol):
-    def create(self, user_id: int, data: Mapping[str, Any]) -> Pot: ...
-    def get(self, user_id: int, pot_id: int) -> Pot: ...
-    def update(self, user_id: int, pot_id: int, changes: Mapping[str, Any]) -> Pot: ...
-    def close(self, user_id: int, pot_id: int) -> Pot: ...
+    async def create(self, user_id: int, data: Mapping[str, Any]) -> Pot: ...
+    async def get(self, user_id: int, pot_id: int) -> Pot: ...
+    async def update(self, user_id: int, pot_id: int, changes: Mapping[str, Any]) -> Pot: ...
+    async def close(self, user_id: int, pot_id: int) -> Pot: ...
 
 
 class RecordsPort(Protocol):
     """Plain per-user CRUD: income sources, fixed costs, life events, slips, reflections."""
 
-    def create(self, user_id: int, data: Mapping[str, Any]) -> Row: ...
-    def get(self, user_id: int, record_id: int) -> Row: ...
-    def update(self, user_id: int, record_id: int, changes: Mapping[str, Any]) -> Row: ...
-    def list(self, user_id: int) -> list[Row]: ...
-    def remove(self, user_id: int, record_id: int) -> None: ...
+    async def create(self, user_id: int, data: Mapping[str, Any]) -> Row: ...
+    async def get(self, user_id: int, record_id: int) -> Row: ...
+    async def update(self, user_id: int, record_id: int, changes: Mapping[str, Any]) -> Row: ...
+    async def list(self, user_id: int) -> list[Row]: ...
+    async def remove(self, user_id: int, record_id: int) -> None: ...
 
 
 class GoalsPort(Protocol):
-    def active(self, user_id: int) -> Goal | None: ...
-    def create(self, user_id: int, data: Mapping[str, Any]) -> Goal: ...
-    def update(self, user_id: int, goal_id: int, changes: Mapping[str, Any]) -> Goal: ...
+    async def active(self, user_id: int) -> Goal | None: ...
+    async def create(self, user_id: int, data: Mapping[str, Any]) -> Goal: ...
+    async def update(self, user_id: int, goal_id: int, changes: Mapping[str, Any]) -> Goal: ...
 
 
 class PlanPreferencesPort(Protocol):
-    def get(self, user_id: int) -> PlanPreferences: ...
-    def save(self, user_id: int, preferences: PlanPreferences) -> PlanPreferences: ...
+    async def get(self, user_id: int) -> PlanPreferences: ...
+    async def save(self, user_id: int, preferences: PlanPreferences) -> PlanPreferences: ...
 
 
 class LifeProfilePort(Protocol):
-    def set_note(self, user_id: int, key: str, value: str) -> Row: ...
+    async def set_note(self, user_id: int, key: str, value: str) -> Row: ...
 
 
 class AgentEventsPort(Protocol):
-    def get(self, user_id: int, event_id: int) -> Row: ...
-    def open_question_for(self, user_id: int, tx_id: int) -> Row | None: ...
-    def mark_answered(self, user_id: int, event_id: int) -> Row: ...
-    def mark_handled(self, user_id: int, event_id: int) -> Row: ...
+    async def get(self, user_id: int, event_id: int) -> Row: ...
+    async def open_question_for(self, user_id: int, tx_id: int) -> Row | None: ...
+    async def mark_answered(self, user_id: int, event_id: int) -> Row: ...
+    async def mark_handled(self, user_id: int, event_id: int) -> Row: ...
 
 
 class TransfersPort(Protocol):
-    def to_savings(self, user_id: int, amount: Decimal) -> Row: ...
+    async def to_savings(self, user_id: int, amount: Decimal) -> Row: ...
 
 
 class UsersPort(Protocol):
-    def mark_onboarded(self, user_id: int) -> Row: ...
+    async def mark_onboarded(self, user_id: int) -> Row: ...
 
 
 class PlansPort(Protocol):
-    def latest(self, user_id: int) -> Row | None: ...
+    async def latest(self, user_id: int) -> Row | None: ...
 
 
 class ForecastsPort(Protocol):
-    def latest(self, user_id: int) -> Row | None: ...
+    async def latest(self, user_id: int) -> Row | None: ...
 
 
 class ProductsPort(Protocol):
-    def list(self) -> list[Row]: ...
+    async def list(self) -> list[Row]: ...
 
 
 class ToolCallsPort(Protocol):
-    def log(
+    async def log(
         self,
         user_id: int,
         run_id: int | None,
@@ -213,15 +217,23 @@ class Services:
 
 
 class EnginePort(Protocol):
-    def recompute_plan(
+    async def recompute_plan(
         self, db: Any, user_id: int, reason: str, trigger_ref: dict[str, Any] | None = None
-    ) -> PlanSummary: ...
-    def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast: ...
-    def own_share_estimate(self, db: Any, user_id: int, tx: TxView) -> Decimal: ...
-    def on_annotation_changed(
-        self, db: Any, user_id: int, tx_id: int, old: Decimal, new: Decimal
+    ) -> PlanSummary | None: ...  # None: no goal yet, so no plan (danutu's E4)
+    async def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast: ...
+    async def own_share_estimate(self, db: Any, user_id: int, tx: TxView) -> Decimal: ...
+    async def on_annotation_changed(
+        self,
+        db: Any,
+        user_id: int,
+        tx_id: int,
+        old: Decimal,
+        new: Decimal,
+        *,
+        before: TxView | None = None,
+        after: TxView | None = None,
     ) -> None: ...
-    def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> SimResult: ...
+    async def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> SimResult: ...
 
 
 class LazyEngine:
@@ -230,27 +242,47 @@ class LazyEngine:
     def _fn(self, name: str) -> Any:
         return getattr(importlib.import_module("app.engine.service"), name)
 
-    def recompute_plan(
+    async def recompute_plan(
         self, db: Any, user_id: int, reason: str, trigger_ref: dict[str, Any] | None = None
-    ) -> PlanSummary:
-        plan: PlanSummary = self._fn("recompute_plan")(db, user_id, reason, trigger_ref)
+    ) -> PlanSummary | None:
+        plan: PlanSummary | None = await self._fn("recompute_plan")(
+            db, user_id, reason, trigger_ref
+        )
         return plan
 
-    def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast:
-        forecast: Forecast = self._fn("forecast_goal")(db, user_id, plan_version)
+    async def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast:
+        forecast: Forecast = await self._fn("forecast_goal")(db, user_id, plan_version)
         return forecast
 
-    def own_share_estimate(self, db: Any, user_id: int, tx: TxView) -> Decimal:
-        value: Decimal = self._fn("own_share_estimate")(db, user_id, tx)
+    async def own_share_estimate(self, db: Any, user_id: int, tx: TxView) -> Decimal:
+        value: Decimal = await self._fn("own_share_estimate")(db, user_id, tx)
         return value
 
-    def on_annotation_changed(
-        self, db: Any, user_id: int, tx_id: int, old: Decimal, new: Decimal
+    async def on_annotation_changed(
+        self,
+        db: Any,
+        user_id: int,
+        tx_id: int,
+        old: Decimal,
+        new: Decimal,
+        *,
+        before: TxView | None = None,
+        after: TxView | None = None,
     ) -> None:
-        self._fn("on_annotation_changed")(db, user_id, tx_id, old, new)
+        """danutu's E3 takes the transaction as it was and as it is now, not two amounts
+        (`ledger.reannotate_delta` also reads the purpose and the pot). The port keeps the two
+        effective amounts; the caller passes the views when it has them (`apply_annotation`
+        does). A missing `after` comes from bomboe's `transactions.get`, and a missing `before`
+        is `after` with the old amount."""
+        if after is None:
+            transactions = importlib.import_module("app.services.transactions")
+            after = await transactions.get(db, user_id, tx_id)
+        after = after.replace(effective_amount=new)
+        before = (before or after).replace(effective_amount=old)
+        await self._fn("on_annotation_changed")(db, user_id, tx_id, before, after)
 
-    def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> SimResult:
-        result: SimResult = self._fn("simulate_plan")(db, user_id, changes)
+    async def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> SimResult:
+        result: SimResult = await self._fn("simulate_plan")(db, user_id, changes)
         return result
 
 
@@ -258,11 +290,13 @@ class LazyEngine:
 
 
 class ContextPort(Protocol):
-    def signatures_for_fact(
+    async def signatures_for_fact(
         self, fact: LifeFact, llm_signatures: list[dict[str, Any]] | None
     ) -> list[Signature]: ...
-    def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> PropagationResult | None: ...
-    def learn_from_annotation(self, db: Any, user_id: int, tx_id: int) -> Any: ...
+    async def on_fact_changed(
+        self, db: Any, user_id: int, fact_id: int
+    ) -> PropagationResult | None: ...
+    async def learn_from_annotation(self, db: Any, user_id: int, tx_id: int) -> Any: ...
 
 
 def _first(*candidates: tuple[str, str]) -> Any:
@@ -277,34 +311,42 @@ def _first(*candidates: tuple[str, str]) -> Any:
     raise RuntimeError(f"none of {candidates} exists")
 
 
+async def _settle(value: Any) -> Any:
+    """`value`, awaited when it is awaitable: the §15 shells that load data are async, the pure
+    cores (C4's library) sync, and a module landing in parallel may still be either."""
+    return await value if inspect.isawaitable(value) else value
+
+
 class LazyContext:
     """`ContextPort` over `app.context.*`: C4's library, C9's propagation and C8's rules once they
     land, S0's `app.context.service` stubs until then."""
 
-    def signatures_for_fact(
+    async def signatures_for_fact(
         self, fact: LifeFact, llm_signatures: list[dict[str, Any]] | None
     ) -> list[Signature]:
         fn = _first(
             ("app.context.library", "signatures_for_fact"),
             ("app.context.service", "signatures_for_fact"),
         )
-        return list(fn(fact, llm_signatures))
+        return list(await _settle(fn(fact, llm_signatures)))
 
-    def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> PropagationResult | None:
+    async def on_fact_changed(
+        self, db: Any, user_id: int, fact_id: int
+    ) -> PropagationResult | None:
         # C9's tool-path shell: no plan recompute inside, the executor does it once (D18).
         fn = _first(
             ("app.context.propagate", "reevaluate_after_fact"),
             ("app.context.service", "on_fact_changed"),
         )
-        result: PropagationResult | None = fn(db, user_id, fact_id)
+        result: PropagationResult | None = await _settle(fn(db, user_id, fact_id))
         return result
 
-    def learn_from_annotation(self, db: Any, user_id: int, tx_id: int) -> Any:
+    async def learn_from_annotation(self, db: Any, user_id: int, tx_id: int) -> Any:
         fn = _first(
             ("app.context.rules", "learn_from_annotation"),
             ("app.context.service", "learn_from_annotation"),
         )
-        return fn(db, user_id, tx_id)
+        return await _settle(fn(db, user_id, tx_id))
 
 
 # ── where the services come from outside a tool call (bomboe's PATCH /transactions) ──────────

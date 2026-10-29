@@ -10,7 +10,9 @@ from app.errors import DomainError
 MAX_QUICK_REPLIES = 5
 
 
-def show_quick_replies(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
+async def show_quick_replies(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
     options = [str(o).strip() for o in args.get("options") or [] if str(o).strip()]
     unique = list(dict.fromkeys(options))
     if not 1 <= len(unique) <= MAX_QUICK_REPLIES or any(len(o) > 80 for o in unique):
@@ -21,6 +23,8 @@ def show_quick_replies(ctx: ToolContext, run: RunState, args: Mapping[str, Any])
     return {"quick_replies": unique}
 
 
-def mark_event_handled(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
-    event = ctx.services.agent_events.mark_handled(ctx.user_id, args["event_id"])
+async def mark_event_handled(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
+    event = await ctx.services.agent_events.mark_handled(ctx.user_id, args["event_id"])
     return {"event_id": event["id"], "status": event["status"]}

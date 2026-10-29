@@ -14,7 +14,7 @@ from app.context.rules import best_rule, decay, explicit_rule, learn, rule_match
 from app.domain.enums import AnnotationSource, Decision, Purpose, RuleKind, RuleSource
 from app.domain.models import PatternRule, RuleMatch, RuleOutcome, TxView
 from app.domain.results import RuleChange
-from tests.builders import at, matei_ctx, rule, tx
+from tests.builders import at, matei_ctx, returning, rule, tx
 
 FRIDAY = date(2026, 6, 12)  # the Friday before the demo Monday
 
@@ -245,23 +245,25 @@ class _Rules:
     def __init__(self) -> None:
         self.calls: list[tuple[str, Any]] = []
 
-    def create(self, db: Any, user_id: int, new: PatternRule) -> PatternRule:
+    async def create(self, db: Any, user_id: int, new: PatternRule) -> PatternRule:
         self.calls.append(("create", user_id))
         return new.replace(id=42)
 
-    def record_hit(self, db: Any, user_id: int, rule_id: int) -> PatternRule:
+    async def record_hit(self, db: Any, user_id: int, rule_id: int) -> PatternRule:
         self.calls.append(("record_hit", rule_id))
         return rule(hits=3)
 
-    def record_miss(self, db: Any, user_id: int, rule_id: int) -> PatternRule:
+    async def record_miss(self, db: Any, user_id: int, rule_id: int) -> PatternRule:
         self.calls.append(("record_miss", rule_id))
         return rule(misses=1)
 
-    def set_confidence(self, db: Any, user_id: int, rule_id: int, value: float) -> PatternRule:
+    async def set_confidence(
+        self, db: Any, user_id: int, rule_id: int, value: float
+    ) -> PatternRule:
         self.calls.append(("set_confidence", value))
         return rule(confidence=value)
 
-    def deactivate(self, db: Any, user_id: int, rule_id: int) -> PatternRule:
+    async def deactivate(self, db: Any, user_id: int, rule_id: int) -> PatternRule:
         self.calls.append(("deactivate", rule_id))
         return rule(active=False)
 
@@ -273,37 +275,37 @@ def store(monkeypatch: pytest.MonkeyPatch) -> _Rules:
     return fake
 
 
-def test_learn_from_annotation_stores_the_confirmation(
+async def test_learn_from_annotation_stores_the_confirmation(
     monkeypatch: pytest.MonkeyPatch, store: _Rules
 ) -> None:
     third = lunch(id=950)
-    monkeypatch.setattr(service, "_transaction", lambda db, user_id, tx_id: third)
-    monkeypatch.setattr(service, "_context", lambda db, user_id, today: matei_ctx())
+    monkeypatch.setattr(service, "_transaction", returning(third))
+    monkeypatch.setattr(service, "_context", returning(matei_ctx()))
     with clock.use_clock(clock.FixedClock(at(FRIDAY, 14))):
-        change = service.learn_from_annotation(None, 1, 950)
+        change = await service.learn_from_annotation(None, 1, 950)
     assert change is not None
     assert change.rule.confidence == 0.9
     assert store.calls == [("record_hit", 1), ("set_confidence", 0.9)]
 
 
-def test_learn_from_annotation_stores_a_new_rule_or_nothing(
+async def test_learn_from_annotation_stores_a_new_rule_or_nothing(
     monkeypatch: pytest.MonkeyPatch, store: _Rules
 ) -> None:
     ctx = matei_ctx().replace(rules=[])
-    monkeypatch.setattr(service, "_context", lambda db, user_id, today: ctx)
-    monkeypatch.setattr(service, "_transaction", lambda db, user_id, tx_id: lunch(id=950))
+    monkeypatch.setattr(service, "_context", returning(ctx))
+    monkeypatch.setattr(service, "_transaction", returning(lunch(id=950)))
     with clock.use_clock(clock.FixedClock(at(FRIDAY, 14))):
-        change = service.learn_from_annotation(None, 1, 950)
+        change = await service.learn_from_annotation(None, 1, 950)
         assert change is not None
         assert change.rule.id == 42
         assert store.calls == [("create", 1)]
-        monkeypatch.setattr(service, "_transaction", lambda db, u, t: tx(annotation_source="auto"))
-        assert service.learn_from_annotation(None, 1, 1) is None
+        monkeypatch.setattr(service, "_transaction", returning(tx(annotation_source="auto")))
+        assert await service.learn_from_annotation(None, 1, 1) is None
 
 
-def test_save_rule_change_deactivates_after_decay(store: _Rules) -> None:
+async def test_save_rule_change_deactivates_after_decay(store: _Rules) -> None:
     [change] = decay([_hit(120)], FRIDAY)
-    saved = service.save_rule_change(None, 1, _hit(120), change)
+    saved = await service.save_rule_change(None, 1, _hit(120), change)
     assert store.calls == [("set_confidence", 0.3), ("deactivate", 1)]
     assert isinstance(saved, RuleChange)
     assert saved.rule.active is False

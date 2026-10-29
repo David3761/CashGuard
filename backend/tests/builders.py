@@ -18,6 +18,15 @@ TODAY = date(2026, 6, 15)
 BUCHAREST = ZoneInfo("Europe/Bucharest")
 
 
+def returning(value: Any) -> Any:
+    """An async stand-in for one of bomboe's loaders (B3/B4 are async): always `value`."""
+
+    async def load(*args: Any) -> Any:
+        return value
+
+    return load
+
+
 def at(day: date, hour: int = 12, minute: int = 0) -> datetime:
     """An aware Bucharest timestamp."""
     return datetime(day.year, day.month, day.day, hour, minute, tzinfo=BUCHAREST)

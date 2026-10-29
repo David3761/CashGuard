@@ -28,9 +28,9 @@ def test_ledger_delta_debit_and_credit() -> None:
     )
 
 
-def test_recompute_plan_fixed_summary() -> None:
+async def test_recompute_plan_fixed_summary() -> None:
     with use_clock(FixedClock(datetime(2026, 6, 15, 9, 0, tzinfo=UTC))):
-        plan = service.recompute_plan(None, 1, "new transactions")
+        plan = await service.recompute_plan(None, 1, "new transactions")
     assert isinstance(plan, PlanSummary)
     assert plan.version == 1
     assert plan.feasible is True
@@ -39,24 +39,24 @@ def test_recompute_plan_fixed_summary() -> None:
     assert plan.reason == "new transactions"
 
 
-def test_forecast_goal_is_078() -> None:
-    forecast = service.forecast_goal(None, 1, 1)
+async def test_forecast_goal_is_078() -> None:
+    forecast = await service.forecast_goal(None, 1, 1)
     assert isinstance(forecast, Forecast)
     assert forecast.probability == 0.78
     assert forecast.p10 <= forecast.p50 <= forecast.p90
 
 
-def test_simulate_plan_saves_nothing_and_has_a_probability() -> None:
-    result = service.simulate_plan(None, 1, {"goal_amount": 12000})
+async def test_simulate_plan_saves_nothing_and_has_a_probability() -> None:
+    result = await service.simulate_plan(None, 1, {"goal_amount": 12000})
     assert isinstance(result, SimResult)
     assert result.probability == 0.78
     assert result.diff_vs_current.today_budget == Decimal("0.00")
 
 
-def test_the_other_shells() -> None:
+async def test_the_other_shells() -> None:
     tx = _tx(Direction.DEBIT, "500", "500")
-    service.apply_transaction(None, 1, 1)  # returns None (a no-op until B3)
-    service.on_annotation_changed(None, 1, 1, tx, tx.replace(effective_amount="100"))
-    assert service.recompute_baselines(None, 1) == {}
-    assert service.own_share_estimate(None, 1, tx) == Decimal("500.00")
-    assert service.auto_save(None, 1, 9) is None
+    await service.apply_transaction(None, 1, 1)  # returns None (a no-op until B3)
+    await service.on_annotation_changed(None, 1, 1, tx, tx.replace(effective_amount="100"))
+    assert await service.recompute_baselines(None, 1) == {}
+    assert await service.own_share_estimate(None, 1, tx) == Decimal("500.00")
+    assert await service.auto_save(None, 1, 9) is None
