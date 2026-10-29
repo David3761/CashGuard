@@ -3,8 +3,10 @@
 `install()` (called from the app's lifespan) registers:
 - the loop's `AgentServices`: our `AgentWiring` with bomboe's loaders. Each loader opens its own
   unit of work, because `/chat` and the pipeline run the agent in a background task after their
-  own session committed. The `agent_runs` row is bomboe's: `/chat` creates and finishes it, so
-  `record_run` stays None here (no double finish).
+  own session committed. A chat run's `agent_runs` row is bomboe's: `/chat` creates and finishes
+  it, so `record_run` stays None here (no double finish). A proactive run's row is opened here
+  (`start_run`, trigger proactive) and closed by `finish_run`, with the same `agent_runs`
+  service, so its tool calls land in `tool_calls` like a chat run's.
 - the tool handlers' `Services` factory: `pg_ports.pg_services(db)`, bomboe's Postgres services.
   Each tool call is its own unit of work (`PlatformServices.execute_tool`): one session for the
   handler, danutu's engine (the D18 recompute) and the context layer; committed when the result
@@ -28,17 +30,26 @@ from app import clock, events
 from app.agent import pg_ports
 from app.agent import ports as agent_ports
 from app.agent.handlers.common import ToolContext
-from app.agent.loop import set_agent_services
+from app.agent.loop import RunStatus, set_agent_services
 from app.agent.ports import LazyContext, LazyEngine
 from app.agent.proactive import ProactiveEvent, set_proactive_services
 from app.agent.wiring import AgentWiring
+from app.config import get_settings
 from app.db.session import unit_of_work
-from app.domain.enums import MessageRole
+from app.domain.enums import AgentRunStatus, AgentTrigger, MessageRole
 from app.domain.results import ActionCard
 from app.domain.user_context import UserContext
 from app.errors import DomainError
 from app.pipeline import ports as pipeline_ports
-from app.services import agent_events, messages, notifications, receivables, transactions, users
+from app.services import (
+    agent_events,
+    agent_runs,
+    messages,
+    notifications,
+    receivables,
+    transactions,
+    users,
+)
 from app.services.context_loader import load_user_context
 from app.ws import push_after_commit
 
@@ -121,6 +132,29 @@ class PlatformServices(AgentWiring):
     the notification. Each write is its own unit of work."""
 
     _event_users: dict[int, int] = field(default_factory=dict)
+    _run_users: dict[int, int] = field(default_factory=dict)  # the runs start_run opened
+
+    async def start_run(self, user_id: int) -> int | None:
+        """A proactive run's `agent_runs` row, as `/chat` opens a chat run's: running, committed
+        now so its tool calls can reference it."""
+        async with unit_of_work() as db:
+            run_id = await agent_runs.start(
+                db, user_id, trigger=AgentTrigger.PROACTIVE, model=get_settings().ANTHROPIC_MODEL
+            )
+        self._run_users[run_id] = user_id
+        return run_id
+
+    async def finish_run(self, run_id: int | None, status: RunStatus, reason: str | None) -> None:
+        """running → completed | failed for a run `start_run` opened; any other (chat's) run is
+        its route's to finish."""
+        user_id = self._run_users.pop(run_id, None) if run_id is not None else None
+        if run_id is None or user_id is None:
+            await super().finish_run(run_id, status, reason)
+            return
+        async with unit_of_work() as db:
+            await agent_runs.finish(
+                db, user_id, run_id, status=AgentRunStatus(status), iterations=0, error=reason
+            )
 
     async def execute_tool(
         self, user_id: int, run_id: int | None, block: BetaToolUseBlock

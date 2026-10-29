@@ -120,6 +120,10 @@ class AgentWiring:
         out["content"] = json.dumps(data, default=str)
         return out
 
+    async def start_run(self, user_id: int) -> int | None:
+        """A proactive run's `agent_runs` row (A7): none here; `PlatformServices` opens it."""
+        return None
+
     async def finish_run(self, run_id: int | None, status: RunStatus, reason: str | None) -> None:
         if self.record_run is not None:
             await self.record_run(run_id, status, reason)

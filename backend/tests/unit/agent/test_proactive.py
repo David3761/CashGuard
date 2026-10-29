@@ -1,6 +1,7 @@
 """A7: proactive runs, the spoken question (FakeLLM strict, in-memory services)."""
 
 import asyncio
+import dataclasses
 import logging
 from collections.abc import Sequence
 from decimal import Decimal
@@ -165,3 +166,49 @@ async def test_a_long_question_is_logged(caplog: pytest.LogCaptureFixture) -> No
     assert result is not None
     assert result.text == long_question  # logged, not refused
     assert any("words" in record.getMessage() for record in caplog.records)
+
+
+# ── the audit row (agent_runs), like a chat run's ───────────────────────────────────────────
+
+
+async def test_a_pipeline_run_opens_its_run_links_its_tool_calls_and_completes_it() -> None:
+    services = _services()
+    services.new_run_id = 41
+    fake = FakeLLM(
+        [
+            tool_round(tool_use("show_quick_replies", {"options": CHIPS}, tool_use_id="toolu_1")),
+            end_turn(QUESTION),
+        ]
+    )
+    assert await run_proactive(1, 77, llm=fake, services=services) is not None
+    assert services.started_runs == [1]
+    assert services.tool_run_ids == [41]
+    assert services.runs == [(41, "completed", None)]
+
+
+async def test_a_callers_run_id_opens_no_second_run() -> None:
+    services = _services()
+    await run_proactive(1, 77, llm=FakeLLM([end_turn(QUESTION)]), services=services, run_id=3)
+    assert services.started_runs == []
+    assert services.runs == [(3, "completed", None)]
+
+
+async def test_an_event_that_isnt_pending_opens_no_run() -> None:
+    services = _services()
+    services.events[77] = dataclasses.replace(services.events[77], status="asked")
+    assert await run_proactive(1, 77, llm=FakeLLM([]), services=services) is None
+    assert services.started_runs == []
+    assert services.runs == []
+
+
+async def test_a_run_that_raises_is_finished_as_failed() -> None:
+    services = _services()
+    services.new_run_id = 41
+
+    async def broken(user_id: int, **fields: object) -> int:
+        raise RuntimeError("db down")
+
+    services.save_assistant_message = broken  # type: ignore[method-assign]
+    with pytest.raises(RuntimeError):
+        await run_proactive(1, 77, llm=FakeLLM([end_turn(QUESTION)]), services=services)
+    assert services.runs == [(41, "failed", "internal_error")]

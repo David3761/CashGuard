@@ -9,6 +9,9 @@
 - The message is saved with `speak = true`, `speak_text`, `ref_transaction_id` and
   `agent_event_id`; the event is marked asked; a notification opens the chat.
 - An event that isn't pending (already asked, or being run right now) → nothing (no duplicate).
+- Audited like a chat run: without a caller's `run_id`, `start_run` opens the `agent_runs` row
+  (trigger proactive, running) once the event is pending; its id links the tool calls, and
+  `finish_run` closes it (completed / failed, also when the run raises).
 """
 
 import asyncio
@@ -76,6 +79,11 @@ class ProactiveServices(AgentServices, Protocol):
 
     async def mark_event_asked(self, event_id: int) -> None: ...
 
+    async def start_run(self, user_id: int) -> int | None:
+        """Open this run's `agent_runs` row (trigger proactive, running); returns its id, or None
+        when runs aren't recorded."""
+        ...
+
     async def create_notification(
         self, user_id: int, *, text: str, opens_chat: bool, agent_event_id: int
     ) -> None: ...
@@ -138,6 +146,23 @@ async def _run(
     if event is None or event.status != "pending":
         log.info("event %d is not pending: nothing to say", event_id)
         return None
+    if run_id is None:  # the pipeline's call: the run gets its own audit row, like a chat run
+        run_id = await services.start_run(user_id)
+    try:
+        return await _speak(user_id, event_id, event, run_id, llm, services)
+    except Exception:
+        await services.finish_run(run_id, "failed", "internal_error")  # never left running
+        raise
+
+
+async def _speak(
+    user_id: int,
+    event_id: int,
+    event: ProactiveEvent,
+    run_id: int | None,
+    llm: LLMClient | None,
+    services: ProactiveServices,
+) -> AgentResult | None:
     is_question = event.type in QUESTION_EVENTS
     setup = await services.setup(user_id, "proactive", event_id)
     lang = setup.language
