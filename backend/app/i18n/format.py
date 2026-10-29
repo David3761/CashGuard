@@ -14,6 +14,9 @@ from decimal import ROUND_HALF_UP, Context, Decimal, InvalidOperation
 from types import MappingProxyType
 from typing import Final
 
+from app.domain.enums import Language
+from app.domain.money import quantize_cents
+
 
 @dataclass(frozen=True, slots=True)
 class _Locale:
@@ -41,19 +44,18 @@ _WEEKDAYS_EN: Final = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "
                        "Sunday")  # fmt: skip
 _LOCALES: Final = MappingProxyType(
     {
-        "ro": _Locale(thousands=".", decimal=",", months=_MONTHS_RO, weekdays=_WEEKDAYS_RO),
-        "en": _Locale(thousands=",", decimal=".", months=_MONTHS_EN, weekdays=_WEEKDAYS_EN),
+        Language.RO: _Locale(thousands=".", decimal=",", months=_MONTHS_RO, weekdays=_WEEKDAYS_RO),
+        Language.EN: _Locale(thousands=",", decimal=".", months=_MONTHS_EN, weekdays=_WEEKDAYS_EN),
     }
 )
-_CENT: Final = Decimal("0.01")
 # An explicit context, so the result never depends on the thread's decimal context.
 _CONTEXT: Final = Context(prec=28, rounding=ROUND_HALF_UP, traps=[InvalidOperation])
 
 
 def _locale(lang: str) -> _Locale:
     try:
-        return _LOCALES[lang]
-    except (KeyError, TypeError):
+        return _LOCALES[Language(lang)]
+    except ValueError:
         raise ValueError(f"unsupported language {lang!r}: expected 'ro' or 'en'") from None
 
 
@@ -64,9 +66,7 @@ def _shift(value: Decimal, places: int) -> Decimal:
 
 
 def _round_half_up(value: Decimal, exponent: Decimal, what: str, given: object) -> Decimal:
-    """The one rounding step; errors name what the caller passed (`given`)."""
-    if not value.is_finite():
-        raise ValueError(f"the {what} must be a finite number, got {given!r}")
+    """format_pct's one rounding step (finite values only); errors name the caller's `given`."""
     try:
         rounded = value.quantize(exponent, rounding=ROUND_HALF_UP, context=_CONTEXT)
     except InvalidOperation:
@@ -74,17 +74,49 @@ def _round_half_up(value: Decimal, exponent: Decimal, what: str, given: object) 
     return abs(rounded) if rounded == 0 else rounded  # never "-0"
 
 
-def format_money(amount: Decimal | int, lang: str) -> str:
-    """RO `10.000 lei` / `30,40 lei`, EN `10,000 lei` / `30.40 lei`: half-up to the cent (the
-    same rule as `to_money`), and whole amounts without decimals."""
-    locale = _locale(lang)
+def _cents(amount: Decimal | int, caller: str) -> Decimal:
+    """`amount` rounded by `app.domain.money.quantize_cents`, the rule storage uses (`to_money`),
+    so the shown and the stored cents can't differ; never -0.00; any amount below 10^26."""
     if isinstance(amount, bool) or not isinstance(amount, Decimal | int):
         raise TypeError(
-            f"format_money takes a Decimal or an int, not {type(amount).__name__}: "
+            f"{caller} takes a Decimal or an int, not {type(amount).__name__}: "
             "round money with to_money() first"
         )
-    cents = _round_half_up(Decimal(amount), _CENT, "amount", amount)
-    return f"{locale.number(format(cents, ',.2f').removesuffix('.00'))} lei"
+    value = Decimal(amount)
+    if not value.is_finite():
+        raise ValueError(f"the amount must be a finite number, got {amount!r}")
+    try:
+        return quantize_cents(value)
+    except ValueError:
+        raise ValueError(f"the amount is too large to format: {amount!r}") from None
+
+
+def _amount_text(cents: Decimal, locale: _Locale) -> str:
+    return locale.number(format(cents, ",.2f").removesuffix(".00"))  # whole amounts: no decimals
+
+
+def format_money(amount: Decimal | int, lang: str) -> str:
+    """The display form (UI, cards): RO `10.000 lei` / `30,40 lei` / `500 lei`, EN `10,000 lei` /
+    `30.40 lei`. Whole amounts without decimals; always "lei"."""
+    locale = _locale(lang)
+    return f"{_amount_text(_cents(amount, 'format_money'), locale)} lei"
+
+
+def format_money_in_sentence(amount: Decimal | int, lang: str) -> str:
+    """The form inside a Romanian sentence (templates, notifications, speak_text): "de" before
+    "lei" from 20 on, when the last two digits are 00 or 20-99 (`80 de lei`, `1.500 de lei`,
+    `100 de lei`), but `19 lei`, `101 lei`, `30,40 lei` (decimals); `1 leu` (singular).
+    English is the display form (`80 lei`)."""
+    locale = _locale(lang)
+    cents = _cents(amount, "format_money_in_sentence")
+    text = _amount_text(cents, locale)
+    if Language(lang) is not Language.RO or cents != cents.to_integral_value():
+        return f"{text} lei"
+    whole = abs(int(cents))
+    if whole == 1:
+        return f"{text} leu"
+    needs_de = whole >= 20 and (whole % 100 == 0 or whole % 100 >= 20)
+    return f"{text} de lei" if needs_de else f"{text} lei"
 
 
 def format_pct(value: Decimal | float | int, lang: str, *, decimals: int = 0) -> str:

@@ -14,7 +14,10 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from app.i18n.format import format_date, format_money, format_pct
+import app.i18n.format as format_module
+from app.domain.enums import Language
+from app.domain.money import quantize_cents
+from app.i18n.format import format_date, format_money, format_money_in_sentence, format_pct
 
 MONTHS_RO = ["ianuarie", "februarie", "martie", "aprilie", "mai", "iunie", "iulie", "august",
              "septembrie", "octombrie", "noiembrie", "decembrie"]  # fmt: skip
@@ -93,11 +96,20 @@ def test_format_money_rejects_anything_but_decimal_or_int(amount: object) -> Non
 
 
 @pytest.mark.parametrize(
-    "amount",
-    [Decimal("NaN"), Decimal("sNaN"), Decimal("Infinity"), Decimal("-Infinity"), Decimal("1E+30")],
+    ("amount", "message"),
+    [
+        (Decimal("NaN"), "the amount must be a finite number"),
+        (Decimal("sNaN"), "the amount must be a finite number"),
+        (Decimal("Infinity"), "the amount must be a finite number"),
+        (Decimal("-Infinity"), "the amount must be a finite number"),
+        (Decimal("1E+30"), "the amount is too large to format"),
+    ],
 )
-def test_format_money_rejects_amounts_that_are_not_a_finite_sum(amount: Decimal) -> None:
-    with pytest.raises(ValueError, match="amount"):
+def test_format_money_rejects_amounts_that_are_not_a_finite_sum(
+    amount: Decimal, message: str
+) -> None:
+    # Each failure says what is wrong (a NaN is not "too large").
+    with pytest.raises(ValueError, match=message):
         format_money(amount, "ro")
 
 
@@ -208,7 +220,8 @@ def test_format_money_rounds_once_even_beyond_28_digits(
 
 def test_format_money_reports_the_callers_amount_beyond_the_format_limit() -> None:
     # 10^26 lei needs 29 digits with the cents: past the 28-digit context (the limit).
-    with pytest.raises(ValueError, match="too large") as info:
+    # format_money's own message (quantize_cents' error is mapped, as agreed with F2).
+    with pytest.raises(ValueError, match="the amount is too large to format") as info:
         format_money(10**26, "ro")
 
     assert str(10**26) in str(info.value)
@@ -389,3 +402,126 @@ def test_every_formatter_rejects_an_unknown_language(
 ) -> None:
     with pytest.raises(ValueError, match="language"):
         formatter(lang)
+
+
+# ── C1.4: one rounding rule with storage, F2's languages ────────────────────────────────
+
+
+def test_format_money_rounds_with_the_domain_rule(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Display and storage can never round differently: format_money delegates the rounding to
+    # app.domain.money.quantize_cents (the rule to_money uses), it doesn't reimplement it.
+    calls: list[Decimal] = []
+
+    def spy(value: Decimal) -> Decimal:
+        calls.append(value)
+        return Decimal("1.23")
+
+    monkeypatch.setattr(format_module, "quantize_cents", spy)
+
+    assert format_money(Decimal("5.005"), "ro") == "1,23 lei"
+    assert calls == [Decimal("5.005")]
+
+
+@given(st.integers(-(10**35), 10**35), st.integers(10, 45))
+def test_format_money_shows_exactly_quantize_cents(n: int, k: int) -> None:
+    amount = Decimal(f"{n}E-{k}")
+    shown = format_money(amount, "en").removesuffix(" lei").replace(",", "")
+
+    assert Decimal(shown) == quantize_cents(amount)
+
+
+@pytest.mark.parametrize("formatter", FORMATTERS, ids=["money", "pct", "date"])
+@pytest.mark.parametrize("lang", list(Language), ids=lambda lang: lang.value)
+def test_every_formatter_accepts_every_language_of_f2(
+    formatter: Callable[[str], str], lang: Language
+) -> None:
+    assert formatter(lang) == formatter(lang.value)
+
+
+# ── C1.4 addition: the Romanian sentence form ("80 de lei", boss decision) ──────────────
+
+
+def _needs_de(whole: int) -> bool:
+    """Romanian grammar, stated the other way round: no "de" for 0-19 or when the last two
+    digits are 01-19 (an independent oracle for the implementation's rule)."""
+    return not (whole < 20 or 1 <= whole % 100 <= 19)
+
+
+@pytest.mark.parametrize(
+    ("amount", "expected"),
+    [
+        (1, "1 leu"),  # singular
+        (19, "19 lei"),
+        (20, "20 de lei"),
+        (99, "99 de lei"),
+        (100, "100 de lei"),
+        (101, "101 lei"),
+        (119, "119 lei"),
+        (120, "120 de lei"),
+        (1000, "1.000 de lei"),
+        (1019, "1.019 lei"),
+        (1020, "1.020 de lei"),
+        (Decimal("30.40"), "30,40 lei"),  # decimals: no "de"
+        (0, "0 lei"),
+        (2, "2 lei"),
+        (80, "80 de lei"),
+        (240, "240 de lei"),
+        (1500, "1.500 de lei"),
+        (10**6, "1.000.000 de lei"),
+        (Decimal("1.00"), "1 leu"),
+        (Decimal("1.50"), "1,50 lei"),
+        (Decimal("20.50"), "20,50 lei"),
+        (Decimal("19.995"), "20 de lei"),  # rounded to the cent first: a whole 20
+        (-1, "-1 leu"),
+        (-19, "-19 lei"),
+        (-20, "-20 de lei"),
+        (-1020, "-1.020 de lei"),
+        (Decimal("-30.4"), "-30,40 lei"),
+        (Decimal("-0.004"), "0 lei"),
+    ],
+)
+def test_format_money_in_sentence_puts_de_before_lei_by_the_romanian_rule(
+    amount: Decimal | int, expected: str
+) -> None:
+    assert format_money_in_sentence(amount, "ro") == expected
+
+
+def test_the_sentence_rule_matches_romanian_grammar_for_every_whole_amount_to_2500() -> None:
+    for whole in range(2501):
+        text = format_money_in_sentence(whole, "ro")
+        if whole == 1:
+            assert text == "1 leu"
+        else:
+            assert text.endswith(" de lei") is _needs_de(whole), text
+
+
+@given(st.decimals(min_value=Decimal("-1e9"), max_value=Decimal("1e9"), places=2))
+def test_the_sentence_form_shows_the_same_number_as_the_display_form(amount: Decimal) -> None:
+    display = format_money(amount, "ro").removesuffix(" lei")
+    sentence = format_money_in_sentence(amount, "ro")
+
+    assert sentence in {f"{display} lei", f"{display} de lei", f"{display} leu"}
+    assert format_money_in_sentence(amount, "en") == format_money(amount, "en")
+
+
+def test_the_display_form_is_unchanged() -> None:
+    # The UI form the spec pins stays "500 lei" (no "de").
+    assert format_money(500, "ro") == "500 lei"
+    assert format_money(1, "ro") == "1 lei"
+
+
+@pytest.mark.parametrize("amount", [30.4, True, "30.4"])
+def test_format_money_in_sentence_rejects_non_money(amount: object) -> None:
+    with pytest.raises(TypeError, match="to_money"):
+        format_money_in_sentence(amount, "ro")  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("lang", ["fr", "", "RO"])
+def test_format_money_in_sentence_rejects_an_unknown_language(lang: str) -> None:
+    with pytest.raises(ValueError, match="language"):
+        format_money_in_sentence(80, lang)
+
+
+@pytest.mark.parametrize("lang", list(Language), ids=lambda lang: lang.value)
+def test_format_money_in_sentence_accepts_every_language_of_f2(lang: Language) -> None:
+    assert format_money_in_sentence(80, lang) == format_money_in_sentence(80, lang.value)
