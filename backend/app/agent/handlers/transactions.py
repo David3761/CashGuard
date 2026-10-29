@@ -1,8 +1,8 @@
 """Transaction tool handlers (A3 step 2) and the shared `apply_annotation` (arch 6.6, F11, 15.2).
 
 `apply_annotation` is the one implementation behind the `annotate_transaction` tool and bomboe's
-`PATCH /transactions/{id}` (B6); it keeps S0's signature. **The code computes every amount**,
-never Claude:
+`PATCH /transactions/{id}` (B6); it keeps S0's signature, as a coroutine (B6 awaits it). **The
+code computes every amount**, never Claude:
 
 - effective (the user's own share) = `own_amount` if given (it wins over `people_count`), else
   `split_share(amount, people_count)`, else, for a purchase shared with or made for others,
@@ -62,7 +62,7 @@ class AnnotationResult(DomainModel):
     source: AnnotationSource
 
 
-def _own_share(
+async def _own_share(
     db: Any,
     user_id: int,
     tx: TxView,
@@ -95,11 +95,11 @@ def _own_share(
     )
     if not shared:
         return tx.amount, False
-    estimate = to_money(engine.own_share_estimate(db, user_id, tx))
+    estimate = to_money(await engine.own_share_estimate(db, user_id, tx))
     return min(max(estimate, Decimal("0.00")), tx.amount), True
 
 
-def apply_annotation(
+async def apply_annotation(
     db: Any,
     user_id: int,
     tx_id: int,
@@ -123,10 +123,10 @@ def apply_annotation(
     context = LazyContext() if context is None else context
     purpose, beneficiary = Purpose(purpose), Beneficiary(beneficiary)
 
-    tx = services.transactions.get(user_id, tx_id)  # not_found for another user's transaction
+    tx = await services.transactions.get(user_id, tx_id)  # not_found for another user's transaction
     if tx.direction is not Direction.DEBIT:
         raise DomainError("not_a_spend", "Only a spend (debit) can be annotated.", 422)
-    own, estimated = _own_share(
+    own, estimated = await _own_share(
         db,
         user_id,
         tx,
@@ -148,15 +148,15 @@ def apply_annotation(
 
     receivable: Receivable | None = None
     cancelled: int | None = None
-    old = services.receivables.open_for_transaction(user_id, tx_id)
+    old = await services.receivables.open_for_transaction(user_id, tx_id)
     if old is not None:
         if repay and old.amount == others and old.debtor_label == label:
             receivable = old  # the same answer again: keep it
         else:
-            services.receivables.cancel(user_id, old.id)
+            await services.receivables.cancel(user_id, old.id)
             cancelled = old.id
     if repay and receivable is None:
-        receivable = services.receivables.create(
+        receivable = await services.receivables.create(
             user_id,
             ReceivableDraft(
                 debtor_label=label,
@@ -168,7 +168,7 @@ def apply_annotation(
             ),
         )
 
-    services.transactions.annotate(
+    await services.transactions.annotate(
         user_id,
         tx_id,
         Annotation(
@@ -182,13 +182,13 @@ def apply_annotation(
             note=note,
         ),
     )
-    engine.on_annotation_changed(db, user_id, tx_id, tx.effective_amount, own)
-    context.learn_from_annotation(db, user_id, tx_id)
-    question = services.agent_events.open_question_for(user_id, tx_id)
+    await engine.on_annotation_changed(db, user_id, tx_id, tx.effective_amount, own)
+    await context.learn_from_annotation(db, user_id, tx_id)
+    question = await services.agent_events.open_question_for(user_id, tx_id)
     answered = None
     if question is not None:
         answered = int(question["id"])
-        services.agent_events.mark_answered(user_id, answered)
+        await services.agent_events.mark_answered(user_id, answered)
 
     return AnnotationResult(
         transaction_id=tx_id,
@@ -208,10 +208,10 @@ def apply_annotation(
     )
 
 
-def annotate_transaction(
+async def annotate_transaction(
     ctx: ToolContext, run: RunState, args: Mapping[str, Any]
 ) -> dict[str, Any]:
-    result = apply_annotation(
+    result = await apply_annotation(
         ctx.db,
         ctx.user_id,
         args["transaction_id"],
@@ -242,11 +242,13 @@ def annotate_transaction(
     }
 
 
-def get_transaction(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> dict[str, Any]:
-    tx = ctx.services.transactions.get(ctx.user_id, args["transaction_id"])
+async def get_transaction(
+    ctx: ToolContext, run: RunState, args: Mapping[str, Any]
+) -> dict[str, Any]:
+    tx = await ctx.services.transactions.get(ctx.user_id, args["transaction_id"])
     receivable = (
         None
         if tx.receivable_id is None
-        else ctx.services.receivables.get(ctx.user_id, tx.receivable_id)
+        else await ctx.services.receivables.get(ctx.user_id, tx.receivable_id)
     )
     return {"transaction": to_jsonable(tx), "receivable": to_jsonable(receivable)}

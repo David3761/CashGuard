@@ -19,6 +19,9 @@ The security rules (arch 6.4), in the order they apply:
 
 The content of every `tool_result` is JSON: `{"ok": true, …}` or
 `{"ok": false, "error": {"code", "message"}}` with `is_error: true`.
+
+`execute_tool` and every handler are `async` (the ports are: bomboe's `AsyncSession` services,
+danutu's async engine); the loop awaits one call at a time, in Claude's order.
 """
 
 import importlib
@@ -119,39 +122,39 @@ def _dumps(value: Any) -> str:
     return json.dumps(to_jsonable(value), ensure_ascii=False)
 
 
-def _log_call(
+async def _log_call(
     ctx: ToolContext, run: RunState, tool_use_id: str, name: str, raw: Any, output: str, status: str
 ) -> None:
     try:
         tool_input = dict(raw) if isinstance(raw, Mapping) else {"_raw": repr(raw)[:200]}
-        ctx.services.tool_calls.log(
+        await ctx.services.tool_calls.log(
             ctx.user_id, run.run_id, tool_use_id, name[:64], tool_input, output, status
         )
     except Exception:
         log.exception("tool_calls.log failed for %s", name[:64])
 
 
-def _error(
+async def _error(
     ctx: ToolContext, run: RunState, tool_use_id: str, name: str, raw: Any, code: str, message: str
 ) -> dict[str, Any]:
     content = _dumps({"ok": False, "error": {"code": code, "message": message[:_MAX_MESSAGE]}})
-    _log_call(ctx, run, tool_use_id, name, raw, content, "error")
+    await _log_call(ctx, run, tool_use_id, name, raw, content, "error")
     return {"type": "tool_result", "tool_use_id": tool_use_id, "content": content, "is_error": True}
 
 
-def _recompute(
+async def _recompute(
     ctx: ToolContext, run: RunState, name: str, tool_use_id: str, result: dict[str, Any]
 ) -> None:
     """D18: the new plan and forecast go into the same tool result."""
     reason = str(result.pop("_plan_reason", None) or name)
     trigger_ref = {"tool": name, "tool_use_id": tool_use_id, **result.pop("_trigger_ref", {})}
-    plan = ctx.engine.recompute_plan(ctx.db, ctx.user_id, reason, trigger_ref)
-    forecast = ctx.engine.forecast_goal(ctx.db, ctx.user_id, plan.version)
+    plan = await ctx.engine.recompute_plan(ctx.db, ctx.user_id, reason, trigger_ref)
+    forecast = await ctx.engine.forecast_goal(ctx.db, ctx.user_id, plan.version)
     result["plan"], result["forecast"] = plan, forecast
     run.plan_changed, run.plan, run.forecast = True, plan, forecast
 
 
-def execute_tool(
+async def execute_tool(
     ctx: ToolContext, run: RunState, block: Any, registry: Mapping[str, ToolEntry] | None = None
 ) -> dict[str, Any]:
     """Run one `tool_use` block for `ctx.user_id`; always returns a `tool_result` block."""
@@ -159,35 +162,36 @@ def execute_tool(
     entry = (default_registry() if registry is None else registry).get(name)
     if entry is None:
         message = f"Unknown tool {name[:64]!r}. Use only the tools offered in this run."
-        return _error(ctx, run, tool_use_id, name, raw, "unknown_tool", message)
+        return await _error(ctx, run, tool_use_id, name, raw, "unknown_tool", message)
     if run.trigger == PROACTIVE and not allowed_in_proactive(name):
         message = (
             f"{name} changes data, which a proactive run may not do. Suggest the change "
             "(simulate_plan can back it up); it happens when the user replies."
         )
-        return _error(ctx, run, tool_use_id, name, raw, "not_allowed_in_proactive", message)
+        return await _error(ctx, run, tool_use_id, name, raw, "not_allowed_in_proactive", message)
     if not isinstance(raw, Mapping):
-        return _error(
+        return await _error(
             ctx, run, tool_use_id, name, raw, "invalid_input", "The input must be an object."
         )
     if "user_id" in raw:
         message = "Never pass user_id: the backend sets it. Call the tool again without it."
-        return _error(ctx, run, tool_use_id, name, raw, "invalid_input", message)
+        return await _error(ctx, run, tool_use_id, name, raw, "invalid_input", message)
     try:
         args = entry.input_model.model_validate(dict(raw))
     except ValidationError as error:
-        return _error(ctx, run, tool_use_id, name, raw, "invalid_input", _validation_message(error))
+        message = _validation_message(error)
+        return await _error(ctx, run, tool_use_id, name, raw, "invalid_input", message)
     try:
-        result = dict(entry.handler(ctx, run, args.model_dump()))
+        result = dict(await entry.handler(ctx, run, args.model_dump()))
         if entry.money:
-            _recompute(ctx, run, name, tool_use_id, result)
+            await _recompute(ctx, run, name, tool_use_id, result)
         result.pop("_plan_reason", None)
         result.pop("_trigger_ref", None)
         content = _dumps({"ok": True, **result})
     except DomainError as error:
-        return _error(ctx, run, tool_use_id, name, raw, error.code, error.message)
+        return await _error(ctx, run, tool_use_id, name, raw, error.code, error.message)
     except Exception:
         log.exception("tool %s failed", name)
-        return _error(ctx, run, tool_use_id, name, raw, "internal_error", _INTERNAL_MESSAGE)
-    _log_call(ctx, run, tool_use_id, name, raw, content, "ok")
+        return await _error(ctx, run, tool_use_id, name, raw, "internal_error", _INTERNAL_MESSAGE)
+    await _log_call(ctx, run, tool_use_id, name, raw, content, "ok")
     return {"type": "tool_result", "tool_use_id": tool_use_id, "content": content}

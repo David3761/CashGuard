@@ -9,8 +9,10 @@ E5 (`simulate_plan`), E6 (`recompute_baselines`), E8 (`forecast_goal`) and E10 (
   (`ledger_delta`; the DB write waits for bomboe's B3, so the shell writes nothing yet);
 - `auto_save` returns None; `own_share_estimate` the whole amount; the others are no-ops.
 
-The pure `anomaly_features` / `household_scale` are not here: they live in `anomaly.py` /
-`baselines.py`. `db` is typed `Any` until bomboe's session exists.
+The §15 shells are `async`, like danutu's real ones (they read and write through bomboe's
+`AsyncSession` services); the pure `ledger_delta` stays sync. The pure `anomaly_features` /
+`household_scale` are not here: they live in `anomaly.py` / `baselines.py`. `db` is typed `Any`
+until bomboe's session exists.
 """
 
 from decimal import Decimal
@@ -40,22 +42,24 @@ def ledger_delta(tx: TxView) -> tuple[Decimal, Decimal]:
 # ── the §15 functions ────────────────────────────────────────────────────────────────────────
 
 
-def apply_transaction(db: Any, user_id: int, tx_id: int) -> None:
+async def apply_transaction(db: Any, user_id: int, tx_id: int) -> None:
     """Stub of E3: `ledger_delta` is the rule; no write until bomboe's services exist."""
     return None
 
 
-def on_annotation_changed(db: Any, user_id: int, tx_id: int, old: TxView, new: TxView) -> None:
+async def on_annotation_changed(
+    db: Any, user_id: int, tx_id: int, old: TxView, new: TxView
+) -> None:
     """Stub of E3: a no-op (the real one moves the day's spent by the effective-amount change)."""
     return None
 
 
-def recompute_baselines(db: Any, user_id: int) -> dict[str, Baseline]:
+async def recompute_baselines(db: Any, user_id: int) -> dict[str, Baseline]:
     """Stub of E6: no baselines."""
     return {}
 
 
-def recompute_plan(
+async def recompute_plan(
     db: Any, user_id: int, reason: str, trigger_ref: dict[str, Any] | None = None
 ) -> PlanSummary:
     """Stub of E4: a fixed, feasible plan of 150 lei a day (version 1), saving nothing."""
@@ -68,7 +72,7 @@ def recompute_plan(
     )
 
 
-def forecast_goal(db: Any, user_id: int, plan_version: int) -> Forecast:
+async def forecast_goal(db: Any, user_id: int, plan_version: int) -> Forecast:
     """Stub of E8: probability 0.78 (the demo's opening number), saving nothing."""
     return Forecast(
         probability=STUB_PROBABILITY,
@@ -78,7 +82,7 @@ def forecast_goal(db: Any, user_id: int, plan_version: int) -> Forecast:
     )
 
 
-def simulate_plan(db: Any, user_id: int, changes: dict[str, Any]) -> SimResult:
+async def simulate_plan(db: Any, user_id: int, changes: dict[str, Any]) -> SimResult:
     """Stub of E5: the current stub plan, unchanged by `changes` (saves nothing)."""
     return SimResult(
         feasible=True,
@@ -89,11 +93,11 @@ def simulate_plan(db: Any, user_id: int, changes: dict[str, Any]) -> SimResult:
     )
 
 
-def own_share_estimate(db: Any, user_id: int, tx: TxView) -> Decimal:
+async def own_share_estimate(db: Any, user_id: int, tx: TxView) -> Decimal:
     """Stub of E10: with no count or amount given, the whole amount is the user's."""
     return tx.amount
 
 
-def auto_save(db: Any, user_id: int, income_tx_id: int) -> Transfer | None:
+async def auto_save(db: Any, user_id: int, income_tx_id: int) -> Transfer | None:
     """Stub of E10: never auto-saves."""
     return None

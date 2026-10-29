@@ -1,6 +1,6 @@
 """What every tool handler shares: the per-call context, the per-run state and small helpers (A3).
 
-A handler is `handler(ctx, run, args) -> dict`: `args` is the validated tool input
+A handler is `async handler(ctx, run, args) -> dict`: `args` is the validated tool input
 (`input_model.model_dump()`), and the dict is the JSON tool result Claude reads. `user_id` comes
 only from `ctx` (the backend), never from `args` (arch 6.4 rule 1). A handler raises `DomainError`
 for an expected failure; the executor turns it into an `is_error` result.
@@ -9,7 +9,7 @@ A handler may return two private keys the executor pops before serialising: `_pl
 `plans.reason` text of the D18 recompute) and `_trigger_ref` (extra ids for `trigger_ref`).
 """
 
-from collections.abc import Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
 from datetime import date, datetime, time
 from decimal import Decimal
@@ -52,7 +52,7 @@ class RunState:
     forecast: Any = None
 
 
-Handler = Callable[[ToolContext, RunState, Mapping[str, Any]], dict[str, Any]]
+Handler = Callable[[ToolContext, RunState, Mapping[str, Any]], Awaitable[dict[str, Any]]]
 
 
 def to_jsonable(value: Any) -> Any:

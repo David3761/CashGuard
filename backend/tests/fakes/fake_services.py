@@ -1,7 +1,9 @@
 """In-memory implementations of `app.agent.ports` (A3), the reference for bomboe's Postgres ones.
 
 Each table keeps rows per user; a row of another user raises `not_found` exactly like a missing
-id. `FakeEngine` and `FakeContext` record their calls and return small, plausible results.
+id. `FakeEngine` and `FakeContext` record their calls and return small, plausible results. Every
+port method is `async`, like the ports; the seeding helpers (`FakeTransactions.add`,
+`Harness.add_tx`) and the `Table` internals stay sync.
 """
 
 from collections.abc import Mapping, Sequence
@@ -110,19 +112,19 @@ class FakeRecords:
     def __init__(self, what: str) -> None:
         self.table = Table(what)
 
-    def create(self, user_id: int, data: Mapping[str, Any]) -> Row:
+    async def create(self, user_id: int, data: Mapping[str, Any]) -> Row:
         return self.table.insert(user_id, data)
 
-    def get(self, user_id: int, record_id: int) -> Row:
+    async def get(self, user_id: int, record_id: int) -> Row:
         return self.table.get(user_id, record_id)
 
-    def update(self, user_id: int, record_id: int, changes: Mapping[str, Any]) -> Row:
+    async def update(self, user_id: int, record_id: int, changes: Mapping[str, Any]) -> Row:
         return self.table.update(user_id, record_id, changes)
 
-    def list(self, user_id: int) -> list[Row]:
+    async def list(self, user_id: int) -> list[Row]:
         return self.table.list(user_id)
 
-    def remove(self, user_id: int, record_id: int) -> None:
+    async def remove(self, user_id: int, record_id: int) -> None:
         self.table.remove(user_id, record_id)
 
 
@@ -135,13 +137,13 @@ class FakeTransactions:
         self.rows[tx.id] = (user_id, tx)
         return tx
 
-    def get(self, user_id: int, tx_id: int) -> TxView:
+    async def get(self, user_id: int, tx_id: int) -> TxView:
         owner, tx = self.rows.get(tx_id, (None, None))
         if owner != user_id or tx is None:
             raise not_found("transaction")
         return tx
 
-    def list(
+    async def list(
         self, user_id: int, since: date, until: date, category: str | None = None
     ) -> list[TxView]:
         return [
@@ -152,8 +154,8 @@ class FakeTransactions:
             and (category is None or tx.category == category)
         ]
 
-    def annotate(self, user_id: int, tx_id: int, annotation: Annotation) -> TxView:
-        tx = self.get(user_id, tx_id).replace(
+    async def annotate(self, user_id: int, tx_id: int, annotation: Annotation) -> TxView:
+        tx = (await self.get(user_id, tx_id)).replace(
             purpose=annotation.purpose,
             beneficiary=annotation.beneficiary,
             effective_amount=annotation.effective_amount,
@@ -165,8 +167,8 @@ class FakeTransactions:
         self.annotations[tx_id] = annotation
         return tx
 
-    def set_pot(self, user_id: int, tx_id: int, pot_id: int) -> TxView:
-        tx = self.get(user_id, tx_id).replace(pot_id=pot_id)
+    async def set_pot(self, user_id: int, tx_id: int, pot_id: int) -> TxView:
+        tx = (await self.get(user_id, tx_id)).replace(pot_id=pot_id)
         self.rows[tx_id] = (user_id, tx)
         return tx
 
@@ -175,7 +177,7 @@ class FakeReceivables:
     def __init__(self) -> None:
         self.table = ModelTable("receivable", Receivable)
 
-    def create(self, user_id: int, draft: ReceivableDraft) -> Receivable:
+    async def create(self, user_id: int, draft: ReceivableDraft) -> Receivable:
         return self.table.insert(
             user_id,
             {
@@ -190,23 +192,23 @@ class FakeReceivables:
             },
         )
 
-    def get(self, user_id: int, receivable_id: int) -> Receivable:
+    async def get(self, user_id: int, receivable_id: int) -> Receivable:
         return self.table.get(user_id, receivable_id)
 
-    def cancel(self, user_id: int, receivable_id: int) -> Receivable:
+    async def cancel(self, user_id: int, receivable_id: int) -> Receivable:
         return self.table.update(user_id, receivable_id, {"status": ReceivableStatus.CANCELLED})
 
-    def mark_paid(self, user_id: int, receivable_id: int) -> Receivable:
+    async def mark_paid(self, user_id: int, receivable_id: int) -> Receivable:
         return self.table.update(
             user_id, receivable_id, {"status": ReceivableStatus.PAID, "paid_at": clock.now()}
         )
 
-    def list_open(self, user_id: int) -> list[Receivable]:
+    async def list_open(self, user_id: int) -> list[Receivable]:
         live = (ReceivableStatus.OPEN, ReceivableStatus.REQUESTED)
         return [r for r in self.table.list(user_id) if r.status in live]
 
-    def open_for_transaction(self, user_id: int, tx_id: int) -> Receivable | None:
-        found = [r for r in self.list_open(user_id) if r.transaction_id == tx_id]
+    async def open_for_transaction(self, user_id: int, tx_id: int) -> Receivable | None:
+        found = [r for r in await self.list_open(user_id) if r.transaction_id == tx_id]
         return found[-1] if found else None
 
 
@@ -214,27 +216,27 @@ class FakeLifeFacts:
     def __init__(self) -> None:
         self.table = ModelTable("life fact", LifeFact)
 
-    def create(self, user_id: int, draft: LifeFactDraft) -> LifeFact:
+    async def create(self, user_id: int, draft: LifeFactDraft) -> LifeFact:
         return self.table.insert(user_id, {**draft.model_dump(), "created_at": clock.now()})
 
-    def get(self, user_id: int, fact_id: int) -> LifeFact:
+    async def get(self, user_id: int, fact_id: int) -> LifeFact:
         return self.table.get(user_id, fact_id)
 
-    def update(self, user_id: int, fact_id: int, draft: LifeFactDraft) -> LifeFact:
+    async def update(self, user_id: int, fact_id: int, draft: LifeFactDraft) -> LifeFact:
         return self.table.update(user_id, fact_id, draft.model_dump())
 
-    def expire(self, user_id: int, fact_id: int, valid_to: date) -> LifeFact:
+    async def expire(self, user_id: int, fact_id: int, valid_to: date) -> LifeFact:
         return self.table.update(
             user_id, fact_id, {"status": FactStatus.EXPIRED, "valid_to": valid_to}
         )
 
-    def confirm(self, user_id: int, fact_id: int) -> LifeFact:
+    async def confirm(self, user_id: int, fact_id: int) -> LifeFact:
         return self.table.update(user_id, fact_id, {"status": FactStatus.CONFIRMED})
 
-    def reject(self, user_id: int, fact_id: int) -> LifeFact:
+    async def reject(self, user_id: int, fact_id: int) -> LifeFact:
         return self.table.update(user_id, fact_id, {"status": FactStatus.REJECTED})
 
-    def list_active(self, user_id: int) -> list[LifeFact]:
+    async def list_active(self, user_id: int) -> list[LifeFact]:
         today = clock.today()
         return [
             f
@@ -247,7 +249,9 @@ class FakeSignatures:
     def __init__(self) -> None:
         self.by_fact: dict[tuple[int, int], list[Signature]] = {}
 
-    def replace_for_fact(self, user_id: int, fact_id: int, signatures: Sequence[Signature]) -> None:
+    async def replace_for_fact(
+        self, user_id: int, fact_id: int, signatures: Sequence[Signature]
+    ) -> None:
         self.by_fact[(user_id, fact_id)] = list(signatures)
 
 
@@ -255,7 +259,7 @@ class FakePatternRules:
     def __init__(self) -> None:
         self.table = ModelTable("pattern rule", PatternRule)
 
-    def create(self, user_id: int, rule: PatternRule) -> PatternRule:
+    async def create(self, user_id: int, rule: PatternRule) -> PatternRule:
         return self.table.insert(user_id, rule.model_dump(exclude={"id"}))
 
 
@@ -263,16 +267,16 @@ class FakePots:
     def __init__(self) -> None:
         self.table = ModelTable("pot", Pot)
 
-    def create(self, user_id: int, data: Mapping[str, Any]) -> Pot:
+    async def create(self, user_id: int, data: Mapping[str, Any]) -> Pot:
         return self.table.insert(user_id, data)
 
-    def get(self, user_id: int, pot_id: int) -> Pot:
+    async def get(self, user_id: int, pot_id: int) -> Pot:
         return self.table.get(user_id, pot_id)
 
-    def update(self, user_id: int, pot_id: int, changes: Mapping[str, Any]) -> Pot:
+    async def update(self, user_id: int, pot_id: int, changes: Mapping[str, Any]) -> Pot:
         return self.table.update(user_id, pot_id, changes)
 
-    def close(self, user_id: int, pot_id: int) -> Pot:
+    async def close(self, user_id: int, pot_id: int) -> Pot:
         return self.table.update(user_id, pot_id, {"status": PotStatus.CLOSED})
 
 
@@ -280,14 +284,14 @@ class FakeGoals:
     def __init__(self) -> None:
         self.table = ModelTable("goal", Goal)
 
-    def active(self, user_id: int) -> Goal | None:
+    async def active(self, user_id: int) -> Goal | None:
         found = [g for g in self.table.list(user_id) if g.status is GoalStatus.ACTIVE]
         return found[0] if found else None
 
-    def create(self, user_id: int, data: Mapping[str, Any]) -> Goal:
+    async def create(self, user_id: int, data: Mapping[str, Any]) -> Goal:
         return self.table.insert(user_id, {**data, "created_at": clock.now()})
 
-    def update(self, user_id: int, goal_id: int, changes: Mapping[str, Any]) -> Goal:
+    async def update(self, user_id: int, goal_id: int, changes: Mapping[str, Any]) -> Goal:
         return self.table.update(user_id, goal_id, changes)
 
 
@@ -295,10 +299,10 @@ class FakePlanPreferences:
     def __init__(self) -> None:
         self.rows: dict[int, PlanPreferences] = {}
 
-    def get(self, user_id: int) -> PlanPreferences:
+    async def get(self, user_id: int) -> PlanPreferences:
         return self.rows.get(user_id, PlanPreferences())
 
-    def save(self, user_id: int, preferences: PlanPreferences) -> PlanPreferences:
+    async def save(self, user_id: int, preferences: PlanPreferences) -> PlanPreferences:
         self.rows[user_id] = preferences
         return preferences
 
@@ -307,7 +311,7 @@ class FakeLifeProfile:
     def __init__(self) -> None:
         self.notes: dict[int, dict[str, str]] = {}
 
-    def set_note(self, user_id: int, key: str, value: str) -> Row:
+    async def set_note(self, user_id: int, key: str, value: str) -> Row:
         self.notes.setdefault(user_id, {})[key] = value
         return dict(self.notes[user_id])
 
@@ -316,34 +320,34 @@ class FakeAgentEvents(FakeRecords):
     def __init__(self) -> None:
         super().__init__("agent event")
 
-    def open_question_for(self, user_id: int, tx_id: int) -> Row | None:
+    async def open_question_for(self, user_id: int, tx_id: int) -> Row | None:
         found = [
             r
-            for r in self.list(user_id)
+            for r in await self.list(user_id)
             if r.get("ref_transaction_id") == tx_id and r.get("status") == "asked"
         ]
         return found[-1] if found else None
 
-    def mark_answered(self, user_id: int, event_id: int) -> Row:
-        return self.update(user_id, event_id, {"status": "answered"})
+    async def mark_answered(self, user_id: int, event_id: int) -> Row:
+        return await self.update(user_id, event_id, {"status": "answered"})
 
-    def mark_handled(self, user_id: int, event_id: int) -> Row:
-        return self.update(user_id, event_id, {"status": "handled"})
+    async def mark_handled(self, user_id: int, event_id: int) -> Row:
+        return await self.update(user_id, event_id, {"status": "handled"})
 
 
 class FakeTransfers(FakeRecords):
     def __init__(self) -> None:
         super().__init__("transfer")
 
-    def to_savings(self, user_id: int, amount: Decimal) -> Row:
-        return self.create(user_id, {"amount": amount, "kind": "manual"})
+    async def to_savings(self, user_id: int, amount: Decimal) -> Row:
+        return await self.create(user_id, {"amount": amount, "kind": "manual"})
 
 
 class FakeUsers:
     def __init__(self) -> None:
         self.onboarded: set[int] = set()
 
-    def mark_onboarded(self, user_id: int) -> Row:
+    async def mark_onboarded(self, user_id: int) -> Row:
         self.onboarded.add(user_id)
         return {"id": user_id, "onboarded": True}
 
@@ -352,7 +356,7 @@ class FakeLatest:
     def __init__(self) -> None:
         self.rows: dict[int, Row] = {}
 
-    def latest(self, user_id: int) -> Row | None:
+    async def latest(self, user_id: int) -> Row | None:
         return self.rows.get(user_id)
 
 
@@ -360,7 +364,7 @@ class FakeProducts:
     def __init__(self, products: list[Row] | None = None) -> None:
         self.products = products or []
 
-    def list(self) -> list[Row]:
+    async def list(self) -> list[Row]:
         return [dict(p) for p in self.products]
 
 
@@ -368,7 +372,7 @@ class FakeToolCalls:
     def __init__(self) -> None:
         self.rows: list[Row] = []
 
-    def log(
+    async def log(
         self,
         user_id: int,
         run_id: int | None,
@@ -428,7 +432,7 @@ class FakeEngine:
     today_budget: Decimal = Decimal("31.20")
     probability: float = 0.71
 
-    def recompute_plan(
+    async def recompute_plan(
         self, db: Any, user_id: int, reason: str, trigger_ref: dict[str, Any] | None = None
     ) -> PlanSummary:
         self.calls.append(("recompute_plan", (user_id, reason, trigger_ref)))
@@ -442,7 +446,7 @@ class FakeEngine:
             reason=reason[:300],
         )
 
-    def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast:
+    async def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast:
         self.calls.append(("forecast_goal", (user_id, plan_version)))
         previous, self.probability = self.probability, min(1.0, round(self.probability + 0.06, 2))
         return Forecast(
@@ -454,16 +458,16 @@ class FakeEngine:
             p90=Decimal("12100"),
         )
 
-    def own_share_estimate(self, db: Any, user_id: int, tx: TxView) -> Decimal:
+    async def own_share_estimate(self, db: Any, user_id: int, tx: TxView) -> Decimal:
         self.calls.append(("own_share_estimate", (user_id, tx.id)))
         return self.estimate
 
-    def on_annotation_changed(
+    async def on_annotation_changed(
         self, db: Any, user_id: int, tx_id: int, old: Decimal, new: Decimal
     ) -> None:
         self.calls.append(("on_annotation_changed", (user_id, tx_id, old, new)))
 
-    def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> SimResult:
+    async def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> SimResult:
         self.calls.append(("simulate_plan", (user_id, changes)))
         return SimResult(
             feasible=True,
@@ -482,16 +486,16 @@ class FakeContext:
     signatures: list[Signature] = field(default_factory=list)
     calls: list[tuple[str, tuple[Any, ...]]] = field(default_factory=list)
 
-    def signatures_for_fact(
+    async def signatures_for_fact(
         self, fact: LifeFact, llm_signatures: list[dict[str, Any]] | None
     ) -> list[Signature]:
         self.calls.append(("signatures_for_fact", (fact.id, llm_signatures)))
         return list(self.signatures)
 
-    def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> None:
+    async def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> None:
         self.calls.append(("on_fact_changed", (user_id, fact_id)))
 
-    def learn_from_annotation(self, db: Any, user_id: int, tx_id: int) -> None:
+    async def learn_from_annotation(self, db: Any, user_id: int, tx_id: int) -> None:
         self.calls.append(("learn_from_annotation", (user_id, tx_id)))
 
     def names(self) -> list[str]:

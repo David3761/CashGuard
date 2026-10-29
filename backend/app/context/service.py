@@ -5,6 +5,11 @@ Real: `evaluate_transaction` (C6, `context.evaluate`), `pick_question` and `defa
 (`on_fact_changed`), C8 (`learn_from_annotation`) and C10 (`infer_hypotheses`): `[]`, a no-op
 result, `None`.
 
+The shells that load data (`evaluate_transaction`, `pick_question`, `on_fact_changed`,
+`learn_from_annotation`, `infer_hypotheses`) are `async`: bomboe's services and B4's
+`load_user_context` run on SQLAlchemy's `AsyncSession`. The pure ones (`default_reading`,
+`signatures_for_fact`) and the cores they call stay sync.
+
 `db` is typed `Any` until bomboe's session exists. The DB reads go through bomboe's services
 (arch 15.1 `services/`), looked up at call time because B3 isn't merged yet; tests replace them.
 """
@@ -35,20 +40,19 @@ def _service(name: str) -> Any:
     return importlib.import_module(f"app.services.{name}")
 
 
-def _transaction(db: Any, user_id: int, tx_id: int) -> TxView:
-    tx: TxView = _service("transactions").get(db, user_id, tx_id)
+async def _transaction(db: Any, user_id: int, tx_id: int) -> TxView:
+    tx: TxView = await _service("transactions").get(db, user_id, tx_id)
     return tx
 
 
-def _transactions_of_day(db: Any, user_id: int, day: date) -> list[TxView]:
-    txs: list[TxView] = _service("transactions").list_effective(db, user_id, day, day)
+async def _transactions_of_day(db: Any, user_id: int, day: date) -> list[TxView]:
+    txs: list[TxView] = await _service("transactions").list_effective(db, user_id, day, day)
     return txs
 
 
-def _context(db: Any, user_id: int, today: date) -> UserContext:
-    """bomboe's B4 read model. NOTE: WB B4 declares it `async`; this shell is sync (§15), so the
-    pipeline must hand over a sync loader or this shell becomes async (open point, C5-C7 report)."""
-    ctx: UserContext = _service("context").load_user_context(db, user_id, today)
+async def _context(db: Any, user_id: int, today: date) -> UserContext:
+    """bomboe's B4 read model (`async`, WB B4; so are the shells that call it)."""
+    ctx: UserContext = await _service("context").load_user_context(db, user_id, today)
     return ctx
 
 
@@ -72,21 +76,21 @@ def default_reading(tx: TxView) -> Evaluation:
     return questions.default_reading(tx)
 
 
-def evaluate_transaction(db: Any, user_id: int, tx_id: int) -> Evaluation:
+async def evaluate_transaction(db: Any, user_id: int, tx_id: int) -> Evaluation:
     """C6: load the transaction and the context, then the pure `evaluate` (5.3.4). Pure read +
     compute: the pipeline saves it (`transactions.save_evaluation`)."""
-    tx = _transaction(db, user_id, tx_id)
-    return evaluate(_context(db, user_id, clock.today()), tx)
+    tx = await _transaction(db, user_id, tx_id)
+    return evaluate(await _context(db, user_id, clock.today()), tx)
 
 
-def pick_question(db: Any, user_id: int, today: date) -> QuestionCandidate | None:
+async def pick_question(db: Any, user_id: int, today: date) -> QuestionCandidate | None:
     """C7: the one question to ask now among the `ask` / `ask_later` transactions of the last
     48 h (5.3.6), or None. The caller turns the others into ask_later / expired events."""
-    ctx = _context(db, user_id, today)
+    ctx = await _context(db, user_id, today)
     recent = [
-        *_transactions_of_day(db, user_id, today - timedelta(days=2)),
-        *_transactions_of_day(db, user_id, today - timedelta(days=1)),
-        *_transactions_of_day(db, user_id, today),
+        *await _transactions_of_day(db, user_id, today - timedelta(days=2)),
+        *await _transactions_of_day(db, user_id, today - timedelta(days=1)),
+        *await _transactions_of_day(db, user_id, today),
     ]
     waiting = {tx.id: tx for tx in recent if tx.decision in (Decision.ASK, Decision.ASK_LATER)}
     candidates = [_candidate(ctx, tx) for tx in waiting.values()]
@@ -100,16 +104,16 @@ def signatures_for_fact(
     return library.signatures_for_fact(fact, llm_signatures)
 
 
-def on_fact_changed(db: Any, user_id: int, fact_id: int) -> PropagationResult:
+async def on_fact_changed(db: Any, user_id: int, fact_id: int) -> PropagationResult:
     """Stub of C9: a no-op (nothing re-evaluated, the scale unchanged)."""
     return PropagationResult(fact_id=fact_id)
 
 
-def learn_from_annotation(db: Any, user_id: int, tx_id: int) -> RuleChange | None:
+async def learn_from_annotation(db: Any, user_id: int, tx_id: int) -> RuleChange | None:
     """Stub of C8: never learns a rule."""
     return None
 
 
-def infer_hypotheses(db: Any, user_id: int) -> list[LifeFactDraft]:
+async def infer_hypotheses(db: Any, user_id: int) -> list[LifeFactDraft]:
     """Stub of C10: no hypotheses."""
     return []
