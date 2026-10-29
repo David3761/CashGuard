@@ -38,3 +38,8 @@ Thumbs.db
 /backend/.idea/
 .vscode/
 *.swp
+
+# Firebase service-account keys (FCM_SERVICE_ACCOUNT_FILE): never commit them
+*firebase-adminsdk*.json
+*service-account*.json
+backend/secrets/

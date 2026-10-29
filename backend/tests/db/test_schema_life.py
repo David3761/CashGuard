@@ -59,6 +59,8 @@ GOLDEN_SCHEMA = {
     "category_baselines": "user_id category personal_median personal_mad n prior_median "
     "household_multiplier expected_median monthly_expected updated_at",
     "merchants": "id canonical_name aliases category mcc typical_basket multi_category",
+    # the app API's push devices (owned by a login, not a users row: no FK, survives /sim/reset)
+    "devices": "id fcm_token platform user_sub created_at updated_at",
 }
 
 # Every column holding a fixed-list value, and the list it must be checked against.
@@ -102,9 +104,10 @@ ENUM_COLUMNS = {
     ("pots", "status"): e.PotStatus,
     ("category_baselines", "category"): e.Category,
     ("merchants", "category"): e.Category,
+    ("devices", "platform"): m.DevicePlatform,
 }
 
-GLOBAL_TABLES = {"products", "sim_clock", "merchants"}  # not owned by a user
+GLOBAL_TABLES = {"products", "sim_clock", "merchants", "devices"}  # not owned by a user row
 
 
 async def test_golden_schema_matches_arch_doc(db):

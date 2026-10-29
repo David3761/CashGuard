@@ -125,6 +125,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         api.include_router(sim.router)
     app.include_router(api)
     app.include_router(ws_router)
+    if settings.APP_API_ENABLED:  # David V.'s Flutter contract at the root (API_SPEC.md)
+        from app.app_api.router import install_app_api
+
+        install_app_api(app, settings)
     # Secrets show as "**********" (SecretStr) and the redaction filter backs that up.
     logger.info("app_configured", extra={"settings": settings.model_dump(mode="json")})
     return app

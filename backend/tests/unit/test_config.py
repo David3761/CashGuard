@@ -60,6 +60,20 @@ FIELDS = frozenset(
         "MAX_AGENT_ITERATIONS",
         "QUESTIONS_PER_DAY",
         "LOG_LEVEL",
+        "RATE_LIMIT_CHAT_PER_MINUTE",
+        "RATE_LIMIT_CHAT_PER_DAY",
+        "RATE_LIMIT_SIM_PER_MINUTE",
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE",
+        # the app API (tests/unit/app_api/test_settings.py checks their defaults)
+        "APP_API_ENABLED",
+        "APP_API_USER",
+        "APP_API_MAX_TEXT_CHARS",
+        "APP_API_REPLY_TIMEOUT_S",
+        "APP_API_HISTORY_LIMIT",
+        "APP_API_MAX_DEVICES",
+        "APP_API_CORS_ORIGIN_REGEX",
+        "FCM_SERVICE_ACCOUNT_FILE",
+        "FCM_PROJECT_ID",
     }
 )
 OPTIONAL_FIELDS = (
@@ -152,6 +166,19 @@ def test_settings_defaults_match_the_documented_values(settings: Settings) -> No
         "MAX_AGENT_ITERATIONS": 6,
         "QUESTIONS_PER_DAY": 1,
         "LOG_LEVEL": "INFO",
+        "RATE_LIMIT_CHAT_PER_MINUTE": 10,
+        "RATE_LIMIT_CHAT_PER_DAY": 200,
+        "RATE_LIMIT_SIM_PER_MINUTE": 5,
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE": 10,
+        "APP_API_ENABLED": False,
+        "APP_API_USER": "a0000000-0000-4000-8000-000000000001",
+        "APP_API_MAX_TEXT_CHARS": 2000,
+        "APP_API_REPLY_TIMEOUT_S": 120.0,
+        "APP_API_HISTORY_LIMIT": 100,
+        "APP_API_MAX_DEVICES": 5,
+        "APP_API_CORS_ORIGIN_REGEX": r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+        "FCM_SERVICE_ACCOUNT_FILE": None,
+        "FCM_PROJECT_ID": None,
     }
 
 
@@ -216,6 +243,18 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         MAX_AGENT_ITERATIONS="8",
         QUESTIONS_PER_DAY="2",
         LOG_LEVEL="DEBUG",
+        RATE_LIMIT_CHAT_PER_MINUTE="3",
+        RATE_LIMIT_CHAT_PER_DAY="30",
+        RATE_LIMIT_SIM_PER_MINUTE="2",
+        RATE_LIMIT_WS_CONNECT_PER_MINUTE="4",
+        APP_API_ENABLED="true",
+        APP_API_USER="b0000000-0000-4000-8000-000000000002",
+        APP_API_MAX_TEXT_CHARS="500",
+        APP_API_REPLY_TIMEOUT_S="30",
+        APP_API_HISTORY_LIMIT="20",
+        APP_API_MAX_DEVICES="2",
+        APP_API_CORS_ORIGIN_REGEX="^https://app\\.example\\.com$",
+        FCM_PROJECT_ID="demo-project",
     )
 
     assert settings.model_dump() == {
@@ -241,6 +280,19 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         "MAX_AGENT_ITERATIONS": 8,
         "QUESTIONS_PER_DAY": 2,
         "LOG_LEVEL": "DEBUG",
+        "RATE_LIMIT_CHAT_PER_MINUTE": 3,
+        "RATE_LIMIT_CHAT_PER_DAY": 30,
+        "RATE_LIMIT_SIM_PER_MINUTE": 2,
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE": 4,
+        "APP_API_ENABLED": True,
+        "APP_API_USER": "b0000000-0000-4000-8000-000000000002",
+        "APP_API_MAX_TEXT_CHARS": 500,
+        "APP_API_REPLY_TIMEOUT_S": 30.0,
+        "APP_API_HISTORY_LIMIT": 20,
+        "APP_API_MAX_DEVICES": 2,
+        "APP_API_CORS_ORIGIN_REGEX": "^https://app\\.example\\.com$",
+        "FCM_SERVICE_ACCOUNT_FILE": None,
+        "FCM_PROJECT_ID": "demo-project",
     }
 
 
@@ -557,6 +609,19 @@ def test_every_value_may_have_surrounding_spaces(monkeypatch: pytest.MonkeyPatch
         "MAX_AGENT_ITERATIONS": "8",
         "QUESTIONS_PER_DAY": "2",
         "LOG_LEVEL": "WARNING",
+        "RATE_LIMIT_CHAT_PER_MINUTE": "3",
+        "RATE_LIMIT_CHAT_PER_DAY": "30",
+        "RATE_LIMIT_SIM_PER_MINUTE": "2",
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE": "4",
+        "APP_API_ENABLED": "true",
+        "APP_API_USER": "42",
+        "APP_API_MAX_TEXT_CHARS": "500",
+        "APP_API_REPLY_TIMEOUT_S": "60",
+        "APP_API_HISTORY_LIMIT": "50",
+        "APP_API_MAX_DEVICES": "3",
+        "APP_API_CORS_ORIGIN_REGEX": "^http://localhost$",
+        "FCM_SERVICE_ACCOUNT_FILE": "/run/secrets/firebase.json",
+        "FCM_PROJECT_ID": "cashctrl-6b66a",
     }
     assert set(values) == FIELDS
     plain = _from_env(monkeypatch, **values)
