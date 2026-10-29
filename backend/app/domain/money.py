@@ -163,17 +163,54 @@ def share_each(others: MoneyLike, count: int) -> Decimal:
     return to_money(_CONTEXT.divide(amount, people))
 
 
+MAX_JSON_DEPTH: Final = 64
+"""parse_json refuses deeper JSON (domain data is a few levels deep; this stops nesting bombs)."""
+
+
+def _depth(value: object) -> int:
+    deepest, stack = 0, [(value, 1)]
+    while stack:
+        node, level = stack.pop()
+        if isinstance(node, dict | list):
+            deepest = max(deepest, level)
+            stack.extend(
+                (child, level + 1) for child in (node.values() if isinstance(node, dict) else node)
+            )
+    return deepest
+
+
 def _no_constant(name: str) -> NoReturn:
     raise ValueError(f"JSON {name} is not a number")
 
 
+def _no_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"JSON has a duplicate key {_shown(key)}")
+        result[key] = value
+    return result
+
+
 def parse_json(data: str | bytes | bytearray) -> object:
-    """JSON with every number read exactly (decimals as `Decimal`); NaN and Infinity rejected.
+    """JSON with every number read exactly (decimals as `Decimal`); NaN, Infinity and duplicate
+    keys rejected (the stdlib would silently keep the last value; C1's loader rule, H-7).
 
     Use it, then `model_validate`, wherever JSON carrying money is parsed (see the module
-    docstring for why pydantic's own JSON parsing isn't exact).
+    docstring for why pydantic's own JSON parsing isn't exact). `DomainModel.model_validate_json`
+    does exactly that.
     """
-    parsed: object = json.loads(data, parse_float=Decimal, parse_constant=_no_constant)
+    try:
+        parsed: object = json.loads(
+            data,
+            parse_float=Decimal,
+            parse_constant=_no_constant,
+            object_pairs_hook=_no_duplicate_keys,
+        )
+    except RecursionError:
+        raise ValueError(f"JSON nested deeper than {MAX_JSON_DEPTH} levels") from None
+    if _depth(parsed) > MAX_JSON_DEPTH:
+        raise ValueError(f"JSON nested deeper than {MAX_JSON_DEPTH} levels")
     return parsed
 
 
