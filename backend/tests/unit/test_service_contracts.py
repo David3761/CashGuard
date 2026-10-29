@@ -167,14 +167,3 @@ def test_service_function_matches_the_contract(name):
     assert inspect.iscoroutinefunction(fn), f"{name} must be async"
     assert params(fn) == CONTRACT[name]
     assert fn.__doc__, f"{name} needs a docstring (it's what the others read)"
-
-
-async def test_load_user_context_stub_returns_a_complete_context_for_today():
-    # Replaced by the real loader in B4 (then this becomes a db test).
-    from datetime import date
-
-    from app.services.context_loader import load_user_context
-
-    ctx = await load_user_context(None, 1, date(2026, 6, 16))  # type: ignore[arg-type]
-    assert ctx.today == date(2026, 6, 16)
-    assert ctx.profile.name == "Matei" and ctx.goal is not None

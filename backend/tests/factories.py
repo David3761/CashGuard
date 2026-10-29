@@ -105,7 +105,9 @@ async def everything(db: AsyncSession) -> m.User:
         m.LifeProfile(user_id=u.id, data={"what_works": ["gătit acasă"]}),
         m.PlanPreferences(user_id=u.id),
         m.DayLedger(user_id=u.id, date=day, budget=Decimal("120")),
-        m.Plan(user_id=u.id, version=1, feasible=True, payload={}),
+        m.Plan(
+            user_id=u.id, version=1, feasible=True, payload={"today_budget": 31.2, "feasible": True}
+        ),
         m.Slip(user_id=u.id, date=day, amount_over=Decimal("10")),
         m.Reflection(user_id=u.id, week_start=date(2026, 6, 8), motivation=4),
         m.Transfer(user_id=u.id, amount=Decimal("760"), pot_id=pot.id),
