@@ -14,7 +14,7 @@
 
 | Order | ID | Task | P | h | Status |
 |---|---|---|---|---|---|
-| 1 | B1 | docker-compose, env, Keycloak realm, cron container | P0 | 0.75 | ✅ steps 1–3 (step 4 after B6a/B8) |
+| 1 | B1 | docker-compose, env, Keycloak realm, cron container | P0 | 0.75 | ✅ (smoke ran OK) |
 | 2 | B2 | DB models for every table | P0 | 1.5 | ✅ (+ Alembic, `goals.soft`) |
 | 3 | F3 | Test fixtures (DB, API, auth, WS) | P0 | 1 | ✅ (`seeded_db` after B12) |
 | 4 | B3 | CRUD services | P0 | 1.5 | ✅ |
@@ -22,16 +22,16 @@
 | 6 | B5 | Auth (JWT/JWKS, `current_user`, internal role, WS token) | P0 | 1 | ✅ |
 | 7 | B7 | WebSocket manager + events + push-after-commit | P0 | 0.75 | ✅ core (see merge notes) |
 | 8 | B8 | Ingestion + processing pipeline | P0 | 1.5 | ✅ (signals.detect waits for E11) |
-| 9 | B9 | `POST /chat` + background agent run | P0 | 0.75 | ☐ |
-| 10 | B6a | REST core endpoints | P0 | 1 | ☐ |
-| 11 | B12 | Seed loader | P0 | 0.75 | ☐ |
-| 12 | B10 | Simulator | P0 | 1 | ☐ |
-| 13 | B6b (step 1) | `POST /receivables/{id}/request-payment` (+ list) | P0 | 0.5 | ☐ |
-| 14 | B14 | Hosting & deploy | P0 | 1 | ☐ |
-| 15 | B6b (rest) | /forecast, /pots, /life-facts, /products, /life-profile | P1 | 0.5 | ☐ |
-| 16 | B11 | Day jobs + internal endpoints + cron | P1 | 1 | ☐ |
-| 17 | B13 | Notifications service + RO/EN templates | P1 | 0.5 | ☐ |
-| 18 | B15 | Audit logging + privacy | P1 | 0.5 | ☐ |
+| 9 | B9 | `POST /chat` + background agent run | P0 | 0.75 | ✅ |
+| 10 | B6a | REST core endpoints | P0 | 1 | ✅ |
+| 11 | B12 | Seed loader | P0 | 0.75 | ✅ (placeholder data until E12/D1/C1) |
+| 12 | B10 | Simulator | P0 | 1 | ✅ |
+| 13 | B6b (step 1) | `POST /receivables/{id}/request-payment` (+ list) | P0 | 0.5 | ✅ |
+| 14 | B14 | Hosting & deploy | P0 | 1 | ◐ ready to deploy (no server yet, Q22) |
+| 15 | B6b (rest) | /forecast, /pots, /life-facts, /products, /life-profile | P1 | 0.5 | ✅ |
+| 16 | B11 | Day jobs + internal endpoints + cron | P1 | 1 | ✅ (stand-in thresholds until E11) |
+| 17 | B13 | Notifications service + RO/EN templates | P1 | 0.5 | ✅ |
+| 18 | B15 | Audit logging + privacy | P1 | 0.5 | ✅ |
 
 **Load:** P0 ≈ 13.75 h · total ≈ 16.25 h. "H+n" below means *n hours after we all start building*.
 

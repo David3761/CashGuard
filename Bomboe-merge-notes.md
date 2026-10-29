@@ -136,6 +136,22 @@ How to use them: **`backend/tests/README.md`** (one example per fixture, how to 
 | Event builders | `app/events.py` | one function per arch 5.2 event → `{type, data, ts}` (`ts` UTC `Z`, money as numbers). `transaction_annotated(tx, purpose_label)`: the label comes from the caller until `app/i18n/labels.py` (C1) exists |
 | `manager`, `push_after_commit(session, user_id, event)` | `app/ws.py` | **call `push_after_commit` in tool handlers / pipeline**: events go out only after the session commits, in order; a rollback drops them. `/ws?token=` closes 1008 on a bad token; ping every 30 s |
 
+### B9 · `POST /chat` ✅ · B6a / B6b REST ✅ · B13 notifications ✅ · B12 seed ✅ · B10 simulator ✅ · B11 day jobs ✅ · B15 audit ✅ · B1.4 + B14 deploy ✅
+
+| Task | Where | What others need to know |
+|---|---|---|
+| B9 chat | `app/api/chat.py` | `POST /api/chat {text, input_mode}` → 202 `{message_id, run_id}`; 409 `agent_busy` (in-memory set + `agent_runs.is_running`); background: `agent.typing` → `process_user("chat")` → **`ports.run_agent(user_id, "chat", text, input_mode)`** → reply saved + `assistant.message`; `plan.updated` + `forecast.updated` only when the plan version changed; any exception → `ports.fallback_reply(language)`, run `failed` with the (redacted) error. **The chat endpoint creates the `agent_runs` row**; the agent reads its id from `app.services.agent_runs.CURRENT_RUN` (ContextVar) to log tool calls |
+| B13 notify | `app/services/notify.py`, `app/i18n/notifications.py` | `notify(db, user_id, type, params)` → row in the user's language + `notification.new` after commit. Types: overspend, plan_updated, streak, auto_save, payment_request_sent, receivable_reminder, goal_completed. `Decimal` params are formatted as money (`ports.format_money`) |
+| B6a REST core | `app/api/{schemas,views,me,state,messages,notifications,plan,transactions,transfers}.py` | shapes of arch 9.3 (`schemas.py`); timestamps ISO UTC `Z`; labels via `ports.label`; `PATCH /transactions/{id}` → `ports.apply_annotation` → re-plan + forecast + `transaction.annotated`; `tests/api/test_rest_core.py::test_every_api_route_needs_a_token` guards every future endpoint (401 without a token) |
+| B6b REST context | `app/api/{receivables,context}.py` | request-payment / mark-paid / cancel; `/forecast` (+drivers, options, weekly history); `/pots`; `/products` (via `ports.rank_products`); `/life-facts` CRUD + confirm/reject (→ `ports.signatures_for_fact` + `ports.on_fact_changed`); `/life-profile` soft notes |
+| B12 seed | `app/db/seed.py`, `data/`, `scripts/placeholder_data.py` | `uv run python -m app.db.seed --reset`. **File formats in the `seed.py` docstring = the contract for E12 / D1 / C1 / D2.** The files in `data/` are **placeholders** written by `scripts/placeholder_data.py`: replace them with yours (same format) |
+| B10 sim | `app/api/sim.py`, `app/sim/{clock_store,scenarios}.py` | `/api/sim/transaction {scenario_id}` or raw `{merchant_raw, amount, …, persona?}`; `/sim/personas`; `/sim/next-day`; `/sim/jump {days}`; `/sim/reset` (204). Scenarios: `data/scenarios/<id>.json` `{id, persona, merchant_raw, mcc, amount, category, items, day_offset, time}`; optional scripted days `data/sim_days/<YYYY-MM-DD>.json` |
+| B11 jobs | `app/pipeline/{jobs,day_jobs}.py`, `POST /api/internal/<job>` | close-day, expire-events, expire-questions, receivable-reminders, forecast-snapshot, weekly-reflection, preemptive, infer-hypotheses; `day_jobs.day_sequence(day)` = the sim order |
+| B15 audit | `app/logging.py` | `redact(text)` scrubs the configured Anthropic key and any `sk-ant-…` from log lines and stored errors; **use it before storing any exception text** |
+| B1.4 / B14 | `scripts/smoke_local.sh`, `scripts/smoke_remote.sh`, `deploy/`, `docs/deploy.md` | local smoke **ran OK** (Keycloak → /me → /state → cron /internal/process → Scene A); a live WebSocket check received resolved → annotated → plan.updated → forecast.updated; hosted: `docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d --build` (not deployed: no server yet, Q22) |
+
+**New ports** (all in `app/pipeline/ports.py`, real module used automatically when it exists): `run_agent` (`app.agent.loop`), `detect_language` (`app.agent.language`), `fallback_reply` (`app.agent.templates`), `apply_annotation` (`app.agent.handlers.transactions`), `default_reading` / `signatures_for_fact` / `on_fact_changed` / `infer_hypotheses` (`app.context.service`), `rank_products` (`app.context.products`), `recompute_baselines` (`app.engine.service`), `label` (`app.i18n.labels`), `format_money` (`app.i18n.format`). ⚠️ The S0 fallbacks' signatures are what the callers use: `default_reading(tx) -> (Purpose, confidence)`, `rank_products(ctx, products) -> [(Product, reason | None)]`, `label(value, lang) -> str | None`, `format_money(amount, lang) -> str`, `fallback_reply(language) -> str`. If yours differ, adapt the port, not the callers.
+
 ### B8 · Ingestion + processing pipeline ✅
 
 | Piece | Where | Notes for others |
@@ -182,6 +198,39 @@ Differences from the names in Bomboe.md / arch 15.1:
 
 ---
 
+## 3b. Assumptions made while finishing every task without review (bomboe asked: "make assumptions and write them down", 2026-10-29)
+
+| # | Area | Assumption | Revisit if |
+|---|---|---|---|
+| A1 | Teammates' code | Their functions are called through `app/pipeline/ports.py`; until a module exists, `_fallbacks.py` runs the S0 stub behaviour (e.g. > 300 lei → ask, forecast 78%, echoing agent) | their modules land (delete `_fallbacks.py`) |
+| A2 | Chat | POST /chat owns the `agent_runs` row and passes the id via `agent_runs.CURRENT_RUN`; `iterations` is recorded as 0 (the loop doesn't report it yet) | A6 returns iterations |
+| A3 | Chat | the reply is spoken when the user spoke (`voice`) or the agent gave `speak_text` | David G. prefers otherwise |
+| A4 | Chat | the user's language follows `detect_language` on each message (A11), stand-in = keep current | — |
+| A5 | /state | `onboarding` also has `life_context` (arch 6.5); `goal`/`plan`/`forecast` are null until `onboarded_at` is set | David V. needs another shape |
+| A6 | /state | `streak_days` = consecutive closed days before today with status ok/under | E11 defines streaks |
+| A7 | Timestamps | always ISO UTC `Z` (9.1), also `occurred_at` (9.3's example shows `+03:00`) | the app wants local times |
+| A8 | PATCH /transactions | no `purpose` + own share < amount → `on_behalf_of_others`, beneficiary `shared`; else the old purpose | — |
+| A9 | Transfers | undo moves the money back (pot −amount, balance +amount) | E10 does it in the engine |
+| A10 | Receivables | request-payment text = (people_count − 1) × amount_each; mark-paid / cancel re-plan | — |
+| A11 | Life facts | profile-screen facts are `source=user_edit`, `confirmed`; DELETE re-plans directly (the fact is gone, so not `on_fact_changed`) | C9 wants a delete hook |
+| A12 | Life profile | only `motivation_trend`, `what_works`, `what_doesnt` are writable (arch 4.3) → else 422 `not_a_soft_note` | — |
+| A13 | Notifications | my RO/EN wording; `opens_chat` for overspend, receivable reminder, goal completed; streak at 3/7/14 days | A5's templates / D33 review |
+| A14 | Day close | stand-in thresholds: overspent > budget, under < 50 %; budget = latest plan's `today_budget` when the ledger has none | E11 lands |
+| A15 | Day close | overspend → `overspend` event when today's question is free, else a quiet notification; idempotent per (user, day) | — |
+| A16 | Expiry | pending events expire after 48 h; asked questions after 24 h get `default_reading` (unplanned, 0.3) and expire | C7 |
+| A17 | Reminders | receivables open ≥ 14 days → one `receivable_reminder` event per day listing them | — |
+| A18 | Snapshots | Monday job copies the latest forecast as this week's snapshot if none exists yet | E8 flags snapshots itself |
+| A19 | Preemptive | 09:00 job: a planned life event tomorrow → `preemptive_checkin` | the team defines preemptive check-ins |
+| A20 | Seed | runs at the sim start date (so past-dated goals are valid); keycloak_sub from the realm file by username; seeded personas are onboarded (Alex isn't); "last week" snapshot saved first with `plan_version 0` | E12/E13 data |
+| A21 | Seed data | placeholder files (`scripts/placeholder_data.py`): 14 merchants, 3 products, 5 personas (Matei 22 history rows), 8 scenarios | E12 / D1 / C1 / D2 replace them |
+| A22 | Simulator | `SimClock`: date from `sim_clock`, time of day real; loaded at startup (`SIM_CLOCK_FROM_DB`, off in tests) | — |
+| A23 | Simulator | `/sim/*` needs a logged-in user (public host) and is absent when `SIM_MODE=false`; `persona` targets that persona's account | the demo needs no login |
+| A24 | Simulator | `next-day`: scripted day (optional) → process → jobs in arch §10 order (+ expire-events after expire-questions) → advance → preemptive for the new day | — |
+| A25 | Hosting | Caddy for TLS + WS; Keycloak `start` with proxy headers; only 80/443 public; cron `process recover` only (Q21); **not deployed** (no server, Q22) | a provider is picked |
+| A26 | WebSocket | a bad token is accepted then closed with 1008 (closing before accept is an HTTP 403 on a real server) | — |
+| A27 | Privacy | stored error texts and logs are passed through `redact()` | — |
+| A28 | load_user_context | ~20 statements (not ≤ 10); the < 50 ms budget is unmeasured | it's too slow with real data |
+
 ## 4. Open questions & follow-ups
 
 | # | For | Item |
@@ -216,4 +265,13 @@ Differences from the names in Bomboe.md / arch 15.1:
 | `34f1687` | F3.2–3 API + WS fixtures, `tests/README.md`; `make check` → 481 passed |
 | `f22171e`, `5ac8c5c`, `306c337`, `94528ea` | B3 steps 1–4: every CRUD service; `make check` → 625 passed |
 | `fd0c526`, `7c05067`, `d3f86e9` | B4 loader, B5.2 auth deps, B7 WebSocket core |
-| (next) | B8 ingest + pipeline + /internal/process, /internal/recover; `make check` → 669 passed |
+| `491f3f7` | B8 ingest + pipeline + /internal/process, /internal/recover; `make check` → 669 passed |
+| `7d78b8d` | B9 /chat |
+| `4a89024` | B13 notifications |
+| `137fb8d` | B6a REST core |
+| `27396b4` | B6b REST context |
+| `94a1033` | B12 seed + placeholder data |
+| `f7c61d2` | B11 day jobs |
+| `adf70b4` | B10 simulator |
+| `fcba773` | B15 audit & privacy |
+| `2db1a49` | B1.4 smoke (ran OK), B14 deploy files, /ws 1008 fix; `make check` → 772 passed |
