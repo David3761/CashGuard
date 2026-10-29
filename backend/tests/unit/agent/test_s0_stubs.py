@@ -19,12 +19,19 @@ def test_detect_language_keeps_current(current: Language) -> None:
     assert detect_language("I bought it for my colleagues", current) == current
 
 
-def test_build_snapshot_minimal_text() -> None:
+async def test_build_snapshot_is_the_async_shell(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A4 replaced the stub: the shell loads the context (B4) and renders it (tests: test_snapshot).
+    from app.agent import snapshot
+    from tests.builders import matei_ctx
+
+    async def load(db: object, user_id: int, today: object) -> object:
+        return matei_ctx()
+
+    monkeypatch.setattr(snapshot, "_load_context", load)
     with use_clock(FixedClock(datetime(2026, 6, 15, 9, 0, tzinfo=UTC))):
-        text = build_snapshot(None, 3, "chat", 12)
+        text = await build_snapshot(None, 1, "chat", None)
     assert "2026-06-15" in text
-    assert "chat" in text
-    assert "12" in text
+    assert "run: chat" in text
 
 
 @pytest.fixture
