@@ -3,6 +3,7 @@
 import httpx2
 import pytest
 from anthropic import AsyncAnthropicBedrock
+from pydantic import SecretStr
 
 from app.agent.llm import LLM, BedrockAuth, LLMError, LLMUnavailable, bedrock_model_id
 from app.config import Settings
@@ -85,3 +86,39 @@ async def test_a_bedrock_request_is_signed_and_sent_to_bedrock_runtime() -> None
     assert request.url.host == "bedrock-runtime.us-west-2.amazonaws.com"
     assert request.headers["authorization"].startswith("AWS4-HMAC-SHA256")
     assert "secret-example" not in str(request.headers)
+
+
+async def test_a_bedrock_api_key_is_sent_as_bearer_instead_of_sigv4() -> None:
+    seen: list[httpx2.Request] = []
+
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        seen.append(request)
+        return httpx2.Response(403, json={"type": "error", "error": {"type": "x", "message": "x"}})
+
+    settings = Settings(
+        _env_file=None,
+        LLM_PROVIDER="bedrock",
+        AWS_DEFAULT_REGION="us-west-2",
+        AWS_BEARER_TOKEN_BEDROCK=SecretStr("bedrock-api-key"),
+        AWS_ACCESS_KEY_ID=SecretStr("AKIDEXAMPLE"),  # ignored: the API key wins
+        AWS_SECRET_ACCESS_KEY=SecretStr("secret-example"),
+    )
+    llm = LLM.from_settings(
+        settings, http_client=httpx2.AsyncClient(transport=httpx2.MockTransport(handler))
+    )
+    with pytest.raises(LLMError):
+        await llm.create(["rules"], [{"role": "user", "content": "salut"}])
+    await llm.aclose()
+
+    assert seen[0].headers["authorization"] == "Bearer bedrock-api-key"
+
+
+def test_an_api_key_alone_is_enough_on_bedrock() -> None:
+    settings = Settings(
+        _env_file=None,
+        LLM_PROVIDER="bedrock",
+        AWS_DEFAULT_REGION="us-west-2",
+        AWS_BEARER_TOKEN_BEDROCK=SecretStr("bedrock-api-key"),
+    )
+
+    assert LLM.from_settings(settings)._client is not None

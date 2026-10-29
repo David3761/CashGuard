@@ -67,6 +67,8 @@ class Settings(BaseSettings):
     # temporary AWS credentials below; ANTHROPIC_MODEL becomes `us.anthropic.<model>` there).
     LLM_PROVIDER: Literal["anthropic", "bedrock"] = "anthropic"
     AWS_DEFAULT_REGION: str | None = None
+    # A Bedrock API key (console: Amazon Bedrock -> API keys). Wins over the AWS_* credentials.
+    AWS_BEARER_TOKEN_BEDROCK: SecretStr | None = None
     AWS_ACCESS_KEY_ID: SecretStr | None = None
     AWS_SECRET_ACCESS_KEY: SecretStr | None = None
     AWS_SESSION_TOKEN: SecretStr | None = None
@@ -84,6 +86,7 @@ class Settings(BaseSettings):
     @field_validator(
         "ANTHROPIC_API_KEY",
         "AWS_DEFAULT_REGION",
+        "AWS_BEARER_TOKEN_BEDROCK",
         "AWS_ACCESS_KEY_ID",
         "AWS_SECRET_ACCESS_KEY",
         "AWS_SESSION_TOKEN",

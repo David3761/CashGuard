@@ -59,9 +59,10 @@ class BedrockAuth:
     """Amazon Bedrock credentials (the hackathon's temporary AWS session); not in repr."""
 
     region: str
-    access_key: str = field(repr=False)
-    secret_key: str = field(repr=False)
+    access_key: str = field(default="", repr=False)
+    secret_key: str = field(default="", repr=False)
     session_token: str | None = field(default=None, repr=False)
+    api_key: str | None = field(default=None, repr=False)  # a Bedrock API key: wins over SigV4
 
 
 class LLMError(Exception):
@@ -269,10 +270,13 @@ class LLM:
             if bedrock is not None:
                 # Explicit credentials, region and endpoint: nothing comes from the environment.
                 # bedrock-runtime (InvokeModel): the hackathon account has no Mantle endpoint.
+                # The SDK refuses an API key together with AWS credentials: pass one or the other.
+                sigv4 = not bedrock.api_key
                 self._client = AsyncAnthropicBedrock(
-                    aws_access_key=bedrock.access_key,
-                    aws_secret_key=bedrock.secret_key,
-                    aws_session_token=bedrock.session_token,
+                    api_key=bedrock.api_key or None,
+                    aws_access_key=bedrock.access_key if sigv4 else None,
+                    aws_secret_key=bedrock.secret_key if sigv4 else None,
+                    aws_session_token=bedrock.session_token if sigv4 else None,
                     aws_region=bedrock.region,
                     base_url=f"https://bedrock-runtime.{bedrock.region}.amazonaws.com",
                     timeout=TIMEOUT_S,
@@ -299,12 +303,13 @@ class LLM:
         bedrock = None
         if settings.LLM_PROVIDER == "bedrock":
             access, key = settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY
-            token = settings.AWS_SESSION_TOKEN
+            token, bearer = settings.AWS_SESSION_TOKEN, settings.AWS_BEARER_TOKEN_BEDROCK
             bedrock = BedrockAuth(
                 region=settings.AWS_DEFAULT_REGION or "",
                 access_key=access.get_secret_value() if access is not None else "",
                 secret_key=key.get_secret_value() if key is not None else "",
                 session_token=token.get_secret_value() if token is not None else None,
+                api_key=bearer.get_secret_value() if bearer is not None else None,
             )
         return cls(
             api_key=secret.get_secret_value() if secret is not None else None,
@@ -427,15 +432,13 @@ def bedrock_model_id(model: str, region: str) -> str:
 
 
 def _bedrock_unavailable_reason(auth: BedrockAuth) -> str | None:
-    missing = [
-        name
-        for name, value in (
-            ("AWS_DEFAULT_REGION", auth.region),
+    needed = [("AWS_DEFAULT_REGION", auth.region)]
+    if not auth.api_key:  # without a Bedrock API key, SigV4 needs the access key pair
+        needed += [
             ("AWS_ACCESS_KEY_ID", auth.access_key),
             ("AWS_SECRET_ACCESS_KEY", auth.secret_key),
-        )
-        if not value
-    ]
+        ]
+    missing = [name for name, value in needed if not value]
     if missing:
         reason = f"{', '.join(missing)} not set (LLM_PROVIDER=bedrock)"
         log.warning("Claude client disabled: %s; every agent reply will be a template", reason)
