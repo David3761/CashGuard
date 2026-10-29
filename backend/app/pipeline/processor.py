@@ -16,6 +16,7 @@ from app import clock, events
 from app.db import models as m
 from app.db.session import unit_of_work
 from app.domain.enums import AgentEventType, Direction, TransactionStatus
+from app.logging import redact
 from app.pipeline import ports
 from app.services import agent_events, transactions, transfers
 from app.ws import push_after_commit
@@ -60,7 +61,7 @@ async def _process_one(db: AsyncSession, user_id: int, tx_id: int) -> bool:
             tx = await transactions.mark_resolved(db, user_id, tx_id)
     except Exception as exc:
         log.warning("transaction %s failed: %s", tx_id, exc)
-        await transactions.bump_attempts(db, user_id, tx_id, str(exc)[:500])
+        await transactions.bump_attempts(db, user_id, tx_id, redact(str(exc))[:500])
         return False
     push_after_commit(db, user_id, events.transaction_resolved(tx))
     push_after_commit(db, user_id, events.transaction_annotated(tx))

@@ -11,6 +11,7 @@ from app.config import get_settings
 from app.db.session import unit_of_work
 from app.domain.enums import AgentRunStatus, AgentTrigger, InputMode
 from app.errors import DomainError
+from app.logging import redact
 from app.pipeline import ports
 from app.pipeline.processor import process_user
 from app.services import agent_runs, forecasts, messages, plans, users
@@ -110,7 +111,7 @@ async def run_chat(user_id: int, run_id: int, text: str, input_mode: InputMode) 
                     run_id,
                     status=AgentRunStatus.FAILED,
                     iterations=0,
-                    error=str(exc)[:500],
+                    error=redact(str(exc))[:500],
                 )
             push_after_commit(db, user_id, events.assistant_message(msg))
     finally:
