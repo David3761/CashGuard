@@ -144,6 +144,7 @@ Script: `/tmp/claude-1000/-home-grosu-david-Documents-CashGuard/45aebd57-0050-44
 7. Type bomboe's platform tests under our mypy flags (currently `ignore_errors`).
 8. Register `SimClock` in `test_every_clock_keeps_the_contract` (H-6).
 9. `agent_events.event_date` should be filled in `AgentEventView` by B4 for E11's dedup (the field exists).
+10. **Shared test DB:** every worktree's `make check` uses the one `db-test` on 5435. When several agents run at once, their session-start `drop_all`/`upgrade` and truncations deadlock or break each other's tests. This was seen at 04:50, with the intnext and psec worktrees running concurrently. Fix: let the conftest isolation keep a shell `TEST_DATABASE_URL`, and give each worktree its own DB. That needs a test_config defaults tweak, so it was left for a follow-up.
 
 ## 9. Proposed updates to HANDOFFS.md / DGAREADME1.md (not edited here)
 
