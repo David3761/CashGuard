@@ -1,0 +1,14 @@
+{
+  "fixed": [
+    {"id": "womens_day", "month": 3, "day": 8, "name": {"ro": "8 Martie", "en": "Women's Day"}, "categories": ["gifts"], "lead_days": 3},
+    {"id": "childrens_day", "month": 6, "day": 1, "name": {"ro": "1 Iunie", "en": "Children's Day"}, "categories": ["kids", "gifts"], "lead_days": 3, "requires_child_age": [0, 13]},
+    {"id": "christmas", "month": 12, "day": 25, "name": {"ro": "Crăciun", "en": "Christmas"}, "categories": ["gifts", "groceries"], "lead_days": 21}
+  ],
+  "computed": [
+    {"id": "orthodox_easter", "rule": "orthodox_easter", "name": {"ro": "Paște", "en": "Easter"}, "categories": ["groceries", "gifts"], "lead_days": 7}
+  ],
+  "configurable": [
+    {"id": "school_start", "dates": ["2026-09-07"], "name": {"ro": "Începutul școlii", "en": "Back to school"}, "categories": ["books", "kids", "clothing"], "lead_days": 30, "requires_child_age": [6, 18]},
+    {"id": "black_friday", "dates": ["2026-11-13"], "name": {"ro": "Black Friday", "en": "Black Friday"}, "categories": ["electronics", "clothing"], "lead_days": 0}
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "products": [
+    {"id": "pusculita_flexibila", "name": "Pușculiță flexibilă", "kind": "flexible_pot", "liquidity": "instant", "rate": 0.0200, "min_months": 0, "max_months": 12, "mock": true},
+    {"id": "cont_economii", "name": "Cont de economii", "kind": "savings_account", "liquidity": "notice", "rate": 0.0350, "min_months": 3, "max_months": 24, "mock": true},
+    {"id": "depozit_6_luni", "name": "Depozit 6 luni", "kind": "term_deposit", "liquidity": "locked", "rate": 0.0550, "min_months": 6, "max_months": 24, "mock": true}
+  ]
+}
