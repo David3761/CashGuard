@@ -29,7 +29,7 @@ from anthropic.types.beta import BetaMessage, BetaMessageParam, BetaToolParam
 from anthropic.types.beta.message_create_params import MessageCreateParamsBase
 from pydantic import BaseModel
 
-from app.config import Effort
+from app.config import Effort, Settings, get_settings
 
 log = logging.getLogger(__name__)
 
@@ -254,6 +254,20 @@ class LLM:
                 http_client=http_client,
             )
 
+    @classmethod
+    def from_settings(
+        cls, settings: Settings, *, http_client: httpx2.AsyncClient | None = None
+    ) -> "LLM":
+        """The client the settings describe (arch §3). The key is unwrapped only here."""
+        secret = settings.ANTHROPIC_API_KEY
+        return cls(
+            api_key=secret.get_secret_value() if secret is not None else None,
+            model=settings.ANTHROPIC_MODEL,
+            effort=settings.ANTHROPIC_EFFORT,
+            refusal_fallback=settings.ANTHROPIC_REFUSAL_FALLBACK,
+            http_client=http_client,
+        )
+
     async def create(
         self,
         system: Sequence[str],
@@ -324,6 +338,23 @@ class LLM:
             await self._client.close()  # closes the injected http_client too
         elif self._http_client is not None:
             await self._http_client.aclose()
+
+
+_llm: LLMClient | None = None  # the process's client, like app.clock's clock (Q4)
+
+
+def get_llm() -> LLMClient:
+    """The process's Claude client: built from the settings on first use, unless one was set."""
+    global _llm
+    if _llm is None:
+        _llm = LLM.from_settings(get_settings())
+    return _llm
+
+
+def set_llm(llm: LLMClient | None) -> None:
+    """Use this client (tests: a FakeLLM). None: build a fresh one from the settings next time."""
+    global _llm
+    _llm = llm
 
 
 def _unavailable_reason(api_key: str | None) -> str | None:

@@ -32,6 +32,7 @@ from anthropic.types.beta import (
 )
 from hypothesis import given
 from hypothesis import strategies as st
+from pydantic import SecretStr
 
 import app.agent.llm
 from app.agent.llm import (
@@ -46,9 +47,12 @@ from app.agent.llm import (
     LLMUnavailable,
     build_params,
     classify,
+    get_llm,
+    set_llm,
 )
-from app.config import Effort
+from app.config import Effort, Settings
 from tests.fakes.fake_llm import (
+    FakeLLM,
     end_turn,
     message,
     redacted_thinking,
@@ -1464,3 +1468,59 @@ async def test_a_missing_key_is_logged_once_not_on_every_call(
     warnings = [r for r in caplog.records if r.levelno == logging.WARNING]
     assert len(warnings) == 1
     assert "ANTHROPIC_API_KEY is not set" in warnings[0].getMessage()
+
+
+# ══ A1 step 5: from_settings, get_llm / set_llm (happy paths) ═══════════════════════════
+
+
+async def test_from_settings_uses_the_settings(settings: Settings) -> None:
+    configured = settings.model_copy(
+        update={
+            "ANTHROPIC_API_KEY": SecretStr(KEY),
+            "ANTHROPIC_MODEL": "claude-opus-5-5",
+            "ANTHROPIC_EFFORT": "medium",
+            "ANTHROPIC_REFUSAL_FALLBACK": True,
+        }
+    )
+    api = _Api(end_turn("ok"))
+    llm = LLM.from_settings(configured, http_client=api.http_client())
+    try:
+        await llm.create(SYSTEM, [USER])
+    finally:
+        await llm.aclose()
+
+    body, headers = api.body(), api.requests[0].headers
+    assert (body["model"], body["output_config"], body["fallbacks"]) == (
+        "claude-opus-5-5",
+        {"effort": "medium"},
+        "default",
+    )
+    assert headers["authorization"] == f"Bearer {KEY}"
+
+
+async def test_from_settings_without_a_key_is_unavailable(settings: Settings) -> None:
+    llm = LLM.from_settings(settings)  # the defaults: no key
+
+    with pytest.raises(LLMUnavailable, match="ANTHROPIC_API_KEY is not set"):
+        await llm.create(SYSTEM, [USER])
+
+
+@pytest.fixture
+def no_process_llm() -> Iterator[None]:
+    set_llm(None)
+    yield
+    set_llm(None)
+
+
+@pytest.mark.usefixtures("no_process_llm")
+def test_get_llm_builds_one_client_and_set_llm_swaps_it() -> None:
+    first = get_llm()
+    assert isinstance(first, LLM)
+    assert get_llm() is first  # one client per process
+
+    fake = FakeLLM([])
+    set_llm(fake)
+    assert get_llm() is fake
+
+    set_llm(None)
+    assert get_llm() is not first  # rebuilt from the settings
