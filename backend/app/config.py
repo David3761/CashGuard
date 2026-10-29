@@ -93,6 +93,20 @@ class Settings(BaseSettings):
     RATE_LIMIT_CHAT_PER_DAY: int = Field(default=200, ge=1)
     RATE_LIMIT_SIM_PER_MINUTE: int = Field(default=5, ge=1)
     RATE_LIMIT_WS_CONNECT_PER_MINUTE: int = Field(default=10, ge=1)
+    # The app API (David V.'s Flutter contract, API_SPEC.md): root routes, no auth, one demo user.
+    APP_API_ENABLED: bool = False
+    # The demo user: a users.keycloak_sub, or a numeric users.id. Default: Matei (realm + seed).
+    APP_API_USER: str = Field(default="a0000000-0000-4000-8000-000000000001", min_length=1)
+    APP_API_MAX_TEXT_CHARS: int = Field(default=2000, ge=1, le=10_000)
+    APP_API_REPLY_TIMEOUT_S: float = Field(default=120.0, gt=0, le=600)
+    APP_API_HISTORY_LIMIT: int = Field(default=100, ge=1, le=1000)
+    APP_API_MAX_DEVICES: int = Field(default=5, ge=1, le=50)
+    # CORS for Flutter web / browser debugging only (the native app sends no Origin).
+    APP_API_CORS_ORIGIN_REGEX: str | None = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
+    # Push (FCM HTTP v1): the Firebase project's service-account JSON. Unset → pushes are logged
+    # and skipped. Keep the file outside git.
+    FCM_SERVICE_ACCOUNT_FILE: Path | None = None
+    FCM_PROJECT_ID: str | None = None
 
     @field_validator(
         "ANTHROPIC_API_KEY",
@@ -105,6 +119,9 @@ class Settings(BaseSettings):
         "KEYCLOAK_AUDIENCE",
         "KEYCLOAK_INTERNAL_URL",
         "KEYCLOAK_CRON_CLIENT_SECRET",
+        "APP_API_CORS_ORIGIN_REGEX",
+        "FCM_SERVICE_ACCOUNT_FILE",
+        "FCM_PROJECT_ID",
         mode="before",
     )
     @classmethod
@@ -163,6 +180,16 @@ class Settings(BaseSettings):
         ):
             raise ValueError("must be the realm URL, e.g. http://localhost:8080/realms/cashguard")
         return value.rstrip("/")
+
+    @field_validator("APP_API_CORS_ORIGIN_REGEX")
+    @classmethod
+    def _compiles(cls, value: str | None) -> str | None:
+        if value is not None:
+            try:
+                re.compile(value)
+            except re.error as err:
+                raise ValueError(f"must be a valid regular expression ({err})") from None
+        return value
 
     @field_validator("*", mode="before")
     @classmethod

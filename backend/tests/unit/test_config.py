@@ -62,6 +62,16 @@ FIELDS = frozenset(
         "RATE_LIMIT_CHAT_PER_DAY",
         "RATE_LIMIT_SIM_PER_MINUTE",
         "RATE_LIMIT_WS_CONNECT_PER_MINUTE",
+        # the app API (tests/unit/app_api/test_settings.py checks their defaults)
+        "APP_API_ENABLED",
+        "APP_API_USER",
+        "APP_API_MAX_TEXT_CHARS",
+        "APP_API_REPLY_TIMEOUT_S",
+        "APP_API_HISTORY_LIMIT",
+        "APP_API_MAX_DEVICES",
+        "APP_API_CORS_ORIGIN_REGEX",
+        "FCM_SERVICE_ACCOUNT_FILE",
+        "FCM_PROJECT_ID",
     }
 )
 OPTIONAL_FIELDS = (
@@ -554,6 +564,15 @@ def test_every_value_may_have_surrounding_spaces(monkeypatch: pytest.MonkeyPatch
         "RATE_LIMIT_CHAT_PER_DAY": "30",
         "RATE_LIMIT_SIM_PER_MINUTE": "2",
         "RATE_LIMIT_WS_CONNECT_PER_MINUTE": "4",
+        "APP_API_ENABLED": "true",
+        "APP_API_USER": "42",
+        "APP_API_MAX_TEXT_CHARS": "500",
+        "APP_API_REPLY_TIMEOUT_S": "60",
+        "APP_API_HISTORY_LIMIT": "50",
+        "APP_API_MAX_DEVICES": "3",
+        "APP_API_CORS_ORIGIN_REGEX": "^http://localhost$",
+        "FCM_SERVICE_ACCOUNT_FILE": "/run/secrets/firebase.json",
+        "FCM_PROJECT_ID": "cashctrl-6b66a",
     }
     assert set(values) == FIELDS
     plain = _from_env(monkeypatch, **values)
