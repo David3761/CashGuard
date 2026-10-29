@@ -6,7 +6,11 @@ Options (only when P < 0.6 or it dropped by more than 10 pp): at most 3, each re
 for
 the user first: (1) count the expected receivables, (2) move the deadline (soft goals only),
 (3) reduce the top driver by at most 25 % of its baseline. Never essential, household or protected
-categories. Labels are i18n keys + params (David G.'s `app/i18n` renders them in RO / EN).
+categories. Labels are i18n keys + params (`label_key` + `params`).
+
+TODO(INT): nothing translates the `option.*` keys yet: `app/i18n` has no table for them, `/forecast`
+sends `label` (the raw key) to the app and the snapshot prints it; RO / EN texts with the params
+(amount, deadline, months, category) still need adding.
 """
 
 from collections.abc import Iterable
@@ -97,7 +101,7 @@ def options(
         found.append(
             Option(
                 kind="count_receivables",
-                label="option.count_receivables",  # TODO(INT): i18n text
+                label="option.count_receivables",
                 label_key="option.count_receivables",
                 params={"amount": total},
                 probability=forecast(certain, seed=seed).probability,
@@ -115,7 +119,7 @@ def options(
                 found.append(
                     Option(
                         kind="move_deadline",
-                        label="option.move_deadline",  # TODO(INT): i18n text
+                        label="option.move_deadline",
                         label_key="option.move_deadline",
                         params={"deadline": new_deadline, "months": months},
                         probability=p,
@@ -133,7 +137,7 @@ def options(
             found.append(
                 Option(
                     kind="reduce_category",
-                    label="option.reduce_category",  # TODO(INT): i18n text
+                    label="option.reduce_category",
                     label_key="option.reduce_category",
                     params={
                         "category": category,

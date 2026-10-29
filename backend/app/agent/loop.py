@@ -80,7 +80,8 @@ class RunSetup:
 
 
 class AgentServices(Protocol):
-    """The loop's port. TODO(A3 ports / B9): the real adapter over bomboe's services."""
+    """The loop's port. The real adapter is `app.agent.wiring.AgentWiring`, installed with
+    bomboe's loaders by `app.agent.platform` (`PlatformServices`)."""
 
     async def setup(self, user_id: int, trigger: str, event_id: int | None) -> RunSetup:
         """The snapshot, the tool list, the language: computed once per run."""
@@ -186,7 +187,8 @@ def _result_data(result: BetaToolResultBlockParam) -> dict[str, Any]:
 
 def _collect_ui(turn: Turn, block: BetaToolUseBlock, result: BetaToolResultBlockParam) -> None:
     """Quick replies (the call's `options`), action cards and plan changes (the result JSON).
-    TODO(A3): handlers return `action_card` for offer_payment_request and `plan` after D18."""
+    The handlers collect cards and the D18 plan change in `RunState`; `AgentWiring.execute_tool`
+    copies them into the result as `action_card` and `plan`."""
     if result.get("is_error"):
         return
     if block.name == "show_quick_replies" and isinstance(block.input, dict):

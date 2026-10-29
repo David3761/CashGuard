@@ -7,8 +7,9 @@
   plan change A3 collects in `RunState` are copied into the result JSON the loop reads;
 - `history` and `finish_run`: injected loaders (bomboe's messages / agent_runs services).
 
-TODO(B4/B9): the real `load_context` / `load_history` / `record_run` come from bomboe's
-services; until then the tests pass in-memory ones.
+In the app, `app.agent.platform` injects bomboe's loaders (`load_user_context`, the messages
+service; `record_run` is None there: `/chat` finishes the `agent_runs` row); the tests pass
+in-memory ones.
 """
 
 import json

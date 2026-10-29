@@ -55,7 +55,8 @@ class ProactiveEvent:
 
 
 class ProactiveServices(AgentServices, Protocol):
-    """The loop's port + what a proactive run writes. TODO(A3 ports / B8): the real adapter."""
+    """The loop's port + what a proactive run writes. The real adapter is
+    `app.agent.platform.PlatformServices` (bomboe's services, one unit of work per write)."""
 
     async def get_event(self, user_id: int, event_id: int) -> ProactiveEvent | None: ...
 
