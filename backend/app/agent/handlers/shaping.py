@@ -14,6 +14,7 @@ from app.errors import DomainError
 
 RECURRING_SLIP_STEP = Decimal("0.25")  # a recurring slip day gets this much more budget weight
 MAX_WEIGHT = Decimal("3")
+MAX_TRANSFERS_PER_RUN = 1  # money moves only on the user's explicit ask (arch 6.4 rule 7)
 
 
 def _pins(value: Any) -> dict[Any, Any]:
@@ -137,10 +138,21 @@ async def update_life_profile(
 async def transfer_to_savings(
     ctx: ToolContext, run: RunState, args: Mapping[str, Any]
 ) -> dict[str, Any]:
+    """Balance -> the user's own savings pot (never to anyone else). At most `MAX_TRANSFERS_PER_RUN`
+    per run and `tools.MAX_TRANSFER` lei per call (the input model); the balance check is the
+    transfers port's (bomboe's B3: `insufficient_funds`), which holds the account."""
     amount = to_money(args["amount"])
     if amount <= 0:
         raise DomainError("invalid_input", "The amount must be above 0.", 422)
+    if run.transfers >= MAX_TRANSFERS_PER_RUN:
+        raise DomainError(
+            "transfer_limit",
+            "Only one transfer to savings per message: tell the user what was moved; another "
+            "transfer needs a new message from them.",
+            429,
+        )
     transfer = await ctx.services.transfers.to_savings(ctx.user_id, amount)
+    run.transfers += 1
     return {
         "transfer": transfer,
         "undo_available": True,
