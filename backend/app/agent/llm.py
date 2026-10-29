@@ -12,8 +12,13 @@ by the SDK's retries. The caller (A6/A7/B9) owns the overall deadline (`asyncio.
 
 Every failure becomes `LLMUnavailable` (transient, or no usable configuration) or `LLMBadRequest`
 (Claude rejected our request), logged without the key or anything the user or Claude said.
+
+At most `LLM_MAX_CONCURRENCY` calls are in flight per client (an `asyncio.Semaphore`): a burst of
+runs queues for a slot instead of fanning out unbounded Bedrock calls (LLM10). The wait counts
+toward the caller's deadline.
 """
 
+import asyncio
 import json
 import logging
 import math
@@ -39,6 +44,7 @@ log = logging.getLogger(__name__)
 API_BASE_URL: Final = "https://api.anthropic.com"  # never ANTHROPIC_BASE_URL (review R3)
 TIMEOUT_S: Final = 30.0  # streamed: connect, and the longest silence between two chunks
 MAX_RETRIES: Final = 2  # the SDK retries a request that fails before its stream opens
+MAX_CONCURRENCY: Final = 4  # the LLM_MAX_CONCURRENCY default
 # Thinking counts toward max_tokens, and higher effort thinks more. `low` keeps the approved 8000;
 # xhigh/max get the skill's streaming default (64 000, half of Sonnet 5.5's 128 000 limit). A cap
 # costs nothing unless it's used.
@@ -248,7 +254,11 @@ class LLM:
         max_retries: int = MAX_RETRIES,
         http_client: httpx2.AsyncClient | None = None,
         bedrock: BedrockAuth | None = None,
+        max_concurrency: int = MAX_CONCURRENCY,
     ) -> None:
+        if max_concurrency < 1:
+            raise ValueError("max_concurrency must be at least 1")
+        self._slots = asyncio.Semaphore(max_concurrency)  # bound to a loop on first use
         self._model = model
         self._effort = effort
         self._refusal_fallback = refusal_fallback
@@ -318,6 +328,7 @@ class LLM:
             refusal_fallback=settings.ANTHROPIC_REFUSAL_FALLBACK,
             http_client=http_client,
             bedrock=bedrock,
+            max_concurrency=settings.LLM_MAX_CONCURRENCY,
         )
 
     async def create(
@@ -345,7 +356,8 @@ class LLM:
             raise LLMUnavailable(self._unavailable or "the Claude client is not configured")
         failure: LLMError
         try:
-            reply = await _read_stream(self._client, params)
+            async with self._slots:  # LLM_MAX_CONCURRENCY calls in flight at most
+                reply = await _read_stream(self._client, params)
         except anthropic.APIStatusError as err:  # before the stream, or an `error` event in it
             failure = _status_error(err)
         except (anthropic.APIConnectionError, httpx2.HTTPError) as err:  # incl. timeouts

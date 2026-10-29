@@ -173,3 +173,14 @@
   - **Claude runs on Amazon Bedrock (D53):** set `LLM_PROVIDER=bedrock`, `AWS_DEFAULT_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` (the hackathon's temporary credentials) in the server's env/`.env`, never in git. The model id becomes `us.anthropic.claude-sonnet-5-5` automatically, and the Docker image needs boto3/botocore (already in `requirements.txt` via `anthropic[bedrock]`).
   - The A1 live tests (`uv run pytest -m live tests/eval -q -rs`) still assume an Anthropic API key; Bedrock was verified with a direct live call instead.
 
+### H-15 · bomboe B3/B8/B9 · what the AI-safety controls expect from the platform · 🟢
+- **By:** DGAdavid1 (AI-SAFETY agent, branch `dga-task/ai-safety`), 2026-10-29
+- **Why it was needed:** the judges look at LLM safety; the agent now bounds what Claude can do, and three bounds need the platform's side.
+- **What was done:** `backend/docs/ai-safety.md` (threat model, controls → files → tests) and `tests/unit/agent/test_ai_safety.py`. `transfer_to_savings` takes at most 100 000 lei and runs at most once per run (`transfer_limit`); a run makes at most 16 tool calls; a chat run waits for Claude at most 60 s; a user message is cut to 4000 chars; `LLM_MAX_CONCURRENCY` (default 4) caps the Claude calls in flight per process.
+- **Decisions taken on the owner's behalf:** the 100 000 lei bound, the error code `transfer_limit` (HTTP 429 if it ever surfaces), the 60 s chat deadline.
+- **Merge instruction:**
+  - B3 `TransfersPort.to_savings`: refuse an amount above the current balance with `DomainError("insufficient_funds", …, 409)`; the agent can't see the balance in the tool call.
+  - B8/B9: keep chat and proactive runs of one user serialised (`pg_advisory_lock(user_id)`, arch 11): `AgentWiring` keeps one `RunState` per user.
+  - B9: `run_agent` never raises for an LLM failure, a timeout or a bug in the run; it returns the template and marks the run failed. The HTTP rate limiter (`app/security/ratelimit.py`, app-api branch) is the per-client layer in front of it.
+  - Check: `uv run pytest tests/unit/agent/test_ai_safety.py`.
+

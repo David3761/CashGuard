@@ -89,7 +89,7 @@ The AI is triggered in three ways:
 | Deploy | docker-compose (db, keycloak, api, cron) 🆕 **on a hosted server** behind HTTPS (D38; provider ❓Q22). The Flutter app runs on a phone/emulator and talks to the public URLs |
 | Tests | pytest (budget engine + tool executor) + 🆕 context acceptance tests (16.3) + LLM eval set (16.4) |
 
-🆕 **Environment variables** (`backend/.env`, never committed; every name, type and default in `backend/app/config.py` + `backend/.env.example`, kept in sync by a test): `DATABASE_URL`, `TEST_DATABASE_URL` (both `postgresql+psycopg://user:password@host:port/db`), `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL=claude-sonnet-5-5`, `ANTHROPIC_EFFORT=low` (`low`/`medium`/`high`/`xhigh`/`max`), `ANTHROPIC_REFUSAL_FALLBACK=false` (D45), `KEYCLOAK_ISSUER` (`http(s)://host[:port][/prefix]/realms/<realm>`), `KEYCLOAK_AUDIENCE`, `KEYCLOAK_CRON_CLIENT_SECRET`, `SIM_MODE=true`, `SIM_START_DATE=2026-06-15`, `MAX_AGENT_ITERATIONS=6` (1–20), `QUESTIONS_PER_DAY=1`, `LOG_LEVEL`. 🆕 `TZ=Europe/Bucharest` is for the OS / cron container only: the app's zone is fixed in `app/clock.py`.
+🆕 **Environment variables** (`backend/.env`, never committed; every name, type and default in `backend/app/config.py` + `backend/.env.example`, kept in sync by a test): `DATABASE_URL`, `TEST_DATABASE_URL` (both `postgresql+psycopg://user:password@host:port/db`), `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL=claude-sonnet-5-5`, `ANTHROPIC_EFFORT=low` (`low`/`medium`/`high`/`xhigh`/`max`), `ANTHROPIC_REFUSAL_FALLBACK=false` (D45), `KEYCLOAK_ISSUER` (`http(s)://host[:port][/prefix]/realms/<realm>`), `KEYCLOAK_AUDIENCE`, `KEYCLOAK_CRON_CLIENT_SECRET`, `SIM_MODE=true`, `SIM_START_DATE=2026-06-15`, `MAX_AGENT_ITERATIONS=6` (1–20), 🆕 `LLM_MAX_CONCURRENCY=4` (1–32, Claude calls in flight per process), `QUESTIONS_PER_DAY=1`, `LOG_LEVEL`. 🆕 `TZ=Europe/Bucharest` is for the OS / cron container only: the app's zone is fixed in `app/clock.py`.
 
 ---
 
@@ -628,6 +628,7 @@ def execute_tool(user_id, run_id, block):
 5. **Max iterations** per run (e.g. 6), then a fallback reply.
 6. Claude must **never say something was saved** unless the tool result says it succeeded (system prompt rule).
 7. **No confirmations (D10)**, so every reply must state exactly what was changed ("Added the concert (100 lei) and updated your plan: 29.8 lei/day"). 🟡 For `transfer_to_savings`, show an **undo** button in the UI. Pitch note: in production, money movements would need user confirmation/strong authentication.
+8. 🆕 **AI safety** (OWASP LLM Top 10): the threat model, every control with its file and the test that proves it, and the per-run bounds (tool-call budget 16, one transfer of ≤ 100 000 lei per run, message cap 4000 chars, 60 s chat deadline, `LLM_MAX_CONCURRENCY`) are in [`ai-safety.md`](ai-safety.md).
 
 ### 6.5 Context snapshot (what goes in the system prompt)
 

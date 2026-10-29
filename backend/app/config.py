@@ -86,6 +86,8 @@ class Settings(BaseSettings):
     # SIM_MODE only: load the simulator's date from the sim_clock table at startup (B10, A22).
     SIM_CLOCK_FROM_DB: bool = True
     MAX_AGENT_ITERATIONS: int = Field(default=6, ge=1, le=20)
+    # Claude calls in flight at once, per process (LLM10: a burst queues, it doesn't fan out).
+    LLM_MAX_CONCURRENCY: int = Field(default=4, ge=1, le=32)
     QUESTIONS_PER_DAY: int = Field(default=1, ge=1, le=10)
     LOG_LEVEL: LogLevel = "INFO"
     # Rate limits (app.security.ratelimit), per principal (user, or the app API's "app").

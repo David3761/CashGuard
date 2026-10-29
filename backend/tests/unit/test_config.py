@@ -58,6 +58,7 @@ FIELDS = frozenset(
         "SIM_START_DATE",
         "SIM_CLOCK_FROM_DB",
         "MAX_AGENT_ITERATIONS",
+        "LLM_MAX_CONCURRENCY",
         "QUESTIONS_PER_DAY",
         "LOG_LEVEL",
         "RATE_LIMIT_CHAT_PER_MINUTE",
@@ -164,6 +165,7 @@ def test_settings_defaults_match_the_documented_values(settings: Settings) -> No
         "SIM_START_DATE": date(2026, 6, 15),
         "SIM_CLOCK_FROM_DB": True,
         "MAX_AGENT_ITERATIONS": 6,
+        "LLM_MAX_CONCURRENCY": 4,
         "QUESTIONS_PER_DAY": 1,
         "LOG_LEVEL": "INFO",
         "RATE_LIMIT_CHAT_PER_MINUTE": 10,
@@ -241,6 +243,7 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         SIM_MODE="true",
         SIM_START_DATE="2026-07-01",
         MAX_AGENT_ITERATIONS="8",
+        LLM_MAX_CONCURRENCY="2",
         QUESTIONS_PER_DAY="2",
         LOG_LEVEL="DEBUG",
         RATE_LIMIT_CHAT_PER_MINUTE="3",
@@ -278,6 +281,7 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         "SIM_MODE": True,
         "SIM_START_DATE": date(2026, 7, 1),
         "MAX_AGENT_ITERATIONS": 8,
+        "LLM_MAX_CONCURRENCY": 2,
         "QUESTIONS_PER_DAY": 2,
         "LOG_LEVEL": "DEBUG",
         "RATE_LIMIT_CHAT_PER_MINUTE": 3,
@@ -410,6 +414,21 @@ def test_max_agent_iterations_accepts_1_to_20(
     monkeypatch: pytest.MonkeyPatch, raw: str, expected: int
 ) -> None:
     assert _from_env(monkeypatch, MAX_AGENT_ITERATIONS=raw).MAX_AGENT_ITERATIONS == expected
+
+
+@pytest.mark.parametrize(("raw", "expected"), [("1", 1), ("4", 4), ("32", 32)])
+def test_llm_max_concurrency_accepts_1_to_32(
+    monkeypatch: pytest.MonkeyPatch, raw: str, expected: int
+) -> None:
+    assert _from_env(monkeypatch, LLM_MAX_CONCURRENCY=raw).LLM_MAX_CONCURRENCY == expected
+
+
+@pytest.mark.parametrize("raw", ["0", "33", "-1", "four"])
+def test_llm_max_concurrency_rejects_anything_else(
+    monkeypatch: pytest.MonkeyPatch, raw: str
+) -> None:
+    with pytest.raises(ValidationError, match="LLM_MAX_CONCURRENCY"):
+        _from_env(monkeypatch, LLM_MAX_CONCURRENCY=raw)
 
 
 @pytest.mark.parametrize("raw", ["0", "21", "-1", "six"])
@@ -607,6 +626,7 @@ def test_every_value_may_have_surrounding_spaces(monkeypatch: pytest.MonkeyPatch
         "SIM_MODE": "true",
         "SIM_START_DATE": "2026-07-01",
         "MAX_AGENT_ITERATIONS": "8",
+        "LLM_MAX_CONCURRENCY": "3",
         "QUESTIONS_PER_DAY": "2",
         "LOG_LEVEL": "WARNING",
         "RATE_LIMIT_CHAT_PER_MINUTE": "3",
@@ -638,9 +658,10 @@ SECRETS = {
     "TEST_DATABASE_URL": "postgresql+psycopg://ci:ci-pass-456@db-test:5432/test",
     "ANTHROPIC_API_KEY": f"{KEY_PREFIX}api03-real-looking-key",
     "KEYCLOAK_CRON_CLIENT_SECRET": "cron-client-secret-789",
-    "AWS_BEARER_TOKEN_BEDROCK": "bedrock-api-key-987",
-    "AWS_SECRET_ACCESS_KEY": "aws-secret-access-key-321",
-    "AWS_SESSION_TOKEN": "aws-session-token-654",
+    # Split like KEY_PREFIX, so a secret scanner (gitleaks) finds no key-shaped literal.
+    "AWS_BEARER_TOKEN_BEDROCK": "bedrock-" + "api-key-987",
+    "AWS_SECRET_ACCESS_KEY": "aws-secret-" + "access-key-321",
+    "AWS_SESSION_TOKEN": "aws-session-" + "token-654",
 }
 
 

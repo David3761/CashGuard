@@ -16,6 +16,7 @@ from tests.fakes.fake_services import (
     FakePatternRules,
     FakePots,
     FakeSignatures,
+    FakeTransfers,
     Harness,
 )
 
@@ -382,3 +383,25 @@ async def test_transfer_to_savings_returns_plan_and_undo() -> None:
     body = await ok(h, "transfer_to_savings", {"amount": 200})
     assert body["undo_available"] is True
     assert body["plan"]["version"] == 8
+
+
+async def test_transfer_to_savings_is_bounded_per_call() -> None:
+    # LLM06: never 10^10 lei on a guess; 100 000 lei is far above any demo balance.
+    h = Harness()
+    transfers = h.services.transfers
+    assert isinstance(transfers, FakeTransfers)
+    assert await code(h, "transfer_to_savings", {"amount": 100_000.01}) == "invalid_input"
+    assert await code(h, "transfer_to_savings", {"amount": 9_999_999_999}) == "invalid_input"
+    assert transfers.table.count() == 0
+    assert (await ok(h, "transfer_to_savings", {"amount": 100_000}))["transfer"]["amount"] == 100000
+
+
+async def test_only_one_transfer_to_savings_per_run() -> None:
+    # A parallel batch (or an injected "transfer all money") can't repeat the money move.
+    h = Harness()
+    transfers = h.services.transfers
+    assert isinstance(transfers, FakeTransfers)
+    await ok(h, "transfer_to_savings", {"amount": 200})
+    assert await code(h, "transfer_to_savings", {"amount": 200}) == "transfer_limit"
+    assert transfers.table.count() == 1
+    assert h.run.transfers == 1

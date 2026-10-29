@@ -196,6 +196,7 @@ async def make_llm() -> AsyncIterator[MakeLLM]:
         effort: Effort = "low",
         refusal_fallback: bool = False,
         max_retries: int = 2,
+        max_concurrency: int = 4,
     ) -> LLM:
         llm = LLM(
             api_key=api_key,
@@ -204,6 +205,7 @@ async def make_llm() -> AsyncIterator[MakeLLM]:
             refusal_fallback=refusal_fallback,
             max_retries=max_retries,
             http_client=api.http_client(),
+            max_concurrency=max_concurrency,
         )
         made.append(llm)
         return llm
@@ -705,6 +707,52 @@ async def test_every_request_has_the_30_second_timeout(make_llm: MakeLLM) -> Non
     assert TIMEOUT_S == 30.0
     timeout = api.requests[0].extensions["timeout"]
     assert timeout == {"connect": 30.0, "read": 30.0, "write": 30.0, "pool": 30.0}
+
+
+async def _peak_in_flight(llm: LLM, monkeypatch: pytest.MonkeyPatch, calls: int) -> int:
+    """How many calls `llm` lets into the (stubbed) stream at once, out of `calls` at once."""
+    in_flight = peak = 0
+    release = asyncio.Event()
+
+    async def slow_stream(client: object, params: object) -> BetaMessage:
+        nonlocal in_flight, peak
+        in_flight += 1
+        peak = max(peak, in_flight)
+        await release.wait()
+        in_flight -= 1
+        return end_turn("ok")
+
+    monkeypatch.setattr(app.agent.llm, "_read_stream", slow_stream)
+    tasks = [asyncio.create_task(llm.create(SYSTEM, [USER])) for _ in range(calls)]
+    for _ in range(calls):  # let every task reach the semaphore or the stream
+        await asyncio.sleep(0)
+    seen = peak
+    release.set()
+    replies = await asyncio.gather(*tasks)
+    assert [reply.stop_reason for reply in replies] == ["end_turn"] * calls  # queued, not dropped
+    return seen
+
+
+async def test_a_burst_of_calls_queues_for_llm_max_concurrency_slots(
+    make_llm: MakeLLM, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # LLM10: a burst of runs never fans out more Bedrock / Claude calls than the cap.
+    assert await _peak_in_flight(make_llm(_Api(), max_concurrency=2), monkeypatch, 6) == 2
+
+
+async def test_the_concurrency_cap_comes_from_the_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+    settings = Settings(_env_file=None, ANTHROPIC_API_KEY=SecretStr(KEY), LLM_MAX_CONCURRENCY=3)
+    llm = LLM.from_settings(settings, http_client=_Api().http_client())
+    try:
+        assert await _peak_in_flight(llm, monkeypatch, 8) == 3
+    finally:
+        await llm.aclose()
+    assert Settings(_env_file=None).LLM_MAX_CONCURRENCY == 4
+
+
+def test_a_concurrency_cap_below_one_is_refused() -> None:
+    with pytest.raises(ValueError, match="max_concurrency"):
+        LLM(api_key=KEY, model=MODEL, effort="low", refusal_fallback=False, max_concurrency=0)
 
 
 # ── language ─────────────────────────────────────────────────────────────────────────────

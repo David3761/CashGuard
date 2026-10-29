@@ -233,8 +233,11 @@ class UpdateLifeProfileIn(ToolInput):
     value: LongText
 
 
+MAX_TRANSFER: Final = 100_000  # lei per call (LLM06): far above any demo balance, never 10^10
+
+
 class TransferToSavingsIn(ToolInput):
-    amount: PositiveMoney
+    amount: Annotated[Money, Field(gt=0, le=MAX_TRANSFER, description="Lei, e.g. 200.")]
 
 
 # ── transactions & receivables ──────────────────────────────────────────────────────────────
