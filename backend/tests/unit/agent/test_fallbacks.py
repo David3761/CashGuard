@@ -144,7 +144,9 @@ def test_chip_keys_and_texts() -> None:
 
 async def test_the_split_reply_reads_the_real_flat_annotate_result() -> None:
     """The real handler returns `receivable_id` / `receivable_amount`, not a nested receivable."""
-    from app.agent.fallbacks import _split_answer
+    from typing import cast
+
+    from app.agent.fallbacks import _Calls, _split_answer
 
     async def call(name: str, args: dict[str, object]) -> dict[str, object]:
         assert (name, args) == ("offer_payment_request", {"receivable_id": 9})
@@ -152,6 +154,6 @@ async def test_the_split_reply_reads_the_real_flat_annotate_result() -> None:
 
     flat = {"effective_amount": "100.00", "receivable_id": 9, "receivable_amount": "400.00"}
     texts = {key: by_lang["ro"] for key, by_lang in _TEXTS.items()}
-    answer = await _split_answer(call, flat, 5, "colegi", texts, "ro")
+    answer = await _split_answer(cast("_Calls", call), flat, 5, "colegi", texts, "ro")
     assert "100 de lei" in answer.text
     assert "400 de lei" in answer.text
