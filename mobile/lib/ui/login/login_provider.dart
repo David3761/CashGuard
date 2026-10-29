@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:cashctrl/core/models/auth_details.dart';
 import 'package:cashctrl/core/models/auth_method.dart';
 import 'package:cashctrl/core/request/auth_token_controller.dart';
-import 'package:cashctrl/exceptions.dart';
+// import 'package:cashctrl/exceptions.dart';
 import 'package:cashctrl/main_providers.dart';
 import 'package:cashctrl/ui/main/user_provider.dart';
-import 'package:cashctrl/utils/validators.dart';
+// import 'package:cashctrl/utils/validators.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Necessary for code-generation to work
@@ -39,14 +39,17 @@ class Login extends _$Login {
     String password,
     AuthMethod authMethod,
   ) async {
-    if (authMethod == .email) {
+    // TODO(everyone): restore the field validation once the login is
+    // implemented. It's skipped for now so the main screen can be reached with
+    // incomplete fields.
+    /*if (authMethod == .email) {
       if (email.trim().isEmpty || password.trim().isEmpty) {
         throw const UIException.allFieldsRequired();
       }
       if (!Validators.instance.isEmailValid(email)) {
         throw const UIException.invalidEmail();
       }
-    }
+    }*/
 
     // Simulate a request. Remove these lines after you implement this method.
     await Future.delayed(const Duration(seconds: 2));

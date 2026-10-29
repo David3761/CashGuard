@@ -44,9 +44,14 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
             item.add_marker(_MARKER_BY_FOLDER[folder])
 
 
+_PLATFORM_UNIT_FILES = frozenset({"test_auth_tokens.py", "test_service_contracts.py"})
+
+
 def _platform_test(request: pytest.FixtureRequest) -> bool:
-    """bomboe's db / api / ws tests: they run at SIM_START with SIM_MODE on (his defaults)."""
-    return Path(str(request.node.fspath)).parent.name in _MARKER_BY_FOLDER
+    """bomboe's db / api / ws tests (and his auth unit tests): they run at SIM_START with
+    SIM_MODE on and his local Keycloak issuer (his defaults)."""
+    path = Path(str(request.node.fspath))
+    return path.parent.name in _MARKER_BY_FOLDER or path.name in _PLATFORM_UNIT_FILES
 
 
 # ── Isolation (F1.2) ─────────────────────────────────────────────────────────────────────────
@@ -81,6 +86,9 @@ def _restore_global_state(
         # app startup (his conftest's SIM_CLOCK_FROM_DB=false).
         monkeypatch.setenv("SIM_MODE", "true")
         monkeypatch.setenv("SIM_CLOCK_FROM_DB", "false")
+        # his local Keycloak (B1/B5): the test tokens are issued for it
+        monkeypatch.setenv("KEYCLOAK_ISSUER", "http://localhost:8081/realms/cashguard")
+        monkeypatch.setenv("KEYCLOAK_AUDIENCE", "cashguard-api")
     get_settings.cache_clear()
     # One clock mechanism: a fresh clock per test, never "whatever is installed" (a clock
     # installed at import/collection time, or an app built in SIM_MODE, must not leak). Our

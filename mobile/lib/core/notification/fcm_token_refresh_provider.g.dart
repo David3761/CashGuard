@@ -8,23 +8,20 @@ part of 'fcm_token_refresh_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The provider that handles the Firebase device token refresh. Whenever the
-/// token is refreshed by the operating system, the new token will be sent to
-/// the server.
+/// The provider that sends the Firebase device token to the server when the
+/// app starts and whenever the token is refreshed by the operating system.
 
 @ProviderFor(fcmTokenRefresh)
 final fcmTokenRefreshProvider = FcmTokenRefreshProvider._();
 
-/// The provider that handles the Firebase device token refresh. Whenever the
-/// token is refreshed by the operating system, the new token will be sent to
-/// the server.
+/// The provider that sends the Firebase device token to the server when the
+/// app starts and whenever the token is refreshed by the operating system.
 
 final class FcmTokenRefreshProvider
     extends $FunctionalProvider<void, void, void>
     with $Provider<void> {
-  /// The provider that handles the Firebase device token refresh. Whenever the
-  /// token is refreshed by the operating system, the new token will be sent to
-  /// the server.
+  /// The provider that sends the Firebase device token to the server when the
+  /// app starts and whenever the token is refreshed by the operating system.
   FcmTokenRefreshProvider._()
     : super(
         from: null,
@@ -58,4 +55,4 @@ final class FcmTokenRefreshProvider
   }
 }
 
-String _$fcmTokenRefreshHash() => r'1d3d8c409aa2e174b4a5505737531a9f085adbd3';
+String _$fcmTokenRefreshHash() => r'536a40495b45cc8f2a22a2bf9bc0e49e5b4c73d1';

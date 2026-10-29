@@ -9,7 +9,6 @@ import base64
 import hashlib
 import hmac
 import json
-import time
 import uuid
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
@@ -21,7 +20,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from jwt.algorithms import RSAAlgorithm
 
-from app import auth
+from app import auth, clock
 from app.config import get_settings
 
 TEST_KID = "test"
@@ -66,7 +65,8 @@ def claims(
     nbf_in: int | None = None,
     **extra: Any,
 ) -> dict[str, Any]:
-    now = int(time.time())  # real time: tokens come from Keycloak's clock, not the simulator's
+    # real time: tokens come from Keycloak's clock, not the simulator's (RealClock, never time.time)
+    now = int(clock.RealClock().now().timestamp())
     body: dict[str, Any] = {
         "iss": iss or get_settings().KEYCLOAK_ISSUER,
         "sub": sub,

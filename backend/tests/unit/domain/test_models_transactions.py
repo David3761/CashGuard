@@ -509,6 +509,8 @@ def test_the_json_shape_of_a_tx_view_is_golden() -> None:
     # B2 / B6a map these keys; a rename or a type change breaks loudly.
     assert tx().model_dump(mode="json") == {
         **REFERENCE,
+        "status": None,  # bomboe's queue state, filled by his services (integration addition)
+        "source": None,
         "amount": 500.0,
         "effective_amount": 100.0,
     }

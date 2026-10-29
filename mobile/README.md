@@ -29,7 +29,7 @@ The CashCtrl mobile app.
 **Key-Value Local Files**: [Shared Preferences](https://pub.dev/packages/shared_preferences) <br>
 **Requests**: [Chopper](https://pub.dev/packages/chopper) <br>
 **Dependency Injection**: - <br>
-**Request Logger**: - <br>
+**Request Logger**: a Chopper interceptor that prints requests to the debug console <br>
 **Crash Logger**: - <br>
 **Product Flavors**: single / only 1 <br>
 **Documentation Generator**: dart doc
@@ -63,7 +63,14 @@ The CashCtrl mobile app.
     - opening the Phone app, a URL, an E-mail app, the Play Store or App Store
     - downloading an image from a url to a given path
 
-### 5. Generating the documentation
+### 5. Backend
+
+The API contract is in [`../api/API_SPEC.md`](../api/API_SPEC.md). The app uses mock data until
+`useMockApi` is set to `false` in `lib/core/request/api_config.dart`. By default it then calls
+`http://10.0.2.2:8000`, the development machine seen from the Android emulator. Debug builds are
+allowed to use plain HTTP for that address only.
+
+### 6. Generating the documentation
 
 The project is fully documented. In order to generate the documentation you only have to run
 ``dart doc``. The documentation can then be found in *doc > api*. The main file you have to open to

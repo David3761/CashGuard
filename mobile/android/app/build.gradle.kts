@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.sst.cashctrl"
+    namespace = "com.cashctrl"
     compileSdk = 37
     ndkVersion = "28.2.13676358"
 
@@ -50,7 +50,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.sst.cashctrl"
+        applicationId = "com.cashctrl"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
         minSdk = 26

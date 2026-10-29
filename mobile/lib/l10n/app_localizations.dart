@@ -358,6 +358,180 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @assistant.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant'**
+  String get assistant;
+
+  /// No description provided for @currentBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Current balance'**
+  String get currentBalance;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @noTransactionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions found.'**
+  String get noTransactionsFound;
+
+  /// No description provided for @filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get period;
+
+  /// No description provided for @choosePeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose period'**
+  String get choosePeriod;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @applyFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply filters'**
+  String get applyFilters;
+
+  /// No description provided for @cardPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Card payments'**
+  String get cardPayments;
+
+  /// No description provided for @incomingTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming transfers'**
+  String get incomingTransfers;
+
+  /// No description provided for @outgoingTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'Outgoing transfers'**
+  String get outgoingTransfers;
+
+  /// No description provided for @amountUnder50.
+  ///
+  /// In en, this message translates to:
+  /// **'Under 50 lei'**
+  String get amountUnder50;
+
+  /// No description provided for @amount50To500.
+  ///
+  /// In en, this message translates to:
+  /// **'50 – 500 lei'**
+  String get amount50To500;
+
+  /// No description provided for @amountOver500.
+  ///
+  /// In en, this message translates to:
+  /// **'Over 500 lei'**
+  String get amountOver500;
+
+  /// No description provided for @assistantGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi there'**
+  String get assistantGreeting;
+
+  /// No description provided for @assistantIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m your CashCtrl assistant.\nAsk me about your transactions, spending or balance.'**
+  String get assistantIntro;
+
+  /// No description provided for @tryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TRY'**
+  String get tryLabel;
+
+  /// No description provided for @suggestionWeeklySpending.
+  ///
+  /// In en, this message translates to:
+  /// **'How much did I spend this week?'**
+  String get suggestionWeeklySpending;
+
+  /// No description provided for @suggestionBiggestExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'What was my biggest expense?'**
+  String get suggestionBiggestExpense;
+
+  /// No description provided for @suggestionBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s my current balance?'**
+  String get suggestionBalance;
+
+  /// No description provided for @suggestionIncomingMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Who sent me money recently?'**
+  String get suggestionIncomingMoney;
+
+  /// No description provided for @messageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message…'**
+  String get messageHint;
+
+  /// No description provided for @amountInLei.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} lei'**
+  String amountInLei(String amount);
+
   /// No description provided for @viewData.
   ///
   /// In en, this message translates to:
