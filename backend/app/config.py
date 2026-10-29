@@ -80,6 +80,8 @@ class Settings(BaseSettings):
     SIM_MODE: bool = False
     SIM_START_DATE: date = date(2026, 6, 15)
     MAX_AGENT_ITERATIONS: int = Field(default=6, ge=1, le=20)
+    # Claude calls in flight at once, per process (LLM10: a burst queues, it doesn't fan out).
+    LLM_MAX_CONCURRENCY: int = Field(default=4, ge=1, le=32)
     QUESTIONS_PER_DAY: int = Field(default=1, ge=1, le=10)
     LOG_LEVEL: LogLevel = "INFO"
 
