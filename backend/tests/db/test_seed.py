@@ -42,7 +42,9 @@ async def test_persona_contents(db):
         assert await forecasts.latest(db, seeded[pid]) is not None
     assert await plans.latest(db, seeded["alex"]) is None
     assert (await users.get(db, seeded["alex"])).onboarded_at is None
-    assert (await forecasts.latest(db, matei)).last_week_probability == 0.72
+    # danutu's E13 calibration (tests/acceptance/test_demo_numbers.py): last week ≈ 71.5 %
+    last_week = (await forecasts.latest(db, matei)).last_week_probability
+    assert last_week is not None and abs(last_week - 0.715) < 0.02
 
 
 async def test_seeding_twice_with_reset_gives_the_same_counts(db):

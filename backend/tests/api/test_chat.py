@@ -3,6 +3,7 @@
 import pytest
 from sqlalchemy import select
 
+from app.agent import templates
 from app.db import models as m
 from app.domain.enums import Language
 from app.domain.results import AgentResult
@@ -44,7 +45,16 @@ async def messages_of(db, user_id):
     return list(rows)
 
 
-async def test_chat_returns_202_and_the_reply_arrives(as_committed_user, db_committed, user, sock):
+async def _echo_agent(user_id, trigger, text, input_mode="text", **_):
+    """bomboe's S0 echo agent: since the integration `ports.run_agent` is our real loop, which
+    needs an LLM, so the endpoint test pins the old stand-in."""
+    return AgentResult(text=f"Am primit: {text}")
+
+
+async def test_chat_returns_202_and_the_reply_arrives(
+    as_committed_user, db_committed, user, sock, monkeypatch
+):
+    monkeypatch.setattr(ports, "run_agent", _echo_agent)
     r = await as_committed_user(user).post(
         "/chat", json={"text": "  Salut!  ", "input_mode": "voice"}
     )
@@ -120,7 +130,7 @@ async def test_agent_failure_gives_the_fallback_and_frees_the_user(
     monkeypatch.setattr(ports, "run_agent", broken)
     r = await as_committed_user(user).post("/chat", json={"text": "hei"})
     msgs = await messages_of(db_committed, user.id)
-    assert msgs[-1].content.startswith("Am o problemă acum")
+    assert msgs[-1].content == templates.fallback_reply("llm_down", "ro")  # our A-templates text
     run = await db_committed.get(m.AgentRun, r.json()["run_id"], populate_existing=True)
     assert (run.status, run.error) == ("failed", "LLM down")
     assert sock.got == ["agent.typing", "assistant.message"]

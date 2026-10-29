@@ -252,6 +252,12 @@ async def seed_persona(db: AsyncSession, pid: str, sub: str, data_dir: Path = DA
             goal_id=g.id,
             reason="seed: last week",
         )
+    elif goal:
+        # danutu's E13: the "last week" snapshot is a real forecast as of a week ago (history up
+        # to that day; plan version 0), so Scene A's "față de săptămâna trecută" is computed.
+        last_week = clock.today() - timedelta(days=7)
+        with clock.use_clock(FixedClock(datetime.combine(last_week, time(9, 0), tzinfo=BUCHAREST))):
+            await ports.forecast_goal(db, uid, 0)
     plan = await ports.recompute_plan(db, uid, reason="seed")
     if plan is not None:
         await ports.forecast_goal(db, uid, plan.version)

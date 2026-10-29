@@ -48,9 +48,7 @@ async def load_user_context(
     except DomainError:
         account = dm.Account(current_balance=Decimal("0"), savings_pot=Decimal("0"))  # fresh user
     all_facts = await life_facts.list_all(db, user_id)
-    facts = tuple(
-        f for f in all_facts if f.status == FactStatus.CONFIRMED and f.active_on(today)
-    )
+    facts = tuple(f for f in all_facts if f.status == FactStatus.CONFIRMED and f.active_on(today))
     active_ids = {f.id for f in facts}
     events = await db.scalars(
         select(m.AgentEvent)

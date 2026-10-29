@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.clock import local_date
 from app.db import models as m
 from app.domain import models as dm
 from app.domain.enums import FactStatus, Persistence
@@ -27,12 +28,14 @@ def _view(row: m.LifeFact) -> dm.LifeFact:
             "id": row.id,
             "type": row.type,
             "value": row.value,
-            "text": row.text,
+            # The columns allow NULL; our LifeFact doesn't: a fact without its own words shows
+            # its type, one without a start date is valid since it was recorded.
+            "text": row.text or str(row.type),
             "source": row.source,
             "status": row.status,
             "confidence": float(row.confidence),
             "persistence": row.persistence,
-            "valid_from": row.valid_from,
+            "valid_from": row.valid_from or local_date(row.created_at),
             "valid_to": row.valid_to,
             "evidence": row.evidence or {},
             "created_at": row.created_at,

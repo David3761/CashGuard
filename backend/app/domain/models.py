@@ -25,6 +25,7 @@ from typing import Annotated, Any, Final, Literal, Self
 
 from pydantic import (
     AfterValidator,
+    AliasChoices,
     AwareDatetime,
     BaseModel,
     BeforeValidator,
@@ -379,7 +380,8 @@ class HouseholdMemberValue(DomainModel):
 
 
 class PetValue(DomainModel):
-    species: Text80
+    # bomboe's F2 calls it `kind` ("câine"): accepted on input, always written as `species`.
+    species: Text80 = Field(validation_alias=AliasChoices("species", "kind"))
     count: SmallCount = 1
 
 

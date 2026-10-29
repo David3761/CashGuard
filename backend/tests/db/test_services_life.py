@@ -47,13 +47,13 @@ def occupation(**kw) -> dm.LifeFact:
 
 async def test_fact_create_get_and_typed_value(db):
     u = await f.user(db)
-    fact = await life_facts.create(db, u.id, occupation(id=None))
+    fact = await life_facts.create(db, u.id, occupation())  # ours: a LifeFact has an id; ignored
     assert fact.id is not None and isinstance(fact.value, dm.OccupationValue)
     assert await life_facts.get(db, u.id, fact.id) == fact
     custom = await life_facts.create(
-        db, u.id, b.fact(type="custom", value={"hobby": "cosplay"}, source="voice")
+        db, u.id, b.fact(type="custom", value={"description": "cosplay"}, source="voice")
     )
-    assert custom.value.model_dump() == {"hobby": "cosplay"}
+    assert custom.value.model_dump() == {"description": "cosplay"}  # our CustomValue
 
 
 async def test_fact_lists_by_status_and_date(db):
@@ -549,18 +549,30 @@ async def test_forecasts_isolation(two, db):  # noqa: F811
 # ── baselines ────────────────────────────────────────────────────────────────────────────
 
 
+def _baseline(category: Category, **fields: object) -> dm.Baseline:
+    """A complete baseline (our F2 Baseline has no defaults: E6 always fills every column)."""
+    row: dict[str, object] = {
+        "personal_median": D("0"),
+        "personal_mad": D("0"),
+        "n": 0,
+        "prior_median": D("0"),
+        "household_multiplier": D("1"),
+        "expected_median": D("0"),
+        "monthly_expected": D("0"),
+    }
+    return dm.Baseline.model_validate({"category": category, **row, **fields})
+
+
 async def test_baselines_replace_all(two, db):  # noqa: F811
     a, c = two
     first = [
-        dm.Baseline(category=Category.GROCERIES, expected_median=D("85"), n=48),
-        dm.Baseline(category=Category.RESTAURANTS, expected_median=D("90"), n=16),
+        _baseline(Category.GROCERIES, expected_median=D("85"), n=48),
+        _baseline(Category.RESTAURANTS, expected_median=D("90"), n=16),
     ]
     got = await baselines.replace_all(db, a.id, first)
     assert set(got) == {Category.GROCERIES, Category.RESTAURANTS}
     scaled = [
-        dm.Baseline(
-            category=Category.GROCERIES, expected_median=D("178.50"), household_multiplier=D("2.1")
-        )
+        _baseline(Category.GROCERIES, expected_median=D("178.50"), household_multiplier=D("2.1"))
     ]
     await baselines.replace_all(db, a.id, scaled)
     stored = await baselines.list_all(db, a.id)
@@ -571,5 +583,5 @@ async def test_baselines_replace_all(two, db):  # noqa: F811
 
 async def test_baselines_reject_duplicate_categories(db):
     u = await f.user(db)
-    dup = [dm.Baseline(category=Category.GROCERIES)] * 2
+    dup = [_baseline(Category.GROCERIES)] * 2
     await fails(baselines.replace_all(db, u.id, dup), "invalid_baselines", 422)

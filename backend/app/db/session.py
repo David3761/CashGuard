@@ -19,7 +19,9 @@ _sessions: async_sessionmaker[AsyncSession] | None = None
 def configure(url: str | None = None) -> AsyncEngine:
     """(Re)create the engine; the app uses DATABASE_URL, tests may point it elsewhere."""
     global _engine, _sessions
-    _engine = create_async_engine(url or get_settings().DATABASE_URL.get_secret_value(), pool_pre_ping=True)
+    _engine = create_async_engine(
+        url or get_settings().DATABASE_URL.get_secret_value(), pool_pre_ping=True
+    )
     _sessions = async_sessionmaker(_engine, expire_on_commit=False)
     return _engine
 

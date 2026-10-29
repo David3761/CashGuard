@@ -309,7 +309,8 @@ async def test_plan_preferences_default_then_merge(db):
         category_caps={"food_delivery": D("100")},
         pinned_days={date(2026, 11, 14): D("150")},
     )
-    assert p.weekday_weights == {"Sat": 1.5, "Sun": 1.5}
+    # our F2 PlanPreferences always lists all 7 days (default weight 1)
+    assert {k: v for k, v in p.weekday_weights.items() if v != 1} == {"Sat": 1.5, "Sun": 1.5}
     p = await plan_preferences.update(
         db,
         u.id,
@@ -317,7 +318,11 @@ async def test_plan_preferences_default_then_merge(db):
         buffer_pct=D("0"),
         category_caps={"food_delivery": None},
     )
-    assert p.weekday_weights == {"Sat": 1.5, "Sun": 1.5, "Fri": 2}
+    assert {k: v for k, v in p.weekday_weights.items() if v != 1} == {
+        "Sat": 1.5,
+        "Sun": 1.5,
+        "Fri": 2,
+    }
     assert p.category_caps == {} and p.buffer_pct == D("0")
     assert p.pinned_days == {date(2026, 11, 14): D("150.00")}
     assert await plan_preferences.get(db, u.id) == p
@@ -349,6 +354,8 @@ async def test_products_and_merchants(db):
                 kind="savings_account",
                 rate=D("0.04"),
                 liquidity="notice",
+                min_months=3,  # our F2 Product needs the month range
+                max_months=24,
             ),
             m.Product(
                 id="a_pot",
@@ -356,15 +363,25 @@ async def test_products_and_merchants(db):
                 kind="flexible_pot",
                 rate=D("0.03"),
                 liquidity="instant",
+                min_months=0,
+                max_months=12,
             ),
             m.Merchant(
                 id="mega_image",
                 canonical_name="Mega Image",
                 category="groceries",
-                aliases=["MEGA IMAGE"],
+                aliases=["mega image"],
+                mcc="5411",  # our F2 Merchant: mcc and typical_basket required
+                typical_basket=D("85"),
             ),
             m.Merchant(
-                id="emag", canonical_name="eMAG", category="electronics", multi_category=True
+                id="emag",
+                canonical_name="eMAG",
+                category="electronics",
+                multi_category=True,
+                aliases=["emag"],
+                mcc="5732",
+                typical_basket=D("400"),
             ),
         ]
     )

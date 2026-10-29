@@ -98,7 +98,7 @@ async def test_forecast_pots_products(as_user, db):
         10900.0,
     )
     assert body["drivers"] == [
-        {"category": "food_delivery", "category_label": "Livrări mâncare", "pp_per_100_lei": 2.1}
+        {"category": "food_delivery", "category_label": "Livrare de mâncare", "pp_per_100_lei": 2.1}
     ]
     assert body["history"] == [{"date": "2026-06-08", "probability": 0.72}]
     pots_body = (await as_user(u).get("/pots")).json()["pots"]
@@ -110,6 +110,8 @@ async def test_forecast_pots_products(as_user, db):
             kind="flexible_pot",
             rate=D("0.035"),
             liquidity="instant",
+            min_months=0,  # our F2 Product needs the month range
+            max_months=12,
         )
     )
     await db.flush()

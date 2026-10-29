@@ -92,7 +92,17 @@ async def save_evaluation(
     amount, scores, decision, explanation, matched ids, pot)."""
     row = await _row(db, user_id, tx_id)
     _check_effective(row, evaluation.effective_amount)
-    fields = evaluation.model_dump(exclude={"goal_impact", "question_hint"}, exclude_none=False)
+    fields = evaluation.model_dump(
+        exclude={"goal_impact", "question_hint", "confidence"}, exclude_none=False
+    )
+    fields["annotation_confidence"] = evaluation.confidence  # our F2 name → the column
+    if (
+        fields["merchant_id"] is not None
+        and await db.get(m.Merchant, fields["merchant_id"]) is None
+    ):
+        # C2 normalises against data/merchants.json; a slug the DB catalogue doesn't have yet
+        # (catalogue not seeded) must not break processing on the FK.
+        fields["merchant_id"] = None
     for name, value in fields.items():
         setattr(row, name, value)
     await db.flush()

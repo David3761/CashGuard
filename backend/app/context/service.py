@@ -31,6 +31,7 @@ from app.domain.user_context import UserContext
 from app.services import transactions as transactions_service
 from app.services.context_loader import load_user_context
 
+
 def _candidate(ctx: UserContext, tx: TxView) -> QuestionCandidate:
     hint = evaluate(ctx, tx).question_hint or QuestionHint(reason="large_amount")
     return QuestionCandidate(

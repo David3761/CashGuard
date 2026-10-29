@@ -25,7 +25,9 @@ def anthropic_key(monkeypatch):
 
 def test_redact_scrubs_the_key_and_key_shaped_strings(anthropic_key):
     assert KEY not in redact(f"auth failed for {KEY}")
-    assert redact("x sk-ant-other-1234 y") == "x [REDACTED] y"  # ours: one marker for every secret (F1.5)
+    assert (
+        redact("x sk-ant-other-1234 y") == "x [REDACTED] y"
+    )  # ours: one marker for every secret (F1.5)
 
 
 def test_log_lines_never_contain_the_key(anthropic_key):
@@ -42,7 +44,7 @@ def test_log_lines_never_contain_the_key(anthropic_key):
             exc_info=__import__("sys").exc_info(),
         )
     line = JsonFormatter().format(record)
-    assert KEY not in line and "with key ***" in line
+    assert KEY not in line and "with key [REDACTED]" in line  # our marker (F1.5)
 
 
 async def test_no_prompt_or_transcript_columns(db):
@@ -68,6 +70,6 @@ async def test_failed_chat_run_keeps_a_redacted_error(
     r = await as_committed_user(u).post("/chat", json={"text": "hei"})
     run = await db_committed.get(m.AgentRun, r.json()["run_id"], populate_existing=True)
     assert (run.trigger, run.status, run.model) == ("chat", "failed", "claude-sonnet-5-5")
-    assert KEY not in run.error and run.error.endswith("for key ***")
+    assert KEY not in run.error and run.error.endswith("for key [REDACTED]")  # our marker
     rows = await db_committed.scalars(select(m.AgentRun).where(m.AgentRun.user_id == u.id))
     assert len(list(rows)) == 1  # one row per run

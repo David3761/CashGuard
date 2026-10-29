@@ -23,12 +23,12 @@ async def test_every_field_is_filled_for_a_full_user(db):
         m.Transaction.__table__.update().where(m.Transaction.id == tx.id).values(status="resolved")
     )
     ctx = await load_user_context(db, u.id, TODAY)
-    assert ctx.profile.id == u.id and ctx.today == TODAY
+    assert ctx.profile.id == u.id and ctx.as_of == TODAY  # our UserContext: as_of
     assert ctx.account.current_balance == Decimal("5200.00")
     assert ctx.goal is not None and ctx.goal_pot is not None and ctx.goal_pot in ctx.pots
     assert len(ctx.income_sources) == len(ctx.fixed_costs) == len(ctx.life_events) == 1
     assert len(ctx.receivables) == 1 and len(ctx.facts) == 1 and len(ctx.signatures) == 1
-    assert len(ctx.rules) == 1 and len(ctx.transactions) == 1 and len(ctx.events) == 1
+    assert len(ctx.rules) == 1 and len(ctx.transactions) == 1 and len(ctx.agent_events) == 1
     assert ctx.plan is not None and ctx.plan.version == 1
     assert ctx.forecast is not None and ctx.forecast.probability == 0.78
     assert list(ctx.baselines) == ["groceries"]

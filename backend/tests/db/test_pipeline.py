@@ -175,6 +175,8 @@ async def test_nothing_to_process_changes_nothing(db_committed, spy):
 
 async def test_salary_auto_saved_once(db_committed, spy):
     u = await f.user(db_committed)
+    # danutu's apply_transaction moves the balance: every user has an account (arch 4.2)
+    db_committed.add(m.Account(user_id=u.id, current_balance=D("0")))
     salary = await ingest(
         db_committed, u.id, tx_in(amount=D("7000"), direction="credit", category="income")
     )

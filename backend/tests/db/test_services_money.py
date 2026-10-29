@@ -111,10 +111,13 @@ async def test_list_effective_only_resolved_oldest_first_by_category(db):
 async def test_save_evaluation_stores_the_reading(db):
     u = await f.user(db)
     t = await f.transaction(db, u.id)
-    ev = Evaluation(
+    ev = Evaluation(  # our F2 Evaluation: beneficiary, annotation_source and confidence required
         category=Category.GROCERIES,
         merchant="Mega Image",
         purpose=Purpose.UNKNOWN,
+        beneficiary=Beneficiary.SELF,
+        annotation_source=AnnotationSource.AUTO,
+        confidence=0.5,
         effective_amount=D("500"),
         life_fit=0.10,
         anomaly_score=0.80,
@@ -144,6 +147,9 @@ async def test_save_evaluation_rejects_effective_above_amount(db):
     ev = Evaluation(
         category=Category.GROCERIES,
         purpose=Purpose.UNKNOWN,
+        beneficiary=Beneficiary.SELF,
+        annotation_source=AnnotationSource.AUTO,
+        confidence=0.5,
         effective_amount=D("100.01"),
         life_fit=0,
         anomaly_score=0,
