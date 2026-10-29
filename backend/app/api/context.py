@@ -98,7 +98,8 @@ async def list_products(user: CurrentUser, db: Db) -> s.ProductsOut:
 
 
 async def fact_out(db: AsyncSession, user_id: int, fact: dm.LifeFact, lang: str) -> s.LifeFactOut:
-    assert fact.id is not None
+    if fact.id is None:
+        raise RuntimeError("fact_out needs a saved fact (id is None)")
     explains = [
         f"{ports.label(sig.category, lang) or sig.category} → {ports.label(sig.purpose, lang)}"
         for sig in await signatures.list_for_fact(db, user_id, fact.id)
@@ -120,7 +121,8 @@ async def fact_out(db: AsyncSession, user_id: int, fact: dm.LifeFact, lang: str)
 
 async def _propagate(db: AsyncSession, user_id: int, fact: dm.LifeFact) -> None:
     """New signatures for the fact, then the rest of the propagation (C9)."""
-    assert fact.id is not None
+    if fact.id is None:
+        raise RuntimeError("_propagate needs a saved fact (id is None)")
     await signatures.replace_for_fact(db, user_id, fact.id, ports.signatures_for_fact(fact, None))
     await ports.on_fact_changed(db, user_id, fact.id)
 

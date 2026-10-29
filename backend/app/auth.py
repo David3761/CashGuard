@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
 
 ACCEPTED_CLIENTS = frozenset({"savings-frontend", "savings-dev", "savings-cron"})
 # Keycloak's `typ` claim: "Bearer" (access), "ID", "Refresh". A token type, not a password.
-ACCESS_TOKEN_TYPE = "Bearer"  # noqa: S105
+ACCESS_TOKEN_TYPE = "Bearer"  # noqa: S105  # nosec B105
 SIM_ROLE = "sim"  # realm role of the demo operator: may drive /api/sim/*
 LEEWAY_SECONDS = 30
 REFETCH_INTERVAL_SECONDS = 60.0
