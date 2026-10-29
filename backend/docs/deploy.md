@@ -9,7 +9,12 @@
    `DOMAIN`, the LLM credentials, and the secrets the
    prod overlay **requires**: `POSTGRES_PASSWORD`, `KC_DB_PASSWORD`, `KC_ADMIN_USER`,
    `KC_ADMIN_PASSWORD`, `KC_CRON_CLIENT_SECRET`, `KC_DEMO_PASSWORD` (at least 12 characters: the
-   realm's password policy). `.env` never leaves the server.
+   realm's password policy) and `APP_API_KEY` (the Flutter app's shared key, e.g.
+   `openssl rand -hex 32`; build the app with `--dart-define=APP_API_KEY=<the same value>`).
+   `.env` never leaves the server.
+   - A Keycloak whose realm was imported before a realm-file change (new personas, the `sim`
+     role, the password policy): run `make keycloak-sync` on the server (`KC_URL` = the Keycloak
+     port or an SSH tunnel, since Caddy hides `/admin`; the prod `KC_ADMIN_*`).
    - **LLM credentials**, one provider: Amazon Bedrock with `LLM_PROVIDER=bedrock`,
      `AWS_DEFAULT_REGION=us-west-2` and a Bedrock API key in `AWS_BEARER_TOKEN_BEDROCK` (or the
      temporary `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_SESSION_TOKEN`, which expire);

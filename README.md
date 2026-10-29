@@ -219,7 +219,9 @@ cd mobile && flutter pub get
 flutter run --dart-define=USE_MOCK_API=false --dart-define=API_BASE_URL=http://10.0.2.2:8000   # Android emulator
 ```
 
-On a physical device, run `adb reverse tcp:8000 tcp:8000` and pass `--dart-define=API_BASE_URL=http://localhost:8000`. Both defines are read in `mobile/lib/core/request/api_config.dart`. Without `USE_MOCK_API=false`, the app shows mock data.
+On a physical device, run `adb reverse tcp:8000 tcp:8000` and pass `--dart-define=API_BASE_URL=http://localhost:8000`. The defines are read in `mobile/lib/core/request/api_config.dart`. Without `USE_MOCK_API=false`, the app shows mock data.
+
+When the server sets `APP_API_KEY` (the hosted overlay requires it), build the app with the same value: `--dart-define=APP_API_KEY=<key>`. Every app request then sends it as `X-App-Key`; without it the app API answers 401. Locally it's unset and the app API is open.
 
 ## Tests
 

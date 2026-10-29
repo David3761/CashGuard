@@ -46,7 +46,7 @@ The research agent's checklist, built from how hackathon code graders (AI repo g
 | AuthN/AuthZ, IDOR | ✅ every route needs a token (except health and the single-user app API); queries are user-scoped and tested; only access tokens are accepted |
 | Static analysis | ✅ bandit 0 issues; semgrep: the f-string SQL fixed, the Dockerfiles clean (cron has a justified `nosemgrep`) |
 | Dependency audit | ✅ pip-audit: no known vulnerabilities (Python 3.12) |
-| Container hardening | ✅ api non-root + HEALTHCHECK; ⚠️ cron runs as root (busybox crond can't run jobs unprivileged; documented, `no-new-privileges`) |
+| Container hardening | ✅ api and cron non-root (cron moved to supercronic on 2026-10-29 morning, branch `dga-task/final-hardening`) + HEALTHCHECK |
 | Mobile: no hard-coded crypto keys, ATS/cleartext limited | ✅ |
 
 ## 4. Bugs found and fixed tonight (beyond the merges)

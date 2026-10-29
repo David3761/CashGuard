@@ -146,8 +146,13 @@ it) is in [`backend/docs/ai-safety.md`](backend/docs/ai-safety.md).
 
 The hosted overlay (`backend/deploy/docker-compose.prod.yml`) **requires** every one of these
 secrets (`${VAR:?}`: compose refuses to start without them), puts everything behind HTTPS and
-publishes only the reverse proxy. The cron container still runs as root (busybox crond can't run
-jobs unprivileged); it has no port and no data, and runs with `no-new-privileges`.
+publishes only the reverse proxy. The cron container runs as an unprivileged user (uid 10001,
+supercronic, checksum-verified download), with no port, no data and `no-new-privileges`.
+
+A Keycloak that already holds the realm skips the realm file on start. `make keycloak-sync`
+(`backend/scripts/keycloak_sync.py`, idempotent, through the admin API) brings it up to the file:
+missing realm roles and persona users (with their fixed ids), the personas' roles, brute-force
+detection and the password policy. It prints counts, never secrets.
 
 ## Not secrets, by design
 
