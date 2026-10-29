@@ -56,7 +56,7 @@ def add_life_fact(ctx: ToolContext, run: RunState, args: Mapping[str, Any]) -> d
             "persistence": args["persistence"],
             "valid_from": args.get("valid_from") or clock.today(),
             "valid_to": args.get("valid_to"),
-            "source": FactSource.CHAT,
+            "source": FactSource.ONBOARDING if run.trigger == "onboarding" else FactSource.CHAT,
             "status": FactStatus.CONFIRMED,
             "confidence": 1.0,
         }
