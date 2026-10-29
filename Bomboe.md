@@ -21,7 +21,7 @@
 | 5 | B4 | `load_user_context` read model | P0 | 0.75 | ✅ (≤ 20 statements, not ≤ 10) |
 | 6 | B5 | Auth (JWT/JWKS, `current_user`, internal role, WS token) | P0 | 1 | ✅ |
 | 7 | B7 | WebSocket manager + events + push-after-commit | P0 | 0.75 | ✅ core (see merge notes) |
-| 8 | B8 | Ingestion + processing pipeline | P0 | 1.5 | ☐ |
+| 8 | B8 | Ingestion + processing pipeline | P0 | 1.5 | ✅ (signals.detect waits for E11) |
 | 9 | B9 | `POST /chat` + background agent run | P0 | 0.75 | ☐ |
 | 10 | B6a | REST core endpoints | P0 | 1 | ☐ |
 | 11 | B12 | Seed loader | P0 | 0.75 | ☐ |

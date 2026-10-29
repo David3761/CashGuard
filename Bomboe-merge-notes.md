@@ -136,6 +136,18 @@ How to use them: **`backend/tests/README.md`** (one example per fixture, how to 
 | Event builders | `app/events.py` | one function per arch 5.2 event → `{type, data, ts}` (`ts` UTC `Z`, money as numbers). `transaction_annotated(tx, purpose_label)`: the label comes from the caller until `app/i18n/labels.py` (C1) exists |
 | `manager`, `push_after_commit(session, user_id, event)` | `app/ws.py` | **call `push_after_commit` in tool handlers / pipeline**: events go out only after the session commits, in order; a rollback drops them. `/ws?token=` closes 1008 on a bad token; ping every 30 s |
 
+### B8 · Ingestion + processing pipeline ✅
+
+| Piece | Where | Notes for others |
+|---|---|---|
+| `ingest(db, user_id, TxIn \| dict) -> tx_id`, `TxIn` | `app/services/ingest.py` | validates (amount > 0, direction, items, merchant_raw 1–200, `occurred_at` ≤ sim today + 1 day, category) → `invalid_transaction` (422); stores `unresolved`, `effective_amount = amount`; calls nothing else |
+| `process_user(user_id, trigger) -> ProcessResult` | `app/pipeline/processor.py` | one transaction under `pg_advisory_xact_lock(user_id)`; claim `unresolved` (`FOR UPDATE SKIP LOCKED`); per transaction in a SAVEPOINT: **evaluate → save_evaluation → apply → resolved**, push `transaction.resolved` + `transaction.annotated` after commit; an error → `attempts + 1` (3rd → `failed`). Then: `auto_save` for every resolved credit not yet auto-saved → `recompute_plan(reason="new transactions")` → `forecast_goal` (push `plan.updated`, `forecast.updated`) → `pick_question(today)` → one `transaction_question` event → **after the commit**, `run_proactive(user_id, event_id)` unless `trigger == "chat"` |
+| `recover_stale()`, `users_with_work()` | same | `processing` rows locked > 5 min → `unresolved` |
+| `POST /api/internal/process`, `/api/internal/recover` | `app/api/internal.py` | `require_internal`; verified live with the cron container's real token (a user token → 403) |
+| **Your functions, wired through `app/pipeline/ports.py`** | `ports.py` + `_fallbacks.py` | the pipeline calls `ports.evaluate_transaction`, `ports.pick_question` (from `app.context.service`), `ports.apply_transaction`, `ports.auto_save`, `ports.recompute_plan`, `ports.forecast_goal` (from `app.engine.service`), `ports.run_proactive` (from `app.agent.proactive`). **When your module exists with the arch 15.1 signature, it's used automatically**; until then `_fallbacks.py` (the S0 stub behaviour) runs. **danutu / David G.: just add your modules; delete `_fallbacks.py` once all three exist.** `run_proactive` is awaited as `async def run_proactive(user_id, event_id)` |
+
+Not done in B8: `signals.detect` (E11, P1) isn't called yet — it has no shell signature in arch 15.1 (only the pure `detect_signals`); I'll wire it when danutu adds a DB shell.
+
 ### Service contract + B3 CRUD services ✅ (only `load_user_context` is still a stub, B4)
 
 | What | Where | Notes for others |
@@ -203,4 +215,5 @@ Differences from the names in Bomboe.md / arch 15.1:
 | `c2d0ddd` | B5.1 `verify_token` + JWKS cache; F3 auth helpers |
 | `34f1687` | F3.2–3 API + WS fixtures, `tests/README.md`; `make check` → 481 passed |
 | `f22171e`, `5ac8c5c`, `306c337`, `94528ea` | B3 steps 1–4: every CRUD service; `make check` → 625 passed |
-| `fd0c526`, `7c05067`, (next) | B4 loader, B5.2 auth deps, B7 WebSocket core |
+| `fd0c526`, `7c05067`, `d3f86e9` | B4 loader, B5.2 auth deps, B7 WebSocket core |
+| (next) | B8 ingest + pipeline + /internal/process, /internal/recover; `make check` → 669 passed |
