@@ -171,7 +171,10 @@ def test_containers_cannot_gain_privileges(prod):
         assert "no-new-privileges:true" in prod["services"][name]["security_opt"], name
 
 
-def test_cron_dockerfile_explains_why_it_runs_as_root():
+def test_cron_image_is_non_root_with_a_healthcheck():
+    # supercronic runs the jobs as uid 10001 (busybox crond needed root); no semgrep waiver left.
     dockerfile = (BACKEND / "cron" / "Dockerfile").read_text()
-    assert "nosemgrep: dockerfile.security.missing-user.missing-user" in dockerfile
-    assert "HEALTHCHECK" in dockerfile
+    users = [line.split()[1] for line in dockerfile.splitlines() if line.startswith("USER ")]
+    assert users == ["10001"]
+    assert "nosemgrep" not in dockerfile
+    assert "HEALTHCHECK" in dockerfile and "supercronic" in dockerfile

@@ -1,4 +1,7 @@
-"""cron/run.sh and cron/crontab (B1, arch §10). Runs the script with a fake `curl` on PATH."""
+"""cron/run.sh, cron/crontab and cron/Dockerfile (B1, arch §10).
+
+Runs the script with a fake `curl` on PATH.
+"""
 
 import os
 import shutil
@@ -11,6 +14,7 @@ import pytest
 BACKEND = Path(__file__).resolve().parents[2]
 RUN_SH = BACKEND / "cron" / "run.sh"
 CRONTAB = BACKEND / "cron" / "crontab"
+DOCKERFILE = BACKEND / "cron" / "Dockerfile"
 
 TOKEN_URL = "http://keycloak:8080/realms/cashguard/protocol/openid-connect/token"
 BASE_ENV = {
@@ -140,10 +144,24 @@ def test_crontab_matches_arch_schedule():
     assert crontab_entries() == ARCH_SCHEDULE
 
 
-def test_crontab_sends_job_output_to_container_logs():
+def test_crontab_leaves_job_output_to_supercronic():
+    # supercronic logs each job's output to the container log; a redirect to PID 1's stdout
+    # (the busybox crond trick) is not needed and fails for an unprivileged user.
     for line in CRONTAB.read_text().splitlines():
         if line.strip() and not line.lstrip().startswith("#"):
-            assert ">> /proc/1/fd/1 2>&1" in line
+            assert ">" not in line, line
+
+
+def test_cron_image_runs_supercronic_unprivileged():
+    instructions = [
+        line.strip() for line in DOCKERFILE.read_text().splitlines() if line.strip()[:1] not in "#"
+    ]
+    assert "USER 10001" in instructions
+    assert not any(line.startswith("USER root") or line == "USER 0" for line in instructions)
+    assert instructions[-1].startswith('CMD ["supercronic"')
+    assert '"/cron/crontab"]' in instructions[-1]
+    assert any("sha1sum -c" in line for line in instructions)  # the download is verified
+    assert "crond" not in DOCKERFILE.read_text()
 
 
 @pytest.mark.skipif(shutil.which("shellcheck") is None, reason="shellcheck not installed")

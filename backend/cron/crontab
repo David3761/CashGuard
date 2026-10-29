@@ -1,13 +1,14 @@
 # Arch §10. Times are Europe/Bucharest (TZ in the container).
-# Output goes to the container log (docker compose logs cron).
+# Run by supercronic as an unprivileged user: no user column, and it logs each job's output to
+# the container log itself (docker compose logs cron), so no redirects here.
 # m    h  dom mon dow  command
-*/5    *  *   *   *    /cron/run.sh process >> /proc/1/fd/1 2>&1
-*/5    *  *   *   *    /cron/run.sh recover >> /proc/1/fd/1 2>&1
-55     23 *   *   *    /cron/run.sh close-day >> /proc/1/fd/1 2>&1
-0      9  *   *   *    /cron/run.sh preemptive >> /proc/1/fd/1 2>&1
-0      18 *   *   0    /cron/run.sh weekly-reflection >> /proc/1/fd/1 2>&1
-0      3  *   *   *    /cron/run.sh expire-events >> /proc/1/fd/1 2>&1
-0      *  *   *   *    /cron/run.sh expire-questions >> /proc/1/fd/1 2>&1
-0      10 *   *   *    /cron/run.sh receivable-reminders >> /proc/1/fd/1 2>&1
-0      0  *   *   1    /cron/run.sh forecast-snapshot >> /proc/1/fd/1 2>&1
-0      20 *   *   0    /cron/run.sh infer-hypotheses >> /proc/1/fd/1 2>&1
+*/5    *  *   *   *    /cron/run.sh process
+*/5    *  *   *   *    /cron/run.sh recover
+55     23 *   *   *    /cron/run.sh close-day
+0      9  *   *   *    /cron/run.sh preemptive
+0      18 *   *   0    /cron/run.sh weekly-reflection
+0      3  *   *   *    /cron/run.sh expire-events
+0      *  *   *   *    /cron/run.sh expire-questions
+0      10 *   *   *    /cron/run.sh receivable-reminders
+0      0  *   *   1    /cron/run.sh forecast-snapshot
+0      20 *   *   0    /cron/run.sh infer-hypotheses
