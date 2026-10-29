@@ -91,7 +91,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="com.sst.cashctrl"
+                    android:scheme="com.cashctrl"
                     android:host="sst" />
             </intent-filter>-->
         </activity>

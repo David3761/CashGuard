@@ -24,7 +24,7 @@ class AppNotificationService {
   final newNotification = StreamController<String>.broadcast();
 
   final _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  static const _channelId = 'com.sst.cashctrl.notification';
+  static const _channelId = 'com.cashctrl.notification';
   static const _appName = 'CashCtrl';
 
   // TODO(Mihai): at some point, these may need to be translated, but there
@@ -99,7 +99,7 @@ class AppNotificationService {
   }
 
   /// Initializes the listener that intercepts notifications while the app is
-  /// in foreground. If the MainScreen widget is in foreground, then the
+  /// in foreground. If the TransactionsScreen widget is in foreground, then the
   /// notification will be added to [newNotification]. Otherwise, the
   /// [_showNotification] will be called.
   ///
@@ -110,6 +110,7 @@ class AppNotificationService {
     if (settings.authorizationStatus != .authorized) {
       return;
     }
+    devPrint('FCM token: ${await FirebaseMessaging.instance.getToken()}');
 
     FirebaseMessaging.onMessage.listen((message) {
       devPrint(

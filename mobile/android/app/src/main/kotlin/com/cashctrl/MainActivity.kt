@@ -1,4 +1,4 @@
-package com.sst.cashctrl
+package com.cashctrl
 
 import android.os.Build
 import io.flutter.embedding.android.FlutterFragmentActivity
