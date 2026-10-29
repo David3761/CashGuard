@@ -18,7 +18,11 @@ money = st.decimals(min_value=0, max_value=100_000, places=2, allow_nan=False, a
     [
         ([D("85")], D("85"), D("0")),
         ([D("60"), D("85"), D("110")], D("85"), D("25")),
-        ([D("10"), D("20"), D("30"), D("40")], D("25"), D("10")),  # even count → mean of the middle two
+        (
+            [D("10"), D("20"), D("30"), D("40")],
+            D("25"),
+            D("10"),
+        ),  # even count → mean of the middle two
         ([D("80"), D("85"), D("90"), D("500")], D("87.5"), D("5")),  # one outlier barely moves MAD
     ],
 )
@@ -64,7 +68,7 @@ def test_blend_without_prior_weight_is_personal() -> None:
 
 @pytest.mark.parametrize(("n", "k"), [(-1, 5), (2, -1), (0, 0)])
 def test_blend_rejects_invalid_weights(n: int, k: int) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must be ≥ 0"):
         blend(n, D("1"), D("1"), k=k)
 
 
@@ -91,5 +95,5 @@ def test_monthly_rate_no_span_is_zero() -> None:
 
 
 def test_monthly_rate_rejects_negative_span() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="span_days"):
         monthly_rate(D("500"), -1)

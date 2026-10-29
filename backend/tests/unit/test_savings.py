@@ -5,11 +5,8 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-pytest.importorskip("app.domain", reason="needs F2 app.domain (David G.)")
-
 from app.domain.enums import Direction, ReceivableStatus
 from app.domain.models import FixedCost, IncomeSource, Receivable
-
 from app.engine.calendar import paydays_between
 from app.engine.savings import (
     auto_save_amount,
@@ -19,6 +16,7 @@ from app.engine.savings import (
     pot_contribution,
     receivables_expected,
 )
+from tests.builders import receivable as make_receivable
 from tests.builders import tx
 
 D = Decimal
@@ -31,7 +29,9 @@ RENT = FixedCost(id=1, name="Chirie", amount=D("2000"), day_of_month=1)
 def receivable(
     amount: str, expected_by: date, status: ReceivableStatus = ReceivableStatus.OPEN
 ) -> Receivable:
-    return Receivable(id=1, amount=D(amount), debtor_label="colegi", expected_by=expected_by, status=status)
+    return make_receivable(
+        id=1, amount=D(amount), debtor_label="colegi", expected_by=expected_by, status=status
+    )
 
 
 # ── pot_contribution ─────────────────────────────────────────────────────────
@@ -43,7 +43,7 @@ def test_pot_contribution_vacation_pot_example() -> None:
 
 
 def test_pot_contribution_rounds_up_so_the_target_is_reached() -> None:
-    # 1 000 over 3 paydays: 333.34 each (333.33 × 3 would miss a cent)
+    # 1 000 over 3 paydays: 333.34 each (333.33 x 3 would miss a cent)
     assert pot_contribution(D("1000"), D("0"), date(2026, 9, 15), TODAY, [10]) == D("333.34")
 
 
@@ -56,7 +56,9 @@ def test_pot_contribution_rounds_up_so_the_target_is_reached() -> None:
         (D("0"), None, D("0")),  # no deadline, no schedule
     ],
 )
-def test_pot_contribution_nothing_to_do(saved: Decimal, deadline: date | None, expected: Decimal) -> None:
+def test_pot_contribution_nothing_to_do(
+    saved: Decimal, deadline: date | None, expected: Decimal
+) -> None:
     assert pot_contribution(D("3000"), saved, deadline, TODAY, [10]) == expected
 
 
@@ -95,15 +97,21 @@ def test_p_repay_drops_a_tenth_per_full_fortnight(days_overdue: int, expected: D
 
 
 def test_receivables_expected_demo_400_not_overdue_is_360() -> None:
-    assert receivables_expected([receivable("400", TODAY + timedelta(14))], TODAY, DEADLINE) == D("360.00")
+    assert receivables_expected([receivable("400", TODAY + timedelta(14))], TODAY, DEADLINE) == D(
+        "360.00"
+    )
 
 
 def test_receivables_expected_four_weeks_overdue_is_280() -> None:
-    assert receivables_expected([receivable("400", TODAY - timedelta(28))], TODAY, DEADLINE) == D("280.00")
+    assert receivables_expected([receivable("400", TODAY - timedelta(28))], TODAY, DEADLINE) == D(
+        "280.00"
+    )
 
 
 def test_receivables_expected_after_the_deadline_counts_zero() -> None:
-    assert receivables_expected([receivable("400", DEADLINE + timedelta(1))], TODAY, DEADLINE) == D("0.00")
+    assert receivables_expected([receivable("400", DEADLINE + timedelta(1))], TODAY, DEADLINE) == D(
+        "0.00"
+    )
 
 
 def test_receivables_expected_on_the_deadline_counts() -> None:
@@ -129,11 +137,11 @@ def test_receivables_expected_counts_requested() -> None:
         (D("7000"), date(2026, 7, 10), True),
         (D("8400"), date(2026, 7, 10), True),  # +20 % exactly
         (D("8400.01"), date(2026, 7, 10), False),
-        (D("5600"), date(2026, 7, 10), True),  # −20 % exactly
+        (D("5600"), date(2026, 7, 10), True),  # -20 % exactly
         (D("5599.99"), date(2026, 7, 10), False),
         (D("7000"), date(2026, 7, 13), True),  # +3 days
         (D("7000"), date(2026, 7, 14), False),
-        (D("7000"), date(2026, 7, 7), True),  # −3 days
+        (D("7000"), date(2026, 7, 7), True),  # -3 days
         (D("7000"), date(2026, 7, 6), False),
     ],
 )
@@ -150,10 +158,16 @@ def test_matches_recurring_across_month_end() -> None:
 def test_matching_income_source_needs_a_credit() -> None:
     salary_day = datetime(2026, 7, 10, 7, 0, tzinfo=UTC)
     credit = tx(
-        amount=D("7000"), effective_amount=D("7000"), direction=Direction.CREDIT, occurred_at=salary_day
+        amount=D("7000"),
+        effective_amount=D("7000"),
+        direction=Direction.CREDIT,
+        occurred_at=salary_day,
     )
     debit = tx(
-        amount=D("7000"), effective_amount=D("7000"), direction=Direction.DEBIT, occurred_at=salary_day
+        amount=D("7000"),
+        effective_amount=D("7000"),
+        direction=Direction.DEBIT,
+        occurred_at=salary_day,
     )
     assert matching_income_source(credit, [SALARY]) == SALARY
     assert matching_income_source(debit, [SALARY]) is None
@@ -183,7 +197,7 @@ def test_auto_save_planned_saving_counts_todays_payday() -> None:
 
 
 def test_auto_save_cap_when_the_balance_is_low() -> None:
-    # until 10 Aug: rent 2 000 (1 Aug) + 31 days × 40 = 1 240 → cap = 3 900 − 3 240 = 660
+    # until 10 Aug: rent 2 000 (1 Aug) + 31 days x 40 = 1 240 → cap = 3 900 - 3 240 = 660
     assert auto_save("3900") == D("660.00")
 
 

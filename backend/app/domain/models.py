@@ -677,6 +677,9 @@ class Goal(DomainModel):
     motivation: Text300 | None = None
     status: GoalStatus
     created_at: Timestamp
+    soft: StrictBool = (
+        True  # the deadline may move (bomboe's `goals.soft`; E9 moves soft ones only)
+    )
 
 
 class IncomeSource(DomainModel):
@@ -762,8 +765,10 @@ class UserProfile(DomainModel):
 
 
 class Account(DomainModel):
-    current_balance: Money  # may be negative
-    savings_pot: NonNegMoney
+    """No account row yet → zeros (bomboe's B4 builds `Account()` for a fresh user)."""
+
+    current_balance: Money = Decimal("0")  # may be negative
+    savings_pot: NonNegMoney = Decimal("0")
 
 
 class AgentEventView(DomainModel):
@@ -774,6 +779,7 @@ class AgentEventView(DomainModel):
     status: AgentEventStatus
     payload: Mapping[str, JsonValue] = Field(default_factory=dict)
     ref_transaction_id: Id | None = None
+    event_date: Date | None = None  # bomboe's dedup day (day-level types are unique per day)
     created_at: Timestamp
     asked_at: Timestamp | None = None
     answered_at: Timestamp | None = None

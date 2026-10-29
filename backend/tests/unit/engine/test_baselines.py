@@ -96,7 +96,8 @@ def test_blend_n5_is_the_midpoint() -> None:
     ]
     out = compute_baselines(history, PRIORS, Decimal(1), "București", TODAY)
     assert out[Category.GROCERIES].expected_median == Decimal("100.00")  # (130 + 70) / 2
-    assert out[Category.GROCERIES].personal_mad == 0
+    # MAD 0 is stored with the 0.25 x expected-median fallback (danutu E6, merged_notes 🟡)
+    assert out[Category.GROCERIES].personal_mad == Decimal("25.00")
 
 
 def test_clean_inputs_and_180_day_bound() -> None:

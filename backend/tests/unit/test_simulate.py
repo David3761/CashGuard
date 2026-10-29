@@ -4,27 +4,25 @@ from typing import Any
 
 import pytest
 
-pytest.importorskip("app.domain", reason="needs F2 app.domain (David G.)")
-
-from app.domain.models import LifeEvent
-from app.errors import DomainError
-
+from app.domain.user_context import UserContext
 from app.engine.budget import compute_plan, plan_inputs
 from app.engine.simulate import apply_changes, simulate, solve
 from app.engine.stats import stable_seed
+from app.errors import DomainError
+from tests.builders import life_event as make_life_event
 from tests.unit.test_forecast import TODAY
 from tests.unit.test_options import goal_ctx
 
 D = Decimal
 SEED = stable_seed(1, TODAY, 1)
-CONCERT = LifeEvent(id=42, name="Concert", date=date(2026, 7, 4), est_cost=D("400"))
+CONCERT = make_life_event(id=42, name="Concert", date=date(2026, 7, 4), est_cost=D("400"))
 
 
 def base() -> Any:
     return goal_ctx("17000", life_events=[CONCERT])
 
 
-def today_budget(c: object, **changes: object) -> Decimal:
+def today_budget(c: UserContext, **changes: object) -> Decimal:
     plan = compute_plan(plan_inputs(apply_changes(c, changes), TODAY, D("0")), TODAY)
     assert plan is not None
     return plan.today_budget
@@ -35,7 +33,7 @@ def today_budget(c: object, **changes: object) -> Decimal:
 
 def test_no_changes_gives_the_current_numbers() -> None:
     result = simulate(base(), TODAY, {}, seed=SEED)
-    assert result.diff_vs_current == {"today_budget": D("0.00"), "probability": 0.0}
+    assert result.diff_vs_current.model_dump() == {"today_budget": D("0.00"), "probability": 0.0}
 
 
 @pytest.mark.parametrize(
@@ -51,24 +49,31 @@ def test_no_changes_gives_the_current_numbers() -> None:
         ({"buffer_pct": 0}, True),
     ],
 )
-def test_each_change_moves_the_daily_budget_the_right_way(changes: dict[str, Any], budget_up: bool) -> None:
-    diff = simulate(base(), TODAY, changes, seed=SEED).diff_vs_current["today_budget"]
+def test_each_change_moves_the_daily_budget_the_right_way(
+    changes: dict[str, Any], budget_up: bool
+) -> None:
+    diff = simulate(base(), TODAY, changes, seed=SEED).diff_vs_current.today_budget
     assert (diff > 0) is budget_up
 
 
 def test_a_ps5_lowers_the_probability() -> None:
     result = simulate(
-        base(), TODAY, {"add_events": [{"name": "PS5", "date": "2026-07-20", "est_cost": 2500}]}, seed=SEED
+        base(),
+        TODAY,
+        {"add_events": [{"name": "PS5", "date": "2026-07-20", "est_cost": 2500}]},
+        seed=SEED,
     )
-    assert result.diff_vs_current["probability"] < 0
+    assert result.diff_vs_current.probability < 0
 
 
 def test_diff_vs_current_is_the_difference_of_the_two_runs() -> None:
     c = base()
     current = simulate(c, TODAY, {}, seed=SEED)
     changed = simulate(c, TODAY, {"income_delta": 500}, seed=SEED)
-    assert changed.diff_vs_current["today_budget"] == changed.today_budget - current.today_budget
-    assert changed.diff_vs_current["probability"] == pytest.approx(changed.probability - current.probability)
+    assert changed.diff_vs_current.today_budget == changed.today_budget - current.today_budget
+    assert changed.diff_vs_current.probability == pytest.approx(
+        changed.probability - current.probability
+    )
 
 
 def test_pins_and_weights_are_applied_to_a_copy() -> None:
@@ -125,10 +130,12 @@ def test_solve_largest_goal_for_the_same_deadline() -> None:
 
 def test_solve_impossible_target_returns_none_with_a_reason() -> None:
     result = solve(base(), TODAY, D("100000"), essentials_floor=D("0"))
-    assert result["deadline_needed"] is None and result["goal_amount_possible"] is None
+    assert result["deadline_needed"] is None
+    assert result["goal_amount_possible"] is None
     assert result["reason"] == "target_not_reachable"
 
 
 def test_simulate_with_target_includes_solve() -> None:
     result = simulate(base(), TODAY, {"target_daily_budget": 40}, seed=SEED)
-    assert result.solve is not None and "deadline_needed" in result.solve
+    assert result.solve is not None
+    assert "deadline_needed" in result.solve.model_fields_set | {"deadline_needed"}

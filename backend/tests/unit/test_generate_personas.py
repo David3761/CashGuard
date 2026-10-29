@@ -23,7 +23,8 @@ def load_generator() -> ModuleType:
     spec = importlib.util.spec_from_file_location(
         "generate_personas", BACKEND / "scripts" / "generate_personas.py"
     )
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -59,7 +60,9 @@ def test_running_twice_gives_byte_identical_files(tmp_path: Path) -> None:
         folder.mkdir(parents=True)
         shutil.copy(PERSONAS / "matei" / "config.json", folder / "config.json")
         gen.write_persona(folder)
-        outputs.append(((folder / "profile.json").read_bytes(), (folder / "transactions.json").read_bytes()))
+        outputs.append(
+            ((folder / "profile.json").read_bytes(), (folder / "transactions.json").read_bytes())
+        )
     assert outputs[0] == outputs[1]
 
 
@@ -67,7 +70,9 @@ def test_running_twice_gives_byte_identical_files(tmp_path: Path) -> None:
 def test_committed_files_match_the_generator(pid: str) -> None:
     profile, transactions = generated(pid)
     assert (PERSONAS / pid / "profile.json").read_text(encoding="utf-8") == gen.dump(profile)
-    assert (PERSONAS / pid / "transactions.json").read_text(encoding="utf-8") == gen.dump(transactions)
+    assert (PERSONAS / pid / "transactions.json").read_text(encoding="utf-8") == gen.dump(
+        transactions
+    )
 
 
 # ── every persona ────────────────────────────────────────────────────────────
@@ -84,7 +89,9 @@ def test_history_stays_inside_the_window(pid: str) -> None:
 @pytest.mark.parametrize("pid", ALL)
 def test_start_balance_plus_history_ends_on_the_current_balance(pid: str) -> None:
     profile, txs = generated(pid)
-    net = sum((Decimal(t["amount"]) * (1 if t["direction"] == "credit" else -1) for t in txs), Decimal(0))
+    net = sum(
+        (Decimal(t["amount"]) * (1 if t["direction"] == "credit" else -1) for t in txs), Decimal(0)
+    )
     assert Decimal(profile["history"]["start_balance"]) + net == Decimal(
         profile["account"]["current_balance"]
     )
@@ -96,7 +103,8 @@ def test_amounts_are_positive_with_two_decimals(pid: str) -> None:
     _, txs = generated(pid)
     for t in txs:
         amount = Decimal(t["amount"])
-        assert amount > 0 and amount == amount.quantize(Decimal("0.01"))
+        assert amount > 0
+        assert amount == amount.quantize(Decimal("0.01"))
 
 
 @pytest.mark.parametrize("pid", ALL)
@@ -126,7 +134,7 @@ def test_salary_and_rent_land_on_their_day_every_month(pid: str) -> None:
 
 def full_weeks() -> list[date]:
     first = date(2026, 2, 16)  # the first Monday inside the window
-    return [first + timedelta(weeks=i) for i in range(17)]  # last full week: 8–14 Jun
+    return [first + timedelta(weeks=i) for i in range(17)]  # last full week: 8-14 Jun
 
 
 def test_matei_mega_image_three_or_four_weekday_lunches_each_week() -> None:
@@ -165,13 +173,19 @@ def test_matei_eighth_of_march_flowers() -> None:
 
 def test_ioana_shop_and_go_median_basket_is_140() -> None:
     _, txs = generated("ioana")
-    normal = [t for t in stream(txs, "shopgo") if not date(2026, 4, 6) <= when(t).date() <= date(2026, 4, 11)]
+    normal = [
+        t
+        for t in stream(txs, "shopgo")
+        if not date(2026, 4, 6) <= when(t).date() <= date(2026, 4, 11)
+    ]
     assert abs(median(Decimal(t["amount"]) for t in normal) - 140) <= 15
 
 
 def test_ioana_easter_week_is_well_above_an_average_week() -> None:
     _, txs = generated("ioana")
-    spending = [t for t in txs if t["direction"] == "debit" and t["category"] in ("groceries", "gifts")]
+    spending = [
+        t for t in txs if t["direction"] == "debit" and t["category"] in ("groceries", "gifts")
+    ]
     weekly: dict[date, Decimal] = {}
     for t in spending:
         monday = when(t).date() - timedelta(when(t).weekday())
@@ -184,7 +198,8 @@ def test_ioana_easter_week_is_well_above_an_average_week() -> None:
 def test_ioana_children_day_gifts() -> None:
     _, txs = generated("ioana")
     assert any(
-        t["category"] == "gifts" and date(2026, 5, 29) <= when(t).date() <= date(2026, 6, 1) for t in txs
+        t["category"] == "gifts" and date(2026, 5, 29) <= when(t).date() <= date(2026, 6, 1)
+        for t in txs
     )
 
 
@@ -215,12 +230,14 @@ def test_andrei_saw_electronics_but_never_emag_and_bianca_never_electronics() ->
 
 
 def test_every_merchant_raw_resolves_with_normalize() -> None:
-    normalize = pytest.importorskip("app.context.normalize", reason="needs C2 normalize (David G.)").normalize
+    normalize = pytest.importorskip(
+        "app.context.normalize", reason="needs C2 normalize (David G.)"
+    ).normalize
     for pid in ALL:
         _, txs = generated(pid)
         for t in txs:
             if t["direction"] == "debit" and t["category"] not in ("housing_rent", "savings"):
-                _, _, category = normalize(t["merchant_raw"], t["mcc"], t["category"])
+                category = normalize(t["merchant_raw"], t["mcc"], t["category"]).category
                 assert category == t["category"]
 
 

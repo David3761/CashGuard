@@ -1,24 +1,30 @@
-from dataclasses import replace
 from datetime import date
 from decimal import Decimal
 from typing import Any
 
-import pytest
-
-pytest.importorskip("app.domain", reason="needs F2 app.domain (David G.)")
-
 from app.domain.enums import Category, ReceivableStatus, SignatureEffect
-from app.domain.models import Receivable, Signature
-
+from app.domain.user_context import UserContext
 from app.engine.forecast import build_forecast_inputs, forecast
 from app.engine.options import PROBABILITY_FLOOR, cuttable_categories, drivers, options
 from app.engine.stats import stable_seed
-from tests.builders import tx
+from tests.builders import receivable as make_receivable
+from tests.builders import replace, signature, tx
 from tests.unit.test_forecast import GOAL, TODAY, at, history, matei_ctx
 
 D = Decimal
 SEED = stable_seed(1, TODAY, 1)
-CONCERTS = Signature(id=1, fact_id=1, effect=SignatureEffect.PROTECTS, category=Category.ENTERTAINMENT)
+CONCERTS = signature(
+    id=1,
+    fact_id=1,
+    effect=SignatureEffect.PROTECTS,
+    category=Category.ENTERTAINMENT,
+    merchant_hints=[],
+    item_keywords=[],
+    amount_min=None,
+    amount_max=None,
+    replacement_cycle_days=None,
+    purpose="identity_joy",
+)
 OCCASIONAL = {
     Category.GROCERIES: 1400,
     Category.RESTAURANTS: 900,
@@ -30,7 +36,7 @@ OCCASIONAL = {
 def varied_history() -> list[Any]:
     """Monthly totals that change from month to month (a bootstrap needs some spread)."""
     txs = history({})
-    for month, factor in zip(range(2, 6), (0.7, 1.0, 1.4, 0.9)):
+    for month, factor in zip(range(2, 6), (0.7, 1.0, 1.4, 0.9), strict=False):
         for category, amount in OCCASIONAL.items():
             value = D(str(round(amount * factor)))
             txs.append(
@@ -50,7 +56,7 @@ def goal_ctx(amount: str, **over: object) -> Any:
     return matei_ctx(transactions=varied_history(), **over)
 
 
-def probability(c: object) -> float:
+def probability(c: UserContext) -> float:
     return forecast(build_forecast_inputs(c, TODAY), seed=SEED).probability
 
 
@@ -74,7 +80,9 @@ def test_drivers_are_non_negative_sorted_and_skip_protected() -> None:
     categories = {d.category for d in result}
     assert categories == {Category.RESTAURANTS, Category.FOOD_DELIVERY}
     assert all(d.pp_per_100_lei >= 0 for d in result)
-    assert [d.pp_per_100_lei for d in result] == sorted((d.pp_per_100_lei for d in result), reverse=True)
+    assert [d.pp_per_100_lei for d in result] == sorted(
+        (d.pp_per_100_lei for d in result), reverse=True
+    )
     assert result[0].pp_per_100_lei > 0
 
 
@@ -89,7 +97,7 @@ def test_no_options_when_the_probability_is_fine() -> None:
 
 
 def test_options_when_the_probability_is_low_are_at_most_three_and_each_better() -> None:
-    r = Receivable(
+    r = make_receivable(
         id=1,
         amount=D("400"),
         debtor_label="colegi",
@@ -109,16 +117,20 @@ def test_options_after_a_big_drop_even_above_the_floor() -> None:
     current = probability(c)
     assert PROBABILITY_FLOOR <= current < 1
     assert options(c, TODAY, current=current, previous=current + 0.11, seed=SEED)
-    assert options(c, TODAY, current=current, previous=current + 0.10, seed=SEED) == []  # exactly 10 pp: no
+    assert (
+        options(c, TODAY, current=current, previous=current + 0.10, seed=SEED) == []
+    )  # exactly 10 pp: no
 
 
 def test_no_deadline_option_for_a_hard_goal() -> None:
-    c = goal_ctx("18500", goal=replace(GOAL, amount=D("18500"), hard_deadline=True))
+    c = goal_ctx("18500", goal=replace(GOAL, amount=D("18500"), soft=False))
     kinds = {o.kind for o in options(c, TODAY, current=probability(c), previous=None, seed=SEED)}
     assert "move_deadline" not in kinds
 
 
-def test_reduction_option_never_cuts_more_than_a_quarter_of_the_baseline_and_never_protected() -> None:
+def test_reduction_option_never_cuts_more_than_a_quarter_of_the_baseline_and_never_protected() -> (
+    None
+):
     c = goal_ctx("18500", signatures=[CONCERTS])
     cuts = [
         o
@@ -128,7 +140,10 @@ def test_reduction_option_never_cuts_more_than_a_quarter_of_the_baseline_and_nev
     assert cuts
     for o in cuts:
         assert o.params["category"] != Category.ENTERTAINMENT
-        assert o.params["amount_per_month"] <= o.params["baseline_per_month"] * D("0.25")
+        cut, baseline = o.params["amount_per_month"], o.params["baseline_per_month"]
+        assert isinstance(cut, Decimal)
+        assert isinstance(baseline, Decimal)
+        assert cut <= baseline * D("0.25")
 
 
 def test_option_labels_are_i18n_keys_with_params() -> None:

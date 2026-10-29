@@ -1,7 +1,9 @@
 """What-if `simulate_plan` and solve mode (arch 6.7, D20, E5). Pure: works on a copy, saves nothing.
 
-`changes` uses the tool's field names: goal_amount, deadline, add_events, remove_event_ids, income_delta,
-fixed_cost_delta (monthly, + or −), weekday_weights, pin_days, buffer_pct, target_daily_budget (solve mode).
+`changes` uses the tool's field names: goal_amount, deadline, add_events, remove_event_ids,
+income_delta,
+fixed_cost_delta (monthly, + or -), weekday_weights, pin_days, buffer_pct, target_daily_budget
+(solve mode).
 Solve mode bisects: the earliest deadline (up to 5 years) and the largest goal (same deadline) whose
 daily budget today is at least the target. The daily budget isn't strictly monotonic in the deadline
 (it jumps on paydays), so the deadline found is one where the day before misses the target.
@@ -12,10 +14,11 @@ from datetime import date, timedelta
 from decimal import Decimal
 from typing import Any
 
+from app.domain.enums import LifeEventType
 from app.domain.models import FixedCost, IncomeSource, LifeEvent
-from app.domain.user_context import UserContext
 from app.domain.money import to_money
-from app.domain.results import SimResult
+from app.domain.results import SimDiff, SimResult, SolveResult
+from app.domain.user_context import UserContext
 from app.engine.baselines import essentials_floor
 from app.engine.budget import compute_plan, plan_inputs
 from app.engine.forecast import build_forecast_inputs, forecast
@@ -39,7 +42,8 @@ KNOWN = frozenset(
         "target_daily_budget",
     }
 )
-SIMULATED_ID = -1
+SIMULATED_ID = 2**62
+"""Ids of the simulated rows: positive (our `Id`), far above any real row id; counting down."""
 
 
 def _invalid(message: str) -> DomainError:
@@ -79,28 +83,46 @@ def apply_changes(ctx: UserContext, changes: Mapping[str, Any]) -> UserContext:
         if cost < 0:
             raise _invalid("est_cost must be ≥ 0")
         events.append(
-            LifeEvent(id=SIMULATED_ID - i, name=str(e["name"]), date=_date(e["date"]), est_cost=cost)
+            LifeEvent(
+                id=SIMULATED_ID - i,
+                name=str(e["name"]),
+                date=_date(e["date"]),
+                est_cost=cost,
+                type=LifeEventType(e.get("type", LifeEventType.OTHER)),
+            )
         )
     update["life_events"] = events
 
-    if changes.get("income_delta"):
-        day = ctx.income_sources[0].day_of_month if ctx.income_sources else 1
-        extra = IncomeSource(
-            id=SIMULATED_ID, source="simulated", amount=_money(changes["income_delta"]), day_of_month=day
-        )
-        update["income_sources"] = [*ctx.income_sources, extra]
-    if changes.get("fixed_cost_delta"):
-        extra_cost = FixedCost(
-            id=SIMULATED_ID, name="simulated", amount=_money(changes["fixed_cost_delta"]), day_of_month=1
-        )
-        update["fixed_costs"] = [*ctx.fixed_costs, extra_cost]
+    # Our IncomeSource / FixedCost amounts are > 0, so a negative delta becomes the opposite row:
+    # less income = an extra monthly cost on payday, a lower fixed cost = extra monthly income.
+    incomes, costs = list(ctx.income_sources), list(ctx.fixed_costs)
+    payday = ctx.income_sources[0].day_of_month if ctx.income_sources else 1
+    for key, day in (("income_delta", payday), ("fixed_cost_delta", 1)):
+        delta = _money(changes.get(key) or 0)
+        if delta == 0:
+            continue
+        gains = (delta > 0) is (key == "income_delta")
+        if gains:
+            incomes.append(
+                IncomeSource(
+                    id=SIMULATED_ID, source="simulated", amount=abs(delta), day_of_month=day
+                )
+            )
+        else:
+            costs.append(
+                FixedCost(id=SIMULATED_ID, name="simulated", amount=abs(delta), day_of_month=day)
+            )
+    if len(incomes) != len(ctx.income_sources):
+        update["income_sources"] = incomes
+    if len(costs) != len(ctx.fixed_costs):
+        update["fixed_costs"] = costs
 
     prefs = ctx.plan_preferences
     prefs_update: dict[str, Any] = {}
     if "weekday_weights" in changes:
         weights = {k: _money(v) for k, v in changes["weekday_weights"].items()}
         if any(not WEIGHT_RANGE[0] <= w <= WEIGHT_RANGE[1] for w in weights.values()):
-            raise _invalid("weekday weights must be 0.5–3")
+            raise _invalid("weekday weights must be 0.5-3")
         prefs_update["weekday_weights"] = {**prefs.weekday_weights, **weights}
     if "pin_days" in changes:
         pins = {_date(p["date"]): _money(p["amount"]) for p in changes["pin_days"]}
@@ -108,7 +130,7 @@ def apply_changes(ctx: UserContext, changes: Mapping[str, Any]) -> UserContext:
     if "buffer_pct" in changes:
         buffer = _money(changes["buffer_pct"])
         if not BUFFER_RANGE[0] <= buffer <= BUFFER_RANGE[1]:
-            raise _invalid("buffer_pct must be 0–0.3")
+            raise _invalid("buffer_pct must be 0-0.3")
         prefs_update["buffer_pct"] = buffer
     if prefs_update:
         update["plan_preferences"] = prefs.model_copy(update=prefs_update)
@@ -116,12 +138,16 @@ def apply_changes(ctx: UserContext, changes: Mapping[str, Any]) -> UserContext:
 
 
 def _today_budget(ctx: UserContext, today: date, floor: Decimal, **goal: Any) -> Decimal:
-    goal_ctx = ctx.model_copy(update={"goal": ctx.goal.model_copy(update=goal)}) if goal else ctx
+    goal_ctx = ctx
+    if goal and ctx.goal is not None:
+        goal_ctx = ctx.model_copy(update={"goal": ctx.goal.model_copy(update=goal)})
     plan = compute_plan(plan_inputs(goal_ctx, today, floor), today)
     return plan.today_budget if plan is not None else Decimal(0)
 
 
-def solve(ctx: UserContext, today: date, target: Decimal, *, essentials_floor: Decimal) -> dict[str, Any]:
+def solve(
+    ctx: UserContext, today: date, target: Decimal, *, essentials_floor: Decimal
+) -> dict[str, Any]:
     """Earliest deadline and largest goal giving a daily budget today of at least `target`."""
     if ctx.goal is None:
         raise DomainError("no_goal", "there is no active goal to solve for")
@@ -160,7 +186,11 @@ def solve(ctx: UserContext, today: date, target: Decimal, *, essentials_floor: D
         amount_possible = to_money(Decimal(lo_c) / 100)
 
     reason = "target_not_reachable" if deadline_needed is None and amount_possible is None else None
-    return {"deadline_needed": deadline_needed, "goal_amount_possible": amount_possible, "reason": reason}
+    return {
+        "deadline_needed": deadline_needed,
+        "goal_amount_possible": amount_possible,
+        "reason": reason,
+    }
 
 
 def simulate(ctx: UserContext, today: date, changes: Mapping[str, Any], *, seed: int) -> SimResult:
@@ -178,9 +208,13 @@ def simulate(ctx: UserContext, today: date, changes: Mapping[str, Any], *, seed:
         today_budget=plan.today_budget,
         avg_daily_budget=to_money(sum((d.budget for d in plan.days), Decimal(0)) / len(plan.days)),
         probability=p,
-        diff_vs_current={
-            "today_budget": plan.today_budget - current_plan.today_budget,
-            "probability": round(p - current_p, 4),
-        },
-        solve=solve(changed, today, _money(target), essentials_floor=floor) if target is not None else None,
+        diff_vs_current=SimDiff(
+            today_budget=plan.today_budget - current_plan.today_budget,
+            probability=round(p - current_p, 4),
+        ),
+        solve=SolveResult.model_validate(
+            solve(changed, today, _money(target), essentials_floor=floor)
+        )
+        if target is not None
+        else None,
     )

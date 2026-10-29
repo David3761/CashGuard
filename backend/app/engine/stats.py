@@ -17,7 +17,8 @@ def median_and_mad(values: Sequence[Decimal]) -> tuple[Decimal, Decimal]:
 
 
 def blend(n: int, personal: Decimal, prior: Decimal, k: int = 5) -> Decimal:
-    """(n·personal + k·prior) / (n + k): the prior dominates while there's little personal history."""
+    """(n·personal + k·prior) / (n + k): the prior dominates while there's little personal
+    history."""
     if n < 0 or k < 0 or n + k == 0:
         raise ValueError("n and k must be ≥ 0 and not both 0")
     return (n * personal + k * prior) / (n + k)
@@ -31,6 +32,7 @@ def monthly_rate(total: Decimal, span_days: int) -> Decimal:
 
 
 def stable_seed(*parts: object) -> int:
-    """64-bit seed from `parts`, identical in every process (never Python's `hash()`, which is salted)."""
+    """64-bit seed from `parts`, identical in every process (never Python's `hash()`, which is
+    salted)."""
     key = "|".join(str(p) for p in parts).encode()
     return int.from_bytes(blake2b(key, digest_size=8).digest(), "big")

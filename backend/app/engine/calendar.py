@@ -13,7 +13,7 @@ from datetime import date, timedelta
 
 
 def days_in_month(year: int, month: int) -> int:
-    """Number of days in `month` (1–12) of `year`; raises `ValueError` for any other month."""
+    """Number of days in `month` (1-12) of `year`; raises `ValueError` for any other month."""
     return calendar.monthrange(year, month)[1]
 
 
@@ -27,7 +27,7 @@ def occurrences(day_of_month: int, start: date, end: date) -> list[date]:
     A day past the month's end lands on its last day (31 → 28 Feb 2027, 29 Feb 2028).
     """
     if not 1 <= day_of_month <= 31:
-        raise ValueError(f"day_of_month must be 1–31, got {day_of_month}")
+        raise ValueError(f"day_of_month must be 1-31, got {day_of_month}")
     return [
         d
         for year, month in months_between(start, end)

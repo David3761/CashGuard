@@ -4,12 +4,15 @@ from typing import Any
 
 import pytest
 
-pytest.importorskip("app.domain", reason="needs F2 app.domain (David G.)")
-
 from app.domain.enums import Category, Direction, Purpose
 from app.domain.models import Baseline, FixedCost
-
-from app.engine.ledger import apply, counts_as_spent, estimate_own_share, ledger_day, reannotate_delta
+from app.engine.ledger import (
+    apply,
+    counts_as_spent,
+    estimate_own_share,
+    ledger_day,
+    reannotate_delta,
+)
 from tests.builders import tx
 
 D = Decimal
@@ -38,7 +41,10 @@ def test_shared_purchase_spent_is_the_own_share_but_balance_the_full_amount() ->
 
 def test_salary_credit_raises_balance_and_is_never_spent() -> None:
     salary = tx(
-        amount=D("7000"), effective_amount=D("7000"), direction=Direction.CREDIT, category=Category.INCOME
+        amount=D("7000"),
+        effective_amount=D("7000"),
+        direction=Direction.CREDIT,
+        category=Category.INCOME,
     )
     delta = apply(salary, [RENT])
     assert (delta.balance, delta.spent) == (D("7000"), D("0"))
@@ -65,7 +71,12 @@ def test_pot_funded_transaction_is_not_spent_and_draws_from_the_pot() -> None:
         occurred_at=JUNE_15,
     )
     delta = apply(flight, [])
-    assert (delta.balance, delta.spent, delta.pot_saved, delta.pot_id) == (D("-900"), D("0"), D("-900"), 3)
+    assert (delta.balance, delta.spent, delta.pot_saved, delta.pot_id) == (
+        D("-900"),
+        D("0"),
+        D("-900"),
+        3,
+    )
 
 
 def test_ledger_day_is_the_bucharest_date() -> None:

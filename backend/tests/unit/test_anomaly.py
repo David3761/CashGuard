@@ -6,8 +6,6 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-pytest.importorskip("app.domain", reason="needs F2 app.domain (David G.)")
-
 from app.engine.anomaly import materiality, novelty, robust_z, stat_score
 
 D = Decimal
@@ -51,7 +49,7 @@ def test_robust_z_at_median_is_zero() -> None:
 
 
 def test_robust_z_mad_zero_falls_back_to_quarter_of_median() -> None:
-    # MAD 0 → 0.25 · 80 = 20 → z = (120 − 80) / (1.4826 · 20)
+    # MAD 0 → 0.25 · 80 = 20 → z = (120 - 80) / (1.4826 · 20)
     assert robust_z(D("120"), D("80"), D("0")) == pytest.approx(40 / (1.4826 * 20))
 
 
@@ -71,7 +69,7 @@ def test_robust_z_median_and_mad_zero_with_zero_amount_is_zero() -> None:
     [(D("-1"), D("85"), D("25")), (D("10"), D("-1"), D("25")), (D("10"), D("85"), D("-0.01"))],
 )
 def test_robust_z_rejects_negative_inputs(amount: Decimal, median: Decimal, mad: Decimal) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must be ≥ 0"):
         robust_z(amount, median, mad)
 
 
@@ -87,7 +85,7 @@ def test_stat_score_clips_z_over_four(z: float, expected: float) -> None:
 
 
 def test_stat_score_rejects_nan() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="NaN"):
         stat_score(math.nan)
 
 
@@ -128,7 +126,7 @@ def test_novelty_seen_earlier_the_same_day_counts_as_seen() -> None:
 
 def test_novelty_rejects_last_seen_after_the_transaction() -> None:
     # the caller must pass history *before* the transaction (and without the transaction itself)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must not be after"):
         novelty(TODAY + timedelta(days=1), None, TODAY)
 
 
@@ -157,7 +155,7 @@ def test_materiality_non_positive_disposable_is_one(disposable: Decimal) -> None
 
 
 def test_materiality_rejects_negative_amount() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="must be ≥ 0"):
         materiality(D("-5"), D("4385"))
 
 
@@ -165,8 +163,10 @@ def test_materiality_rejects_negative_amount() -> None:
 
 
 def test_same_shopgo_350_matches_arch_table_for_ioana_and_matei() -> None:
-    # arch 5.3.4 table: Ioana (family of 4, median 140) 0.79 · 0.58, Matei (alone, median 85) 1 · 0.80
-    # Ioana's MAD 45 and disposable 6 034 are the values that reproduce the table (E13 calibrates them)
+    # arch 5.3.4 table: Ioana (family of 4, median 140) 0.79 · 0.58, Matei (alone, median 85) 1 ·
+    # 0.80
+    # Ioana's MAD 45 and disposable 6 034 are the values that reproduce the table (E13 calibrates
+    # them)
     ioana_stat = stat_score(robust_z(D("350"), D("140"), D("45")))
     ioana_mat = materiality(D("350"), D("6034"))
     matei_stat = stat_score(robust_z(D("350"), D("85"), D("25")))
@@ -181,7 +181,9 @@ def test_same_shopgo_350_matches_arch_table_for_ioana_and_matei() -> None:
 
 
 @given(amount=money, median=money, mad=money)
-def test_stat_is_always_between_zero_and_one(amount: Decimal, median: Decimal, mad: Decimal) -> None:
+def test_stat_is_always_between_zero_and_one(
+    amount: Decimal, median: Decimal, mad: Decimal
+) -> None:
     assert 0.0 <= stat_score(robust_z(amount, median, mad)) <= 1.0
 
 
