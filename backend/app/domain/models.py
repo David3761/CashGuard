@@ -17,9 +17,11 @@ Timestamps are tz-aware (`Timestamp`: never Unix-time numbers). There's no `user
 
 import re
 from collections.abc import Mapping
-from datetime import datetime
+from datetime import date as Date
+from datetime import datetime, time
 from decimal import Decimal
-from typing import Annotated, Any, Self
+from types import MappingProxyType
+from typing import Annotated, Any, Final, Literal, Self
 
 from pydantic import (
     AfterValidator,
@@ -28,16 +30,51 @@ from pydantic import (
     BeforeValidator,
     ConfigDict,
     Field,
+    JsonValue,
     PlainSerializer,
+    StrictBool,
     StringConstraints,
     ValidationError,
+    ValidationInfo,
     WithJsonSchema,
+    field_validator,
     model_validator,
 )
 from pydantic.config import ExtraValues
 from pydantic_core import InitErrorDetails
 
-from app.domain.enums import AnnotationSource, Beneficiary, Category, Decision, Direction, Purpose
+from app.domain.enums import (
+    AgentEventStatus,
+    AgentEventType,
+    AnnotationSource,
+    Beneficiary,
+    Category,
+    CoachStyle,
+    Decision,
+    Direction,
+    FactSource,
+    FactStatus,
+    FactType,
+    GoalStatus,
+    HouseholdRole,
+    Language,
+    LedgerStatus,
+    LifeEventStatus,
+    LifeEventType,
+    Liquidity,
+    Persistence,
+    PotKind,
+    PotStatus,
+    PriorityLevel,
+    ProductKind,
+    Purpose,
+    ReceivableStatus,
+    RuleKind,
+    RuleSource,
+    SignatureEffect,
+    SignatureOrigin,
+    TransferKind,
+)
 from app.domain.money import Money, decimal_to_json, parse_json, to_decimal
 
 # ── the base model ───────────────────────────────────────────────────────────────────────────
@@ -287,3 +324,499 @@ class Merchant(DomainModel):
     mcc: Mcc
     typical_basket: PositiveMoney
     multi_category: bool = False
+
+
+# ── life facts (arch 4.4 life_facts, 5.3.2; one value shape per FactType: plan step 4) ──────
+
+
+def _sorted_unique(values: tuple[int, ...]) -> tuple[int, ...]:
+    return tuple(sorted(set(values)))
+
+
+Weekdays = Annotated[
+    tuple[Annotated[int, Field(ge=1, le=7, strict=True)], ...], AfterValidator(_sorted_unique)
+]
+"""ISO weekdays (Mon = 1 … Sun = 7), sorted and unique."""
+Months = Annotated[
+    tuple[Annotated[int, Field(ge=1, le=12, strict=True)], ...], AfterValidator(_sorted_unique)
+]
+SmallCount = Annotated[int, Field(ge=1, le=1000, strict=True)]
+
+
+class OccupationValue(DomainModel):
+    title: Text200
+    work_mode: Text80 | None = None
+
+
+class EmploymentValue(DomainModel):
+    kind: Text80  # employee, freelancer, student, part_time, …
+
+
+class IncomePatternValue(DomainModel):
+    irregular: StrictBool  # E8 bootstraps income from history when true
+    note: Text300 | None = None
+
+
+class HouseholdMemberValue(DomainModel):
+    """Another person in the household (the user is implicit: alone = scale 1.0, E6)."""
+
+    role: HouseholdRole
+    age: Annotated[int, Field(ge=0, le=120, strict=True)] | None = None
+    relation: Text80 | None = None
+
+    @model_validator(mode="after")
+    def _child_needs_age(self) -> Self:
+        if self.role is HouseholdRole.CHILD and self.age is None:
+            raise ValueError("a child needs an age")
+        return self
+
+
+class PetValue(DomainModel):
+    species: Text80
+    count: SmallCount = 1
+
+
+class HousingValue(DomainModel):
+    kind: Text80  # rent, own, shared_flat, with_parents, …
+    note: Text300 | None = None
+
+
+class CityValue(DomainModel):
+    name: Text80
+
+
+class VehicleValue(DomainModel):
+    kind: Text80 = "car"
+
+
+class CommuteValue(DomainModel):
+    mode: Text80
+
+
+class ActivityValue(DomainModel):
+    name: Text80
+    per_week: SmallCount | None = None
+
+
+class SocialPatternValue(DomainModel):
+    name: Text80
+    weekdays: Weekdays = ()
+
+
+class LifeEventValue(DomainModel):
+    name: Text80
+    date: Date | None = None
+    months: Months = ()
+
+
+class RhythmValue(DomainModel):
+    name: Text80
+    weekdays: Weekdays = ()
+
+
+class PriorityValue(DomainModel):
+    category: Text80  # free text ("concerts" isn't a Category); C4 maps it to a protects signature
+    priority: PriorityLevel
+
+
+class CustomValue(DomainModel):
+    description: Text300
+
+
+FactValue = (
+    OccupationValue | EmploymentValue | IncomePatternValue | HouseholdMemberValue | PetValue
+    | HousingValue | CityValue | VehicleValue | CommuteValue | ActivityValue | SocialPatternValue
+    | LifeEventValue | RhythmValue | PriorityValue | CustomValue
+)  # fmt: skip
+FACT_VALUE_MODELS: Final[Mapping[FactType, type[DomainModel]]] = MappingProxyType(
+    {
+        FactType.OCCUPATION: OccupationValue,
+        FactType.EMPLOYMENT: EmploymentValue,
+        FactType.INCOME_PATTERN: IncomePatternValue,
+        FactType.HOUSEHOLD_MEMBER: HouseholdMemberValue,
+        FactType.PET: PetValue,
+        FactType.HOUSING: HousingValue,
+        FactType.CITY: CityValue,
+        FactType.VEHICLE: VehicleValue,
+        FactType.COMMUTE: CommuteValue,
+        FactType.ACTIVITY: ActivityValue,
+        FactType.SOCIAL_PATTERN: SocialPatternValue,
+        FactType.LIFE_EVENT: LifeEventValue,
+        FactType.RHYTHM: RhythmValue,
+        FactType.PRIORITY: PriorityValue,
+        FactType.CUSTOM: CustomValue,
+    }
+)
+"""The value model of each fact type: `LifeFact.value` is validated with the one for its `type`."""
+
+
+class Evidence(DomainModel):
+    message_ids: tuple[Id, ...] = ()
+    transaction_ids: tuple[Id, ...] = ()
+
+
+class LifeFactDraft(DomainModel):
+    """A life fact before it's saved (§15 `infer_hypotheses`, the add_life_fact handler)."""
+
+    type: FactType
+    value: FactValue
+    text: Text500  # the user's own words
+    source: FactSource
+    status: FactStatus
+    confidence: Ratio
+    persistence: Persistence
+    valid_from: Date
+    valid_to: Date | None = None
+    evidence: Evidence = Evidence()
+
+    @field_validator("value", mode="before")
+    @classmethod
+    def _value_for_type(cls, value: object, info: ValidationInfo) -> object:
+        model = FACT_VALUE_MODELS.get(info.data.get("type"))  # type: ignore[arg-type]
+        if model is None:  # the type itself failed: its error is reported
+            return value
+        if isinstance(value, BaseModel) and not isinstance(value, model):
+            raise ValueError(f"value must be {model.__name__} for type {info.data['type']}")
+        return model.model_validate(value)
+
+    @model_validator(mode="after")
+    def _validity_window(self) -> Self:
+        if self.valid_to is not None and self.valid_to < self.valid_from:
+            raise ValueError("valid_to must not be before valid_from")
+        if self.persistence is Persistence.TEMPORARY and self.valid_to is None:
+            raise ValueError("temporary facts need valid_to")
+        return self
+
+    def active_on(self, day: Date) -> bool:
+        """Inside its validity window on `day` (both ends inclusive)."""
+        return self.valid_from <= day and (self.valid_to is None or day <= self.valid_to)
+
+
+class LifeFact(LifeFactDraft):
+    """A saved life fact (arch 4.4 `life_facts`, 9.3 LifeFact)."""
+
+    id: Id
+    created_at: Timestamp  # C5's tie-break: the most recent fact
+
+
+# ── signatures & learned rules (arch 4.4, 5.3.3, 5.3.7) ─────────────────────────────────────
+
+
+def _whole_minutes(value: time) -> time:
+    if value.second or value.microsecond or value.tzinfo is not None:
+        raise ValueError("a time of day is whole minutes, no zone (HH:MM)")
+    return value
+
+
+HourMinute = Annotated[
+    time,
+    AfterValidator(_whole_minutes),
+    PlainSerializer(lambda t: t.strftime("%H:%M"), return_type=str, when_used="json"),
+]
+"""A time of day in whole minutes; "HH:MM" in JSON (arch 4.4 time windows)."""
+NonNegMoneyOrNone = NonNegMoney | None
+
+
+class _TimeFilter(DomainModel):
+    weekdays: Weekdays = ()
+    from_: HourMinute | None = Field(default=None, alias="from")
+    to: HourMinute | None = None
+
+    @model_validator(mode="after")
+    def _from_before_to(self) -> Self:
+        if (self.from_ is None) != (self.to is None):
+            raise ValueError("from and to come together")
+        if self.from_ is not None and self.to is not None and self.from_ >= self.to:
+            raise ValueError("from must be before to (no window across midnight)")
+        return self
+
+
+class TimeWindow(_TimeFilter):
+    """When a signature applies: weekdays + from/to and/or months (arch 4.4)."""
+
+    months: Months = ()
+
+
+def _min_not_above_max(low: Decimal | None, high: Decimal | None) -> None:
+    if low is not None and high is not None and low > high:
+        raise ValueError("amount_min must not exceed amount_max")
+
+
+class Signature(DomainModel):
+    """What a life fact predicts about spending (arch 4.4 `spending_signatures`, 5.3.3)."""
+
+    id: Id | None = None  # None until saved
+    fact_id: Id | None = None  # None for a library entry not yet tied to a fact
+    effect: SignatureEffect
+    category: Category | None = None
+    merchant_hints: tuple[Text80, ...] = ()
+    item_keywords: tuple[Text80, ...] = ()
+    amount_min: NonNegMoneyOrNone = None
+    amount_max: NonNegMoneyOrNone = None
+    multiplier: Annotated[Factor, Field(gt=0)] | None = None
+    time_window: TimeWindow | None = None
+    expected_date: Date | None = None
+    expected_amount: PositiveMoney | None = None
+    replacement_cycle_days: Annotated[int, Field(ge=1, le=36500, strict=True)] | None = None
+    purpose: Purpose
+    strength: Ratio
+    origin: SignatureOrigin  # no default: a Claude signature must never pass as library
+    active: StrictBool = True
+
+    @model_validator(mode="after")
+    def _rules(self) -> Self:
+        _min_not_above_max(self.amount_min, self.amount_max)
+        targeted = self.category is not None or bool(self.merchant_hints)
+        if self.effect in (SignatureEffect.EXPLAINS, SignatureEffect.PROTECTS) and not targeted:
+            raise ValueError(f"{self.effect} needs a category or merchant hints")
+        if self.effect is SignatureEffect.SCALES_BASELINE and (
+            self.category is None or self.multiplier is None
+        ):
+            raise ValueError("scales_baseline needs a category and a multiplier")
+        if self.effect is SignatureEffect.EXPECTS_EVENT:
+            months = self.time_window.months if self.time_window else ()
+            if self.expected_amount is None or (self.expected_date is None and not months):
+                raise ValueError("expects_event needs expected_amount and a date or months")
+        if self.category is Category.HEALTH_PHARMACY:
+            raise ValueError("no signature may target health_pharmacy (sensitive, arch 4.5)")
+        return self
+
+
+class RuleMatch(_TimeFilter):
+    """What a learned rule matches (arch 4.4 `pattern_rules.match`)."""
+
+    merchant_id: MerchantId | None = None
+    category: Category | None = None
+    amount_min: NonNegMoneyOrNone = None
+    amount_max: NonNegMoneyOrNone = None
+
+    @model_validator(mode="after")
+    def _rules(self) -> Self:
+        _min_not_above_max(self.amount_min, self.amount_max)
+        if self.merchant_id is None and self.category is None:
+            raise ValueError("a rule matches a merchant or a category (else it matches everything)")
+        return self
+
+
+class RuleOutcome(DomainModel):
+    """What a classify rule decides (arch 4.4 `pattern_rules.outcome`); empty for suppress."""
+
+    purpose: Purpose | None = None
+    label: Text80 | None = None
+    own_share_ratio: Annotated[Factor, Field(ge=0, le=1)] | None = None
+
+
+class PatternRule(DomainModel):
+    """A learned or explicit rule (arch 4.4 `pattern_rules`, 5.3.7)."""
+
+    id: Id | None = None  # None until saved
+    kind: RuleKind
+    match: RuleMatch
+    outcome: RuleOutcome = RuleOutcome()
+    confidence: Ratio
+    hits: Annotated[int, Field(ge=0, strict=True)] = 0
+    misses: Annotated[int, Field(ge=0, strict=True)] = 0
+    source: RuleSource
+    active: StrictBool = True
+    created_at: Timestamp
+    last_hit_at: Timestamp | None = None
+
+    @model_validator(mode="after")
+    def _classify_needs_purpose(self) -> Self:
+        if self.kind is RuleKind.CLASSIFY and self.outcome.purpose is None:
+            raise ValueError("a classify rule needs outcome.purpose")
+        return self
+
+
+# ── plan & money rows (arch 4.1, 4.2, 4.4, 6.7, 9.3) ────────────────────────────────────────
+
+DayOfMonth = Annotated[int, Field(ge=1, le=31, strict=True)]
+WeekdayName = Literal["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+WEEKDAY_NAMES: Final[tuple[WeekdayName, ...]] = ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+Weight = Annotated[Factor, Field(ge=Decimal("0.5"), le=Decimal("3"))]
+
+
+class Receivable(DomainModel):
+    """Money others owe the user (arch 4.4 `receivables`, 9.3 Receivable)."""
+
+    id: Id
+    transaction_id: Id | None = None
+    amount: PositiveMoney
+    debtor_label: Text80  # "colegi", "Andrei"
+    people_count: SmallCount | None = None
+    amount_each: NonNegMoneyOrNone = None
+    expected_by: Date
+    status: ReceivableStatus
+    requested_at: Timestamp | None = None
+    paid_at: Timestamp | None = None
+    created_at: Timestamp
+
+
+class Pot(DomainModel):
+    """A named savings pot (arch 4.4 `pots`, 9.3 Pot); the goal has its own."""
+
+    id: Id
+    name: Text80
+    kind: PotKind
+    goal_id: Id | None = None
+    life_event_id: Id | None = None
+    fact_id: Id | None = None
+    target: PositiveMoney
+    saved: NonNegMoney
+    deadline: Date | None = None
+    monthly_contribution: NonNegMoney = Decimal("0")
+    status: PotStatus
+
+
+class Goal(DomainModel):
+    """The user's goal (arch 4.1 `goals`; one active at a time, D17)."""
+
+    id: Id
+    amount: PositiveMoney
+    deadline: Date
+    motivation: Text300 | None = None
+    status: GoalStatus
+    created_at: Timestamp
+
+
+class IncomeSource(DomainModel):
+    id: Id
+    source: Text80
+    amount: PositiveMoney
+    day_of_month: DayOfMonth  # day 31 in a short month is E1's job
+
+
+class FixedCost(DomainModel):
+    id: Id
+    name: Text80
+    amount: PositiveMoney
+    day_of_month: DayOfMonth
+
+
+class LifeEvent(DomainModel):
+    """A planned event with a cost (arch 4.1 `life_events`)."""
+
+    id: Id
+    name: Text80
+    date: Date
+    est_cost: NonNegMoney
+    type: LifeEventType
+    status: LifeEventStatus = LifeEventStatus.PLANNED
+
+
+class PlanPreferences(DomainModel):
+    """How the user shaped the budget (arch 6.7 `plan_preferences`); defaults = no preference."""
+
+    weekday_weights: Mapping[WeekdayName, Weight] = Field(
+        default_factory=lambda: dict.fromkeys(WEEKDAY_NAMES, Decimal("1"))
+    )
+    pinned_days: Mapping[Date, NonNegMoney] = Field(default_factory=dict)
+    category_caps: Mapping[Category, NonNegMoney] = Field(default_factory=dict)  # per week
+    buffer_pct: Annotated[Factor, Field(ge=0, le=Decimal("0.3"))] = Decimal("0.10")
+
+    @field_validator("weekday_weights", mode="before")
+    @classmethod
+    def _every_weekday(cls, value: object) -> object:
+        if isinstance(value, Mapping):  # a partial shape_budget input: the rest weigh 1
+            return {day: value.get(day, Decimal("1")) for day in WEEKDAY_NAMES} | dict(value)
+        return value
+
+
+class Baseline(DomainModel):
+    """A category's expected spending (arch 4.4 `category_baselines`, 5.3.5; E6's output)."""
+
+    category: Category
+    personal_median: NonNegMoney
+    personal_mad: NonNegMoney
+    n: Annotated[int, Field(ge=0, strict=True)]
+    prior_median: NonNegMoney
+    household_multiplier: Annotated[Factor, Field(gt=0)]
+    expected_median: NonNegMoney
+    monthly_expected: NonNegMoney
+
+
+class Transfer(DomainModel):
+    """A move to savings (arch 4.2 `transfers`; §15 `auto_save` returns one)."""
+
+    id: Id
+    amount: PositiveMoney
+    kind: TransferKind
+    pot_id: Id | None = None
+    income_transaction_id: Id | None = None
+    created_at: Timestamp
+    undone_at: Timestamp | None = None
+
+
+# ── the rows of the user context (arch 4.1, 4.2, 4.4, 6.5) ──────────────────────────────────
+
+
+class UserProfile(DomainModel):
+    name: Text80
+    age: Annotated[int, Field(ge=0, le=120, strict=True)] | None = None
+    language: Language
+    coach_style: CoachStyle
+    household_scale: Annotated[Factor, Field(gt=0)] = Decimal("1")
+    city: Text80 | None = None  # from the city fact (users has no city column)
+    timezone: Text80 = "Europe/Bucharest"
+    onboarded_at: Timestamp | None = None
+
+
+class Account(DomainModel):
+    current_balance: Money  # may be negative
+    savings_pot: NonNegMoney
+
+
+class AgentEventView(DomainModel):
+    """An agent event (arch 4.1 + 4.4 `agent_events`)."""
+
+    id: Id
+    type: AgentEventType
+    status: AgentEventStatus
+    payload: Mapping[str, JsonValue] = Field(default_factory=dict)
+    ref_transaction_id: Id | None = None
+    created_at: Timestamp
+    asked_at: Timestamp | None = None
+    answered_at: Timestamp | None = None
+    handled_at: Timestamp | None = None
+
+
+class LedgerDay(DomainModel):
+    date: Date
+    budget: Money
+    spent: NonNegMoney
+    status: LedgerStatus
+
+
+class Slip(DomainModel):
+    date: Date
+    amount_over: NonNegMoney
+    reason: Text300  # free text: the user's own words
+    detail: Text500 | None = None
+    recurring: StrictBool = False
+
+
+class Reflection(DomainModel):
+    week_start: Date
+    motivation: Annotated[int, Field(ge=1, le=5, strict=True)] | None = None
+    answer: Text500 | None = None
+    reason: Text300 | None = None
+
+
+class Product(DomainModel):
+    """A mock savings product (arch 4.4 `products`)."""
+
+    id: Id
+    name: Text80
+    kind: ProductKind
+    rate: Annotated[Factor, Field(ge=0)]
+    liquidity: Liquidity
+    min_months: Annotated[int, Field(ge=0, strict=True)]
+    max_months: Annotated[int, Field(ge=1, strict=True)]
+    mock: StrictBool = True
+    description: Text300 | None = None
+
+    @model_validator(mode="after")
+    def _months(self) -> Self:
+        if self.min_months >= self.max_months:
+            raise ValueError("min_months must be below max_months")
+        return self
