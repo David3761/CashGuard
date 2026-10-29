@@ -53,7 +53,7 @@ MAX_CHIPS: Final = 4
 MAX_USER_MESSAGE_CHARS: Final = 4000  # LLM10: a longer message is cut (history included)
 # Per run, across iterations: one response may hold any number of parallel calls (LLM06/10).
 MAX_TOOL_CALLS_PER_RUN: Final = 16
-CHAT_RUN_TIMEOUT_S: Final = 60.0  # the whole chat run's wait for Claude (proactive: 5 s, A7)
+CHAT_RUN_TIMEOUT_S: Final = 60.0  # the chat run's whole wait for Claude (proactive: 15 s, D54)
 TOOL_BUDGET_EXCEEDED: Final = (
     "tool budget exceeded: this run already made its {limit} tool calls, so nothing more was "
     "run. Reply to the user now with what was done and what is left."

@@ -49,6 +49,12 @@ The full design is in
 - `/api/sim/*` (the demo simulator, which moves the clock and feeds synthetic transactions): mounted
   **only when `SIM_MODE=true`**, and every route also needs the realm role **`sim`** (the demo
   operator; a plain login gets 403).
+- The root-level **app API** for the Flutter PoC (`/balance`, `/transactions`, `/devices`,
+  `/assistant/messages`; `backend/app/app_api/`) is mounted **only when `APP_API_ENABLED=true`**
+  and speaks as one demo user (`APP_API_USER`), because the app has no login yet. When
+  **`APP_API_KEY`** is set, every app API request needs the header `X-App-Key` (compared in
+  constant time, checked before the rate limits and before any model call); the hosted overlay
+  requires it. It's one shared key, not per-user auth: see *Known limitations*.
 - Only **access tokens** are accepted (`typ: Bearer`): a Keycloak ID or refresh token is refused.
   RS256 only (`alg: none` and HS256-with-the-public-key are rejected and tested); `iss`,
   `exp`/`nbf` (30 s leeway) and `azp`/`aud` are checked.
@@ -59,6 +65,9 @@ The full design is in
 
 - Rate limits per user (`app/security/ratelimit.py`): `/api/chat` 10/min and 200/day, `/api/sim`
   30/min, WebSocket connects 10/min (`RATE_LIMIT_*`); 429 with `Retry-After`.
+- The app API's chat shares the chat limits (10/min and 200/day, keyed by the one app
+  principal), caps a message at 2000 characters (`APP_API_MAX_TEXT_CHARS`) and runs one reply at
+  a time.
 - One chat run at a time per user, claimed atomically (409 `agent_busy`).
 - Request bodies over 64 KiB → 413 (in the app and at Caddy); soft notes ≤ 2000 characters.
 - WebSocket: at most 3 sockets per user, inbound frames ≤ 4 KiB (uvicorn caps frames at 64 KiB),
@@ -69,7 +78,9 @@ The full design is in
 - Every response: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
   `Referrer-Policy: no-referrer`, `Content-Security-Policy: default-src 'none'`,
   `Cache-Control: no-store` on `/api/*`, and HSTS (app outside the simulator, and Caddy).
-- No CORS: the only client is the mobile app, so no browser origin is allowed.
+- No CORS on `/api/*`: the only client is the mobile app, so no browser origin is allowed. The
+  app API allows only `localhost` / `127.0.0.1` origins (`APP_API_CORS_ORIGIN_REGEX`), for
+  Flutter web debugging; set it empty to allow none.
 - `/api/docs` and `/api/openapi.json` only with `API_DOCS_ENABLED=true` (off when hosted).
 - The api container runs as an unprivileged user with a HEALTHCHECK; uvicorn trusts
   `X-Forwarded-*` only from the proxy and sends no `server` banner.
@@ -108,7 +119,16 @@ not only in the prompt:
 - **Bounded runs:** a maximum number of agent iterations per run (`MAX_AGENT_ITERATIONS`, default
   6), `max_tokens` per call, timeouts on every model call, and a templated fallback reply when a
   limit, an API error, a refusal or a cut-off reply is hit. Every tool call is logged in the
-  `tool_calls` table.- **Rate limits** on the chat, simulator and WebSocket endpoints (see Abuse limits above).
+  `tool_calls` table.
+- **Bounded consumption:** at most 16 tool calls per run, a 60 s deadline per chat run, user
+  messages cut at 4000 characters (history included) and at most `LLM_MAX_CONCURRENCY` (default 4)
+  model calls in flight.
+- **Money moves are capped:** `transfer_to_savings` takes at most 100 000 lei per call and runs at
+  most once per run, only when the user asked for it.
+- **Rate limits** on the chat, simulator and WebSocket endpoints (see Abuse limits above).
+
+The full threat model (OWASP Top 10 for LLM applications, each control with the test that proves
+it) is in [`backend/docs/ai-safety.md`](backend/docs/ai-safety.md).
 
 ## Development-only defaults
 
@@ -135,8 +155,26 @@ jobs unprivileged); it has no port and no data, and runs with `no-new-privileges
   API keys in client configs only identify the project; they are meant to ship inside the app and
   are not credentials. Access is controlled by Firebase security rules and API restrictions in
   the Google Cloud console.
-- **`mobile/android/app/debug.keystore`** is an Android *debug* signing key (well-known password),
-  used only for local debug builds; release builds are not signed with it.
+- **`mobile/android/app/debug.keystore`** is an Android *debug* signing key (well-known password).
+  The PoC signs every build with it, release included (`mobile/android/app/build.gradle.kts`), so
+  an APK built from this repo is for demos only: see *Known limitations*.
 - `.gitleaks.toml` allowlists exactly these values plus the fake test credentials, each by file
   **and** value, so a real secret in the same file is still reported. CI runs gitleaks over the
   whole history and `pip-audit` on the locked dependencies.
+
+## Known limitations (PoC)
+
+Honest list of what a production deployment would still need. None of it affects the synthetic
+demo data.
+
+- **The app API has one demo user and one shared key.** Until the Flutter app has a login,
+  `APP_API_KEY` is a shared secret baked into the app build, not a per-user credential. Whoever
+  extracts it from an APK can act as the demo user, within the rate limits.
+- **Rate limits live in memory** (one API worker, arch 5.2): they reset on restart and wouldn't be
+  shared across replicas.
+- **The `savings-dev` client allows the password grant** (for curl and the smoke scripts). Disable
+  it on a real deployment; the app's login is meant for `savings-frontend` (public, PKCE S256).
+- **Android release builds are signed with the debug key**, and there's no iOS Firebase
+  configuration (no iOS push).
+- **Synthetic data only.** No real bank account, card or person is connected; the payment request
+  card is a mock.
