@@ -54,18 +54,20 @@ class Login extends _$Login {
     // Simulate a request. Remove these lines after you implement this method.
     await Future.delayed(const Duration(seconds: 2));
 
-    // Dummy data. Must be removed entirely when the feature is implemented.
-    // The insert method from the UserRepository handles saving the AuthDetails
-    // in the SharedPreferences.
+    // Placeholder tokens that mark the user as logged in while the login is
+    // simulated. Remove them together with the delay above once the backend
+    // has accounts: the insert method from the UserRepository saves the real
+    // AuthDetails in the SharedPreferences.
     final authDetails = AuthDetails(
       authToken: 'lorem-ipsum',
       refreshToken: 'dolor-sit-amet',
     );
     await ref.read(authTokenControllerProvider).saveAuthDetails(authDetails);
-    // End of dummy data.
+    // End of the placeholder tokens.
 
-    // TODO(everyone): don't remove the code below. Skipping the login will be
-    // used just for the base project!
+    // TODO(everyone): the request is simulated because the backend has no
+    // accounts yet. Once it has, remove the delay above and restore the
+    // request below.
     /*final body = {
       'mail': email,
       'key': password,

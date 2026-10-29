@@ -91,8 +91,9 @@ class Register extends _$Register {
     // Simulate a request. Remove these lines after you implement this method.
     await Future.delayed(const Duration(seconds: 2));
 
-    // TODO(everyone): don't remove the code below. Skipping the login will be
-    // used just for the base project!
+    // TODO(everyone): the request is simulated because the backend has no
+    // accounts yet. Once it has, remove the delay above and restore the
+    // request below.
     /*final userRepository = ref.read(userRepositoryProvider);
 
     final body = {
