@@ -526,6 +526,12 @@ abstract class AppLocalizations {
   /// **'Write a message…'**
   String get messageHint;
 
+  /// No description provided for @sendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Send message'**
+  String get sendMessage;
+
   /// No description provided for @amountInLei.
   ///
   /// In en, this message translates to:

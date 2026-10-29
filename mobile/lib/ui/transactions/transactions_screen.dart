@@ -288,6 +288,7 @@ class _SearchBar extends StatelessWidget {
           ),
           IconButton(
             onPressed: onFiltersTap,
+            tooltip: localizations.filters,
             style: IconButton.styleFrom(
               backgroundColor: hasFilters
                   ? AppColors.surfaceBrand

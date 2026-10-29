@@ -31,6 +31,8 @@ void main() {
     expect(find.text('Hi there'), findsOneWidget);
     expect(find.text('How much did I spend this week?'), findsOneWidget);
     expect(find.text("What's my current balance?"), findsOneWidget);
+    // The icon-only send button is named for screen readers.
+    expect(find.byTooltip('Send message'), findsOneWidget);
   }, skip: !useMockApi);
 
   testWidgets('tapping a suggestion sends it and streams the reply', (

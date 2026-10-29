@@ -451,6 +451,7 @@ class _MessageComposer extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: isSendable ? onSend : null,
+                  tooltip: localizations.sendMessage,
                   style: IconButton.styleFrom(
                     backgroundColor: AppColors.surfaceBrand,
                     disabledBackgroundColor: AppColors.surfaceBase,
