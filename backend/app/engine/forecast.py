@@ -112,6 +112,10 @@ def _full_months(ctx: UserContext, today: date) -> list[Month]:
     return months[-HISTORY_MONTHS:]
 
 
+def _mid_month_scale(ctx: UserContext, month: Month) -> float:
+    return float(household_scale(ctx.facts, _month_bounds(month)[0] + timedelta(days=14)))
+
+
 def _irregular_income(ctx: UserContext) -> bool:
     for f in ctx.facts:
         if f.type == FactType.INCOME_PATTERN:
@@ -186,11 +190,14 @@ def build_forecast_inputs(
         if cat not in var_prior and history_months:
             var_prior[cat] = sum(var_history[cat]) / len(history_months)
 
-    scale_now = float(household_scale(ctx.facts, today))
-    ratios = tuple(
-        float(household_scale(ctx.facts, _month_bounds(m)[0] + timedelta(days=14))) / scale_now
-        for m in months
-    )
+    # The household a month's draws were spent by: bootstrapped history months by the household of
+    # those months, the priors by today's (D57). Relative to today alone, a temporary member here
+    # today shrank every month after they leave.
+    if len(history_months) >= MIN_HISTORY_MONTHS:
+        reference = sum(_mid_month_scale(ctx, m) for m in history_months) / len(history_months)
+    else:
+        reference = float(household_scale(ctx.facts, today))
+    ratios = tuple(_mid_month_scale(ctx, m) / reference for m in months)
     var_scale = {c: ratios if c in HOUSEHOLD_SCALED else (1.0,) * count for c in categories}
 
     share = []

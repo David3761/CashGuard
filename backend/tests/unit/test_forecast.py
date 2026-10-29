@@ -179,9 +179,31 @@ def test_inputs_temporary_household_member_scales_groceries_only_in_that_month()
     )
     fi = inputs(facts=[partner, *kids, mother])
     july = fi.months.index((2026, 7))
-    assert fi.var_scale[Category.GROCERIES][july] == pytest.approx(1.0)
-    assert fi.var_scale[Category.GROCERIES][july + 1] == pytest.approx(2.1 / 2.6)
-    assert fi.var_scale[Category.RESTAURANTS][july + 1] == pytest.approx(1.0)
+    # the history (Mar … May) was spent without her: July costs more, August is back to normal
+    assert fi.var_scale[Category.GROCERIES][july] == pytest.approx(2.6 / 2.1)
+    assert fi.var_scale[Category.GROCERIES][july + 1] == pytest.approx(1.0)
+    assert fi.var_scale[Category.RESTAURANTS][july] == pytest.approx(1.0)
+
+
+def test_inputs_a_temporary_member_doesnt_lower_the_probability_after_they_leave() -> None:
+    """D57: Elena's forecast went 19 % → 92 % the day her mother's two-week stay began."""
+    family = [
+        fact(type=FactType.HOUSEHOLD_MEMBER, value=HouseholdMemberValue(role=HouseholdRole.ADULT)),
+        fact(
+            type=FactType.HOUSEHOLD_MEMBER,
+            value=HouseholdMemberValue(role=HouseholdRole.CHILD, age=7),
+        ),
+    ]
+    guest = fact(
+        type=FactType.HOUSEHOLD_MEMBER,
+        value=HouseholdMemberValue(role=HouseholdRole.ADULT, age=64),
+        persistence="temporary",
+        valid_from=TODAY,
+        valid_to=TODAY + timedelta(days=14),
+    )
+    alone = forecast(inputs(facts=family), n_paths=2000, seed=7)
+    visited = forecast(inputs(facts=[*family, guest]), n_paths=2000, seed=7)
+    assert visited.p50 < alone.p50  # her two weeks cost something; the months after, nothing
 
 
 def test_inputs_receivable_lands_in_its_expected_month() -> None:
