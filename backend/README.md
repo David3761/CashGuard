@@ -32,6 +32,16 @@ All configuration is environment variables, read by `Settings` in `app/config.py
 - In code: `create_app(settings)` stores them; routes use `Depends(get_app_settings)`; classes take a `Settings` argument. Only `create_app()` and command-line entry points call `get_settings()`.
 - In tests: every test is isolated automatically (`tests/conftest.py`): `Settings()` and `get_settings()` see only the code defaults plus what the test sets (`monkeypatch.setenv`), never your real `.env` or shell variables; and no `ANTHROPIC_*` variable reaches the anthropic SDK (it reads `ANTHROPIC_BASE_URL`, `ANTHROPIC_LOG`, … by itself). Tests marked `live` opt out, so they can use the real key on purpose. The `settings` fixture gives the defaults; `make_client(app)` gives an in-process HTTP client.
 
+## Time
+
+Time comes only from `app/clock.py`. ruff bans `datetime.now()`, `time.time()`, `time.localtime()` and the other wall-clock reads everywhere else, and an architecture test double-checks `app/`, including aliases and references like `default_factory=datetime.now`.
+
+- In the shell (services, pipeline, endpoints): `clock.now()` (timezone-aware, Europe/Bucharest) and `clock.today()` (the Bucharest date). Pure cores (`engine/`, `context/`) receive `today` as a parameter.
+- Day boundaries are Bucharest's whatever the server's `TZ`: midnight is 21:00Z in summer and 22:00Z in winter.
+- To compare instants from different zones, compare `.astimezone(UTC)` values. During the repeated DST hour, Python never treats a Bucharest datetime as `==` to the same instant in UTC (PEP 495).
+- In tests: `with clock.use_clock(FixedClock(datetime.fromisoformat("2026-06-15T09:00:00Z"))):` (write instants in UTC). Blocks may overlap and end in any order; each removes only its own clock. Every test starts and ends with a fresh real clock (conftest).
+- The simulator (B10) installs its `SimClock` for the whole process with `clock.set_clock(...)`. Both `set_clock` and `use_clock` check that the clock really works: an instance, an aware Bucharest `now()`, a `date` `today()` equal to `now()`'s date.
+
 ## Everyday commands
 
 | Command | What it does |

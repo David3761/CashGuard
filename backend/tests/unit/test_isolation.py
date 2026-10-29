@@ -1,6 +1,7 @@
-"""Every test is isolated from the developer's setup, except `live` tests: the app's settings
-(F1.2 review #1) and every `ANTHROPIC_*` variable, which the anthropic SDK reads by itself
-(F1.2-fix: a redirected base URL, extra headers, body logging, another credential).
+"""Test isolation (tests/conftest.py). Every test is isolated from the developer's setup, except
+`live` tests: the app's settings (F1.2 review #1) and every `ANTHROPIC_*` variable, which the
+anthropic SDK reads by itself (F1.2-fix: a redirected base URL, extra headers, body logging,
+another credential). And a clock installed by one test is gone in the next (F1.3).
 
 A developer's shell variables and real backend/.env exist *before* any test fixture runs. The
 module-scoped fixture below recreates that (higher-scoped fixtures are set up first), and an inner
@@ -112,3 +113,73 @@ def test_the_real_env_file_is_next_to_the_app() -> None:
     # The isolation swaps env_file for None during tests; the real value is checked in the
     # inner `live` test above. Here: the constant itself.
     assert BACKEND_DIR / ".env" == ENV_FILE
+
+
+INNER_CLOCK_TESTS = """
+from datetime import UTC, datetime
+from app import clock
+
+
+def test_1_installs_a_clock_and_leaves_it():
+    clock.set_clock(clock.FixedClock(datetime(2030, 1, 1, tzinfo=UTC)))
+
+
+def test_2_sees_the_real_clock_again():
+    assert isinstance(clock.get_clock(), clock.RealClock)
+"""
+
+INNER_IMPORT_TIME_CLOCK = """
+from datetime import UTC, datetime
+from app import clock
+
+# Installed while pytest imports (collects) this module, before any fixture runs: e.g. a
+# module-level set_clock, or a module-level app that installs a SimClock in SIM_MODE.
+clock.set_clock(clock.FixedClock(datetime(2030, 1, 1, tzinfo=UTC)))
+
+
+def test_sees_the_real_clock():
+    assert isinstance(clock.get_clock(), clock.RealClock)
+"""
+
+
+@pytest.mark.slow
+def test_every_test_starts_with_the_real_clock(
+    pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # A clock left by an earlier test, or installed at import/collection time, never leaks in.
+    monkeypatch.setenv("PYTHONPATH", str(BACKEND_DIR))
+    pytester.makeconftest(CONFTEST.read_text(encoding="utf-8"))
+    pytester.makepyfile(test_inner=INNER_CLOCK_TESTS, test_import_time=INNER_IMPORT_TIME_CLOCK)
+
+    result = pytester.runpytest_subprocess("-p", "no:cacheprovider")
+
+    result.assert_outcomes(passed=3)
+
+
+INNER_OPEN_BLOCK = """
+from datetime import UTC, datetime
+from app import clock
+
+# Entered and never left. (Kept referenced: an unreferenced block is garbage-collected, and closing
+# its generator runs the `finally` that removes it.)
+LEAKED = clock.use_clock(clock.FixedClock(datetime(2030, 1, 1, tzinfo=UTC)))
+LEAKED.__enter__()
+
+
+def test_would_run_with_the_wrong_clock():
+    assert isinstance(clock.get_clock(), clock.RealClock)
+"""
+
+
+@pytest.mark.slow
+def test_a_use_clock_block_left_open_stops_the_tests_loudly(
+    pytester: pytest.Pytester, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("PYTHONPATH", str(BACKEND_DIR))
+    pytester.makeconftest(CONFTEST.read_text(encoding="utf-8"))
+    pytester.makepyfile(test_inner=INNER_OPEN_BLOCK)
+
+    result = pytester.runpytest_subprocess("-p", "no:cacheprovider")
+
+    result.assert_outcomes(errors=1)
+    result.stdout.fnmatch_lines(["*a use_clock() block was entered and never left*"])
