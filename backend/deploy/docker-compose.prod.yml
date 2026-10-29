@@ -1,0 +1,49 @@
+# Hosted deployment (B14, D36/D38): docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d --build
+# Needs DOMAIN and the secrets in backend/.env (never committed). See docs/deploy.md.
+services:
+  caddy:
+    image: caddy:2.8
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN, e.g. cashguard.example.ro}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on:
+      - api
+      - keycloak
+    restart: unless-stopped
+
+  db:
+    ports: !reset []
+    restart: unless-stopped
+
+  db-test:
+    profiles: ["test"]
+
+  keycloak:
+    command: ["start", "--import-realm"]
+    ports: !reset []
+    environment:
+      KC_HOSTNAME: https://auth.${DOMAIN:?set DOMAIN}
+      KC_PROXY_HEADERS: xforwarded
+      KC_HTTP_ENABLED: "true"
+    restart: unless-stopped
+
+  api:
+    ports: !reset []
+    environment:
+      KEYCLOAK_ISSUER: https://auth.${DOMAIN:?set DOMAIN}/realms/cashguard
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080/realms/cashguard
+      SIM_MODE: "true"
+    restart: unless-stopped
+
+  cron:
+    environment:
+      CRON_ENABLED_JOBS: ${CRON_ENABLED_JOBS:-process recover}
+    restart: unless-stopped
+
+volumes:
+  caddy-data:

@@ -92,6 +92,9 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
         async with session_factory()() as db:
             user = await ws_user(db, websocket.query_params.get("token"))
     except DomainError:
+        # accept first: closing before the handshake is an HTTP 403 on a real server, and the
+        # app expects the WebSocket close code 1008 (arch 5.1, 9.4) to refresh its token
+        await websocket.accept()
         await websocket.close(code=1008)
         return
     await websocket.accept()

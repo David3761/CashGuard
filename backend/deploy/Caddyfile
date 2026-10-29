@@ -1,0 +1,8 @@
+# Automatic HTTPS (Let's Encrypt) for both public hostnames. WebSocket upgrades pass through.
+api.{$DOMAIN} {
+	reverse_proxy api:8000
+}
+
+auth.{$DOMAIN} {
+	reverse_proxy keycloak:8080
+}
