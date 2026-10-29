@@ -61,8 +61,37 @@ jobs:
       - name: Install dependencies (exactly as locked)
         run: uv sync --locked
 
+      # `make check` = lock-check, ruff, mypy, then `pytest --cov`: every test except `live`
+      # (pyproject addopts `-m "not live"`), so the db / api / ws tests run against the postgres
+      # service above. They can't be skipped silently: tests/db/test_db_available.py and the
+      # session-scoped `engine` fixture fail (not skip) when the database is unreachable.
       - name: make check (lock, ruff format + lint, mypy, pytest with coverage; live tests excluded)
         run: make check
+
+      # Known vulnerabilities in the locked dependencies. Python 3.12, like the app: on 3.11 the
+      # lock (numpy 2.5) doesn't even resolve. requirements.txt is fully pinned (exported from
+      # uv.lock), so --no-deps --disable-pip only looks the versions up, it installs nothing.
+      - name: pip-audit (locked dependencies, Python 3.12)
+        run: >-
+          uvx --python 3.12 pip-audit@2.9.0 --strict --disable-pip --no-deps
+          --progress-spinner off -r requirements.txt
+
+  secrets:
+    name: Secret scan (gitleaks, full history)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out (all history)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      # Same version and config as the pre-commit hook (.pre-commit-config.yaml, .gitleaks.toml).
+      - name: gitleaks git (every commit)
+        run: >-
+          docker run --rm -v "$PWD:/repo" -w /repo ghcr.io/gitleaks/gitleaks:v8.30.1
+          git . --config .gitleaks.toml --redact --no-banner
 
   mobile:
     name: Mobile (flutter analyze, flutter test)
