@@ -86,4 +86,40 @@ class AppColors {
 
   /// A green color: 0xFFADCB53
   static const greenLight = Color(0xFFADCB53);
+
+  /// An almost black color: 0xFF1A1A1C
+  static const textPrimary = Color(0xFF1A1A1C);
+
+  /// A dark gray color: 0xFF444444
+  static const textSecondary = Color(0xFF444444);
+
+  /// A warm gray color: 0xFF81807C
+  static const textMuted = Color(0xFF81807C);
+
+  /// A light beige color: 0xFFF1ECE6
+  static const surfaceCanvas = Color(0xFFF1ECE6);
+
+  /// An off-white color: 0xFFF7F6F2
+  static const surfaceSubtle = Color(0xFFF7F6F2);
+
+  /// A white color: 0xFFFFFFFF
+  static const surfaceBase = Color(0xFFFFFFFF);
+
+  /// A warm light gray color: 0xFFE1DED9
+  static const surfaceMessageUser = Color(0xFFE1DED9);
+
+  /// A yellow color: 0xFFFFE500
+  static const surfaceBrand = Color(0xFFFFE500);
+
+  /// A warm light gray color: 0xFFEFECE7
+  static const avatarBackground = Color(0xFFEFECE7);
+
+  /// A warm light gray color: 0xFFEFECE7
+  static const surfaceSelection = Color(0xFFEFECE7);
+
+  /// A warm light gray color: 0xFFE1DED9
+  static const borderDefault = Color(0xFFE1DED9);
+
+  /// A green color: 0xFF16A34A
+  static const statusSuccessForeground = Color(0xFF16A34A);
 }

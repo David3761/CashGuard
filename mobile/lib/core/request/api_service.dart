@@ -51,19 +51,27 @@ abstract class ApiService extends ChopperService {
     @PartFile('photo') MultipartFile? file,
   );
 
-  /// Makes a `POST /device_token` request.
-  @POST(path: '/device_token')
-  // @formUrlEncoded
-  Future<Map<String, dynamic>> postDeviceToken(
-    @Body() Map<String, String> body,
+  /// Makes a `POST /devices` request.
+  @POST(path: '/devices')
+  Future<Map<String, dynamic>> registerDevice(@Body() Map<String, String> body);
+
+  /// Makes a `DELETE /devices/{fcm_token}` request.
+  @DELETE(path: '/devices/{fcm_token}')
+  Future<Map<String, dynamic>> unregisterDevice(
+    @Path('fcm_token') String fcmToken,
   );
 
-  /// Makes a `DELETE /device_token` request.
-  @DELETE(path: '/device_token')
-  // @formUrlEncoded
-  Future<Map<String, dynamic>> deleteDeviceToken(
-    @Body() Map<String, String> body,
-  );
+  /// Makes a `GET /balance` request.
+  @GET(path: '/balance')
+  Future<Map<String, dynamic>> getBalance();
+
+  /// Makes a `GET /transactions` request.
+  @GET(path: '/transactions')
+  Future<Map<String, dynamic>> getTransactions();
+
+  /// Makes a `GET /assistant/messages` request.
+  @GET(path: '/assistant/messages')
+  Future<Map<String, dynamic>> getChatMessages();
 
   /// Makes a `GET /user` request to retrieve the user's data.
   @GET(path: '/user')

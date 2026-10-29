@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cashctrl/core/repositories/user_repository.dart';
 import 'package:cashctrl/core/request/api_client.dart';
+import 'package:cashctrl/core/request/api_config.dart';
 import 'package:cashctrl/core/utils/logging.dart';
 import 'package:cashctrl/main_providers.dart';
 import 'package:cashctrl/utils/connection_util.dart';
@@ -26,10 +28,15 @@ Future<void> logout(Ref ref, {bool internetRequired = false}) async {
 
 /// Retrieves the current device token and calls [_sendOrDeleteDeviceToken] to
 /// add or remove it from the server depending on the [deleteToken] flag.
+///
+/// Nothing is sent while [useMockApi] is `true`.
 Future<void> sendOrDeleteDeviceToken(
   Ref ref, {
   required bool deleteToken,
 }) async {
+  if (useMockApi) {
+    return;
+  }
   final deviceToken = await FirebaseMessaging.instance.getToken();
   if (deviceToken == null) {
     return;
@@ -45,21 +52,15 @@ Future<void> _sendOrDeleteDeviceToken(
   String deviceToken,
   bool deleteToken,
 ) async {
-  final body = {'device_token': deviceToken, 'device_type': '1'};
-
-  final dynamic json;
-
   try {
     if (deleteToken) {
-      json = await ref.read(apiServiceProvider).deleteDeviceToken(body);
-    } else {
-      json = await ref.read(apiServiceProvider).postDeviceToken(body);
-    }
-
-    devPrint('Device token request: $json');
-
-    if (deleteToken) {
+      await ref.read(apiServiceProvider).unregisterDevice(deviceToken);
       await ref.read(userRepositoryProvider).logoutUserLocally();
+    } else {
+      await ref.read(apiServiceProvider).registerDevice({
+        'fcm_token': deviceToken,
+        'platform': Platform.isIOS ? 'ios' : 'android',
+      });
     }
   } on Exception catch (e, stacktrace) {
     unawaited(logException(e, stackTrace: stacktrace));

@@ -10,4 +10,11 @@ class AppImages {
   // TODO(everyone): add the app logo from the design at this path.
   static const appLogo = 'images/app_logo.png';
   static const menu = 'images/menu.png';
+  // TODO(everyone): replace with the transactions icon from the design.
+  static const navTransactions = 'images/nav_transactions.webp';
+  static const navTransactionsActive = 'images/nav_transactions_active.webp';
+  static const navAssistant = 'images/nav_assistant.webp';
+  static const navAssistantActive = 'images/nav_assistant_active.webp';
+  static const assistantLogo = 'images/assistant_logo.webp';
+  static const chatSend = 'images/chat_send.webp';
 }

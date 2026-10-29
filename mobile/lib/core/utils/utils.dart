@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -48,6 +49,17 @@ extension IntExtension on int {
     final minutes = '${this ~/ (60 * 1000) % 60}'.padLeft(2, '0');
     final seconds = '${this ~/ 1000 % 60}'.padLeft(2, '0');
     return '$minutes:$seconds';
+  }
+
+  /// Returns the int value's amount of bani as lei (e.g. `-8,38` or `1.250`),
+  /// without the decimals when they're `0`.
+  String formatBani({bool showPlusSign = false}) {
+    final format = NumberFormat.decimalPatternDigits(
+      locale: 'ro',
+      decimalDigits: this % 100 == 0 ? 0 : 2,
+    );
+    final formatted = format.format(this / 100);
+    return showPlusSign && this > 0 ? '+$formatted' : formatted;
   }
 }
 

@@ -150,6 +150,96 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
+  String get transactions => 'Transactions';
+
+  @override
+  String get assistant => 'Assistant';
+
+  @override
+  String get currentBalance => 'Current balance';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get noTransactionsFound => 'No transactions found.';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get period => 'Period';
+
+  @override
+  String get choosePeriod => 'Choose period';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get applyFilters => 'Apply filters';
+
+  @override
+  String get cardPayments => 'Card payments';
+
+  @override
+  String get incomingTransfers => 'Incoming transfers';
+
+  @override
+  String get outgoingTransfers => 'Outgoing transfers';
+
+  @override
+  String get amountUnder50 => 'Under 50 lei';
+
+  @override
+  String get amount50To500 => '50 – 500 lei';
+
+  @override
+  String get amountOver500 => 'Over 500 lei';
+
+  @override
+  String get assistantGreeting => 'Hi there';
+
+  @override
+  String get assistantIntro =>
+      'I\'m your CashCtrl assistant.\nAsk me about your transactions, spending or balance.';
+
+  @override
+  String get tryLabel => 'TRY';
+
+  @override
+  String get suggestionWeeklySpending => 'How much did I spend this week?';
+
+  @override
+  String get suggestionBiggestExpense => 'What was my biggest expense?';
+
+  @override
+  String get suggestionBalance => 'What\'s my current balance?';
+
+  @override
+  String get suggestionIncomingMoney => 'Who sent me money recently?';
+
+  @override
+  String get messageHint => 'Write a message…';
+
+  @override
+  String amountInLei(String amount) {
+    return '$amount lei';
+  }
+
+  @override
   String get viewData => 'View data';
 
   @override

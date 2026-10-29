@@ -5,8 +5,9 @@ import 'package:cashctrl/core/notification/fcm_token_refresh_provider.dart';
 import 'package:cashctrl/core/utils/logging.dart';
 import 'package:cashctrl/l10n/app_localizations.dart';
 import 'package:cashctrl/main_providers.dart';
-import 'package:cashctrl/ui/main/main_screen.dart';
+import 'package:cashctrl/resources/theme.dart';
 import 'package:cashctrl/ui/main/user_provider.dart';
+import 'package:cashctrl/ui/transactions/transactions_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -102,8 +103,14 @@ class _MyAppState extends ConsumerState<MyApp> {
         child: MaterialApp.router(
           routerConfig: router,
           onGenerateTitle: (context) => AppLocalizations.of(context).appName,
-          theme: ThemeData(),
+          theme: ThemeData(
+            fontFamily: 'Inter',
+            colorScheme: colorScheme,
+            filledButtonTheme: filledButtonTheme,
+            datePickerTheme: datePickerTheme,
+          ),
           // darkTheme: ThemeData.dark(),
+          debugShowCheckedModeBanner: false,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),
@@ -112,13 +119,13 @@ class _MyAppState extends ConsumerState<MyApp> {
   }
 
   /// If the [notificationResponse] contains some data, then the
-  /// MainScreen is opened with the given data.
+  /// TransactionsScreen is opened with the given data.
   void _onDidReceiveNotificationResponse(
     NotificationResponse notificationResponse,
   ) {
     final data = notificationResponse.payload;
     if (mounted) {
-      context.goNamed(MainScreen.route, extra: data);
+      context.goNamed(TransactionsScreen.route, extra: data);
     }
   }
 
