@@ -58,6 +58,10 @@ FIELDS = frozenset(
         "MAX_AGENT_ITERATIONS",
         "QUESTIONS_PER_DAY",
         "LOG_LEVEL",
+        "RATE_LIMIT_CHAT_PER_MINUTE",
+        "RATE_LIMIT_CHAT_PER_DAY",
+        "RATE_LIMIT_SIM_PER_MINUTE",
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE",
     }
 )
 OPTIONAL_FIELDS = (
@@ -546,6 +550,10 @@ def test_every_value_may_have_surrounding_spaces(monkeypatch: pytest.MonkeyPatch
         "MAX_AGENT_ITERATIONS": "8",
         "QUESTIONS_PER_DAY": "2",
         "LOG_LEVEL": "WARNING",
+        "RATE_LIMIT_CHAT_PER_MINUTE": "3",
+        "RATE_LIMIT_CHAT_PER_DAY": "30",
+        "RATE_LIMIT_SIM_PER_MINUTE": "2",
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE": "4",
     }
     assert set(values) == FIELDS
     plain = _from_env(monkeypatch, **values)
