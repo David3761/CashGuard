@@ -1,0 +1,2641 @@
+{
+  "life_events": [
+    {
+      "date": "2022-08-06",
+      "est_cost": "1900",
+      "name": "Vacanță Mamaia",
+      "status": "done",
+      "type": "trip"
+    },
+    {
+      "date": "2023-08-12",
+      "est_cost": "4200",
+      "name": "Vacanță Thassos",
+      "status": "done",
+      "type": "trip"
+    },
+    {
+      "date": "2024-07-20",
+      "est_cost": "5200",
+      "name": "Vacanță Split",
+      "status": "done",
+      "type": "trip"
+    },
+    {
+      "date": "2025-08-02",
+      "est_cost": "6100",
+      "name": "Vacanță Halkidiki",
+      "status": "done",
+      "type": "trip"
+    },
+    {
+      "date": "2026-07-10",
+      "est_cost": "1800",
+      "name": "Tabără Ana",
+      "status": "planned",
+      "type": "education"
+    },
+    {
+      "date": "2026-07-15",
+      "est_cost": "1900",
+      "name": "Electric Castle",
+      "status": "planned",
+      "type": "social"
+    },
+    {
+      "date": "2026-08-02",
+      "est_cost": "6400",
+      "name": "Vacanță Corfu",
+      "status": "planned",
+      "type": "trip"
+    },
+    {
+      "date": "2026-09-14",
+      "est_cost": "1500",
+      "name": "Începutul școlii",
+      "status": "planned",
+      "type": "education"
+    },
+    {
+      "date": "2026-09-14",
+      "est_cost": "900",
+      "name": "Ziua lui Luca",
+      "status": "planned",
+      "type": "social"
+    },
+    {
+      "date": "2026-10-01",
+      "est_cost": "2900",
+      "name": "Revizie + RCA",
+      "status": "planned",
+      "type": "purchase"
+    },
+    {
+      "date": "2026-12-20",
+      "est_cost": "3000",
+      "name": "Crăciun",
+      "status": "planned",
+      "type": "gift"
+    }
+  ],
+  "messages": [
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-02-15T19:30:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "2. Grea, s-a stricat mașina de spălat",
+      "created_at": "2026-02-15T19:42:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-02-15T21:35:00+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-02-22T19:30:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "5. Super, am stat bine cu bugetul",
+      "created_at": "2026-02-22T21:02:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-02-22T21:35:00+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe restaurante luna asta?",
+      "created_at": "2026-02-25T20:06:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 februarie până azi ai 1.159,35 lei pe restaurante, în 17 plăți. Luna trecută, în aceeași perioadă, erau 928,05 lei.",
+      "created_at": "2026-02-25T20:06:07+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 1.612,00 lei la Kiddo Party Zi De Nastere. Pentru ce a fost?",
+      "created_at": "2026-03-01T14:35:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 1.612,00 lei la Kiddo Party Zi De Nastere. Pentru ce a fost?"
+    },
+    {
+      "content": "Pentru Ana și Luca",
+      "created_at": "2026-03-01T14:56:00+02:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-03-01T14:56:09+02:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-01T19:30:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "5. Super, am stat bine cu bugetul",
+      "created_at": "2026-03-01T19:52:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-03-01T21:35:00+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?",
+      "created_at": "2026-03-02T09:57:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?"
+    },
+    {
+      "content": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?",
+      "created_at": "2026-03-02T10:18:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?"
+    },
+    {
+      "content": "Pentru Ana și Luca",
+      "created_at": "2026-03-02T11:25:00+02:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-03-02T11:25:09+02:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Pentru Ana și Luca",
+      "created_at": "2026-03-02T11:33:00+02:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-03-02T11:33:09+02:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Cât am cheltuit pe haine luna asta?",
+      "created_at": "2026-03-04T20:25:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 martie până azi ai 0,00 lei pe haine, în 0 plăți. Luna trecută, în aceeași perioadă, erau 0,00 lei.",
+      "created_at": "2026-03-04T20:25:07+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-08T19:30:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "5. Foarte bine, am pus și ceva în plus deoparte",
+      "created_at": "2026-03-08T20:40:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-03-08T21:35:00+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am pus deoparte 2.500,00 lei în 5 pușculițe. Pentru bucătărie ai 14.500,00 din 30.000 de lei.",
+      "created_at": "2026-03-11T09:30:00+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe livrări luna asta?",
+      "created_at": "2026-03-11T20:12:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 martie până azi ai 0,00 lei pe livrări, în 0 plăți. Luna trecută, în aceeași perioadă, erau 0,00 lei.",
+      "created_at": "2026-03-11T20:12:07+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 383,67 lei la Answear.Ro. Pentru ce a fost?",
+      "created_at": "2026-03-15T14:29:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 383,67 lei la Answear.Ro. Pentru ce a fost?"
+    },
+    {
+      "content": "Haine pentru copii, au crescut",
+      "created_at": "2026-03-15T14:56:00+02:00",
+      "input_mode": "voice",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-03-15T14:56:09+02:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Mulțumesc, am notat."
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-15T19:30:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "5. Super, am stat bine cu bugetul",
+      "created_at": "2026-03-15T21:07:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-03-15T21:35:00+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe haine luna asta?",
+      "created_at": "2026-03-18T20:57:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 martie până azi ai 383,67 lei pe haine, în 1 plăți. Luna trecută, în aceeași perioadă, erau 313,24 lei.",
+      "created_at": "2026-03-18T20:57:07+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-22T19:30:00+02:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "4. Bine, doar o comandă în plus",
+      "created_at": "2026-03-22T19:59:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-03-22T21:35:00+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe restaurante luna asta?",
+      "created_at": "2026-03-25T20:13:00+02:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 martie până azi ai 718,56 lei pe restaurante, în 13 plăți. Luna trecută, în aceeași perioadă, erau 1.159,35 lei.",
+      "created_at": "2026-03-25T20:13:07+02:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 361,30 lei la Altex Cluj. Pentru ce a fost?",
+      "created_at": "2026-03-29T18:18:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Necesar",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 361,30 lei la Altex Cluj. Pentru ce a fost?"
+    },
+    {
+      "content": "S-a stricat tableta Anei",
+      "created_at": "2026-03-29T18:26:00+03:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: necesar.",
+      "created_at": "2026-03-29T18:26:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-29T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "4. Ok, cu o ieșire cu prietenii",
+      "created_at": "2026-03-29T19:47:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-03-29T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe copii luna asta?",
+      "created_at": "2026-04-01T20:59:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 aprilie până azi ai 0,00 lei pe copii, în 0 plăți. Luna trecută, în aceeași perioadă, erau 1.612,00 lei.",
+      "created_at": "2026-04-01T20:59:07+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?",
+      "created_at": "2026-04-02T09:09:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?"
+    },
+    {
+      "content": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?",
+      "created_at": "2026-04-02T09:18:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?"
+    },
+    {
+      "content": "Pentru Ana și Luca",
+      "created_at": "2026-04-02T09:45:00+03:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-04-02T09:45:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Pentru Ana și Luca",
+      "created_at": "2026-04-02T10:23:00+03:00",
+      "input_mode": "voice",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-04-02T10:23:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Mulțumesc, am notat."
+    },
+    {
+      "content": "Am văzut 584,48 lei la Flanco Vivo Cluj. Pentru ce a fost?",
+      "created_at": "2026-04-02T12:07:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Necesar",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 584,48 lei la Flanco Vivo Cluj. Pentru ce a fost?"
+    },
+    {
+      "content": "S-a stricat tableta Anei",
+      "created_at": "2026-04-02T12:18:00+03:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: necesar.",
+      "created_at": "2026-04-02T12:18:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Am văzut 402,22 lei la Locul Din Centru. Pentru ce a fost?",
+      "created_at": "2026-04-04T17:09:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Cu prietenii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 402,22 lei la Locul Din Centru. Pentru ce a fost?"
+    },
+    {
+      "content": "Am ieșit cu prietenii, ne-am împărțit nota",
+      "created_at": "2026-04-04T18:26:00+03:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: cu prietenii.",
+      "created_at": "2026-04-04T18:26:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-04-05T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "5. Super, am stat bine cu bugetul",
+      "created_at": "2026-04-05T20:27:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-04-05T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe haine luna asta?",
+      "created_at": "2026-04-08T20:25:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 aprilie până azi ai 0,00 lei pe haine, în 0 plăți. Luna trecută, în aceeași perioadă, erau 0,00 lei.",
+      "created_at": "2026-04-08T20:25:07+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am pus deoparte 2.750,00 lei în 6 pușculițe. Pentru bucătărie ai 15.500,00 din 30.000 de lei.",
+      "created_at": "2026-04-11T09:30:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-04-12T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "4. Bine, doar o comandă în plus",
+      "created_at": "2026-04-12T21:17:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-04-12T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe mâncare luna asta?",
+      "created_at": "2026-04-15T20:48:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 aprilie până azi ai 2.525,57 lei pe mâncare, în 17 plăți. Luna trecută, în aceeași perioadă, erau 1.168,33 lei.",
+      "created_at": "2026-04-15T20:48:07+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-04-19T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "4. Ok, cu o ieșire cu prietenii",
+      "created_at": "2026-04-19T21:17:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-04-19T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 475,33 lei la Answear.Ro. Pentru ce a fost?",
+      "created_at": "2026-04-23T16:03:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 475,33 lei la Answear.Ro. Pentru ce a fost?"
+    },
+    {
+      "content": "Haine pentru copii, au crescut",
+      "created_at": "2026-04-23T16:42:00+03:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-04-23T16:42:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-04-26T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "4. Bine, weekendul la părinți ne-a ajutat",
+      "created_at": "2026-04-26T21:06:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-04-26T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe mâncare luna asta?",
+      "created_at": "2026-04-29T20:07:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 aprilie până azi ai 4.585,14 lei pe mâncare, în 30 plăți. Luna trecută, în aceeași perioadă, erau 3.229,83 lei.",
+      "created_at": "2026-04-29T20:07:07+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?",
+      "created_at": "2026-05-02T09:32:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?"
+    },
+    {
+      "content": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?",
+      "created_at": "2026-05-02T09:41:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?"
+    },
+    {
+      "content": "Pentru Ana și Luca",
+      "created_at": "2026-05-02T10:28:00+03:00",
+      "input_mode": "voice",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-05-02T10:28:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Mulțumesc, am notat."
+    },
+    {
+      "content": "Pentru Ana și Luca",
+      "created_at": "2026-05-02T10:46:00+03:00",
+      "input_mode": "voice",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-05-02T10:46:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Mulțumesc, am notat."
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-03T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "3. Așa și așa, am luat haine pentru copii",
+      "created_at": "2026-05-03T20:29:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-05-03T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe haine luna asta?",
+      "created_at": "2026-05-06T20:35:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 mai până azi ai 0,00 lei pe haine, în 0 plăți. Luna trecută, în aceeași perioadă, erau 0,00 lei.",
+      "created_at": "2026-05-06T20:35:07+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-10T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "4. Bine, weekendul la părinți ne-a ajutat",
+      "created_at": "2026-05-10T21:18:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-05-10T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am pus deoparte 2.700,00 lei în 6 pușculițe. Pentru bucătărie ai 16.450,00 din 30.000 de lei.",
+      "created_at": "2026-05-11T09:30:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe haine luna asta?",
+      "created_at": "2026-05-13T20:40:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 mai până azi ai 0,00 lei pe haine, în 0 plăți. Luna trecută, în aceeași perioadă, erau 285,18 lei.",
+      "created_at": "2026-05-13T20:40:07+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-17T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "2. Grea, s-a stricat mașina de spălat",
+      "created_at": "2026-05-17T19:39:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-05-17T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe haine luna asta?",
+      "created_at": "2026-05-20T20:32:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 mai până azi ai 0,00 lei pe haine, în 0 plăți. Luna trecută, în aceeași perioadă, erau 285,18 lei.",
+      "created_at": "2026-05-20T20:32:07+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 440,67 lei la Restaurant Roata Cluj. Pentru ce a fost?",
+      "created_at": "2026-05-23T14:51:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Cu prietenii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 440,67 lei la Restaurant Roata Cluj. Pentru ce a fost?"
+    },
+    {
+      "content": "Am ieșit cu prietenii, ne-am împărțit nota",
+      "created_at": "2026-05-23T15:44:00+03:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: cu prietenii.",
+      "created_at": "2026-05-23T15:44:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-24T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "3. Așa și așa, am luat haine pentru copii",
+      "created_at": "2026-05-24T20:35:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-05-24T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cât am cheltuit pe benzină luna asta?",
+      "created_at": "2026-05-27T20:31:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 mai până azi ai 1.295,44 lei pe benzină, în 5 plăți. Luna trecută, în aceeași perioadă, erau 910,64 lei.",
+      "created_at": "2026-05-27T20:31:07+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-31T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "4. Bine, weekendul la părinți ne-a ajutat",
+      "created_at": "2026-05-31T21:30:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-05-31T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?",
+      "created_at": "2026-06-02T09:09:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?"
+    },
+    {
+      "content": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?",
+      "created_at": "2026-06-02T10:08:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Pentru copii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?"
+    },
+    {
+      "content": "Pentru Ana și Luca",
+      "created_at": "2026-06-02T10:31:00+03:00",
+      "input_mode": "voice",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-06-02T10:31:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Mulțumesc, am notat."
+    },
+    {
+      "content": "Pentru Ana și Luca",
+      "created_at": "2026-06-02T10:54:00+03:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: pentru copii.",
+      "created_at": "2026-06-02T10:54:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Cât am cheltuit pe mâncare luna asta?",
+      "created_at": "2026-06-03T20:12:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Din 1 iunie până azi ai 296,40 lei pe mâncare, în 3 plăți. Luna trecută, în aceeași perioadă, erau 846,99 lei.",
+      "created_at": "2026-06-03T20:12:07+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am văzut 465,98 lei la Samsara Foodhouse. Pentru ce a fost?",
+      "created_at": "2026-06-05T20:45:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "Cu prietenii",
+        "Pentru mine",
+        "Altceva"
+      ],
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Am văzut 465,98 lei la Samsara Foodhouse. Pentru ce a fost?"
+    },
+    {
+      "content": "Am ieșit cu prietenii, ne-am împărțit nota",
+      "created_at": "2026-06-05T22:11:00+03:00",
+      "input_mode": "quick_reply",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc, am notat: cu prietenii.",
+      "created_at": "2026-06-05T22:11:09+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": false,
+      "speak_text": null
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-06-07T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "4. Ok, cu o ieșire cu prietenii",
+      "created_at": "2026-06-07T20:12:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-06-07T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Am pus deoparte 2.650,00 lei în 6 pușculițe. Pentru bucătărie ai 17.400,00 din 30.000 de lei.",
+      "created_at": "2026-06-11T09:30:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    },
+    {
+      "content": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-06-14T19:30:00+03:00",
+      "input_mode": null,
+      "quick_replies": [
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+      ],
+      "role": "assistant"
+    },
+    {
+      "content": "5. Foarte bine, am pus și ceva în plus deoparte",
+      "created_at": "2026-06-14T19:45:00+03:00",
+      "input_mode": "text",
+      "role": "user"
+    },
+    {
+      "content": "Mai am șanse să strâng pentru bucătărie până la anul în iunie?",
+      "created_at": "2026-06-14T21:05:00+03:00",
+      "input_mode": "voice",
+      "role": "user"
+    },
+    {
+      "content": "Ai strâns 17.400 de lei din 30.000 pentru bucătărie. Mai ai de pus 12.600 de lei până pe 30 iunie 2027.",
+      "created_at": "2026-06-14T21:05:11+03:00",
+      "input_mode": null,
+      "role": "assistant",
+      "speak": true,
+      "speak_text": "Ai strâns cincizeci și opt la sută din bani pentru bucătărie."
+    },
+    {
+      "content": "Mulțumesc că mi-ai spus, am notat pentru săptămâna asta.",
+      "created_at": "2026-06-14T21:35:00+03:00",
+      "input_mode": null,
+      "role": "assistant"
+    }
+  ],
+  "notifications": [
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-02-15T19:30:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-02-22T19:30:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 1.612,00 lei la Kiddo Party Zi De Nastere. Pentru ce a fost?",
+      "created_at": "2026-03-01T14:35:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-01T19:30:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?",
+      "created_at": "2026-03-02T09:57:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?",
+      "created_at": "2026-03-02T10:18:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-08T19:30:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am pus deoparte 2.500,00 lei în 5 pușculițe. Pentru bucătărie ai 14.500,00 din 30.000 de lei.",
+      "created_at": "2026-03-11T09:30:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Economii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 383,67 lei la Answear.Ro. Pentru ce a fost?",
+      "created_at": "2026-03-15T14:29:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-15T19:30:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-22T19:30:00+02:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 361,30 lei la Altex Cluj. Pentru ce a fost?",
+      "created_at": "2026-03-29T18:18:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-03-29T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?",
+      "created_at": "2026-04-02T09:09:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?",
+      "created_at": "2026-04-02T09:18:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 584,48 lei la Flanco Vivo Cluj. Pentru ce a fost?",
+      "created_at": "2026-04-02T12:07:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 402,22 lei la Locul Din Centru. Pentru ce a fost?",
+      "created_at": "2026-04-04T17:09:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-04-05T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am pus deoparte 2.750,00 lei în 6 pușculițe. Pentru bucătărie ai 15.500,00 din 30.000 de lei.",
+      "created_at": "2026-04-11T09:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Economii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-04-12T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-04-19T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 475,33 lei la Answear.Ro. Pentru ce a fost?",
+      "created_at": "2026-04-23T16:03:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-04-26T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?",
+      "created_at": "2026-05-02T09:32:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?",
+      "created_at": "2026-05-02T09:41:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-03T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-10T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am pus deoparte 2.700,00 lei în 6 pușculițe. Pentru bucătărie ai 16.450,00 din 30.000 de lei.",
+      "created_at": "2026-05-11T09:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Economii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-17T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 440,67 lei la Restaurant Roata Cluj. Pentru ce a fost?",
+      "created_at": "2026-05-23T14:51:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-24T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-05-31T19:30:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 950,00 lei la After School Clever Kids. Pentru ce a fost?",
+      "created_at": "2026-06-02T09:09:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 1.250,00 lei la Gradinita Raza De Soare Srl. Pentru ce a fost?",
+      "created_at": "2026-06-02T10:08:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am văzut 465,98 lei la Samsara Foodhouse. Pentru ce a fost?",
+      "created_at": "2026-06-05T20:45:00+03:00",
+      "opens_chat": true,
+      "read": true,
+      "title": "CashGuard",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-06-07T19:30:00+03:00",
+      "opens_chat": true,
+      "read": false,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Am pus deoparte 2.650,00 lei în 6 pușculițe. Pentru bucătărie ai 17.400,00 din 30.000 de lei.",
+      "created_at": "2026-06-11T09:30:00+03:00",
+      "opens_chat": true,
+      "read": false,
+      "title": "Economii",
+      "type": "agent_message"
+    },
+    {
+      "body": "Cum a fost săptămâna? De la 1 la 5, cât de motivată te simți pentru bucătărie?",
+      "created_at": "2026-06-14T19:30:00+03:00",
+      "opens_chat": true,
+      "read": false,
+      "title": "Reflecția săptămânii",
+      "type": "agent_message"
+    }
+  ],
+  "receivables": [
+    {
+      "amount": "254",
+      "amount_each": "127",
+      "created_at": "2024-01-14T21:46:00+02:00",
+      "debtor_label": "Ana-Maria",
+      "expected_by": "2024-01-28",
+      "paid_at": "2024-01-20T21:26:00+02:00",
+      "people_count": 3,
+      "requested_at": "2024-01-15T21:26:00+02:00",
+      "status": "paid"
+    },
+    {
+      "amount": "240",
+      "amount_each": "80",
+      "created_at": "2024-03-08T18:25:00+02:00",
+      "debtor_label": "Cristina",
+      "expected_by": "2024-03-22",
+      "paid_at": "2024-03-14T18:05:00+02:00",
+      "people_count": 4,
+      "requested_at": "2024-03-09T18:05:00+02:00",
+      "status": "paid"
+    },
+    {
+      "amount": "171",
+      "amount_each": "171",
+      "created_at": "2024-04-07T15:37:00+03:00",
+      "debtor_label": "Vlad",
+      "expected_by": "2024-04-21",
+      "paid_at": "2024-04-12T15:17:00+03:00",
+      "people_count": 2,
+      "requested_at": "2024-04-08T15:17:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "159",
+      "amount_each": "159",
+      "created_at": "2024-04-26T17:43:00+03:00",
+      "debtor_label": "Ana-Maria",
+      "expected_by": "2024-05-10",
+      "paid_at": "2024-04-28T17:23:00+03:00",
+      "people_count": 2,
+      "requested_at": "2024-04-27T17:23:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "212",
+      "amount_each": "106",
+      "created_at": "2024-05-24T16:13:00+03:00",
+      "debtor_label": "Mihai și Ioana",
+      "expected_by": "2024-06-07",
+      "paid_at": "2024-05-31T15:53:00+03:00",
+      "people_count": 3,
+      "requested_at": "2024-05-25T15:53:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "276",
+      "amount_each": "92",
+      "created_at": "2024-08-16T16:00:00+03:00",
+      "debtor_label": "Cristina",
+      "expected_by": "2024-08-30",
+      "paid_at": "2024-08-23T15:40:00+03:00",
+      "people_count": 4,
+      "requested_at": "2024-08-17T15:40:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "170",
+      "amount_each": "170",
+      "created_at": "2024-09-21T22:17:00+03:00",
+      "debtor_label": "Sorin",
+      "expected_by": "2024-10-05",
+      "paid_at": "2024-09-29T21:57:00+03:00",
+      "people_count": 2,
+      "requested_at": "2024-09-22T21:57:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "230",
+      "amount_each": "115",
+      "created_at": "2024-09-27T13:23:00+03:00",
+      "debtor_label": "Vlad",
+      "expected_by": "2024-10-11",
+      "paid_at": "2024-10-02T13:03:00+03:00",
+      "people_count": 3,
+      "requested_at": "2024-09-28T13:03:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "210",
+      "amount_each": "210",
+      "created_at": "2024-10-26T16:24:00+03:00",
+      "debtor_label": "Mihai și Ioana",
+      "expected_by": "2024-11-09",
+      "paid_at": "2024-10-30T16:04:00+03:00",
+      "people_count": 2,
+      "requested_at": "2024-10-27T16:04:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "333",
+      "amount_each": "111",
+      "created_at": "2024-12-06T17:26:00+02:00",
+      "debtor_label": "colegii",
+      "expected_by": "2024-12-20",
+      "paid_at": "2024-12-12T17:06:00+02:00",
+      "people_count": 4,
+      "requested_at": "2024-12-07T17:06:00+02:00",
+      "status": "paid"
+    },
+    {
+      "amount": "294",
+      "amount_each": "98",
+      "created_at": "2025-02-21T14:21:00+02:00",
+      "debtor_label": "Ana-Maria",
+      "expected_by": "2025-03-07",
+      "paid_at": "2025-02-25T14:01:00+02:00",
+      "people_count": 4,
+      "requested_at": "2025-02-22T14:01:00+02:00",
+      "status": "paid"
+    },
+    {
+      "amount": "218",
+      "amount_each": "109",
+      "created_at": "2025-06-01T13:30:00+03:00",
+      "debtor_label": "colegii",
+      "expected_by": "2025-06-15",
+      "paid_at": "2025-06-03T13:10:00+03:00",
+      "people_count": 3,
+      "requested_at": "2025-06-02T13:10:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "167",
+      "amount_each": "167",
+      "created_at": "2025-09-20T13:50:00+03:00",
+      "debtor_label": "Cristina",
+      "expected_by": "2025-10-04",
+      "paid_at": "2025-09-29T13:30:00+03:00",
+      "people_count": 2,
+      "requested_at": "2025-09-21T13:30:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "273",
+      "amount_each": "91",
+      "created_at": "2025-10-10T21:46:00+03:00",
+      "debtor_label": "Mihai și Ioana",
+      "expected_by": "2025-10-24",
+      "paid_at": "2025-10-19T21:26:00+03:00",
+      "people_count": 4,
+      "requested_at": "2025-10-11T21:26:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "276",
+      "amount_each": "92",
+      "created_at": "2025-10-25T19:14:00+03:00",
+      "debtor_label": "Vlad",
+      "expected_by": "2025-11-08",
+      "paid_at": "2025-11-03T18:54:00+03:00",
+      "people_count": 4,
+      "requested_at": "2025-10-26T18:54:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "210",
+      "amount_each": "210",
+      "created_at": "2026-02-01T20:47:00+02:00",
+      "debtor_label": "Vlad",
+      "expected_by": "2026-02-15",
+      "paid_at": "2026-02-04T20:27:00+02:00",
+      "people_count": 2,
+      "requested_at": "2026-02-02T20:27:00+02:00",
+      "status": "paid"
+    },
+    {
+      "amount": "159",
+      "amount_each": "159",
+      "created_at": "2026-03-20T17:02:00+02:00",
+      "debtor_label": "Mihai și Ioana",
+      "expected_by": "2026-04-03",
+      "paid_at": "2026-03-22T16:42:00+02:00",
+      "people_count": 2,
+      "requested_at": "2026-03-21T16:42:00+02:00",
+      "status": "paid"
+    },
+    {
+      "amount": "268",
+      "amount_each": "134",
+      "created_at": "2026-04-04T17:26:00+03:00",
+      "debtor_label": "Sorin",
+      "expected_by": "2026-04-18",
+      "paid_at": "2026-04-12T17:06:00+03:00",
+      "people_count": 3,
+      "requested_at": "2026-04-05T17:06:00+03:00",
+      "status": "paid"
+    },
+    {
+      "amount": "155",
+      "amount_each": "155",
+      "created_at": "2026-04-10T18:45:00+03:00",
+      "debtor_label": "Ana-Maria",
+      "expected_by": "2026-04-24",
+      "paid_at": null,
+      "people_count": 2,
+      "requested_at": null,
+      "status": "open"
+    },
+    {
+      "amount": "294",
+      "amount_each": "147",
+      "created_at": "2026-05-23T15:08:00+03:00",
+      "debtor_label": "Mihai și Ioana",
+      "expected_by": "2026-06-06",
+      "paid_at": null,
+      "people_count": 3,
+      "requested_at": null,
+      "status": "open"
+    },
+    {
+      "amount": "233",
+      "amount_each": "233",
+      "created_at": "2026-06-05T21:02:00+03:00",
+      "debtor_label": "Sorin",
+      "expected_by": "2026-06-19",
+      "paid_at": null,
+      "people_count": 2,
+      "requested_at": null,
+      "status": "open"
+    }
+  ],
+  "reflections": [
+    {
+      "answer": "Așa și așa, am luat haine pentru copii",
+      "motivation": 3,
+      "reason": "Au crescut din toate",
+      "week_start": "2025-06-09"
+    },
+    {
+      "answer": "Ok, cu o ieșire cu prietenii",
+      "motivation": 4,
+      "reason": "A fost ziua Cristinei",
+      "week_start": "2025-06-16"
+    },
+    {
+      "answer": "Ok, cu o ieșire cu prietenii",
+      "motivation": 4,
+      "reason": "A fost ziua Cristinei",
+      "week_start": "2025-06-23"
+    },
+    {
+      "answer": "Grea, s-a stricat mașina de spălat",
+      "motivation": 2,
+      "reason": "Reparația n-a fost planificată",
+      "week_start": "2025-06-30"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2025-07-07"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2025-07-14"
+    },
+    {
+      "answer": "Așa și așa, am luat haine pentru copii",
+      "motivation": 3,
+      "reason": "Au crescut din toate",
+      "week_start": "2025-07-21"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2025-07-28"
+    },
+    {
+      "answer": "Așa și așa, am luat haine pentru copii",
+      "motivation": 3,
+      "reason": "Au crescut din toate",
+      "week_start": "2025-08-04"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2025-08-11"
+    },
+    {
+      "answer": "Bine, weekendul la părinți ne-a ajutat",
+      "motivation": 4,
+      "reason": "Am mâncat la mama",
+      "week_start": "2025-08-18"
+    },
+    {
+      "answer": "Grea, s-a stricat mașina de spălat",
+      "motivation": 2,
+      "reason": "Reparația n-a fost planificată",
+      "week_start": "2025-08-25"
+    },
+    {
+      "answer": "Ok, cu o ieșire cu prietenii",
+      "motivation": 4,
+      "reason": "A fost ziua Cristinei",
+      "week_start": "2025-09-01"
+    },
+    {
+      "answer": "Grea, s-a stricat mașina de spălat",
+      "motivation": 2,
+      "reason": "Reparația n-a fost planificată",
+      "week_start": "2025-09-08"
+    },
+    {
+      "answer": "Grea, s-a stricat mașina de spălat",
+      "motivation": 2,
+      "reason": "Reparația n-a fost planificată",
+      "week_start": "2025-09-15"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2025-09-22"
+    },
+    {
+      "answer": "Așa și așa, am luat haine pentru copii",
+      "motivation": 3,
+      "reason": "Au crescut din toate",
+      "week_start": "2025-09-29"
+    },
+    {
+      "answer": "Foarte bine, am pus și ceva în plus deoparte",
+      "motivation": 5,
+      "reason": "Am primit plata pe freelance",
+      "week_start": "2025-10-06"
+    },
+    {
+      "answer": "Super, am stat bine cu bugetul",
+      "motivation": 5,
+      "reason": "Am gătit acasă toată săptămâna",
+      "week_start": "2025-10-13"
+    },
+    {
+      "answer": "Așa și așa, am luat haine pentru copii",
+      "motivation": 3,
+      "reason": "Au crescut din toate",
+      "week_start": "2025-10-20"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2025-10-27"
+    },
+    {
+      "answer": "Grea, s-a stricat mașina de spălat",
+      "motivation": 2,
+      "reason": "Reparația n-a fost planificată",
+      "week_start": "2025-11-03"
+    },
+    {
+      "answer": "Așa și așa, am luat haine pentru copii",
+      "motivation": 3,
+      "reason": "Au crescut din toate",
+      "week_start": "2025-11-10"
+    },
+    {
+      "answer": "Bine, weekendul la părinți ne-a ajutat",
+      "motivation": 4,
+      "reason": "Am mâncat la mama",
+      "week_start": "2025-11-17"
+    },
+    {
+      "answer": "Bine, weekendul la părinți ne-a ajutat",
+      "motivation": 4,
+      "reason": "Am mâncat la mama",
+      "week_start": "2025-11-24"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2025-12-01"
+    },
+    {
+      "answer": "Așa și așa, am luat haine pentru copii",
+      "motivation": 3,
+      "reason": "Au crescut din toate",
+      "week_start": "2025-12-08"
+    },
+    {
+      "answer": "Foarte bine, am pus și ceva în plus deoparte",
+      "motivation": 5,
+      "reason": "Am primit plata pe freelance",
+      "week_start": "2025-12-15"
+    },
+    {
+      "answer": "Ok, cu o ieșire cu prietenii",
+      "motivation": 4,
+      "reason": "A fost ziua Cristinei",
+      "week_start": "2025-12-22"
+    },
+    {
+      "answer": "Bine, weekendul la părinți ne-a ajutat",
+      "motivation": 4,
+      "reason": "Am mâncat la mama",
+      "week_start": "2025-12-29"
+    },
+    {
+      "answer": "Foarte bine, am pus și ceva în plus deoparte",
+      "motivation": 5,
+      "reason": "Am primit plata pe freelance",
+      "week_start": "2026-01-05"
+    },
+    {
+      "answer": "Așa și așa, am luat haine pentru copii",
+      "motivation": 3,
+      "reason": "Au crescut din toate",
+      "week_start": "2026-01-12"
+    },
+    {
+      "answer": "Super, am stat bine cu bugetul",
+      "motivation": 5,
+      "reason": "Am gătit acasă toată săptămâna",
+      "week_start": "2026-01-19"
+    },
+    {
+      "answer": "Ok, cu o ieșire cu prietenii",
+      "motivation": 4,
+      "reason": "A fost ziua Cristinei",
+      "week_start": "2026-01-26"
+    },
+    {
+      "answer": "Super, am stat bine cu bugetul",
+      "motivation": 5,
+      "reason": "Am gătit acasă toată săptămâna",
+      "week_start": "2026-02-02"
+    },
+    {
+      "answer": "Ok, cu o ieșire cu prietenii",
+      "motivation": 4,
+      "reason": "A fost ziua Cristinei",
+      "week_start": "2026-02-09"
+    },
+    {
+      "answer": "Super, am stat bine cu bugetul",
+      "motivation": 5,
+      "reason": "Am gătit acasă toată săptămâna",
+      "week_start": "2026-02-16"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2026-02-23"
+    },
+    {
+      "answer": "Ok, cu o ieșire cu prietenii",
+      "motivation": 4,
+      "reason": "A fost ziua Cristinei",
+      "week_start": "2026-03-02"
+    },
+    {
+      "answer": "Bine, weekendul la părinți ne-a ajutat",
+      "motivation": 4,
+      "reason": "Am mâncat la mama",
+      "week_start": "2026-03-09"
+    },
+    {
+      "answer": "Ok, cu o ieșire cu prietenii",
+      "motivation": 4,
+      "reason": "A fost ziua Cristinei",
+      "week_start": "2026-03-16"
+    },
+    {
+      "answer": "Bine, weekendul la părinți ne-a ajutat",
+      "motivation": 4,
+      "reason": "Am mâncat la mama",
+      "week_start": "2026-03-23"
+    },
+    {
+      "answer": "Așa și așa, am luat haine pentru copii",
+      "motivation": 3,
+      "reason": "Au crescut din toate",
+      "week_start": "2026-03-30"
+    },
+    {
+      "answer": "Grea, s-a stricat mașina de spălat",
+      "motivation": 2,
+      "reason": "Reparația n-a fost planificată",
+      "week_start": "2026-04-06"
+    },
+    {
+      "answer": "Foarte bine, am pus și ceva în plus deoparte",
+      "motivation": 5,
+      "reason": "Am primit plata pe freelance",
+      "week_start": "2026-04-13"
+    },
+    {
+      "answer": "Super, am stat bine cu bugetul",
+      "motivation": 5,
+      "reason": "Am gătit acasă toată săptămâna",
+      "week_start": "2026-04-20"
+    },
+    {
+      "answer": "Grea, s-a stricat mașina de spălat",
+      "motivation": 2,
+      "reason": "Reparația n-a fost planificată",
+      "week_start": "2026-04-27"
+    },
+    {
+      "answer": "Grea, s-a stricat mașina de spălat",
+      "motivation": 2,
+      "reason": "Reparația n-a fost planificată",
+      "week_start": "2026-05-04"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2026-05-11"
+    },
+    {
+      "answer": "Bine, doar o comandă în plus",
+      "motivation": 4,
+      "reason": "Am fost obosită miercuri",
+      "week_start": "2026-05-18"
+    },
+    {
+      "answer": "Super, am stat bine cu bugetul",
+      "motivation": 5,
+      "reason": "Am gătit acasă toată săptămâna",
+      "week_start": "2026-05-25"
+    },
+    {
+      "answer": "Foarte bine, am pus și ceva în plus deoparte",
+      "motivation": 5,
+      "reason": "Am primit plata pe freelance",
+      "week_start": "2026-06-01"
+    }
+  ],
+  "slips": [
+    {
+      "amount_over": "182.84",
+      "date": "2025-07-20",
+      "detail": "385,43 lei pe livrări și haine într-o săptămână",
+      "reason": "Am comandat mâncare de mai multe ori și am luat haine",
+      "recurring": false
+    },
+    {
+      "amount_over": "211.61",
+      "date": "2025-08-17",
+      "detail": "414,20 lei pe livrări și haine într-o săptămână",
+      "reason": "Am comandat mâncare de mai multe ori și am luat haine",
+      "recurring": true
+    },
+    {
+      "amount_over": "736.14",
+      "date": "2025-09-07",
+      "detail": "938,73 lei pe livrări și haine într-o săptămână",
+      "reason": "Am comandat mâncare de mai multe ori și am luat haine",
+      "recurring": true
+    },
+    {
+      "amount_over": "178.33",
+      "date": "2025-11-16",
+      "detail": "380,92 lei pe livrări și haine într-o săptămână",
+      "reason": "Am comandat mâncare de mai multe ori și am luat haine",
+      "recurring": false
+    },
+    {
+      "amount_over": "185.32",
+      "date": "2025-12-07",
+      "detail": "387,91 lei pe livrări și haine într-o săptămână",
+      "reason": "Am comandat mâncare de mai multe ori și am luat haine",
+      "recurring": false
+    },
+    {
+      "amount_over": "181.08",
+      "date": "2026-03-15",
+      "detail": "383,67 lei pe livrări și haine într-o săptămână",
+      "reason": "Am comandat mâncare de mai multe ori și am luat haine",
+      "recurring": false
+    },
+    {
+      "amount_over": "409.77",
+      "date": "2026-04-26",
+      "detail": "612,36 lei pe livrări și haine într-o săptămână",
+      "reason": "Am comandat mâncare de mai multe ori și am luat haine",
+      "recurring": true
+    }
+  ],
+  "transfers": [
+    {
+      "amount": "500",
+      "created_at": "2022-07-11T09:26:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "500",
+      "created_at": "2022-08-11T09:45:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2022-09-11T09:58:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2022-10-11T09:48:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2022-11-11T09:22:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2022-12-11T09:39:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2023-01-11T09:04:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2023-02-11T09:13:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "500",
+      "created_at": "2023-03-11T09:22:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2023-04-11T09:50:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2023-05-11T09:41:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2023-06-11T09:33:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2023-07-11T09:24:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2023-08-11T09:09:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2023-09-11T09:44:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2023-10-11T09:53:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2023-11-11T09:53:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2023-12-11T09:20:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2024-01-11T09:42:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2024-02-11T09:21:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2024-03-11T09:42:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2024-04-11T09:47:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2024-05-11T09:01:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2024-06-11T09:58:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2024-07-11T09:02:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2024-08-11T09:00:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "500",
+      "created_at": "2024-09-11T09:14:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2024-10-11T09:01:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2024-11-11T09:33:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "500",
+      "created_at": "2024-12-11T09:54:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "950",
+      "created_at": "2025-01-11T09:20:00+02:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "400",
+      "created_at": "2025-01-11T09:37:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "950",
+      "created_at": "2025-02-11T09:06:00+02:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "400",
+      "created_at": "2025-02-11T09:57:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "400",
+      "created_at": "2025-03-11T09:39:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "950",
+      "created_at": "2025-03-11T09:41:00+02:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "550",
+      "created_at": "2025-04-11T09:04:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "950",
+      "created_at": "2025-04-11T09:52:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "950",
+      "created_at": "2025-05-11T09:28:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "450",
+      "created_at": "2025-05-11T09:36:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "450",
+      "created_at": "2025-06-11T09:12:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "950",
+      "created_at": "2025-06-11T09:40:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "400",
+      "created_at": "2025-07-11T09:41:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "1000",
+      "created_at": "2025-07-11T09:52:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "450",
+      "created_at": "2025-08-11T09:31:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "1050",
+      "created_at": "2025-08-11T09:38:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "500",
+      "created_at": "2025-09-11T09:03:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "600",
+      "created_at": "2025-09-11T09:06:00+03:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "950",
+      "created_at": "2025-09-11T09:28:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "400",
+      "created_at": "2025-10-11T09:29:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "950",
+      "created_at": "2025-10-11T09:32:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "250",
+      "created_at": "2025-10-11T09:34:00+03:00",
+      "kind": "manual",
+      "pot": "Service & RCA mașină"
+    },
+    {
+      "amount": "550",
+      "created_at": "2025-10-11T09:46:00+03:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "1050",
+      "created_at": "2025-11-11T09:01:00+02:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "250",
+      "created_at": "2025-11-11T09:27:00+02:00",
+      "kind": "manual",
+      "pot": "Service & RCA mașină"
+    },
+    {
+      "amount": "550",
+      "created_at": "2025-11-11T09:34:00+02:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "400",
+      "created_at": "2025-11-11T09:40:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "950",
+      "created_at": "2025-12-11T09:01:00+02:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "400",
+      "created_at": "2025-12-11T09:12:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "550",
+      "created_at": "2025-12-11T09:40:00+02:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "250",
+      "created_at": "2025-12-11T09:47:00+02:00",
+      "kind": "manual",
+      "pot": "Service & RCA mașină"
+    },
+    {
+      "amount": "950",
+      "created_at": "2026-01-11T09:03:00+02:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "200",
+      "created_at": "2026-01-11T09:25:00+02:00",
+      "kind": "manual",
+      "pot": "Tabără Ana"
+    },
+    {
+      "amount": "250",
+      "created_at": "2026-01-11T09:30:00+02:00",
+      "kind": "manual",
+      "pot": "Service & RCA mașină"
+    },
+    {
+      "amount": "550",
+      "created_at": "2026-01-11T09:31:00+02:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "400",
+      "created_at": "2026-01-11T09:33:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "550",
+      "created_at": "2026-02-11T09:02:00+02:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "200",
+      "created_at": "2026-02-11T09:41:00+02:00",
+      "kind": "manual",
+      "pot": "Tabără Ana"
+    },
+    {
+      "amount": "400",
+      "created_at": "2026-02-11T09:42:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "250",
+      "created_at": "2026-02-11T09:49:00+02:00",
+      "kind": "manual",
+      "pot": "Service & RCA mașină"
+    },
+    {
+      "amount": "950",
+      "created_at": "2026-02-11T09:54:00+02:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "950",
+      "created_at": "2026-03-11T09:03:00+02:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "450",
+      "created_at": "2026-03-11T09:07:00+02:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "200",
+      "created_at": "2026-03-11T09:14:00+02:00",
+      "kind": "manual",
+      "pot": "Tabără Ana"
+    },
+    {
+      "amount": "300",
+      "created_at": "2026-03-11T09:46:00+02:00",
+      "kind": "manual",
+      "pot": "Service & RCA mașină"
+    },
+    {
+      "amount": "600",
+      "created_at": "2026-03-11T09:51:00+02:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "450",
+      "created_at": "2026-04-11T09:04:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "1000",
+      "created_at": "2026-04-11T09:29:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "200",
+      "created_at": "2026-04-11T09:36:00+03:00",
+      "kind": "manual",
+      "pot": "Tabără Ana"
+    },
+    {
+      "amount": "250",
+      "created_at": "2026-04-11T09:48:00+03:00",
+      "kind": "manual",
+      "pot": "Service & RCA mașină"
+    },
+    {
+      "amount": "550",
+      "created_at": "2026-04-11T09:48:00+03:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "300",
+      "created_at": "2026-04-11T09:54:00+03:00",
+      "kind": "manual",
+      "pot": "Crăciun 2026"
+    },
+    {
+      "amount": "950",
+      "created_at": "2026-05-11T09:10:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "300",
+      "created_at": "2026-05-11T09:15:00+03:00",
+      "kind": "manual",
+      "pot": "Crăciun 2026"
+    },
+    {
+      "amount": "550",
+      "created_at": "2026-05-11T09:18:00+03:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "200",
+      "created_at": "2026-05-11T09:33:00+03:00",
+      "kind": "manual",
+      "pot": "Tabără Ana"
+    },
+    {
+      "amount": "450",
+      "created_at": "2026-05-11T09:39:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "250",
+      "created_at": "2026-05-11T09:53:00+03:00",
+      "kind": "manual",
+      "pot": "Service & RCA mașină"
+    },
+    {
+      "amount": "200",
+      "created_at": "2026-06-11T09:24:00+03:00",
+      "kind": "manual",
+      "pot": "Tabără Ana"
+    },
+    {
+      "amount": "400",
+      "created_at": "2026-06-11T09:32:00+03:00",
+      "kind": "manual",
+      "pot": "Fond de urgență"
+    },
+    {
+      "amount": "550",
+      "created_at": "2026-06-11T09:39:00+03:00",
+      "kind": "manual",
+      "pot": "Vacanță Corfu 2026"
+    },
+    {
+      "amount": "950",
+      "created_at": "2026-06-11T09:46:00+03:00",
+      "kind": "manual",
+      "pot": "Bucătărie nouă"
+    },
+    {
+      "amount": "300",
+      "created_at": "2026-06-11T09:47:00+03:00",
+      "kind": "manual",
+      "pot": "Crăciun 2026"
+    },
+    {
+      "amount": "250",
+      "created_at": "2026-06-11T09:48:00+03:00",
+      "kind": "manual",
+      "pot": "Service & RCA mașină"
+    }
+  ]
+}

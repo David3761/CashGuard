@@ -15,6 +15,7 @@ from app.domain.enums import (
     FactStatus,
     Purpose,
     RuleKind,
+    RuleSource,
     SignatureEffect,
 )
 from app.domain.models import LifeFact, LifeFactDraft, PatternRule, Signature
@@ -24,7 +25,7 @@ from app.i18n.text import fold
 from tests.unit.datafiles import DATA_DIR
 
 PERSONAS_DIR = DATA_DIR / "personas"
-PERSONAS = ("matei", "andrei", "bianca", "ioana", "alex")
+PERSONAS = ("matei", "andrei", "bianca", "ioana", "alex", "elena")
 AS_OF = date(2026, 6, 15)
 # Folded words that would make a fact sensitive (arch 4.5: never stored or inferred).
 SENSITIVE = (
@@ -111,7 +112,14 @@ def test_ioana_kids_expect_school_supplies_and_1_iunie() -> None:
 
 @pytest.mark.parametrize(
     ("persona", "scale"),
-    [("matei", "1"), ("andrei", "1.5"), ("bianca", "1"), ("ioana", "2.1"), ("alex", "1")],
+    [
+        ("matei", "1"),
+        ("andrei", "1.5"),
+        ("bianca", "1"),
+        ("ioana", "2.1"),
+        ("alex", "1"),
+        ("elena", "2.1"),  # Elena, Radu, Ana (7) and Luca (3)
+    ],
 )
 def test_household_scale_with_e6(persona: str, scale: str) -> None:
     assert household_scale(_saved(persona), AS_OF) == Decimal(scale)
@@ -131,5 +139,27 @@ def test_mateis_seeded_friday_lunch_rule() -> None:
     assert (rule.confidence, rule.hits) == (0.7, 2)
 
 
-def test_only_matei_has_seeded_rules() -> None:
-    assert sorted(path.parent.name for path in PERSONAS_DIR.glob("*/rules.json")) == ["matei"]
+def test_only_matei_and_elena_have_seeded_rules() -> None:
+    assert sorted(path.parent.name for path in PERSONAS_DIR.glob("*/rules.json")) == [
+        "elena",
+        "matei",
+    ]
+
+
+def test_elenas_rules_all_validate_as_learned_classify_rules() -> None:
+    rules = [
+        PatternRule.model_validate(raw)
+        for raw in _load(PERSONAS_DIR / "elena" / "rules.json")["rules"]
+    ]
+    assert len(rules) == 6
+    assert {(r.kind, r.source, r.active) for r in rules} == {
+        (RuleKind.CLASSIFY, RuleSource.LEARNED, True)
+    }
+    assert "Prânz cu colegii" in {r.outcome.label for r in rules}
+
+
+def test_elenas_family_protects_the_kids_and_the_summer_holiday() -> None:
+    signatures = _signatures("elena")
+    assert (SignatureEffect.PROTECTS, Category.KIDS, Purpose.HOUSEHOLD_CARE) in signatures
+    assert (SignatureEffect.PROTECTS, Category.TRAVEL, Purpose.IDENTITY_JOY) in signatures
+    assert (SignatureEffect.EXPLAINS, Category.PETS, Purpose.HOUSEHOLD_CARE) in signatures

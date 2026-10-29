@@ -1,0 +1,2120 @@
+{
+  "answered": [
+    {
+      "label": "Cumpărături pentru părinți",
+      "last": 12,
+      "purpose": "household_care",
+      "stream": "parents_groceries"
+    },
+    {
+      "label": "Ieșit cu prietenii",
+      "last": 4,
+      "purpose": "social_connection",
+      "stream": "weekend_restaurant"
+    },
+    {
+      "label": "Weekend cu copiii",
+      "last": 5,
+      "purpose": "household_care",
+      "stream": "kids_weekend"
+    }
+  ],
+  "calendar": [
+    {
+      "amount": "1900",
+      "category": "travel",
+      "date": "2022-06-20",
+      "mcc": 4722,
+      "merchant_raw": "BOOKING.COM HOTEL MAMAIA"
+    },
+    {
+      "amount": "600",
+      "category": "restaurants",
+      "date": "2022-07-19",
+      "mcc": 5812,
+      "merchant_raw": "SAMSARA FOODHOUSE ZI NASTERE"
+    },
+    {
+      "amount": "145",
+      "category": "travel",
+      "date": "2022-08-06",
+      "merchant_raw": "PENSIUNEA MAMAIA NORD"
+    },
+    {
+      "amount": "250",
+      "category": "groceries",
+      "date": "2022-08-07",
+      "merchant_raw": "CARREFOUR MAMAIA"
+    },
+    {
+      "amount": "290",
+      "category": "restaurants",
+      "date": "2022-08-08",
+      "merchant_raw": "RESTAURANT ZANZIBAR MAMAIA"
+    },
+    {
+      "amount": "360",
+      "category": "travel",
+      "date": "2022-08-09",
+      "merchant_raw": "PENSIUNEA MAMAIA NORD"
+    },
+    {
+      "amount": "140",
+      "category": "groceries",
+      "date": "2022-08-10",
+      "merchant_raw": "CARREFOUR MAMAIA"
+    },
+    {
+      "amount": "275",
+      "category": "restaurants",
+      "date": "2022-08-11",
+      "merchant_raw": "RESTAURANT ZANZIBAR MAMAIA"
+    },
+    {
+      "amount": "185",
+      "category": "travel",
+      "date": "2022-08-12",
+      "merchant_raw": "PENSIUNEA MAMAIA NORD"
+    },
+    {
+      "amount": "280",
+      "category": "groceries",
+      "date": "2022-08-13",
+      "merchant_raw": "CARREFOUR MAMAIA"
+    },
+    {
+      "amount": "365",
+      "category": "restaurants",
+      "date": "2022-08-14",
+      "merchant_raw": "RESTAURANT ZANZIBAR MAMAIA"
+    },
+    {
+      "amount": "650",
+      "category": "education",
+      "date": "2022-08-27",
+      "mcc": 5943,
+      "merchant_raw": "CARREFOUR RECHIZITE SCOALA"
+    },
+    {
+      "amount": "900",
+      "category": "kids",
+      "date": "2022-09-14",
+      "mcc": 7996,
+      "merchant_raw": "LOCUL DE JOACA KIDDO PARTY"
+    },
+    {
+      "amount": "1300",
+      "category": "transport",
+      "date": "2022-10-05",
+      "mcc": 7538,
+      "merchant_raw": "SERVICE AUTO DACIA PLUS CLUJ"
+    },
+    {
+      "amount": "170",
+      "category": "transport",
+      "date": "2022-10-20",
+      "mcc": 7549,
+      "merchant_raw": "ITP AUTO TEST CLUJ"
+    },
+    {
+      "amount": "450",
+      "category": "gifts",
+      "date": "2022-10-28",
+      "mcc": 5941,
+      "merchant_raw": "DECATHLON CADOU RADU"
+    },
+    {
+      "amount": "220",
+      "category": "transport",
+      "date": "2022-11-05",
+      "mcc": 7538,
+      "merchant_raw": "VULCANIZARE ANVELOPE CLUJ"
+    },
+    {
+      "amount": "3400",
+      "category": "electronics",
+      "date": "2022-11-25",
+      "mcc": 5732,
+      "merchant_raw": "EMAG.RO BLACK FRIDAY LAPTOP"
+    },
+    {
+      "amount": "1510",
+      "category": "health_pharmacy",
+      "date": "2022-12-08",
+      "mcc": 8021,
+      "merchant_raw": "DENTAL ART CLUJ"
+    },
+    {
+      "amount": "220",
+      "category": "entertainment",
+      "date": "2022-12-08",
+      "merchant_raw": "TARGUL DE CRACIUN CLUJ"
+    },
+    {
+      "amount": "850",
+      "category": "gifts",
+      "date": "2022-12-15",
+      "mcc": 5641,
+      "merchant_raw": "SMYK CADOURI CRACIUN"
+    },
+    {
+      "amount": "560",
+      "category": "gifts",
+      "date": "2022-12-18",
+      "merchant_raw": "ALLEGRO.RO CADOURI"
+    },
+    {
+      "amount": "280",
+      "category": "books",
+      "date": "2022-12-20",
+      "mcc": 5942,
+      "merchant_raw": "CARTURESTI CADOURI"
+    },
+    {
+      "amount": "900",
+      "category": "restaurants",
+      "date": "2022-12-31",
+      "mcc": 5812,
+      "merchant_raw": "RESTAURANT REVELION CLUJ"
+    },
+    {
+      "amount": "1431",
+      "category": "transport",
+      "date": "2023-01-14",
+      "mcc": 6300,
+      "merchant_raw": "GROUPAMA ASIGURARI RCA"
+    },
+    {
+      "amount": "180",
+      "category": "gifts",
+      "date": "2023-02-14",
+      "mcc": 5992,
+      "merchant_raw": "FLORARIA ANTHURIUM CLUJ"
+    },
+    {
+      "amount": "1378",
+      "category": "kids",
+      "date": "2023-03-01",
+      "mcc": 7996,
+      "merchant_raw": "KIDDO PARTY ZI DE NASTERE"
+    },
+    {
+      "amount": "159",
+      "category": "gifts",
+      "date": "2023-03-07",
+      "mcc": 5992,
+      "merchant_raw": "FLORARIA MARTISOR CLUJ"
+    },
+    {
+      "amount": "1560",
+      "category": "health_pharmacy",
+      "date": "2023-03-10",
+      "mcc": 8021,
+      "merchant_raw": "DENTAL ART CLUJ"
+    },
+    {
+      "amount": "254",
+      "category": "gifts",
+      "date": "2023-04-13",
+      "mcc": 5641,
+      "merchant_raw": "SMYK CADOURI PASTE"
+    },
+    {
+      "amount": "382",
+      "category": "groceries",
+      "date": "2023-04-14",
+      "merchant_raw": "PIATA MARASTI PASTE"
+    },
+    {
+      "amount": "1590",
+      "category": "entertainment",
+      "date": "2023-05-10",
+      "mcc": 7922,
+      "merchant_raw": "ELECTRIC CASTLE BILETE"
+    },
+    {
+      "amount": "4200",
+      "category": "travel",
+      "date": "2023-06-10",
+      "mcc": 4722,
+      "merchant_raw": "BOOKING.COM HOTEL THASSOS"
+    },
+    {
+      "amount": "636",
+      "category": "restaurants",
+      "date": "2023-07-19",
+      "mcc": 5812,
+      "merchant_raw": "SAMSARA FOODHOUSE ZI NASTERE"
+    },
+    {
+      "amount": "130",
+      "category": "travel",
+      "date": "2023-08-12",
+      "merchant_raw": "AEGEAN FERRIES KERAMOTI"
+    },
+    {
+      "amount": "295",
+      "category": "groceries",
+      "date": "2023-08-13",
+      "merchant_raw": "MASOUTIS THASSOS"
+    },
+    {
+      "amount": "185",
+      "category": "restaurants",
+      "date": "2023-08-14",
+      "merchant_raw": "TAVERNA KYMA THASSOS"
+    },
+    {
+      "amount": "165",
+      "category": "travel",
+      "date": "2023-08-15",
+      "merchant_raw": "AEGEAN FERRIES KERAMOTI"
+    },
+    {
+      "amount": "325",
+      "category": "groceries",
+      "date": "2023-08-16",
+      "merchant_raw": "MASOUTIS THASSOS"
+    },
+    {
+      "amount": "255",
+      "category": "restaurants",
+      "date": "2023-08-17",
+      "merchant_raw": "TAVERNA KYMA THASSOS"
+    },
+    {
+      "amount": "255",
+      "category": "travel",
+      "date": "2023-08-18",
+      "merchant_raw": "AEGEAN FERRIES KERAMOTI"
+    },
+    {
+      "amount": "315",
+      "category": "groceries",
+      "date": "2023-08-19",
+      "merchant_raw": "MASOUTIS THASSOS"
+    },
+    {
+      "amount": "320",
+      "category": "restaurants",
+      "date": "2023-08-20",
+      "merchant_raw": "TAVERNA KYMA THASSOS"
+    },
+    {
+      "amount": "220",
+      "category": "travel",
+      "date": "2023-08-21",
+      "merchant_raw": "AEGEAN FERRIES KERAMOTI"
+    },
+    {
+      "amount": "350",
+      "category": "groceries",
+      "date": "2023-08-22",
+      "merchant_raw": "MASOUTIS THASSOS"
+    },
+    {
+      "amount": "689",
+      "category": "education",
+      "date": "2023-08-27",
+      "mcc": 5943,
+      "merchant_raw": "CARREFOUR RECHIZITE SCOALA"
+    },
+    {
+      "amount": "954",
+      "category": "kids",
+      "date": "2023-09-14",
+      "mcc": 7996,
+      "merchant_raw": "LOCUL DE JOACA KIDDO PARTY"
+    },
+    {
+      "amount": "1378",
+      "category": "transport",
+      "date": "2023-10-05",
+      "mcc": 7538,
+      "merchant_raw": "SERVICE AUTO DACIA PLUS CLUJ"
+    },
+    {
+      "amount": "477",
+      "category": "gifts",
+      "date": "2023-10-28",
+      "mcc": 5941,
+      "merchant_raw": "DECATHLON CADOU RADU"
+    },
+    {
+      "amount": "1900",
+      "category": "transport",
+      "date": "2023-11-05",
+      "mcc": 7538,
+      "merchant_raw": "VULCANIZARE ANVELOPE CLUJ"
+    },
+    {
+      "amount": "2600",
+      "category": "electronics",
+      "date": "2023-11-24",
+      "mcc": 5732,
+      "merchant_raw": "ALTEX TV BLACK FRIDAY"
+    },
+    {
+      "amount": "1290",
+      "category": "health_pharmacy",
+      "date": "2023-12-04",
+      "mcc": 8021,
+      "merchant_raw": "DENTAL ART CLUJ"
+    },
+    {
+      "amount": "233",
+      "category": "entertainment",
+      "date": "2023-12-08",
+      "merchant_raw": "TARGUL DE CRACIUN CLUJ"
+    },
+    {
+      "amount": "901",
+      "category": "gifts",
+      "date": "2023-12-15",
+      "mcc": 5641,
+      "merchant_raw": "SMYK CADOURI CRACIUN"
+    },
+    {
+      "amount": "594",
+      "category": "gifts",
+      "date": "2023-12-18",
+      "merchant_raw": "ALLEGRO.RO CADOURI"
+    },
+    {
+      "amount": "297",
+      "category": "books",
+      "date": "2023-12-20",
+      "mcc": 5942,
+      "merchant_raw": "CARTURESTI CADOURI"
+    },
+    {
+      "amount": "954",
+      "category": "restaurants",
+      "date": "2023-12-31",
+      "mcc": 5812,
+      "merchant_raw": "RESTAURANT REVELION CLUJ"
+    },
+    {
+      "amount": "1512",
+      "category": "transport",
+      "date": "2024-01-14",
+      "mcc": 6300,
+      "merchant_raw": "GROUPAMA ASIGURARI RCA"
+    },
+    {
+      "amount": "190",
+      "category": "gifts",
+      "date": "2024-02-14",
+      "mcc": 5992,
+      "merchant_raw": "FLORARIA ANTHURIUM CLUJ"
+    },
+    {
+      "amount": "1456",
+      "category": "kids",
+      "date": "2024-03-01",
+      "mcc": 7996,
+      "merchant_raw": "KIDDO PARTY ZI DE NASTERE"
+    },
+    {
+      "amount": "168",
+      "category": "gifts",
+      "date": "2024-03-07",
+      "mcc": 5992,
+      "merchant_raw": "FLORARIA MARTISOR CLUJ"
+    },
+    {
+      "amount": "860",
+      "category": "health_pharmacy",
+      "date": "2024-03-24",
+      "mcc": 8021,
+      "merchant_raw": "DENTAL ART CLUJ"
+    },
+    {
+      "amount": "560",
+      "category": "household_goods",
+      "date": "2024-04-20",
+      "mcc": 5200,
+      "merchant_raw": "DEDEMAN CLUJ GRADINA"
+    },
+    {
+      "amount": "269",
+      "category": "gifts",
+      "date": "2024-05-02",
+      "mcc": 5641,
+      "merchant_raw": "SMYK CADOURI PASTE"
+    },
+    {
+      "amount": "403",
+      "category": "groceries",
+      "date": "2024-05-03",
+      "merchant_raw": "PIATA MARASTI PASTE"
+    },
+    {
+      "amount": "1680",
+      "category": "entertainment",
+      "date": "2024-05-10",
+      "mcc": 7922,
+      "merchant_raw": "ELECTRIC CASTLE BILETE"
+    },
+    {
+      "amount": "5200",
+      "category": "travel",
+      "date": "2024-06-10",
+      "mcc": 4722,
+      "merchant_raw": "BOOKING.COM HOTEL SPLIT"
+    },
+    {
+      "amount": "672",
+      "category": "restaurants",
+      "date": "2024-07-19",
+      "mcc": 5812,
+      "merchant_raw": "SAMSARA FOODHOUSE ZI NASTERE"
+    },
+    {
+      "amount": "360",
+      "category": "travel",
+      "date": "2024-07-20",
+      "merchant_raw": "KONZUM SPLIT"
+    },
+    {
+      "amount": "350",
+      "category": "groceries",
+      "date": "2024-07-21",
+      "merchant_raw": "RESTORAN DALMACIJA SPLIT"
+    },
+    {
+      "amount": "160",
+      "category": "restaurants",
+      "date": "2024-07-22",
+      "merchant_raw": "JADROLINIJA FERRY"
+    },
+    {
+      "amount": "320",
+      "category": "travel",
+      "date": "2024-07-23",
+      "merchant_raw": "KONZUM SPLIT"
+    },
+    {
+      "amount": "400",
+      "category": "groceries",
+      "date": "2024-07-24",
+      "merchant_raw": "RESTORAN DALMACIJA SPLIT"
+    },
+    {
+      "amount": "255",
+      "category": "restaurants",
+      "date": "2024-07-25",
+      "merchant_raw": "JADROLINIJA FERRY"
+    },
+    {
+      "amount": "300",
+      "category": "travel",
+      "date": "2024-07-26",
+      "merchant_raw": "KONZUM SPLIT"
+    },
+    {
+      "amount": "120",
+      "category": "groceries",
+      "date": "2024-07-27",
+      "merchant_raw": "RESTORAN DALMACIJA SPLIT"
+    },
+    {
+      "amount": "140",
+      "category": "restaurants",
+      "date": "2024-07-28",
+      "merchant_raw": "JADROLINIJA FERRY"
+    },
+    {
+      "amount": "175",
+      "category": "travel",
+      "date": "2024-07-29",
+      "merchant_raw": "KONZUM SPLIT"
+    },
+    {
+      "amount": "290",
+      "category": "groceries",
+      "date": "2024-07-30",
+      "merchant_raw": "RESTORAN DALMACIJA SPLIT"
+    },
+    {
+      "amount": "255",
+      "category": "restaurants",
+      "date": "2024-07-31",
+      "merchant_raw": "JADROLINIJA FERRY"
+    },
+    {
+      "amount": "728",
+      "category": "education",
+      "date": "2024-08-27",
+      "mcc": 5943,
+      "merchant_raw": "CARREFOUR RECHIZITE SCOALA"
+    },
+    {
+      "amount": "1550",
+      "category": "health_pharmacy",
+      "date": "2024-08-31",
+      "mcc": 8021,
+      "merchant_raw": "DENTAL ART CLUJ"
+    },
+    {
+      "amount": "1008",
+      "category": "kids",
+      "date": "2024-09-14",
+      "mcc": 7996,
+      "merchant_raw": "LOCUL DE JOACA KIDDO PARTY"
+    },
+    {
+      "amount": "1456",
+      "category": "transport",
+      "date": "2024-10-05",
+      "mcc": 7538,
+      "merchant_raw": "SERVICE AUTO DACIA PLUS CLUJ"
+    },
+    {
+      "amount": "190",
+      "category": "transport",
+      "date": "2024-10-20",
+      "mcc": 7549,
+      "merchant_raw": "ITP AUTO TEST CLUJ"
+    },
+    {
+      "amount": "504",
+      "category": "gifts",
+      "date": "2024-10-28",
+      "mcc": 5941,
+      "merchant_raw": "DECATHLON CADOU RADU"
+    },
+    {
+      "amount": "246",
+      "category": "transport",
+      "date": "2024-11-05",
+      "mcc": 7538,
+      "merchant_raw": "VULCANIZARE ANVELOPE CLUJ"
+    },
+    {
+      "amount": "3200",
+      "category": "household_goods",
+      "date": "2024-11-29",
+      "mcc": 5732,
+      "merchant_raw": "FLANCO FRIGIDER BLACK FRIDAY"
+    },
+    {
+      "amount": "246",
+      "category": "entertainment",
+      "date": "2024-12-08",
+      "merchant_raw": "TARGUL DE CRACIUN CLUJ"
+    },
+    {
+      "amount": "952",
+      "category": "gifts",
+      "date": "2024-12-15",
+      "mcc": 5641,
+      "merchant_raw": "SMYK CADOURI CRACIUN"
+    },
+    {
+      "amount": "627",
+      "category": "gifts",
+      "date": "2024-12-18",
+      "merchant_raw": "ALLEGRO.RO CADOURI"
+    },
+    {
+      "amount": "314",
+      "category": "books",
+      "date": "2024-12-20",
+      "mcc": 5942,
+      "merchant_raw": "CARTURESTI CADOURI"
+    },
+    {
+      "amount": "1008",
+      "category": "restaurants",
+      "date": "2024-12-31",
+      "mcc": 5812,
+      "merchant_raw": "RESTAURANT REVELION CLUJ"
+    },
+    {
+      "amount": "1250",
+      "category": "health_pharmacy",
+      "date": "2025-01-10",
+      "mcc": 8021,
+      "merchant_raw": "DENTAL ART CLUJ"
+    },
+    {
+      "amount": "1593",
+      "category": "transport",
+      "date": "2025-01-14",
+      "mcc": 6300,
+      "merchant_raw": "GROUPAMA ASIGURARI RCA"
+    },
+    {
+      "amount": "2600",
+      "category": "travel",
+      "date": "2025-01-20",
+      "mcc": 4722,
+      "merchant_raw": "BOOKING.COM POIANA BRASOV"
+    },
+    {
+      "amount": "201",
+      "category": "gifts",
+      "date": "2025-02-14",
+      "mcc": 5992,
+      "merchant_raw": "FLORARIA ANTHURIUM CLUJ"
+    },
+    {
+      "amount": "880",
+      "category": "sport",
+      "date": "2025-02-16",
+      "mcc": 7997,
+      "merchant_raw": "SKIPASS POIANA BRASOV"
+    },
+    {
+      "amount": "600",
+      "category": "sport",
+      "date": "2025-02-17",
+      "mcc": 7997,
+      "merchant_raw": "SCOALA SCHI POIANA BRASOV"
+    },
+    {
+      "amount": "1534",
+      "category": "kids",
+      "date": "2025-03-01",
+      "mcc": 7996,
+      "merchant_raw": "KIDDO PARTY ZI DE NASTERE"
+    },
+    {
+      "amount": "177",
+      "category": "gifts",
+      "date": "2025-03-07",
+      "mcc": 5992,
+      "merchant_raw": "FLORARIA MARTISOR CLUJ"
+    },
+    {
+      "amount": "283",
+      "category": "gifts",
+      "date": "2025-04-17",
+      "mcc": 5641,
+      "merchant_raw": "SMYK CADOURI PASTE"
+    },
+    {
+      "amount": "425",
+      "category": "groceries",
+      "date": "2025-04-18",
+      "merchant_raw": "PIATA MARASTI PASTE"
+    },
+    {
+      "amount": "1770",
+      "category": "entertainment",
+      "date": "2025-05-10",
+      "mcc": 7922,
+      "merchant_raw": "ELECTRIC CASTLE BILETE"
+    },
+    {
+      "amount": "6100",
+      "category": "travel",
+      "date": "2025-06-10",
+      "mcc": 4722,
+      "merchant_raw": "BOOKING.COM HOTEL HALKIDIKI"
+    },
+    {
+      "amount": "708",
+      "category": "restaurants",
+      "date": "2025-07-19",
+      "mcc": 5812,
+      "merchant_raw": "SAMSARA FOODHOUSE ZI NASTERE"
+    },
+    {
+      "amount": "155",
+      "category": "travel",
+      "date": "2025-08-02",
+      "merchant_raw": "MY MARKET HALKIDIKI"
+    },
+    {
+      "amount": "235",
+      "category": "groceries",
+      "date": "2025-08-03",
+      "merchant_raw": "TAVERNA THALASSA"
+    },
+    {
+      "amount": "235",
+      "category": "restaurants",
+      "date": "2025-08-04",
+      "merchant_raw": "BOAT TRIP KASSANDRA"
+    },
+    {
+      "amount": "145",
+      "category": "travel",
+      "date": "2025-08-05",
+      "merchant_raw": "MY MARKET HALKIDIKI"
+    },
+    {
+      "amount": "230",
+      "category": "groceries",
+      "date": "2025-08-06",
+      "merchant_raw": "TAVERNA THALASSA"
+    },
+    {
+      "amount": "385",
+      "category": "restaurants",
+      "date": "2025-08-07",
+      "merchant_raw": "BOAT TRIP KASSANDRA"
+    },
+    {
+      "amount": "140",
+      "category": "travel",
+      "date": "2025-08-08",
+      "merchant_raw": "MY MARKET HALKIDIKI"
+    },
+    {
+      "amount": "370",
+      "category": "groceries",
+      "date": "2025-08-09",
+      "merchant_raw": "TAVERNA THALASSA"
+    },
+    {
+      "amount": "135",
+      "category": "restaurants",
+      "date": "2025-08-10",
+      "merchant_raw": "BOAT TRIP KASSANDRA"
+    },
+    {
+      "amount": "220",
+      "category": "travel",
+      "date": "2025-08-11",
+      "merchant_raw": "MY MARKET HALKIDIKI"
+    },
+    {
+      "amount": "365",
+      "category": "groceries",
+      "date": "2025-08-12",
+      "merchant_raw": "TAVERNA THALASSA"
+    },
+    {
+      "amount": "215",
+      "category": "restaurants",
+      "date": "2025-08-13",
+      "merchant_raw": "BOAT TRIP KASSANDRA"
+    },
+    {
+      "amount": "767",
+      "category": "education",
+      "date": "2025-08-27",
+      "mcc": 5943,
+      "merchant_raw": "CARREFOUR RECHIZITE SCOALA"
+    },
+    {
+      "amount": "1062",
+      "category": "kids",
+      "date": "2025-09-14",
+      "mcc": 7996,
+      "merchant_raw": "LOCUL DE JOACA KIDDO PARTY"
+    },
+    {
+      "amount": "1534",
+      "category": "transport",
+      "date": "2025-10-05",
+      "mcc": 7538,
+      "merchant_raw": "SERVICE AUTO DACIA PLUS CLUJ"
+    },
+    {
+      "amount": "531",
+      "category": "gifts",
+      "date": "2025-10-28",
+      "mcc": 5941,
+      "merchant_raw": "DECATHLON CADOU RADU"
+    },
+    {
+      "amount": "260",
+      "category": "transport",
+      "date": "2025-11-05",
+      "mcc": 7538,
+      "merchant_raw": "VULCANIZARE ANVELOPE CLUJ"
+    },
+    {
+      "amount": "2900",
+      "category": "electronics",
+      "date": "2025-11-28",
+      "mcc": 5732,
+      "merchant_raw": "EMAG.RO BLACK FRIDAY TELEFON"
+    },
+    {
+      "amount": "1170",
+      "category": "health_pharmacy",
+      "date": "2025-12-02",
+      "mcc": 8021,
+      "merchant_raw": "DENTAL ART CLUJ"
+    },
+    {
+      "amount": "260",
+      "category": "entertainment",
+      "date": "2025-12-08",
+      "merchant_raw": "TARGUL DE CRACIUN CLUJ"
+    },
+    {
+      "amount": "1003",
+      "category": "gifts",
+      "date": "2025-12-15",
+      "mcc": 5641,
+      "merchant_raw": "SMYK CADOURI CRACIUN"
+    },
+    {
+      "amount": "661",
+      "category": "gifts",
+      "date": "2025-12-18",
+      "merchant_raw": "ALLEGRO.RO CADOURI"
+    },
+    {
+      "amount": "330",
+      "category": "books",
+      "date": "2025-12-20",
+      "mcc": 5942,
+      "merchant_raw": "CARTURESTI CADOURI"
+    },
+    {
+      "amount": "1062",
+      "category": "restaurants",
+      "date": "2025-12-31",
+      "mcc": 5812,
+      "merchant_raw": "RESTAURANT REVELION CLUJ"
+    },
+    {
+      "amount": "1674",
+      "category": "transport",
+      "date": "2026-01-14",
+      "mcc": 6300,
+      "merchant_raw": "GROUPAMA ASIGURARI RCA"
+    },
+    {
+      "amount": "211",
+      "category": "gifts",
+      "date": "2026-02-14",
+      "mcc": 5992,
+      "merchant_raw": "FLORARIA ANTHURIUM CLUJ"
+    },
+    {
+      "amount": "1390",
+      "category": "health_pharmacy",
+      "date": "2026-02-19",
+      "mcc": 8021,
+      "merchant_raw": "DENTAL ART CLUJ"
+    },
+    {
+      "amount": "1612",
+      "category": "kids",
+      "date": "2026-03-01",
+      "mcc": 7996,
+      "merchant_raw": "KIDDO PARTY ZI DE NASTERE"
+    },
+    {
+      "amount": "186",
+      "category": "gifts",
+      "date": "2026-03-07",
+      "mcc": 5992,
+      "merchant_raw": "FLORARIA MARTISOR CLUJ"
+    },
+    {
+      "amount": "298",
+      "category": "gifts",
+      "date": "2026-04-09",
+      "mcc": 5641,
+      "merchant_raw": "SMYK CADOURI PASTE"
+    },
+    {
+      "amount": "446",
+      "category": "groceries",
+      "date": "2026-04-10",
+      "merchant_raw": "PIATA MARASTI PASTE"
+    },
+    {
+      "amount": "1860",
+      "category": "entertainment",
+      "date": "2026-05-10",
+      "mcc": 7922,
+      "merchant_raw": "ELECTRIC CASTLE BILETE"
+    },
+    {
+      "amount": "1500",
+      "category": "travel",
+      "date": "2026-05-22",
+      "mcc": 4722,
+      "merchant_raw": "BOOKING.COM AVANS CORFU"
+    },
+    {
+      "amount": "340",
+      "category": "household_goods",
+      "date": "2026-06-06",
+      "mcc": 5200,
+      "merchant_raw": "DEDEMAN MOSTRE GRESIE"
+    }
+  ],
+  "current_balance": "9340.55",
+  "fixed_costs": [
+    {
+      "amount": "3150",
+      "category": "housing_rent",
+      "day_of_month": 5,
+      "merchant_raw": "RATA CREDIT IPOTECAR BT 77120",
+      "name": "Rată ipotecă"
+    },
+    {
+      "amount": "430",
+      "category": "utilities",
+      "day_of_month": 18,
+      "jitter_pct": 20,
+      "merchant_raw": "ASOCIATIA PROPRIETARI GHEORGHENI",
+      "name": "Întreținere bloc"
+    },
+    {
+      "amount": "260",
+      "category": "utilities",
+      "day_of_month": 14,
+      "jitter_pct": 15,
+      "mcc": 4900,
+      "merchant_raw": "ELECTRICA FURNIZARE SA",
+      "name": "Curent"
+    },
+    {
+      "amount": "190",
+      "category": "utilities",
+      "day_of_month": 16,
+      "jitter_pct": 35,
+      "mcc": 4900,
+      "merchant_raw": "ENGIE ROMANIA SA",
+      "name": "Gaz"
+    },
+    {
+      "amount": "95",
+      "category": "telecom",
+      "day_of_month": 21,
+      "mcc": 4899,
+      "merchant_raw": "DIGI ROMANIA SA",
+      "name": "Internet + TV"
+    },
+    {
+      "amount": "145",
+      "category": "telecom",
+      "day_of_month": 20,
+      "mcc": 4814,
+      "merchant_raw": "ORANGE ROMANIA SA",
+      "name": "Telefoane"
+    },
+    {
+      "amount": "980",
+      "category": "transport",
+      "day_of_month": 12,
+      "merchant_raw": "RATA LEASING AUTO UNICREDIT",
+      "name": "Rată mașină"
+    },
+    {
+      "amount": "1250",
+      "category": "kids",
+      "day_of_month": 2,
+      "mcc": 8211,
+      "merchant_raw": "GRADINITA RAZA DE SOARE SRL",
+      "name": "Grădiniță Luca"
+    },
+    {
+      "amount": "950",
+      "category": "kids",
+      "day_of_month": 2,
+      "mcc": 8299,
+      "merchant_raw": "AFTER SCHOOL CLEVER KIDS",
+      "name": "After-school Ana"
+    },
+    {
+      "amount": "62",
+      "category": "subscriptions",
+      "day_of_month": 7,
+      "mcc": 4899,
+      "merchant_raw": "NETFLIX.COM",
+      "name": "Netflix"
+    },
+    {
+      "amount": "42",
+      "category": "subscriptions",
+      "day_of_month": 9,
+      "mcc": 5815,
+      "merchant_raw": "SPOTIFY P3B71D2",
+      "name": "Spotify Family"
+    },
+    {
+      "amount": "230",
+      "category": "sport",
+      "day_of_month": 4,
+      "mcc": 7997,
+      "merchant_raw": "STAY FIT GYM CLUJ",
+      "name": "Sală"
+    },
+    {
+      "amount": "75",
+      "category": "other",
+      "day_of_month": 22,
+      "mcc": 6300,
+      "merchant_raw": "GROUPAMA ASIGURARI LOCUINTA",
+      "name": "Asigurare locuință"
+    },
+    {
+      "amount": "320",
+      "category": "sport",
+      "day_of_month": 6,
+      "mcc": 7997,
+      "merchant_raw": "CLUB SPORTIV POLI CLUJ INOT",
+      "name": "Înot Ana"
+    },
+    {
+      "amount": "380",
+      "category": "education",
+      "day_of_month": 6,
+      "mcc": 8299,
+      "merchant_raw": "ENGLISH TIME CLUJ",
+      "name": "Engleză Ana"
+    }
+  ],
+  "goal": {
+    "amount": "30000",
+    "deadline": "2027-06-30",
+    "hard_deadline": false,
+    "motivation": "Bucătărie nouă"
+  },
+  "goal_pot": {
+    "name": "Bucătărie nouă",
+    "saved": "17400"
+  },
+  "history_from": "2022-06-15",
+  "id": "elena",
+  "income_sources": [
+    {
+      "amount": "11500",
+      "day_of_month": 10,
+      "merchant_raw": "SALARIU NORDIC SOFT SRL",
+      "source": "Salariu"
+    },
+    {
+      "amount": "7050",
+      "day_of_month": 15,
+      "merchant_raw": "SALARIU CLUJ MEDICAL SRL",
+      "source": "Salariu Radu"
+    },
+    {
+      "amount": "2200",
+      "day_of_month": 25,
+      "merchant_raw": "TRANSFER PIXEL DESIGN STUDIO",
+      "source": "Proiecte freelance"
+    },
+    {
+      "amount": "680",
+      "day_of_month": 8,
+      "merchant_raw": "ALOCATIE STAT AJPIS CLUJ",
+      "source": "Alocații copii"
+    }
+  ],
+  "plan_preferences": {
+    "buffer_pct": "0.12"
+  },
+  "pots": [
+    {
+      "deadline": null,
+      "kind": "emergency",
+      "name": "Fond de urgență",
+      "saved": "21000",
+      "target": "25000"
+    },
+    {
+      "deadline": "2026-08-01",
+      "kind": "event",
+      "name": "Vacanță Corfu 2026",
+      "saved": "5600",
+      "target": "8000"
+    },
+    {
+      "deadline": "2026-10-01",
+      "kind": "custom",
+      "name": "Service & RCA mașină",
+      "saved": "2300",
+      "target": "4000"
+    },
+    {
+      "deadline": "2026-07-10",
+      "kind": "event",
+      "name": "Tabără Ana",
+      "saved": "1200",
+      "target": "1800"
+    },
+    {
+      "deadline": "2026-12-15",
+      "kind": "event",
+      "name": "Crăciun 2026",
+      "saved": "900",
+      "target": "3000"
+    }
+  ],
+  "quiet": [
+    {
+      "from": "2022-08-06",
+      "streams": [
+        "kaufland_weekly",
+        "lidl_midweek",
+        "bakery",
+        "coffee",
+        "office_lunch",
+        "delivery",
+        "rides",
+        "parents_groceries",
+        "weekend_restaurant",
+        "kids_weekend",
+        "going_out",
+        "personal_care"
+      ],
+      "to": "2022-08-14"
+    },
+    {
+      "from": "2023-08-12",
+      "streams": [
+        "kaufland_weekly",
+        "lidl_midweek",
+        "bakery",
+        "coffee",
+        "office_lunch",
+        "delivery",
+        "rides",
+        "parents_groceries",
+        "weekend_restaurant",
+        "kids_weekend",
+        "going_out",
+        "personal_care"
+      ],
+      "to": "2023-08-22"
+    },
+    {
+      "from": "2024-07-20",
+      "streams": [
+        "kaufland_weekly",
+        "lidl_midweek",
+        "bakery",
+        "coffee",
+        "office_lunch",
+        "delivery",
+        "rides",
+        "parents_groceries",
+        "weekend_restaurant",
+        "kids_weekend",
+        "going_out",
+        "personal_care"
+      ],
+      "to": "2024-07-31"
+    },
+    {
+      "from": "2025-08-02",
+      "streams": [
+        "kaufland_weekly",
+        "lidl_midweek",
+        "bakery",
+        "coffee",
+        "office_lunch",
+        "delivery",
+        "rides",
+        "parents_groceries",
+        "weekend_restaurant",
+        "kids_weekend",
+        "going_out",
+        "personal_care"
+      ],
+      "to": "2025-08-13"
+    },
+    {
+      "from": "2025-02-15",
+      "streams": [
+        "kaufland_weekly",
+        "lidl_midweek",
+        "bakery",
+        "coffee",
+        "office_lunch",
+        "delivery",
+        "rides",
+        "parents_groceries",
+        "weekend_restaurant",
+        "kids_weekend",
+        "going_out",
+        "personal_care"
+      ],
+      "to": "2025-02-20"
+    },
+    {
+      "from": "2022-12-24",
+      "streams": [
+        "coffee",
+        "office_lunch",
+        "lidl_midweek"
+      ],
+      "to": "2022-12-28"
+    },
+    {
+      "from": "2023-12-24",
+      "streams": [
+        "coffee",
+        "office_lunch",
+        "lidl_midweek"
+      ],
+      "to": "2023-12-28"
+    },
+    {
+      "from": "2024-12-24",
+      "streams": [
+        "coffee",
+        "office_lunch",
+        "lidl_midweek"
+      ],
+      "to": "2024-12-28"
+    },
+    {
+      "from": "2025-12-24",
+      "streams": [
+        "coffee",
+        "office_lunch",
+        "lidl_midweek"
+      ],
+      "to": "2025-12-28"
+    },
+    {
+      "from": "2026-01-05",
+      "streams": [
+        "delivery"
+      ],
+      "to": "2026-01-31"
+    }
+  ],
+  "receipt_items": {
+    "household": [
+      "Raft",
+      "Cutii depozitare",
+      "Lampă",
+      "Prosoape",
+      "Vopsea",
+      "Becuri"
+    ],
+    "kaufland_weekly": [
+      "Lapte",
+      "Ouă",
+      "Pâine",
+      "Piept de pui",
+      "Mere",
+      "Iaurt copii",
+      "Detergent",
+      "Scutece",
+      "Cafea",
+      "Brânză",
+      "Roșii",
+      "Paste"
+    ],
+    "kids_shop": [
+      "Tricou",
+      "Pantaloni",
+      "Puzzle",
+      "Lego",
+      "Carte de colorat",
+      "Șosete",
+      "Încălțăminte sport"
+    ],
+    "lidl_midweek": [
+      "Banane",
+      "Iaurt",
+      "Pâine integrală",
+      "Castraveți",
+      "Șuncă",
+      "Apă plată",
+      "Biscuiți copii",
+      "Unt"
+    ],
+    "pharmacy": [
+      "Nurofen copii",
+      "Vitamina D",
+      "Ser fiziologic",
+      "Plasturi",
+      "Paracetamol"
+    ]
+  },
+  "receipt_share": 0.25,
+  "seed": 606,
+  "spikes": [
+    {
+      "from": "2022-12-14",
+      "multiplier": 1.8,
+      "stream": "kaufland_weekly",
+      "to": "2022-12-23"
+    },
+    {
+      "from": "2022-08-20",
+      "multiplier": 2.3,
+      "stream": "kids_shop",
+      "to": "2022-09-12"
+    },
+    {
+      "from": "2022-11-20",
+      "multiplier": 1.7,
+      "stream": "clothes",
+      "to": "2022-11-30"
+    },
+    {
+      "from": "2022-01-10",
+      "multiplier": 1.6,
+      "stream": "pharmacy",
+      "to": "2022-02-20"
+    },
+    {
+      "from": "2023-12-14",
+      "multiplier": 1.8,
+      "stream": "kaufland_weekly",
+      "to": "2023-12-23"
+    },
+    {
+      "from": "2023-08-20",
+      "multiplier": 2.3,
+      "stream": "kids_shop",
+      "to": "2023-09-12"
+    },
+    {
+      "from": "2023-11-20",
+      "multiplier": 1.7,
+      "stream": "clothes",
+      "to": "2023-11-30"
+    },
+    {
+      "from": "2023-01-10",
+      "multiplier": 1.6,
+      "stream": "pharmacy",
+      "to": "2023-02-20"
+    },
+    {
+      "from": "2024-12-14",
+      "multiplier": 1.8,
+      "stream": "kaufland_weekly",
+      "to": "2024-12-23"
+    },
+    {
+      "from": "2024-08-20",
+      "multiplier": 2.3,
+      "stream": "kids_shop",
+      "to": "2024-09-12"
+    },
+    {
+      "from": "2024-11-20",
+      "multiplier": 1.7,
+      "stream": "clothes",
+      "to": "2024-11-30"
+    },
+    {
+      "from": "2024-01-10",
+      "multiplier": 1.6,
+      "stream": "pharmacy",
+      "to": "2024-02-20"
+    },
+    {
+      "from": "2025-12-14",
+      "multiplier": 1.8,
+      "stream": "kaufland_weekly",
+      "to": "2025-12-23"
+    },
+    {
+      "from": "2025-08-20",
+      "multiplier": 2.3,
+      "stream": "kids_shop",
+      "to": "2025-09-12"
+    },
+    {
+      "from": "2025-11-20",
+      "multiplier": 1.7,
+      "stream": "clothes",
+      "to": "2025-11-30"
+    },
+    {
+      "from": "2025-01-10",
+      "multiplier": 1.6,
+      "stream": "pharmacy",
+      "to": "2025-02-20"
+    },
+    {
+      "from": "2026-12-14",
+      "multiplier": 1.8,
+      "stream": "kaufland_weekly",
+      "to": "2026-12-23"
+    },
+    {
+      "from": "2026-08-20",
+      "multiplier": 2.3,
+      "stream": "kids_shop",
+      "to": "2026-09-12"
+    },
+    {
+      "from": "2026-11-20",
+      "multiplier": 1.7,
+      "stream": "clothes",
+      "to": "2026-11-30"
+    },
+    {
+      "from": "2026-01-10",
+      "multiplier": 1.6,
+      "stream": "pharmacy",
+      "to": "2026-02-20"
+    }
+  ],
+  "streams": [
+    {
+      "category": "groceries",
+      "hours": [
+        10,
+        13
+      ],
+      "kind": "weekly",
+      "max": 1100,
+      "mcc": 5411,
+      "median": 330,
+      "merchant_raw": [
+        "KAUFLAND 1203 CLUJ",
+        "KAUFLAND MARASTI CLUJ"
+      ],
+      "min": 120,
+      "name": "kaufland_weekly",
+      "per_week": [
+        1,
+        2
+      ],
+      "sigma": 0.3,
+      "weekdays": [
+        5,
+        6
+      ]
+    },
+    {
+      "category": "groceries",
+      "hours": [
+        17,
+        20
+      ],
+      "kind": "weekly",
+      "max": 480,
+      "mcc": 5411,
+      "median": 120,
+      "merchant_raw": [
+        "LIDL 0213 CLUJ-NAPOCA",
+        "LIDL GHEORGHENI CLUJ"
+      ],
+      "min": 30,
+      "name": "lidl_midweek",
+      "per_week": [
+        1,
+        2
+      ],
+      "sigma": 0.35,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "category": "groceries",
+      "hours": [
+        7,
+        9
+      ],
+      "kind": "every",
+      "max": 70,
+      "mcc": 5462,
+      "median": 22,
+      "merchant_raw": [
+        "PANEMAR 014 CLUJ",
+        "LA BONTON PATISERIE"
+      ],
+      "min": 6,
+      "name": "bakery",
+      "probability": 0.55,
+      "sigma": 0.3,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "category": "restaurants",
+      "hours": [
+        9,
+        11
+      ],
+      "kind": "every",
+      "mcc": 5814,
+      "merchant_raw": [
+        "MAKERS SPECIALTY COFFEE",
+        "OUTPOST COFFEE CLUJ",
+        "STARBUCKS IULIUS MALL"
+      ],
+      "name": "coffee",
+      "probability": 0.5,
+      "range": [
+        12,
+        26
+      ],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "category": "restaurants",
+      "hours": [
+        12,
+        14
+      ],
+      "kind": "every",
+      "max": 95,
+      "mcc": 5812,
+      "median": 45,
+      "merchant_raw": [
+        "BISTRO NORDIC CAFETERIA",
+        "SALAD BOX CLUJ",
+        "SUBWAY CLUJ"
+      ],
+      "min": 18,
+      "name": "office_lunch",
+      "probability": 0.6,
+      "sigma": 0.25,
+      "weekdays": [
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "category": "fuel",
+      "hours": [
+        7,
+        20
+      ],
+      "kind": "weekly",
+      "max": 520,
+      "mcc": 5541,
+      "median": 260,
+      "merchant_raw": [
+        "OMV 2201 CLUJ",
+        "PETROM FLORESTI",
+        "MOL CALEA TURZII"
+      ],
+      "min": 120,
+      "name": "fuel",
+      "per_week": [
+        1,
+        1
+      ],
+      "sigma": 0.2,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "health_pharmacy",
+      "hours": [
+        9,
+        20
+      ],
+      "kind": "weekly",
+      "max": 450,
+      "mcc": 5912,
+      "median": 95,
+      "merchant_raw": [
+        "CATENA FARMACIA 112",
+        "DONA FARMACIA 51",
+        "HELP NET FARMACIE"
+      ],
+      "min": 15,
+      "name": "pharmacy",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.5,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "category": "kids",
+      "hours": [
+        10,
+        20
+      ],
+      "kind": "weekly",
+      "max": 700,
+      "mcc": 5641,
+      "median": 110,
+      "merchant_raw": [
+        "SMYK CLUJ IULIUS",
+        "NORIEL VIVO CLUJ",
+        "DECATHLON CLUJ",
+        "KINDERLAND CLUJ"
+      ],
+      "min": 20,
+      "name": "kids_shop",
+      "per_week": [
+        0,
+        2
+      ],
+      "sigma": 0.55,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "kids",
+      "hours": [
+        10,
+        18
+      ],
+      "kind": "weekly",
+      "max": 260,
+      "mcc": 7996,
+      "median": 90,
+      "merchant_raw": [
+        "LOCUL DE JOACA KIDDO",
+        "GRADINA ZOOLOGICA CLUJ",
+        "AQUAPARK ARENA CLUJ"
+      ],
+      "min": 25,
+      "name": "kids_weekend",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.35,
+      "weekdays": [
+        6,
+        7
+      ]
+    },
+    {
+      "category": "pets",
+      "hours": [
+        10,
+        19
+      ],
+      "kind": "weekly",
+      "max": 650,
+      "mcc": 5995,
+      "median": 160,
+      "merchant_raw": [
+        "ANIMAX CLUJ",
+        "PET MART VIVO",
+        "CABINET VETERINAR VETMED"
+      ],
+      "min": 30,
+      "name": "pets",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.4,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "category": "restaurants",
+      "hours": [
+        13,
+        22
+      ],
+      "kind": "weekly",
+      "max": 750,
+      "mcc": 5812,
+      "median": 240,
+      "merchant_raw": [
+        "RESTAURANT ROATA CLUJ",
+        "SAMSARA FOODHOUSE",
+        "LOCUL DIN CENTRU",
+        "MARTY CAFE CLUJ"
+      ],
+      "min": 80,
+      "name": "weekend_restaurant",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.35,
+      "weekdays": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "food_delivery",
+      "hours": [
+        18,
+        22
+      ],
+      "kind": "weekly",
+      "max": 320,
+      "mcc": 5814,
+      "median": 110,
+      "merchant_raw": [
+        "GLOVO*ORDER 7731",
+        "TAZZ BY EMAG",
+        "WOLT CLUJ"
+      ],
+      "min": 35,
+      "name": "delivery",
+      "per_week": [
+        0,
+        2
+      ],
+      "sigma": 0.3,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "clothing",
+      "hours": [
+        11,
+        21
+      ],
+      "kind": "weekly",
+      "max": 1500,
+      "mcc": 5651,
+      "median": 200,
+      "merchant_raw": [
+        "H&M IULIUS MALL",
+        "ZARA VIVO CLUJ",
+        "ANSWEAR.RO",
+        "FASHIONDAYS.RO",
+        "PEPCO CLUJ"
+      ],
+      "min": 40,
+      "name": "clothes",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.6,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "household_goods",
+      "hours": [
+        10,
+        19
+      ],
+      "kind": "weekly",
+      "max": 2000,
+      "mcc": 5200,
+      "median": 190,
+      "merchant_raw": [
+        "IKEA CLUJ",
+        "DEDEMAN CLUJ",
+        "JYSK CLUJ",
+        "LEROY MERLIN CLUJ"
+      ],
+      "min": 20,
+      "name": "household",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.6,
+      "weekdays": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "personal_care",
+      "hours": [
+        10,
+        20
+      ],
+      "kind": "weekly",
+      "max": 420,
+      "mcc": 5977,
+      "median": 85,
+      "merchant_raw": [
+        "DM DROGERIE MARKT",
+        "SEPHORA IULIUS",
+        "SALON BEAUTY ROOM CLUJ"
+      ],
+      "min": 15,
+      "name": "personal_care",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.45,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "category": "transport",
+      "hours": [
+        8,
+        23
+      ],
+      "kind": "weekly",
+      "max": 90,
+      "mcc": 4121,
+      "median": 24,
+      "merchant_raw": [
+        "BOLT.EU/O/2304",
+        "UBER *TRIP",
+        "CTP CLUJ BILET",
+        "PARCARE CLUJ SMS"
+      ],
+      "min": 5,
+      "name": "rides",
+      "per_week": [
+        0,
+        3
+      ],
+      "sigma": 0.4,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "entertainment",
+      "hours": [
+        16,
+        21
+      ],
+      "kind": "weekly",
+      "max": 400,
+      "mcc": 7832,
+      "median": 120,
+      "merchant_raw": [
+        "CINEMA CITY IULIUS",
+        "IABILET.RO",
+        "ENTERTIX.RO",
+        "TEATRUL NATIONAL CLUJ"
+      ],
+      "min": 30,
+      "name": "going_out",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.4,
+      "weekdays": [
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "books",
+      "hours": [
+        12,
+        21
+      ],
+      "kind": "weekly",
+      "max": 260,
+      "mcc": 5942,
+      "median": 75,
+      "merchant_raw": [
+        "CARTURESTI CLUJ",
+        "LIBRARIA ESTE",
+        "ELEFANT.RO"
+      ],
+      "min": 20,
+      "name": "books",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.4,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "electronics",
+      "hours": [
+        12,
+        22
+      ],
+      "kind": "every",
+      "max": 4500,
+      "mcc": 5732,
+      "median": 420,
+      "merchant_raw": [
+        "EMAG.RO",
+        "ALTEX CLUJ",
+        "FLANCO VIVO CLUJ"
+      ],
+      "min": 40,
+      "name": "gadgets",
+      "probability": 0.02,
+      "sigma": 0.8,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "category": "gifts",
+      "hours": [
+        11,
+        19
+      ],
+      "kind": "weekly",
+      "max": 480,
+      "mcc": 5992,
+      "median": 120,
+      "merchant_raw": [
+        "FLORARIA ANTHURIUM CLUJ",
+        "CADOURI.RO",
+        "BOOKZONE CADOURI"
+      ],
+      "min": 30,
+      "name": "gifts",
+      "per_week": [
+        0,
+        1
+      ],
+      "sigma": 0.5,
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "category": "groceries",
+      "hours": [
+        10,
+        12
+      ],
+      "kind": "every",
+      "max": 420,
+      "mcc": 5411,
+      "median": 180,
+      "merchant_raw": "PROFI 1450 FLORESTI",
+      "min": 60,
+      "name": "parents_groceries",
+      "probability": 0.35,
+      "sigma": 0.3,
+      "weekdays": [
+        7
+      ]
+    },
+    {
+      "amount": 50,
+      "category": "other",
+      "day_of_month": 28,
+      "hours": [
+        9,
+        10
+      ],
+      "kind": "monthly",
+      "merchant_raw": "SALVATI COPIII ROMANIA",
+      "name": "donation"
+    },
+    {
+      "amount": 15,
+      "category": "subscriptions",
+      "day_of_month": 15,
+      "hours": [
+        3,
+        4
+      ],
+      "kind": "monthly",
+      "mcc": 5815,
+      "merchant_raw": "GOOGLE *GOOGLE ONE",
+      "name": "google_one"
+    },
+    {
+      "amount": 15,
+      "category": "subscriptions",
+      "day_of_month": 19,
+      "hours": [
+        3,
+        4
+      ],
+      "kind": "monthly",
+      "mcc": 5815,
+      "merchant_raw": "APPLE.COM/BILL ICLOUD",
+      "name": "icloud"
+    }
+  ],
+  "user": {
+    "age": 34,
+    "city": "Cluj-Napoca",
+    "coach_style": "warm",
+    "language": "ro",
+    "name": "Elena"
+  }
+}

@@ -189,7 +189,8 @@ The script:
 Then:
 
 - API docs: http://localhost:8000/api/docs (on in dev: `API_DOCS_ENABLED=true`)
-- Keycloak: http://localhost:8081. The personas are `matei`, `andrei`, `bianca`, `ioana` and `alex`, with the dev password `cashguard-dev`. They also have the `sim` role, so they can drive the simulator.
+- Keycloak: http://localhost:8081. The personas are `matei`, `andrei`, `bianca`, `ioana`, `alex` and `elena`, with the dev password `cashguard-dev`. They also have the `sim` role, so they can drive the simulator.
+- `elena` is the heavy persona: 4 years of history (5,332 transactions), plus chat history, transfers, receivables, life events, reflections and notifications (`backend/scripts/build_elena.py`). To see her in the Flutter app, set `APP_API_USER=a0000000-0000-4000-8000-000000000006` in `backend/.env`.
 
 ### 2b. Local API with hot reload
 

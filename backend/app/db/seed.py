@@ -9,6 +9,9 @@ File formats since the integration (the teams' real files; read strictly with `p
   {name, saved}, `pots`, `plan_preferences`; transactions with an `annotation` object)
 - `personas/<id>/facts.json` {"facts": [LifeFactDraft]}, `rules.json` {"rules": [PatternRule]}
   (David G., H-13)
+- `personas/<id>/extras.json` (optional; Elena, the heavy persona, `scripts/build_elena.py`):
+  {"transfers", "receivables", "life_events", "slips", "reflections", "messages",
+  "notifications"}, each a list of rows for that table (a transfer names its pot by `pot`)
 Every persona but Alex is onboarded (A20).
 
 bomboe's original placeholder formats (`scripts/placeholder_data.py`), kept for reference:
@@ -33,7 +36,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import clock
@@ -68,7 +71,7 @@ from app.services import (
 BACKEND = Path(__file__).resolve().parents[2]
 DATA_DIR = BACKEND / "data"
 REALM_FILE = BACKEND / "keycloak" / "realm-cashguard.json"
-PERSONAS = ("matei", "andrei", "bianca", "ioana", "alex")
+PERSONAS = ("matei", "andrei", "bianca", "ioana", "alex", "elena")
 
 
 def _read(path: Path) -> Any:
@@ -101,6 +104,10 @@ def persona_list(data_dir: Path = DATA_DIR) -> list[dict[str, Any]]:
             user = profile.get("user", profile)
             out.append({"id": pid, "name": user["name"], "tagline": profile.get("tagline", "")})
     return out
+
+
+def _at(value: str | None) -> datetime | None:
+    return datetime.fromisoformat(value) if value else None
 
 
 def _json_items(items: Any) -> Any:
@@ -206,11 +213,12 @@ async def seed_persona(db: AsyncSession, pid: str, sub: str, data_dir: Path = DA
         await pattern_rules.create(
             db, uid, dm.PatternRule.model_validate({"created_at": clock.now(), **raw})
         )
+    history = []
     for raw in _rows(folder / "transactions.json", "transactions"):
         amount = Decimal(str(raw["amount"]))
         note = raw.get("annotation") or {}  # danutu's E12 shape
-        db.add(
-            m.Transaction(
+        history.append(
+            dict(
                 user_id=uid,
                 amount=amount,
                 direction=raw.get("direction", "debit"),
@@ -235,7 +243,10 @@ async def seed_persona(db: AsyncSession, pid: str, sub: str, data_dir: Path = DA
                 decision="auto",
             )
         )
+    if history:  # one Core bulk INSERT: Elena's 5 000+ rows as ORM objects take seconds to flush
+        await db.execute(insert(m.Base.metadata.tables[m.Transaction.__tablename__]), history)
     await db.flush()
+    await seed_extras(db, uid, folder)
     await ports.recompute_baselines(db, uid)
     if goal and p.get("last_week_probability") is not None:
         last_week = clock.today() - timedelta(days=7)
@@ -264,6 +275,100 @@ async def seed_persona(db: AsyncSession, pid: str, sub: str, data_dir: Path = DA
     if plan is not None:
         await ports.forecast_goal(db, uid, plan.version)
     return uid
+
+
+async def seed_extras(db: AsyncSession, uid: int, folder: Path) -> None:
+    """The optional `extras.json`: rows for the tables the E12 generator doesn't fill."""
+    extras = _read(folder / "extras.json")
+    if not extras:
+        return
+    pot_ids = {
+        pot.name: pot.id for pot in await db.scalars(select(m.Pot).where(m.Pot.user_id == uid))
+    }
+    db.add_all(
+        m.Transfer(
+            user_id=uid,
+            pot_id=pot_ids[t["pot"]],
+            amount=Decimal(str(t["amount"])),
+            kind=t["kind"],
+            created_at=_at(t["created_at"]),
+        )
+        for t in extras.get("transfers", [])
+    )
+    db.add_all(
+        m.Receivable(
+            user_id=uid,
+            amount=Decimal(str(r["amount"])),
+            debtor_label=r["debtor_label"],
+            people_count=r.get("people_count"),
+            amount_each=Decimal(str(r["amount_each"])) if r.get("amount_each") else None,
+            expected_by=date.fromisoformat(r["expected_by"]),
+            status=r["status"],
+            requested_at=_at(r.get("requested_at")),
+            paid_at=_at(r.get("paid_at")),
+            created_at=_at(r["created_at"]),
+        )
+        for r in extras.get("receivables", [])
+    )
+    db.add_all(
+        m.LifeEvent(
+            user_id=uid,
+            name=e["name"],
+            date=date.fromisoformat(e["date"]),
+            est_cost=Decimal(str(e["est_cost"])),
+            type=e["type"],
+            source=FactSource.SEED,
+            status=e["status"],
+        )
+        for e in extras.get("life_events", [])
+    )
+    db.add_all(
+        m.Slip(
+            user_id=uid,
+            date=date.fromisoformat(s["date"]),
+            amount_over=Decimal(str(s["amount_over"])),
+            reason=s["reason"],
+            detail=s.get("detail"),
+            recurring=s.get("recurring", False),
+        )
+        for s in extras.get("slips", [])
+    )
+    db.add_all(
+        m.Reflection(
+            user_id=uid,
+            week_start=date.fromisoformat(r["week_start"]),
+            motivation=r.get("motivation"),
+            answer=r.get("answer"),
+            reason=r.get("reason"),
+        )
+        for r in extras.get("reflections", [])
+    )
+    db.add_all(
+        m.Message(
+            user_id=uid,
+            role=msg["role"],
+            content=msg["content"],
+            quick_replies=msg.get("quick_replies") or [],
+            input_mode=msg.get("input_mode"),
+            speak=msg.get("speak", False),
+            speak_text=msg.get("speak_text"),
+            created_at=_at(msg["created_at"]),
+        )
+        for msg in extras.get("messages", [])
+    )
+    db.add_all(
+        m.Notification(
+            user_id=uid,
+            type=n["type"],
+            title=n["title"],
+            body=n["body"],
+            read=n.get("read", False),
+            opens_chat=n.get("opens_chat", False),
+            created_at=_at(n["created_at"]),
+        )
+        for n in extras.get("notifications", [])
+    )
+    await db.flush()
 
 
 async def seed_all(

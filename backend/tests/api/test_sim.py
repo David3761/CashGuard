@@ -119,7 +119,14 @@ async def test_sim_transaction_errors(as_committed_user, seeded, body, status, c
 
 async def test_personas(as_committed_user, seeded):
     r = await as_committed_user(MATEI, roles=SIM).get("/sim/personas")
-    assert [p["id"] for p in r.json()["personas"]] == ["matei", "andrei", "bianca", "ioana", "alex"]
+    assert [p["id"] for p in r.json()["personas"]] == [
+        "matei",
+        "andrei",
+        "bianca",
+        "ioana",
+        "alex",
+        "elena",
+    ]
 
 
 async def test_next_day_runs_the_jobs_in_order_and_advances_one_day(

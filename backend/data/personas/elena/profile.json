@@ -1,0 +1,168 @@
+{
+  "account": {
+    "current_balance": "9340.55"
+  },
+  "fixed_costs": [
+    {
+      "amount": "3150",
+      "day_of_month": 5,
+      "name": "Rată ipotecă"
+    },
+    {
+      "amount": "430",
+      "day_of_month": 18,
+      "name": "Întreținere bloc"
+    },
+    {
+      "amount": "260",
+      "day_of_month": 14,
+      "name": "Curent"
+    },
+    {
+      "amount": "190",
+      "day_of_month": 16,
+      "name": "Gaz"
+    },
+    {
+      "amount": "95",
+      "day_of_month": 21,
+      "name": "Internet + TV"
+    },
+    {
+      "amount": "145",
+      "day_of_month": 20,
+      "name": "Telefoane"
+    },
+    {
+      "amount": "980",
+      "day_of_month": 12,
+      "name": "Rată mașină"
+    },
+    {
+      "amount": "1250",
+      "day_of_month": 2,
+      "name": "Grădiniță Luca"
+    },
+    {
+      "amount": "950",
+      "day_of_month": 2,
+      "name": "After-school Ana"
+    },
+    {
+      "amount": "62",
+      "day_of_month": 7,
+      "name": "Netflix"
+    },
+    {
+      "amount": "42",
+      "day_of_month": 9,
+      "name": "Spotify Family"
+    },
+    {
+      "amount": "230",
+      "day_of_month": 4,
+      "name": "Sală"
+    },
+    {
+      "amount": "75",
+      "day_of_month": 22,
+      "name": "Asigurare locuință"
+    },
+    {
+      "amount": "320",
+      "day_of_month": 6,
+      "name": "Înot Ana"
+    },
+    {
+      "amount": "380",
+      "day_of_month": 6,
+      "name": "Engleză Ana"
+    }
+  ],
+  "goal": {
+    "amount": "30000",
+    "deadline": "2027-06-30",
+    "hard_deadline": false,
+    "motivation": "Bucătărie nouă"
+  },
+  "goal_pot": {
+    "name": "Bucătărie nouă",
+    "saved": "17400"
+  },
+  "history": {
+    "as_of": "2026-06-15",
+    "from": "2022-06-15",
+    "start_balance": "4021.02",
+    "to": "2026-06-14"
+  },
+  "id": "elena",
+  "income_sources": [
+    {
+      "amount": "11500",
+      "day_of_month": 10,
+      "source": "Salariu"
+    },
+    {
+      "amount": "7050",
+      "day_of_month": 15,
+      "source": "Salariu Radu"
+    },
+    {
+      "amount": "2200",
+      "day_of_month": 25,
+      "source": "Proiecte freelance"
+    },
+    {
+      "amount": "680",
+      "day_of_month": 8,
+      "source": "Alocații copii"
+    }
+  ],
+  "plan_preferences": {
+    "buffer_pct": "0.12"
+  },
+  "pots": [
+    {
+      "deadline": null,
+      "kind": "emergency",
+      "name": "Fond de urgență",
+      "saved": "21000",
+      "target": "25000"
+    },
+    {
+      "deadline": "2026-08-01",
+      "kind": "event",
+      "name": "Vacanță Corfu 2026",
+      "saved": "5600",
+      "target": "8000"
+    },
+    {
+      "deadline": "2026-10-01",
+      "kind": "custom",
+      "name": "Service & RCA mașină",
+      "saved": "2300",
+      "target": "4000"
+    },
+    {
+      "deadline": "2026-07-10",
+      "kind": "event",
+      "name": "Tabără Ana",
+      "saved": "1200",
+      "target": "1800"
+    },
+    {
+      "deadline": "2026-12-15",
+      "kind": "event",
+      "name": "Crăciun 2026",
+      "saved": "900",
+      "target": "3000"
+    }
+  ],
+  "user": {
+    "age": 34,
+    "city": "Cluj-Napoca",
+    "coach_style": "warm",
+    "language": "ro",
+    "name": "Elena"
+  }
+}

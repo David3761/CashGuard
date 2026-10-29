@@ -47,7 +47,8 @@ def stream(transactions: list[dict[str, Any]], name: str) -> list[dict[str, Any]
     return [t for t in transactions if t["stream"] == name]
 
 
-ALL = ["matei", "andrei", "bianca", "ioana", "alex"]
+ALL = ["matei", "andrei", "bianca", "ioana", "alex"]  # the 4-month demo personas
+EVERY = [*ALL, "elena"]  # + the heavy one: 4 years (scripts/build_elena.py)
 
 
 # ── determinism and files ────────────────────────────────────────────────────
@@ -66,7 +67,7 @@ def test_running_twice_gives_byte_identical_files(tmp_path: Path) -> None:
     assert outputs[0] == outputs[1]
 
 
-@pytest.mark.parametrize("pid", ALL)
+@pytest.mark.parametrize("pid", EVERY)
 def test_committed_files_match_the_generator(pid: str) -> None:
     profile, transactions = generated(pid)
     assert (PERSONAS / pid / "profile.json").read_text(encoding="utf-8") == gen.dump(profile)
@@ -86,7 +87,7 @@ def test_history_stays_inside_the_window(pid: str) -> None:
     assert max(days) <= date(2026, 6, 14)  # nothing after 2026-06-14 23:59 Bucharest
 
 
-@pytest.mark.parametrize("pid", ALL)
+@pytest.mark.parametrize("pid", EVERY)
 def test_start_balance_plus_history_ends_on_the_current_balance(pid: str) -> None:
     profile, txs = generated(pid)
     net = sum(
@@ -98,7 +99,7 @@ def test_start_balance_plus_history_ends_on_the_current_balance(pid: str) -> Non
     assert Decimal(profile["history"]["start_balance"]) > 0
 
 
-@pytest.mark.parametrize("pid", ALL)
+@pytest.mark.parametrize("pid", EVERY)
 def test_amounts_are_positive_with_two_decimals(pid: str) -> None:
     _, txs = generated(pid)
     for t in txs:
@@ -107,7 +108,7 @@ def test_amounts_are_positive_with_two_decimals(pid: str) -> None:
         assert amount == amount.quantize(Decimal("0.01"))
 
 
-@pytest.mark.parametrize("pid", ALL)
+@pytest.mark.parametrize("pid", EVERY)
 def test_receipt_items_are_well_formed(pid: str) -> None:
     _, txs = generated(pid)
     for t in txs:
@@ -250,3 +251,99 @@ def test_every_transaction_validates_as_a_domain_object() -> None:
         for t in txs:
             Category(t["category"])
             assert models.TxView is not None
+
+
+# ── Elena, the heavy persona (scripts/build_elena.py) ────────────────────────
+
+
+def load_builder() -> ModuleType:
+    spec = importlib.util.spec_from_file_location(
+        "build_elena", BACKEND / "scripts" / "build_elena.py"
+    )
+    assert spec is not None
+    assert spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def elena_extras() -> dict[str, Any]:
+    return json.loads((PERSONAS / "elena" / "extras.json").read_text(encoding="utf-8"))
+
+
+def test_history_from_moves_the_start_of_the_window() -> None:
+    profile, txs = generated("elena")
+    days = [when(t).date() for t in txs]
+    assert (min(days), max(days)) == (date(2022, 6, 15), date(2026, 6, 14))
+    assert profile["history"]["from"] == "2022-06-15"
+    assert len(txs) > 5000
+    assert len(stream(txs, "salary")) == 4 * 48  # four income sources, every month for 4 years
+
+
+def test_the_default_window_is_unchanged_without_history_from() -> None:
+    assert gen.history_months() == [(2026, 2), (2026, 3), (2026, 4), (2026, 5), (2026, 6)]
+    assert gen.history_months(date(2025, 11, 30))[:3] == [(2025, 11), (2025, 12), (2026, 1)]
+    assert gen.month_days(31, date(2026, 2, 15)) == [
+        date(2026, 2, 28),
+        date(2026, 3, 31),
+        date(2026, 4, 30),
+        date(2026, 5, 31),
+    ]
+
+
+def test_elenas_committed_files_match_the_builder(tmp_path: Path) -> None:
+    counts = load_builder().build(tmp_path / "elena")
+    for name in ("config", "facts", "rules", "extras", "profile", "transactions"):
+        built = (tmp_path / "elena" / f"{name}.json").read_bytes()
+        assert built == (PERSONAS / "elena" / f"{name}.json").read_bytes(), name
+    assert counts["transactions"] > 5000
+    assert counts["messages"] > 100
+
+
+def test_elenas_transfers_add_up_to_what_each_pot_has_saved() -> None:
+    profile, _ = generated("elena")
+    saved = {p["name"]: Decimal(p["saved"]) for p in profile["pots"]}
+    saved[profile["goal_pot"]["name"]] = Decimal(profile["goal_pot"]["saved"])
+    moved: Counter[str] = Counter()
+    for t in elena_extras()["transfers"]:
+        moved[t["pot"]] += int(t["amount"])
+    assert {name: Decimal(total) for name, total in moved.items()} == saved
+    assert profile["goal_pot"]["name"] == profile["goal"]["motivation"]  # the seed's pot name
+
+
+def test_elenas_chat_and_notifications_are_in_order_and_before_the_demo_day() -> None:
+    extras = elena_extras()
+    demo_day = datetime(2026, 6, 15, tzinfo=BUCHAREST)
+    for key in ("messages", "notifications"):
+        stamps = [datetime.fromisoformat(row["created_at"]) for row in extras[key]]
+        assert stamps == sorted(stamps)
+        assert stamps[-1] < demo_day
+    assert {m["role"] for m in extras["messages"]} == {"user", "assistant"}
+    assert sum(not n["read"] for n in extras["notifications"]) == 3
+
+
+def test_elenas_receivables_are_the_other_peoples_shares() -> None:
+    receivables = elena_extras()["receivables"]
+    assert {r["status"] for r in receivables} == {"open", "paid"}
+    for r in receivables:
+        assert Decimal(r["amount"]) == Decimal(r["amount_each"]) * (r["people_count"] - 1)
+        assert (r["paid_at"] is None) == (r["status"] == "open")
+
+
+def test_elenas_chat_quotes_the_real_monthly_totals() -> None:
+    """The "how much on …?" answers are computed from the generated transactions."""
+    builder = load_builder()
+    _, txs = generated("elena")
+    asked = [m for m in elena_extras()["messages"] if m["content"].startswith("Cât am cheltuit")]
+    assert asked
+    for question in asked[:5]:
+        day = datetime.fromisoformat(question["created_at"]).date()
+        name = question["content"].removeprefix("Cât am cheltuit pe ").removesuffix(" luna asta?")
+        category = next(c for c, ro in builder.CATEGORY_RO.items() if ro == name)
+        total, n = builder.spend(txs, category, day.replace(day=1), day)
+        answers = [
+            m["content"]
+            for m in elena_extras()["messages"]
+            if m["role"] == "assistant" and m["created_at"] > question["created_at"]
+        ]
+        assert f"ai {builder.lei(total)} lei pe {name}, în {n} plăți" in answers[0]

@@ -135,6 +135,18 @@
       "requiredActions": [],
       "realmRoles": ["default-roles-cashguard", "sim"],
       "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
+    },
+    {
+      "id": "a0000000-0000-4000-8000-000000000006",
+      "username": "elena",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Elena",
+      "lastName": "Demo",
+      "email": "elena@demo.cashguard.ro",
+      "requiredActions": [],
+      "realmRoles": ["default-roles-cashguard", "sim"],
+      "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
     }
   ]
 }

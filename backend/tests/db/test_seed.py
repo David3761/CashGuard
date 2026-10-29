@@ -17,7 +17,7 @@ def profile(pid):
 
 async def test_every_persona_with_its_realm_login(db):
     seeded = await seed_all(db, reset_first=True)
-    assert set(seeded) == {"matei", "andrei", "bianca", "ioana", "alex"}
+    assert set(seeded) == {"matei", "andrei", "bianca", "ioana", "alex", "elena"}
     subs = realm_subs()
     for pid, uid in seeded.items():
         assert (await db.get(m.User, uid)).keycloak_sub == subs[pid]
@@ -55,3 +55,44 @@ async def test_seeding_twice_with_reset_gives_the_same_counts(db):
     await seed_all(db, reset_first=True)
     assert await counts(db) == first
     assert first["merchants"] >= 10 and first["products"] == 3
+
+
+async def test_elena_the_heavy_persona_fills_every_table_the_app_reads(db):
+    seeded = await seed_all(db, reset_first=True)
+    elena = seeded["elena"]
+    extras = json.loads((DATA_DIR / "personas/elena/extras.json").read_text())
+
+    async def rows(model):
+        return await db.scalar(select(func.count()).where(model.user_id == elena))
+
+    assert await rows(m.Transaction) == len(
+        json.loads((DATA_DIR / "personas/elena/transactions.json").read_text())
+    )
+    assert await rows(m.Transaction) > 5000
+    for model, key in (
+        (m.Transfer, "transfers"),
+        (m.Receivable, "receivables"),
+        (m.LifeEvent, "life_events"),
+        (m.Slip, "slips"),
+        (m.Reflection, "reflections"),
+        (m.Message, "messages"),
+        (m.Notification, "notifications"),
+    ):
+        assert await rows(model) == len(extras[key]), key
+    assert await rows(m.LifeFact) == 30
+    assert await rows(m.PatternRule) == 6
+    assert await rows(m.Pot) == 6  # the goal's pot + five
+    assert (await users.get(db, elena)).household_scale == Decimal("2.10")
+    # every transfer points at one of her pots (by name in the file)
+    orphan = await db.scalar(
+        select(func.count()).where(m.Transfer.user_id == elena, m.Transfer.pot_id.is_(None))
+    )
+    assert orphan == 0
+    assert await plans.latest(db, elena) is not None
+    latest = await forecasts.latest(db, elena)
+    assert latest is not None
+    assert 0 < latest.probability < 1
+    first = await db.scalar(
+        select(func.min(m.Message.created_at)).where(m.Message.user_id == elena)
+    )
+    assert first.date() < date(2026, 3, 1)  # the seeded history, not "now"

@@ -1,0 +1,421 @@
+{
+  "facts": [
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Sunt product manager la Nordic Soft, merg la birou marți, miercuri și joi",
+      "type": "occupation",
+      "valid_from": "2022-06-01",
+      "value": {
+        "employer": "Nordic Soft",
+        "title": "product manager",
+        "work_mode": "birou marți-joi"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Sunt angajată",
+      "type": "employment",
+      "valid_from": "2022-06-01",
+      "value": {
+        "kind": "employee"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Mai fac proiecte de design freelance, cam 2.200 de lei pe lună",
+      "type": "income_pattern",
+      "valid_from": "2022-06-01",
+      "value": {
+        "irregular": false,
+        "note": "freelance design, ~2.200 lei pe 25"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Stau cu soțul meu, Radu",
+      "type": "household_member",
+      "valid_from": "2022-06-01",
+      "value": {
+        "relation": "partner",
+        "role": "adult"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Fiica mea, Ana, are 7 ani",
+      "type": "household_member",
+      "valid_from": "2022-06-01",
+      "value": {
+        "age": 7,
+        "relation": "daughter",
+        "role": "child"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Fiul meu, Luca, are 3 ani",
+      "type": "household_member",
+      "valid_from": "2022-09-14",
+      "value": {
+        "age": 3,
+        "relation": "son",
+        "role": "child"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Avem un câine, Bruno",
+      "type": "pet",
+      "valid_from": "2022-06-01",
+      "value": {
+        "species": "câine"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Avem apartamentul nostru, plătim rata",
+      "type": "housing",
+      "valid_from": "2022-06-01",
+      "value": {
+        "kind": "own",
+        "note": "mortgage"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Stăm în Cluj",
+      "type": "city",
+      "valid_from": "2022-06-01",
+      "value": {
+        "name": "Cluj-Napoca"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Avem o mașină pe benzină, în leasing",
+      "type": "vehicle",
+      "valid_from": "2022-06-01",
+      "value": {
+        "fuel": "benzină",
+        "kind": "car"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Merg la birou cu mașina",
+      "type": "commute",
+      "valid_from": "2022-06-01",
+      "value": {
+        "mode": "car"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Merg la sală de trei ori pe săptămână",
+      "type": "activity",
+      "valid_from": "2022-06-01",
+      "value": {
+        "name": "sală",
+        "per_week": 3
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Ana face înot de două ori pe săptămână",
+      "type": "activity",
+      "valid_from": "2022-06-01",
+      "value": {
+        "name": "înot Ana",
+        "per_week": 2
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Ana face engleză după școală",
+      "type": "activity",
+      "valid_from": "2022-06-01",
+      "value": {
+        "name": "engleză Ana",
+        "per_week": 2
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Mănânc cu colegii în zilele de birou",
+      "type": "social_pattern",
+      "valid_from": "2022-06-01",
+      "value": {
+        "name": "prânz cu colegii",
+        "weekdays": [
+          2,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Vinerea sau sâmbăta ieșim cu prietenii",
+      "type": "social_pattern",
+      "valid_from": "2022-06-01",
+      "value": {
+        "name": "ieșit cu prietenii",
+        "weekdays": [
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Sunt la birou marți, miercuri și joi",
+      "type": "rhythm",
+      "valid_from": "2022-06-01",
+      "value": {
+        "name": "zile la birou",
+        "weekdays": [
+          2,
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Facem cumpărăturile mari vineri sau sâmbătă",
+      "type": "rhythm",
+      "valid_from": "2022-06-01",
+      "value": {
+        "name": "cumpărături mari",
+        "weekdays": [
+          5,
+          6
+        ]
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Duminica mergem la părinții mei și le duc cumpărături",
+      "type": "rhythm",
+      "valid_from": "2022-06-01",
+      "value": {
+        "name": "la părinți",
+        "weekdays": [
+          7
+        ]
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "La copii nu tai nimic",
+      "type": "priority",
+      "valid_from": "2022-06-01",
+      "value": {
+        "category": "kids",
+        "label": "copiii",
+        "priority": "protected"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Vacanța de vară e sfântă",
+      "type": "priority",
+      "valid_from": "2022-06-01",
+      "value": {
+        "category": "travel",
+        "label": "vacanța de vară",
+        "priority": "protected"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Electric Castle e tradiția noastră",
+      "type": "priority",
+      "valid_from": "2022-06-01",
+      "value": {
+        "category": "concerts",
+        "label": "Electric Castle",
+        "priority": "protected"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Vreau să comand mai rar mâncare",
+      "type": "priority",
+      "valid_from": "2022-06-01",
+      "value": {
+        "category": "food_delivery",
+        "priority": "reduce"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Vreau să cumpăr mai puține haine",
+      "type": "priority",
+      "valid_from": "2022-06-01",
+      "value": {
+        "category": "clothing",
+        "priority": "reduce"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "recurring",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "În iulie mergem la Electric Castle",
+      "type": "life_event",
+      "valid_from": "2022-06-01",
+      "value": {
+        "months": [
+          7
+        ],
+        "name": "Electric Castle"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "recurring",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "În august plecăm în vacanță",
+      "type": "life_event",
+      "valid_from": "2022-06-01",
+      "value": {
+        "months": [
+          8
+        ],
+        "name": "vacanța de vară"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "recurring",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Decembrie e scump, cu cadourile",
+      "type": "life_event",
+      "valid_from": "2022-06-01",
+      "value": {
+        "months": [
+          12
+        ],
+        "name": "Crăciun"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "recurring",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Ana își serbează ziua în martie",
+      "type": "life_event",
+      "valid_from": "2022-06-01",
+      "value": {
+        "months": [
+          3
+        ],
+        "name": "ziua Anei"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "recurring",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "În septembrie începe școala",
+      "type": "life_event",
+      "valid_from": "2022-06-01",
+      "value": {
+        "months": [
+          9
+        ],
+        "name": "începutul școlii"
+      }
+    },
+    {
+      "confidence": 0.95,
+      "persistence": "permanent",
+      "source": "seed",
+      "status": "confirmed",
+      "text": "Strângem pentru bucătărie, vrem s-o refacem în 2027",
+      "type": "custom",
+      "valid_from": "2025-01-01",
+      "value": {
+        "description": "Renovăm bucătăria în 2027"
+      }
+    }
+  ]
+}

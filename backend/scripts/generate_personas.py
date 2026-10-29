@@ -2,7 +2,8 @@
 
 Reads `data/personas/<id>/config.json` (inputs we write) and writes `profile.json` +
 `transactions.json`
-next to it: 4 months of history (2026-02-15 … 2026-06-14, Bucharest time) before the demo date.
+next to it: 4 months of history (2026-02-15 … 2026-06-14, Bucharest time) before the demo date. A
+config can start earlier with `history_from` (Elena, the heavy persona: 4 years).
 Deterministic: one seeded `random.Random` per persona, sorted JSON, so two runs give identical
 bytes.
 The start balance is computed backwards, so the history ends exactly on `current_balance`.
@@ -66,16 +67,22 @@ def clamp_day(year: int, month: int, day: int) -> date:
     return date(year, month, min(day, last))
 
 
-def history_days() -> list[date]:
-    return [HISTORY_FROM + timedelta(days=i) for i in range((HISTORY_TO - HISTORY_FROM).days + 1)]
+def history_days(start: date = HISTORY_FROM) -> list[date]:
+    return [start + timedelta(days=i) for i in range((HISTORY_TO - start).days + 1)]
 
 
-def month_days(day_of_month: int) -> list[date]:
+def history_months(start: date = HISTORY_FROM) -> list[tuple[int, int]]:
+    """(year, month) of every month the history window touches."""
+    first, last = start.year * 12 + start.month - 1, HISTORY_TO.year * 12 + HISTORY_TO.month - 1
+    return [(i // 12, i % 12 + 1) for i in range(first, last + 1)]
+
+
+def month_days(day_of_month: int, start: date = HISTORY_FROM) -> list[date]:
     """The date `day_of_month` falls on in every month of the history window."""
     out = []
-    for year, month in [(2026, m) for m in range(2, 7)]:
+    for year, month in history_months(start):
         d = clamp_day(year, month, day_of_month)
-        if HISTORY_FROM <= d <= HISTORY_TO:
+        if start <= d <= HISTORY_TO:
             out.append(d)
     return out
 
@@ -84,6 +91,7 @@ class Generator:
     def __init__(self, config: dict[str, Any]) -> None:
         self.config = config
         self.rng = random.Random(config["seed"])  # noqa: S311 (seeded test data, not crypto)
+        self.start = date.fromisoformat(config.get("history_from", HISTORY_FROM.isoformat()))
         self.rows: list[dict[str, Any]] = []
 
     # ── helpers ──────────────────────────────────────────────────────────────
@@ -145,12 +153,12 @@ class Generator:
     def recurring(self) -> None:
         for income in self.config["income_sources"]:
             stream = {"name": "salary", "category": "income", **income}
-            for d in month_days(income["day_of_month"]):
+            for d in month_days(income["day_of_month"], self.start):
                 self.add(self.at(d, [8, 9]), money(income["amount"]), stream, "credit")
         for cost in self.config["fixed_costs"]:
             stream = {**cost, "name": f"fixed:{cost['name']}"}
             jitter = cost.get("jitter_pct", 0)
-            for d in month_days(cost["day_of_month"]):
+            for d in month_days(cost["day_of_month"], self.start):
                 factor = 1 + self.rng.uniform(-jitter, jitter) / 100 if jitter else 1
                 self.add(
                     self.at(d, [9, 11]),
@@ -162,7 +170,7 @@ class Generator:
         spec = self.config.get("irregular_income")
         if not spec:
             return
-        for monday in [d for d in history_days() if d.weekday() == 0]:
+        for monday in [d for d in history_days(self.start) if d.weekday() == 0]:
             d = monday + timedelta(days=self.rng.randrange(7))
             if d <= HISTORY_TO:
                 self.add(
@@ -171,10 +179,10 @@ class Generator:
                     {"name": "tips", **spec["tips"]},
                     "credit",
                 )
-        for year, month in [(2026, m) for m in range(2, 7)]:
+        for year, month in history_months(self.start):
             day = self.rng.randint(*spec["wage"]["days"])
             d = clamp_day(year, month, day)
-            if HISTORY_FROM <= d <= HISTORY_TO:
+            if self.start <= d <= HISTORY_TO:
                 self.add(
                     self.at(d, [9, 12]),
                     self.amount(spec["wage"]),
@@ -184,15 +192,15 @@ class Generator:
 
     def weekly(self, stream: dict[str, Any]) -> None:
         weekdays = stream.get("weekdays", [1, 2, 3, 4, 5, 6, 7])
-        for monday in [d for d in history_days() if d.weekday() == 0] + [
-            HISTORY_FROM - timedelta(HISTORY_FROM.weekday())
+        for monday in [d for d in history_days(self.start) if d.weekday() == 0] + [
+            self.start - timedelta(self.start.weekday())
         ]:
             low, high = stream["per_week"]
             count = self.rng.randint(low, high)
             days = sorted(self.rng.sample(weekdays, min(count, len(weekdays))))
             for wd in days:
                 d = monday + timedelta(days=wd - 1)
-                if HISTORY_FROM <= d <= HISTORY_TO and not self.quiet(d, stream):
+                if self.start <= d <= HISTORY_TO and not self.quiet(d, stream):
                     self.add(
                         self.at(d, stream["hours"]),
                         self.amount(stream, self.multiplier(stream, d)),
@@ -200,7 +208,7 @@ class Generator:
                     )
 
     def every(self, stream: dict[str, Any]) -> None:
-        for d in history_days():
+        for d in history_days(self.start):
             due = d.isoweekday() in stream["weekdays"] and not self.quiet(d, stream)
             if due and self.rng.random() < stream.get("probability", 1.0):
                 self.add(
@@ -210,7 +218,7 @@ class Generator:
                 )
 
     def monthly(self, stream: dict[str, Any]) -> None:
-        for d in month_days(stream["day_of_month"]):
+        for d in month_days(stream["day_of_month"], self.start):
             self.add(self.at(d, stream.get("hours", [10, 18])), self.amount(stream), stream)
 
     def calendar(self) -> None:
@@ -299,7 +307,7 @@ class Generator:
             "pots": c.get("pots", []),
             "plan_preferences": c.get("plan_preferences", {}),
             "history": {
-                "from": HISTORY_FROM.isoformat(),
+                "from": self.start.isoformat(),
                 "to": HISTORY_TO.isoformat(),
                 "as_of": AS_OF.isoformat(),
                 "start_balance": str(start),
