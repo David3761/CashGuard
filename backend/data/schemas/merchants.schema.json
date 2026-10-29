@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CashGuard merchant catalogue (backend/data/merchants.json)",
+  "description": "Romanian merchants for normalisation (C2), the seed (B12) and the persona generator (E12). Aliases are lower-case spellings seen on bank statements, without store numbers, cities or payment prefixes (C2 strips those); across merchants they are unique under the strictest key: app.i18n.text.fold, then letters and digits only (tests/unit/test_data_merchants.py). Load it strictly: plain json.load keeps the last of duplicate keys and returns floats, so parse numbers as Decimal and reject duplicate keys and NaN / Infinity, as tests/unit/datafiles.py parse_json does.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["merchants"],
+  "properties": {
+    "merchants": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/merchant" }
+    }
+  },
+  "$defs": {
+    "merchant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "canonical_name", "aliases", "category", "mcc", "typical_basket", "multi_category"],
+      "properties": {
+        "id": {
+          "description": "Stable slug: the merchants primary key and merchant_id everywhere (D47).",
+          "type": "string",
+          "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+          "maxLength": 40
+        },
+        "canonical_name": {
+          "description": "The display name, with correct Romanian diacritics.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "aliases": {
+          "description": "Spellings C2 matches (longest alias wins); the folded canonical name is one of them.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 3, "maxLength": 60 }
+        },
+        "category": {
+          "description": "The merchant's main category (arch 4.5).",
+          "enum": [
+            "groceries", "restaurants", "food_delivery", "transport", "fuel", "electronics",
+            "clothing", "sport", "health_pharmacy", "kids", "education", "books",
+            "entertainment", "subscriptions", "travel", "housing_rent", "utilities", "telecom",
+            "gifts", "pets", "household_goods", "personal_care", "transfers", "income",
+            "savings", "other"
+          ]
+        },
+        "mcc": {
+          "description": "ISO 18245 merchant category code: 4 digits, as text (codes can start with 0).",
+          "type": "string",
+          "pattern": "^[0-9]{4}$"
+        },
+        "typical_basket": {
+          "description": "A fictional typical single purchase for one adult at this merchant, in RON, 2 decimals.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "multi_category": {
+          "description": "true when item detail matters (D32): without items the question asks what was bought.",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
