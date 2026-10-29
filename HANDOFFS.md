@@ -109,3 +109,16 @@
 - **Decisions taken on the owner's behalf:** all arithmetic runs in the module's own decimal context, so a caller's context changes nothing. Scores are `float`, money is `Decimal` (D48).
 - **Merge instruction:** keep ours, and never re-implement rounding. bomboe: read JSON request bodies that carry money with `parse_json` (pydantic and the stdlib parse long JSON numbers as floats first; 2-dp amounts are exact either way). danutu: use `split_share` / `to_money` in the engine and keep Monte Carlo internals in float/numpy. Check: `pytest tests/unit/domain/test_money.py`.
 
+
+### H-9 · danutu E6/E8/E12 · `data/priors.json` (population priors) · 🟢
+- **Date / by:** 2026-10-29, DGAdavid1 (C1.3, merged after 501e8f2). The numbers were "to agree with danutu" (C1); under D42 we chose them, so this entry asks danutu to confirm.
+- **Why it was needed:** E6 blends personal history with priors (arch 5.3.5), E8 needs a fallback distribution with < 3 months of history, and E12 generates persona history.
+- **What was done:** `backend/data/priors.json` + its schema. For each of the **19 variable** categories: `monthly_mean` (single adult, lei/month), `basket_median`, `basket_cv` (the spread of one transaction) and `cv` (the monthly total's spread, derived from purchase rate × basket). Also city indices (București 1.00, Cluj 1.00, Iași 0.85) and a default 1.00. Every number has its reasoning in `backend/docs/reports/C1.md` (old → new table), and plausibility tests check each persona's prior month against their disposable income (Matei 47%, Andrei 45%, Ioana 35%, Bianca 96%).
+- **Decisions taken on the owner's behalf:**
+  - **D51:** no priors for rent, utilities, telecom, subscriptions (they come from fixed costs).
+  - **D50:** **kids is per child** (350 lei/month) × the number of children, not × household_scale.
+  - Which categories scale with the household: use `app.domain.enums.HOUSEHOLD_SCALED_CATEGORIES`, not a flag in the file.
+  - The city lookup goes through a key that ignores case, diacritics, punctuation, spaces and words like "Municipiul"/"Romania"/"sector" (tested on 19 spellings).
+  - **To confirm (C1's readings):** the city index also applies to kids; the kids basket is per transaction (not × children); E8 may model the 8 lumpy categories (basket > month) as compound Poisson rather than lognormal; if lognormal, parameterise it by the **mean** with the file's `cv` (arch 6.7 uses a flat 0.25); seasonal categories (gifts, travel, kids, clothing) noted.
+  - **Demo:** Ioana's real pattern (Shop&Go almost daily) gives ~4.300–5.800 lei/month of groceries against the 1.890 family prior, so Scene E must quote E6's computed figure, never "1.890".
+- **Merge instruction:** keep ours unless danutu's calibration (E13) needs different numbers. Change a number and its golden entry in the same commit, and keep the plausibility tests green. **Load strictly** with `app.domain.money.parse_json` (Decimal, duplicate keys/NaN/Infinity/BOM rejected). Check: `pytest tests/unit/test_data_priors.py`.
