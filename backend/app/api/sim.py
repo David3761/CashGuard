@@ -20,13 +20,20 @@ from app.domain.enums import Category
 from app.errors import DomainError
 from app.pipeline import day_jobs
 from app.pipeline.processor import process_user, users_with_work
+from app.security.ratelimit import rate_limited
 from app.services import ledger, notifications, plans, users
 from app.services.ingest import ingest
 from app.sim import scenarios
 from app.sim.clock_store import SimClock
 from app.ws import manager
 
-router = APIRouter(prefix="/sim", tags=["sim"], dependencies=[Depends(require_sim)])
+# The role check first (a refused caller costs nothing), then the `sim` rate limit: each call
+# can run the pipeline, the day jobs and a proactive LLM run.
+router = APIRouter(
+    prefix="/sim",
+    tags=["sim"],
+    dependencies=[Depends(require_sim), Depends(rate_limited("sim"))],
+)
 
 
 def sim_clock() -> SimClock:
