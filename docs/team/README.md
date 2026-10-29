@@ -18,6 +18,7 @@ These are the process documents from the hackathon build, kept as they were writ
 | [`TASKS.md`](TASKS.md) | Every backend task (F, B, E, C, A, D) with priority, estimate, dependencies and owner |
 | [`DGAREADME1.md`](DGAREADME1.md) | The decision log: every decision (D1…) and open question (Q1…), with who agreed and when, plus a dated changelog |
 | [`HANDOFFS.md`](HANDOFFS.md) | Work done on a teammate's behalf (team rule D42: build it yourself and log it, don't wait). Each entry has a merge instruction |
+| [`early-ai-design/`](early-ai-design/README.md) | David G.'s first AI design notes (2026-10-28, local branch `api-ai`), superseded by the architecture doc; kept for history |
 | [`NIGHT_REPORT.md`](NIGHT_REPORT.md) | The overnight release (2026-10-29): what was merged into `main`, the evaluator checklist, the bugs fixed, the live Scene A run and what is still open |
 | [`ORCHESTRATION.md`](ORCHESTRATION.md) | How David G.'s tasks ran as parallel Claude agents: one agent per task, a boss session gating every step with an independent review and `make check` |
 | [`Bomboe-merge-notes.md`](Bomboe-merge-notes.md) | bomboe's merge notes for the platform branch: what he built, what he assumed, and what differs from the spec |
