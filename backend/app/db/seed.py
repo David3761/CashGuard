@@ -82,7 +82,8 @@ def _rows(path: Path, key: str) -> list[Any]:
     if data is None:
         return []
     rows = data[key] if isinstance(data, dict) else data
-    assert isinstance(rows, list)
+    if not isinstance(rows, list):
+        raise TypeError(f"seed file: {key!r} must be a list")
     return rows
 
 
@@ -193,7 +194,8 @@ async def seed_persona(db: AsyncSession, pid: str, sub: str, data_dir: Path = DA
         fact = await life_facts.create(
             db, uid, dm.LifeFactDraft.model_validate({"source": FactSource.SEED, **raw})
         )
-        assert fact.id is not None
+        if fact.id is None:
+            raise RuntimeError("seed: the saved fact has no id")
         made = (
             [dm.Signature(**s) for s in sigs]
             if sigs is not None

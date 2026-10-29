@@ -79,17 +79,17 @@ The AI is triggered in three ways:
 |---|---|
 | API | FastAPI + Pydantic |
 | DB | PostgreSQL 16, SQLAlchemy 2 + psycopg |
-| AI | Anthropic Messages API with tool use (official `anthropic` Python SDK), model `claude-sonnet-5-5` |
+| AI | Anthropic Messages API with tool use (official `anthropic[bedrock]` Python SDK), model `claude-sonnet-5-5`. `LLM_PROVIDER=bedrock` runs it on **Amazon Bedrock** (us-west-2, cross-region inference profile `us.anthropic.claude-sonnet-5-5`, Bedrock API key in `AWS_BEARER_TOKEN_BEDROCK` or the `AWS_*` credentials); `LLM_PROVIDER=anthropic` on the Claude API (`ANTHROPIC_API_KEY`) |
 | Scheduler | Cron container calling internal REST endpoints (`curl`) |
 | Auth | Keycloak (OIDC); frontend: auth code + PKCE; backend: JWT validation via JWKS (PyJWT) |
 | Real-time | WebSocket (FastAPI native) for server → client events |
-| Frontend | 🆕 **Flutter** app in `mobile/` (Riverpod, chopper, go_router, drift; FCM already in the base project). Integrates via the contract in section 9. Adds `web_socket_channel`, `speech_to_text`, `flutter_tts` (+ `flutter_appauth` if Keycloak stays, ❓Q30) |
+| Frontend | 🆕 **Flutter** app in `mobile/` (Riverpod, chopper, go_router, drift; FCM already in the base project). Integrates via the contract in section 9. Planned: `web_socket_channel`, `speech_to_text`, `flutter_tts` (+ `flutter_appauth` if Keycloak stays, ❓Q30). **Status 2026-10-29:** none of these is in the app yet; it talks to the root-level app API (`backend/app/app_api/`, SSE chat) |
 | Calculations | 🆕 numpy (Monte Carlo goal forecast, baselines) |
-| Voice | 🆕 On the device (D29); the backend is text-only |
-| Deploy | docker-compose (db, keycloak, api, cron) 🆕 **on a hosted server** behind HTTPS (D38; provider ❓Q22). The Flutter app runs on a phone/emulator and talks to the public URLs |
-| Tests | pytest (budget engine + tool executor) + 🆕 context acceptance tests (16.3) + LLM eval set (16.4) |
+| Voice | 🆕 On the device (D29); the backend is text-only and returns `speak_text` for TTS (`app/agent/language.py`). The app has no microphone or TTS yet |
+| Deploy | docker-compose (db, keycloak, api, cron) 🆕 **on a hosted server** behind HTTPS (D38; provider ❓Q22; the Caddy overlay is ready in `backend/deploy/`, see `backend/docs/deploy.md`, **not deployed yet**). The Flutter app runs on a phone/emulator and talks to the public URLs |
+| Tests | pytest + hypothesis: `tests/unit` (engine, context, agent incl. the AI red-team suite `tests/unit/agent/test_ai_safety.py`), `tests/acceptance` (the demo numbers), `tests/db` / `tests/api` / `tests/ws` (Postgres), `tests/eval` (live, opt-in). The 16.3 cases live in `tests/unit/context/` and `tests/unit/agent/test_scene_a.py`; 16.4 is `tests/eval/test_*_live.py` |
 
-🆕 **Environment variables** (`backend/.env`, never committed; every name, type and default in `backend/app/config.py` + `backend/.env.example`, kept in sync by a test): `DATABASE_URL`, `TEST_DATABASE_URL` (both `postgresql+psycopg://user:password@host:port/db`), `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL=claude-sonnet-5-5`, `ANTHROPIC_EFFORT=low` (`low`/`medium`/`high`/`xhigh`/`max`), `ANTHROPIC_REFUSAL_FALLBACK=false` (D45), `KEYCLOAK_ISSUER` (`http(s)://host[:port][/prefix]/realms/<realm>`), `KEYCLOAK_AUDIENCE`, `KEYCLOAK_CRON_CLIENT_SECRET`, `SIM_MODE=true`, `SIM_START_DATE=2026-06-15`, `MAX_AGENT_ITERATIONS=6` (1–20), `QUESTIONS_PER_DAY=1`, `LOG_LEVEL`. 🆕 `TZ=Europe/Bucharest` is for the OS / cron container only: the app's zone is fixed in `app/clock.py`.
+🆕 **Environment variables** (`backend/.env`, never committed; every name, type and default in `backend/app/config.py` + `backend/.env.example`, kept in sync by a test): `DATABASE_URL`, `TEST_DATABASE_URL` (both `postgresql+psycopg://user:password@host:port/db`), `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL=claude-sonnet-5-5`, `ANTHROPIC_EFFORT=low` (`low`/`medium`/`high`/`xhigh`/`max`), `ANTHROPIC_REFUSAL_FALLBACK=false` (D45), 🆕 `LLM_PROVIDER=anthropic|bedrock`, `AWS_DEFAULT_REGION` (Bedrock: `us-west-2`), `AWS_BEARER_TOKEN_BEDROCK` (a Bedrock API key; wins over) `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_SESSION_TOKEN`, `KEYCLOAK_ISSUER` (`http(s)://host[:port][/prefix]/realms/<realm>`), `KEYCLOAK_AUDIENCE`, `KEYCLOAK_CRON_CLIENT_SECRET`, `SIM_MODE=true`, `SIM_START_DATE=2026-06-15`, `MAX_AGENT_ITERATIONS=6` (1–20), 🆕 `LLM_MAX_CONCURRENCY=4` (1–32, Claude calls in flight per process), `QUESTIONS_PER_DAY=1`, `LOG_LEVEL`. 🆕 `TZ=Europe/Bucharest` is for the OS / cron container only: the app's zone is fixed in `app/clock.py`.
 
 ---
 
@@ -301,8 +301,8 @@ merchants (id, canonical_name, aliases JSONB, category, mcc, typical_basket NUME
 ┌────────────┐  REST   │  services/  CRUD per table                                      │
 │ Bank feed /│────────►│  pipeline/  process_user, close_day, jobs                       │
 │ simulator  │         │  engine/    budget, baselines, anomaly, forecast (no AI)        │
-└────────────┘         │  agent/     context builder, tool registry, agent loop          │
-┌────────────┐  REST   │  /internal/* (cron only, X-Internal-Token)                      │
+└────────────┘         │  agent/     snapshot builder, tool registry, agent loop         │
+┌────────────┐  REST   │  /api/internal/* (cron: Keycloak JWT, realm role internal)      │
 │    Cron    │────────►│                                                                 │
 └────────────┘         └──────────────┬───────────────────────────────┬──────────────────┘
                                       │ SQL                           │ HTTPS
@@ -314,23 +314,30 @@ merchants (id, canonical_name, aliases JSONB, category, mcc, typical_basket NUME
 
 ```
 backend/app/                 🆕 the repo folder is backend/ (created by bomboe, 2026-10-29)    OWNER (section 13)
-├── main.py  config.py  clock.py                                                              bomboe
-├── db/        models.py, session.py, seed.py (🆕 loads data/personas/)                        bomboe
-├── services/  users.py, accounts.py, goals.py, life_events.py, transactions.py, ...  (CRUD)  bomboe
-│              🆕 life_facts.py, signatures.py, pattern_rules.py, receivables.py, pots.py, forecasts.py
-├── api/       chat.py, transactions.py, state.py, notifications.py, internal.py, sim.py      bomboe
-│              🆕 life_facts.py, receivables.py, pots.py, forecast.py, products.py
-├── pipeline/  processor.py (process_user), jobs.py (close_day, weekly, preemptive)           bomboe
-│              signals.py (day-level signals)                                                danutu
-├── engine/    budget.py, patterns.py                                                        danutu
-│              🆕 baselines.py (household-adjusted), anomaly.py, forecast.py (Monte Carlo)
+├── main.py  config.py  clock.py  errors.py  logging.py  auth.py  ws.py  events.py                bomboe + David G. (F1)
+├── db/        models.py, session.py, seed.py (🆕 loads data/personas/), init.py               bomboe
+├── services/  one module per table (users, accounts, goals, transactions, ledger, plans,      bomboe
+│              forecasts, life_facts, signatures, pattern_rules, receivables, pots, transfers,
+│              messages, notifications, agent_runs, tool_calls, devices, …) + context_loader.py
+├── api/       chat.py, me.py, state.py, messages.py, notifications.py, plan.py,               bomboe
+│              transactions.py, transfers.py, receivables.py, internal.py, sim.py,
+│              🆕 context.py (forecast, pots, products, life-facts, life-profile)
+├── app_api/   🆕 the Flutter app's root-level API (balance, transactions, devices, SSE chat)    hand-off (HANDOFFS.md)
+├── pipeline/  processor.py (process_user), jobs.py, day_jobs.py, signals.py, ports.py        bomboe + danutu
+├── engine/    budget.py, ledger.py, calendar.py, savings.py, options.py, simulate.py,         danutu
+│              🆕 baselines.py (household-adjusted), anomaly.py, forecast.py (Monte Carlo),
+│              stats.py, service.py (the §15 entry points)
 ├── context/   🆕 normalize.py (merchant → category), library.py (signature library),         David G.
 │              life_fit.py, evaluate.py (evaluate_transaction), rules.py (learning),
-│              questions.py (question policy), inference.py (hypotheses), calendar.py
-├── agent/     context.py (snapshot), prompts.py (RO/EN), tools.py (schemas + registry),     David G.
-│              executor.py, loop.py, proactive.py, 🆕 fallbacks.py (templates + chip actions)
-└── data/      🆕 merchants.json, signature_library.json, priors.json, products.json,         danutu + David G.
-               personas/<id>/{profile,facts,transactions}.json, scenarios/<scene>.json
+│              questions.py (question policy), propagate.py, inference.py (hypotheses),
+│              calendar_events.py, products.py, service.py
+├── agent/     snapshot.py, prompts.py (RO/EN), tools.py (schemas + tools_for), llm.py,        David G.
+│              executor.py, handlers/, loop.py, proactive.py, fallbacks.py, templates.py,
+│              style.py (banned phrases), language.py (speak_text), ports.py, wiring.py, platform.py
+├── security/  🆕 ratelimit.py, http_hardening.py                                              hand-off (HANDOFFS.md)
+├── sim/ (bomboe)  push/ (FCM)  i18n/ (David G.)  domain/ (David G., F2)
+backend/data/  🆕 merchants.json, signature_library.json, priors.json, products.json,         danutu + David G.
+               calendar.json, personas/<id>/{profile,facts,transactions}.json, scenarios/<scene>.json
 ```
 
 ### 5.1 Authentication (Keycloak)
@@ -578,7 +585,7 @@ def run_agent(user_id: int, trigger: str, user_message: str | None) -> AgentResu
             model=MODEL, max_tokens=8000,           # 🆕 thinking counts toward max_tokens; 1024 risks cut-offs
             output_config={"effort": EFFORT},       # 🆕 "low" for chat/proactive (6.8)
             system=system,
-            tools=tools_for(user_id, trigger),      # rebuilt every iteration (D21, D22)
+            tools=tools_for(state, trigger),        # built once per run (D46; D21, D22)
             messages=messages)
         if resp.stop_reason in ("refusal", "max_tokens"):    # 🆕 never show a refused or cut-off reply
             return fallback_reply(run, reason=resp.stop_reason)
@@ -628,6 +635,7 @@ def execute_tool(user_id, run_id, block):
 5. **Max iterations** per run (e.g. 6), then a fallback reply.
 6. Claude must **never say something was saved** unless the tool result says it succeeded (system prompt rule).
 7. **No confirmations (D10)**, so every reply must state exactly what was changed ("Added the concert (100 lei) and updated your plan: 29.8 lei/day"). 🟡 For `transfer_to_savings`, show an **undo** button in the UI. Pitch note: in production, money movements would need user confirmation/strong authentication.
+8. 🆕 **AI safety** (OWASP LLM Top 10): the threat model, every control with its file and the test that proves it, and the per-run bounds (tool-call budget 16, one transfer of ≤ 100 000 lei per run, message cap 4000 chars, 60 s chat deadline, `LLM_MAX_CONCURRENCY`) are in [`ai-safety.md`](ai-safety.md).
 
 ### 6.5 Context snapshot (what goes in the system prompt)
 
@@ -660,7 +668,7 @@ def execute_tool(user_id, run_id, block):
 
 Conversation history: the last N messages from `messages` (❓Q12). Don't send all transactions every time; the AI can call `get_transactions` if it needs more.
 
-🆕 **Rules for the snapshot builder** (`agent/context.py`): compact text, not raw JSON dumps; every id the AI may need to pass to a tool is printed next to its item (`[tx 918]`, `[fact 12]`, `[rcv 9]`); **no IBANs, card numbers, addresses or full names of third parties**; merchant names, item names and user text are data, never instructions (prompt-injection rule in 6.9).
+🆕 **Rules for the snapshot builder** (`agent/snapshot.py`): compact text, not raw JSON dumps; every id the AI may need to pass to a tool is printed next to its item (`[tx 918]`, `[fact 12]`, `[rcv 9]`); **no IBANs, card numbers, addresses or full names of third parties**; merchant names, item names and user text are data, never instructions (prompt-injection rule in 6.9).
 
 ### 6.6 Tool list
 
@@ -696,7 +704,7 @@ Conversation history: the last N messages from `messages` (❓Q12). Don't send a
 | 🆕 `link_transaction_to_pot(transaction_id, pot_id)` | `transactions.pot_id`, `pots.saved` | yes | no |
 | 🆕 `get_goal_forecast()` | — (read: probability, last week, drivers, options) | no | — |
 
-🆕 **Tool rules.** Every tool has `strict: true` and `additionalProperties: false` (6.8). Every tool takes ids, never names, and the snapshot prints the ids. Tools return **numbers computed by code**; Claude only repeats them. `record_slip_reason` stays for day-level overspend only; the reason for one transaction goes through `annotate_transaction`.
+🆕 **Tool rules.** Every tool input forbids unknown keys (`additionalProperties: false`), and up to 20 tools per request are sent with `strict: true`, the API's limit (`STRICT_PRIORITY` in `app/agent/tools.py`; 40 tools in total) (6.8). Every tool takes ids, never names, and the snapshot prints the ids. Tools return **numbers computed by code**; Claude only repeats them. `record_slip_reason` stays for day-level overspend only; the reason for one transaction goes through `annotate_transaction`.
 
 🆕 **Typical calls** (part of the eval set, 16.4):
 
@@ -820,7 +828,7 @@ options  = when probability < 0.6 or it dropped > 10 pp: up to 3, each re-simula
            never cut essential_living, household_care or protected categories (5.3.3 `protects`)
 ```
 - A `goal_forecasts` row is written on every recompute. The first recompute on or after Monday 00:00 (sim time) is the **weekly snapshot**, and "vs last week" compares with the previous snapshot.
-- Demo targets (tune the seed so they come out like this): before the Mega transaction **78%**, provisional **71%**, after the answer **77%**, last week **72%**.
+- Demo targets (tune the seed so they come out like this): before the Mega transaction **78%**, provisional **71%**, after the answer **77%**, last week **72%**. 🆕 **What the committed seed gives** (golden in `backend/tests/acceptance/test_demo_numbers.py`): **79%** (0.7879), **70%** (0.6982), **76%** (0.7590), last week **72%** (0.7153); the test allows ±1 point (before, last week) and ±2 points (provisional, answered). The scripts below use the real numbers.
 
 #### What-if: `simulate_plan` (D20)
 
@@ -853,7 +861,7 @@ Returns:
 | No active goal (onboarding, or after `goal_completed`) | ✅ | ❌ |
 | Active goal | ❌ | ✅ |
 
-- Because the list is rebuilt every iteration, `update_goal` becomes available **in the same run** right after onboarding's `set_goal`.
+- The list is built **once per run** (D46), so `update_goal` becomes available from the run after onboarding's `set_goal`.
 - The executor double-checks: `set_goal` with an active goal returns the error `goal_already_active`.
 
 #### Proactive runs are read-only (D22)
@@ -865,14 +873,14 @@ The AI can **suggest** a change ("Want me to push the deadline 2 weeks? That get
 
 | Setting | Value | Why |
 |---|---|---|
-| Client | `AsyncAnthropic` (official `anthropic` SDK) | the agent runs in FastAPI background tasks; a sync client blocks the event loop |
+| Client | `AsyncAnthropic`, or `AsyncAnthropicBedrock` with `LLM_PROVIDER=bedrock` (official `anthropic[bedrock]` SDK; on Bedrock the refusal fallback is off) | the agent runs in FastAPI background tasks; a sync client blocks the event loop |
 | `model` | `ANTHROPIC_MODEL` = `claude-sonnet-5-5` | D16 |
 | `output_config.effort` | `low` for chat and proactive runs (`ANTHROPIC_EFFORT`) | Sonnet 5.5 defaults to `high`, too slow for a voice exchange. Measure on the eval set; go to `medium` only if tool choice gets worse |
 | `thinking` | omit (adaptive by default) | `{type: "disabled"}` returns a 400 on Sonnet 5.5 |
 | `max_tokens` | 8000 | thinking counts toward it. 🆕 Scaled with effort (A1): low 8 000 · medium 16 000 · high 32 000 · xhigh/max 64 000. 🆕 The wrapper **streams internally** (`get_final_message()`), so the 30 s timeout bounds silence between chunks, not the whole generation; the caller (A6/A7/B9) owns the overall deadline |
 | `temperature` / `top_p` / `top_k` | **never send** | non-default values return a 400 |
 | `tool_choice` | `auto` only | forced `any` / `tool` return a 400 on this model; steer from the prompt and tool descriptions |
-| Tools | `strict: true` + `additionalProperties: false` on every tool | tool inputs always match the schema; Pydantic stays as the domain check |
+| Tools | `additionalProperties: false` on every tool; `strict: true` on up to 20 (the API's limit, `STRICT_PRIORITY`) | tool inputs always match the schema; Pydantic stays as the domain check |
 | Parallel tool calls | allowed; return **all** `tool_result` blocks in **one** user message (6.3 already does) | "annotate + create receivable" in one step = faster reply |
 | Stop reasons | `end_turn` → reply · `tool_use` → loop · `max_tokens` / `refusal` → fallback template (6.3) | never show a refused or cut-off text |
 | Refusal fallback | optional: server-side `fallbacks: "default"` with beta `server-side-fallback-2026-07-01` (Claude API only) | a safety false positive doesn't break the demo. 🆕 Setting `ANTHROPIC_REFUSAL_FALLBACK`, **off** by default (D45); SDK 2.3.0 has it only on `client.beta.messages.*`, so the wrapper always uses the beta endpoint; on Sonnet 5.5 it only rescues `cyber`/`frontier_llm` declines |
@@ -1068,7 +1076,7 @@ POST /sim/transaction {scenario: "matei_mega_500"} → ingest → process_user (
   evaluate: Mega Image 500 lei vs effective median basket 85 → raw 0.80, life_fit 0.10 → unexplained 0.72 → ask
   pick_question: today's question is free → agent_event(transaction_question, ref_transaction_id=918,
                  payload={reason: "~6× coșul obișnuit la Mega", ask_what_item: false})
-  plan + forecast with the provisional reading (500, unknown) → 78% → 71%, push forecast.updated
+  plan + forecast with the provisional reading (500, unknown) → 79% → 70%, push forecast.updated
   proactive run (read-only, D22); snapshot: "You are starting the conversation because of [tx 918] …"
     → "Am văzut 500 lei la Mega azi, mai mult ca de obicei. Ce a fost?"
       + quick replies ["Doar pentru mine", "Și pentru alții", "Ceva plănuit", "Prefer să nu spun"]
@@ -1083,10 +1091,10 @@ chat run (all tools); snapshot has "OPEN QUESTION about [tx 918] Mega Image 500 
   Claude → annotate_transaction(918, purpose="on_behalf_of_others", beneficiary="shared",
                                 people_count=5, others_will_repay=true, debtor_label="colegi")
      code: effective_amount = 500 / 5 = 100 · receivable 400 (4 × 100) · learning candidate (5.3.7)
-     D18: recompute_plan + forecast_goal → 77% (was 71%)
+     D18: recompute_plan + forecast_goal → 76% (was 70%)
   Claude → offer_payment_request(receivable_id)          # attaches a tap card; sends nothing (D31)
   final text: "Am înțeles! Cheltuiala ta reală e 100 lei. Ai 400 lei de recuperat de la colegi.
-               Șansa pentru 10.000 lei: 77% (era 71%)."
+               Șansa pentru 10.000 lei: 76% (era 70%)."
   agent_events.status = 'answered'
 WS: transaction.annotated (500 → 100) · receivable.updated · plan.updated · forecast.updated
     · assistant.message {speak: true, action_cards: [{type: "request_payment", receivable_id, label: "Trimite cererea (4 × 100 lei)"}]}
@@ -1236,7 +1244,7 @@ This section is everything the frontend needs. How it renders things is up to th
   "last_plan_change": "Mega Image: 100 lei ai tăi + 400 de recuperat de la colegi"                      // 🆕
 }
 ```
-`goal` and `plan` are `null` until onboarding is done. 🆕 `forecast` is `null` until onboarding is done. Proposal for the home screen (❓Q32): the big number is the **probability** with its delta ("77%, era 71%"); the bar is `saved / target` with a marker for the projected P50.
+`goal` and `plan` are `null` until onboarding is done. 🆕 `forecast` is `null` until onboarding is done. Proposal for the home screen (❓Q32): the big number is the **probability** with its delta ("76%, era 70%"); the bar is `saved / target` with a marker for the projected P50.
 
 **Message**
 ```json
@@ -1321,10 +1329,10 @@ WS events arrive as in "Proactive message"
 🆕 **Demo: the 60-second scene (F10 + F11)**
 ```
 tap "Simulează tranzacție" → POST /sim/transaction {scenario_id: "matei_mega_500"}
-WS: transaction.resolved → transaction.annotated (decision ask, "în așteptare") → forecast.updated (78% → 71%)
+WS: transaction.resolved → transaction.annotated (decision ask, "în așteptare") → forecast.updated (79% → 70%)
 WS: agent.typing → assistant.message {speak: true, quick_replies} → TTS speaks → mic opens
 STT text → POST /chat {text, input_mode: "voice"} → 202
-WS: agent.typing → transaction.annotated (500 → 100) → receivable.updated (400) → plan.updated → forecast.updated (71% → 77%)
+WS: agent.typing → transaction.annotated (500 → 100) → receivable.updated (400) → plan.updated → forecast.updated (70% → 76%)
 WS: assistant.message {speak: true, action_cards: [request_payment]} → TTS speaks
 tap "Trimite cererea" → POST /receivables/9/request-payment → WS receivable.updated + notification.new
 ```
@@ -1370,7 +1378,7 @@ Timezone: ❓Q25. 🆕 In `SIM_MODE`, `/sim/next-day` and `/sim/jump` run the ti
 | 🆕 A banned phrase in Claude's text | Regenerate once, then the template (6.9) |
 | 🆕 Invalid signatures from Claude in `add_life_fact` | Drop them, keep the fact with library signatures only; logged |
 | 🆕 STT fails / mic permission denied / noisy room | The chips and the text field are always visible; the same `POST /chat` (F15) |
-| 🆕 Forecast slower than 500 ms | Return the last forecast and recompute in the background, then push `forecast.updated` |
+| 🆕 Forecast slower than 500 ms | Return the last forecast and recompute in the background, then push `forecast.updated`. **Not built:** the forecast runs inline in the recompute |
 | 🆕 An answer refers to nothing (no open question, no transaction mentioned) | The AI asks which transaction, or treats it as volunteered context |
 
 ---
@@ -1441,7 +1449,7 @@ danutu and David G. pair on the boundary: `evaluate_transaction` (David G.) call
 | 0–1 | **All:** agree on v0.8: schema (4.1 + 4.4), endpoints (9.2), WS events (5.2), **function contracts (15)**; each owner commits stubs returning fixtures | | | |
 | 1–6 | schema + seed loader, CRUD, auth (decide Q30 by hour 6), `/state` | persona generator (Matei first, then Andrei / Bianca / Ioana), baselines, budget engine + tests | merchants + lists (4.5), signature library, `evaluate_transaction` on fixtures (16.3 #1, #3–#7), snapshot builder | app shell, login, home + feed on mock JSON (9.3 shapes) |
 | 6–11 | pipeline (F3) calling evaluate / recompute / forecast, `/chat` + WS, `/sim/transaction`, receivables / pots / life-facts endpoints | anomaly features, forecast (Monte Carlo) + snapshots, receivables + pots in the engine | agent loop settings (6.8), all tools (6.6), prompts (6.9), question policy, the proactive question | chat + WS client, quick replies, action cards, voice (STT/TTS) |
-| **11–12** | **CHECKPOINT = Scene A end-to-end on the backend:** Mega 500 → question (with `speak_text`) → "am luat și pentru colegi, suntem cinci" → 100 lei + 400 receivable + 71% → 77%, verified with the scripted demo client (section 14), so it doesn't depend on the app's timeline (D39) | | | |
+| **11–12** | **CHECKPOINT = Scene A end-to-end on the backend:** Mega 500 → question (with `speak_text`) → "am luat și pentru colegi, suntem cinci" → 100 lei + 400 receivable + 70% → 76%, verified by `tests/unit/agent/test_scene_a.py` and the golden `tests/acceptance/test_demo_numbers.py` (the scripted demo client wasn't written) (section 14), so it doesn't depend on the app's timeline (D39) | | | |
 | 12–17 | close-day + time jobs in `/sim/next-day`, hypotheses endpoints, polish | drivers + options, tune thresholds and demo numbers on the personas | Scenes B–E (TV contrast, vacation pot, Friday rule, household change), learning, eval set, fallbacks | profile screen, hypothesis cards, persona switcher, polish |
 | 17–19 | bug fixes | bug fixes | bug fixes | slides + demo script |
 | **19** | **FEATURE FREEZE** | | | |
@@ -1453,7 +1461,7 @@ danutu and David G. pair on the boundary: `evaluate_transaction` (David G.) call
 ## 14. Next Steps
 
 1. ✅ bomboe approved the 🆕 decisions and answered Q30 (Keycloak stays, D36), Q31 (auto-save: yes, D37) and Q22 (hosted, D38). Frontend questions are David V.'s (D39). Still open: the hosting provider / URL (Q22), Q33 (mock payment request), Q35.
-1b. 🆕 bomboe + David G.: a scripted **demo client** (`backend/scripts/demo_client.py`: logs in as a persona through `savings-dev`, calls `/sim/reset`, `/sim/transaction` and `/chat`, prints the WS events). It's how we test Scenes A–E without the app.
+1b. 🆕 bomboe + David G.: a scripted **demo client** (planned as `backend/scripts/demo_client.py`, **not written**; today `backend/scripts/smoke_local.sh` drives the stack up to Scene A's transaction and `backend/tests/unit/agent/test_scene_a.py` runs the scene end to end: logs in as a persona through `savings-dev`, calls `/sim/reset`, `/sim/transaction` and `/chat`, prints the WS events). It's how we test Scenes A–E without the app.
 2. 🆕 Hour 0–1: everyone commits stubs for their section 15 functions so the others can integrate against fixtures.
 3. DB schema (4.1 + 4.4) + seed loader; danutu's generator produces `data/personas/`.
 4. Budget engine + baselines + forecast + tests; `context.evaluate_transaction` + acceptance tests 16.3.
@@ -1481,7 +1489,7 @@ def signatures_for_fact(fact: LifeFact, llm_signatures: list[dict] | None) -> li
 def on_fact_changed(db, user_id: int, fact_id: int) -> PropagationResult           # 5.3.9: signatures, re-evaluate last 30 days
 def learn_from_annotation(db, user_id: int, tx_id: int) -> RuleChange | None       # 5.3.7
 def infer_hypotheses(db, user_id: int) -> list[LifeFactDraft]                      # 5.3.8
-def build_snapshot(db, user_id: int, trigger: str, event_id: int | None) -> str    # agent/context.py (6.5)
+def build_snapshot(db, user_id: int, trigger: str, event_id: int | None) -> str    # agent/snapshot.py (6.5)
 def run_agent(user_id: int, trigger: str, user_message: str | None,
               input_mode: str = "text") -> AgentResult                             # agent/loop.py (6.3)
     # AgentResult = {text, speak_text, quick_replies, action_cards, plan_changed, ref_transaction_id}
@@ -1552,7 +1560,7 @@ All people, numbers and products are **fictional** (the challenge requires it). 
 
 Before every run: `POST /sim/reset` (sim date 2026-06-15, Monday).
 
-**Scene A: the 60 seconds (must be bulletproof).** Matei. Home shows **78%** "față de 72% săptămâna trecută" → tap "Simulează tranzacție" (`matei_mega_500`) → the feed shows **Mega Image −500 lei** "în așteptare", **71%** → the agent speaks "Am văzut 500 lei la Mega azi, mai mult ca de obicei. Ce a fost?" → presenter: "Am luat și pentru colegi, suntem cinci." → **500 → 100 lei**, card **"400 lei de recuperat"**, **77%**, the agent speaks the reply → tap "Trimite cererea" → "Cerere trimisă".
+**Scene A: the 60 seconds (must be bulletproof).** Matei. Home shows **79%** "față de 72% săptămâna trecută" → tap "Simulează tranzacție" (`matei_mega_500`) → the feed shows **Mega Image −500 lei** "în așteptare", **70%** → the agent speaks "Am văzut 500 lei la Mega azi, mai mult ca de obicei. Ce a fost?" → presenter: "Am luat și pentru colegi, suntem cinci." → **500 → 100 lei**, card **"400 lei de recuperat"**, **76%**, the agent speaks the reply → tap "Trimite cererea" → "Cerere trimisă".
 *Fallbacks:* mic fails → tap "Și pentru alții" + "5"; LLM down → template question + deterministic chip actions (11).
 
 **Scene B: same purchase, different life (30 s).** Switch to Andrei → `andrei_tv` (eMAG 4.500, items "Televizor 65\"") → **no question**, a quiet card "Am trecut televizorul la Echipament de lucru, știu că analizezi meciuri", probability updated neutrally. Switch to Bianca → `bianca_tv` (the same TV) → gentle question → "Am cedat, era la reducere" → recalculated, **zero reproach**.
@@ -1563,7 +1571,9 @@ Before every run: `POST /sim/reset` (sim date 2026-06-15, Monday).
 
 **Scene E (optional): life changes the plan.** Ioana → `ioana_shopgo_350` → nothing (normal for 4 people). Then: "De luna asta stă și mama la noi" → groceries rescaled ×2.6/2.1 for the month → new probability + options as quick replies.
 
-### 16.3 Acceptance tests: definition of done for the context layer (`backend/tests/test_context_acceptance.py`)
+### 16.3 Acceptance tests: definition of done for the context layer
+
+> 🆕 Planned as `backend/tests/test_context_acceptance.py`, which doesn't exist. The cases are covered by the unit tests in `backend/tests/unit/context/` (`test_evaluate.py`, `test_questions.py`, `test_rules.py`, `test_propagate.py`, `test_inference.py`), Scene A by `backend/tests/unit/agent/test_scene_a.py`, and the demo numbers by `backend/tests/acceptance/test_demo_numbers.py`.
 
 | # | Persona | Input | Expected |
 |---|---|---|---|
@@ -1583,7 +1593,9 @@ Before every run: `POST /sim/reset` (sim date 2026-06-15, Monday).
 | 14 | Matei | "m-am mutat, chiria e 2.400" | fixed cost updated, `plans.reason` set, forecast recomputed, options if it dropped > 10 pp |
 | 15 | anyone | hypothesis "Ai mașină?" rejected | never proposed again |
 
-### 16.4 LLM eval set (`backend/tests/eval/answers.jsonl`)
+### 16.4 LLM eval set
+
+> 🆕 Planned as `backend/tests/eval/answers.jsonl`, which doesn't exist. The live evals are `backend/tests/eval/test_llm_live.py`, `test_tools_live.py` and `test_onboarding_live.py` (marker `live`, real Claude, opt-in with `make test-all`).
 
 60–100 utterances (mostly Romanian, some English) → the expected tool calls and key arguments. 5–10 per row of the "Typical calls" table (6.6), plus multi-intent answers ("am luat pentru colegi și oricum de luna viitoare mă mut"), negations ("nu, doar pentru mine"), missing diacritics, slang, numbers in words and off-topic answers. Targets: ≥ 90% correct tool + key arguments, **100% on the demo utterances**, 0 banned phrases in generated questions. Run it after every prompt change. It calls the real API, so keep it small.
 

@@ -1,6 +1,6 @@
 # ORCHESTRATION: one agent per task, one boss
 
-> Decided by David G. (DGAdavid1) on 2026-10-29 (DGAREADME1 **D44**). This is how David G.'s tasks in [`DGAdavid1.md`](DGAdavid1.md) are built: in parallel by separate AI agents, coordinated by an orchestrator. The quality bar doesn't change: [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md) (tests first, every test category, review after every step).
+> Decided by David G. (DGAdavid1) on 2026-10-29 (DGAREADME1 **D44**). This is how David G.'s tasks in [`DGAdavid1.md`](DGAdavid1.md) are built: in parallel by separate AI agents, coordinated by an orchestrator. The quality bar doesn't change: [`backend/docs/how-we-work.md`](../../backend/docs/how-we-work.md) (tests first, every test category, review after every step).
 
 ## 1. Roles
 
@@ -66,4 +66,4 @@
 | A3 | a3 | `.worktrees/a3` · `dga-task/a3-executor` | A2, S0, F2 | ✅ done (fast) |
 | A6 + A7 + A9 | a6 | `.worktrees/a6` · `dga-task/a6-a7-a9-loop` | A2–A5, F2 | ✅ done (fast) |
 
-**Next waves (superseded by D52)** (an agent starts as soon as its inputs are merged): S0, C2, C4, A2 (after F2) → D1, C5, A4 → C6, A3 → C7, A6 → A7, D2 → D4 → ★ checkpoint (Scene A) → the P1 / P2 tasks. Dependencies: [`DGAdavid1.md`](DGAdavid1.md) §1–§2 and [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) §1.
+**Next waves (superseded by D52)** (an agent starts as soon as its inputs are merged): S0, C2, C4, A2 (after F2) → D1, C5, A4 → C6, A3 → C7, A6 → A7, D2 → D4 → ★ checkpoint (Scene A) → the P1 / P2 tasks. Dependencies: [`DGAdavid1.md`](DGAdavid1.md) §1–§2 and [`backend/docs/work-breakdown.md`](../../backend/docs/work-breakdown.md) §1.

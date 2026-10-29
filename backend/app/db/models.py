@@ -745,3 +745,32 @@ class Merchant(Base):
     mcc: Mapped[str | None] = mapped_column(String(4))
     typical_basket: Mapped[Decimal | None] = mapped_column(Money)
     multi_category: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+# ── the app API (David V.'s Flutter contract): push devices ───────────────────────────────
+
+
+class DevicePlatform(StrEnum):
+    """`POST /devices` platform (API_SPEC.md). Lives here, not in app.domain.enums: it's an
+    app-transport value, not part of the architecture's domain."""
+
+    ANDROID = "android"
+    IOS = "ios"
+
+
+class Device(Base):
+    """A phone's FCM token. Owned by a login (`user_sub` = users.keycloak_sub), not by a users
+    row: `/sim/reset` deletes and re-creates every user with a new id, and the phone's
+    registration must survive that (no FK, so no cascade)."""
+
+    __tablename__ = "devices"
+    __table_args__ = (enum_check("platform", DevicePlatform),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    fcm_token: Mapped[str] = mapped_column(String(512), unique=True)  # FCM tokens are ~160 chars
+    platform: Mapped[str] = mapped_column(String(7))
+    user_sub: Mapped[str] = mapped_column(String(64), index=True)
+    created_at: Mapped[datetime] = created_at()
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_now, onupdate=_now
+    )

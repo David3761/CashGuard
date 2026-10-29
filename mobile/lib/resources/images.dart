@@ -7,7 +7,8 @@ class AppImages {
   /// instantiated.
   AppImages._();
 
-  // TODO(everyone): add the app logo from the design at this path.
+  // TODO(everyone): this file doesn't exist yet and the constant isn't used.
+  // Add the app logo from the design at this path before using it.
   static const appLogo = 'images/app_logo.png';
   static const menu = 'images/menu.png';
   // TODO(everyone): replace with the transactions icon from the design.

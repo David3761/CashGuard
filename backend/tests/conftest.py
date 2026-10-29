@@ -44,7 +44,9 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
             item.add_marker(_MARKER_BY_FOLDER[folder])
 
 
-_PLATFORM_UNIT_FILES = frozenset({"test_auth_tokens.py", "test_service_contracts.py"})
+_PLATFORM_UNIT_FILES = frozenset(
+    {"test_auth_tokens.py", "test_service_contracts.py", "test_ratelimit.py"}
+)
 
 
 def _platform_test(request: pytest.FixtureRequest) -> bool:

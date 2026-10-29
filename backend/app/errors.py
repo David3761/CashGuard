@@ -33,7 +33,7 @@ _CODE = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)*")
 _MAX_CODE_LENGTH = 64
 _FORBIDDEN_HEADERS = frozenset({"content-length", "content-type"})  # the response sets these
 _INTERNAL_ERROR_MESSAGE = "Something went wrong on our side. Please try again."
-_CODES_BY_STATUS = {404: "not_found", 405: "method_not_allowed"}
+_CODES_BY_STATUS = {404: "not_found", 405: "method_not_allowed", 413: "payload_too_large"}
 _STANDARD_METHODS = frozenset({"GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"})
 
 

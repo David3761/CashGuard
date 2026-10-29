@@ -3,7 +3,7 @@
 > Assigned 2026-10-28 by David G. **Scope:** the platform half of `backend/`: DB, services, auth, REST, WebSocket, the pipeline plumbing, chat orchestration, simulator, jobs/cron, seed loader, notifications, hosting, audit logging, and the test fixtures (F3).
 > **Not yours:** the money maths (`app/engine/`, danutu) and the context layer + agent (`app/context/`, `app/agent/`, David G.). You *call* their functions through the contracts in arch §15; you never re-implement them.
 >
-> **Read first:** [`backend/docs/how-we-work.md`](backend/docs/how-we-work.md) (the step loop and templates), [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) §0 (conventions + the test checklist), and the architecture doc [`backend/docs/savings-coach-backend-architecture.md`](backend/docs/savings-coach-backend-architecture.md) §4, §5.1, §5.2, §8, §9, §10, §11, §15.
+> **Read first:** [`backend/docs/how-we-work.md`](../../backend/docs/how-we-work.md) (the step loop and templates), [`backend/docs/work-breakdown.md`](../../backend/docs/work-breakdown.md) §0 (conventions + the test checklist), and the architecture doc [`backend/docs/savings-coach-backend-architecture.md`](../../backend/docs/savings-coach-backend-architecture.md) §4, §5.1, §5.2, §8, §9, §10, §11, §15.
 >
 > **Opening prompt for Claude Code:**
 > *Read `backend/docs/how-we-work.md`, `backend/docs/work-breakdown.md` §0, the architecture doc sections listed in `Bomboe.md`, and `Bomboe.md`. We're doing task <ID>, step <n>. Follow the loop: plan → test analysis over every category → tests first (red) → implement (green) → `make check` → self-review → step report. Then stop and wait for my review.*

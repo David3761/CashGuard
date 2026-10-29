@@ -90,10 +90,9 @@ class _MyAppState extends ConsumerState<MyApp> {
           //     MediaQuery.platformBrightnessOf(context) == Brightness.light
           //         ? Colors.white
           //         : Colors.black,
-          // TODO(everyone): after you fork the repository, replace the
-          // following image with the same image that is used in the
-          // default Android splashscreen. Be sure to also update the iOS
-          // native app to use the same exact image.
+          // TODO(everyone): use the same image as the native launch screens
+          // (Android: windowSplashScreenAnimatedIcon in styles.xml, iOS:
+          // LaunchScreen.storyboard), so the switch to Flutter isn't visible.
           // Scale the image so that its height is roughly ~170 pixels (from
           // testing, that seems to match the default Android & iOS launch
           // screen's image size).

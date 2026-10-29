@@ -1,0 +1,48 @@
+# gitleaks configuration (https://github.com/gitleaks/gitleaks), v8.25+ syntax ([[allowlists]]).
+# Run locally: `gitleaks git .` (whole history) or `gitleaks dir .`; pre-commit scans staged changes.
+#
+# Every allowlist is narrow: one file AND the shape of the one known fake or public value in
+# it (no line numbers, so edits to those files don't break it). A real secret pasted into the
+# same files is still reported. History-only findings are pinned in .gitleaksignore.
+
+title = "CashGuard"
+
+# Start from gitleaks' built-in rules; only the allowlists below are ours.
+[extend]
+useDefault = true
+
+# FAKE token planted by the log-redaction tests ({"alg":"RS256"}.{"sub":"matei"}."signature"):
+# it proves the JSON logs never print a JWT. Not signed by any key.
+[[allowlists]]
+description = "Fake JWT in the log-redaction test"
+condition = "AND"
+paths = ['''^backend/tests/unit/test_logging\.py$''']
+regexes = ['''eyJhbGciOiJSUzI1NiJ9\.eyJzdWIiOiJtYXRlaSJ9\.c2lnbmF0dXJl''']
+
+# FAKE Bedrock API key values in the settings tests (they prove the key is a SecretStr that
+# is never printed). Real keys start with ABSK and never live in the repo.
+[[allowlists]]
+description = "Fake Bedrock API key in the settings tests"
+condition = "AND"
+paths = ['''^backend/tests/unit/test_config\.py$''']
+regexes = ['''bedrock-api-key(-987)?''']
+
+# Firebase Android client config: the `current_key` is a PUBLIC identifier by design (it is
+# shipped inside every APK; Firebase protects data with security rules and the key is
+# restricted to the app's package and SHA-1 in the Google Cloud console). Not a secret.
+# mobile/android/app/debug.keystore is Android's standard DEBUG signing key (password
+# "android"); release builds are signed with a key that is never committed.
+[[allowlists]]
+description = "Firebase client API key (public by design)"
+condition = "AND"
+paths = ['''^mobile/android/app/google-services\.json$''']
+regexes = ['''AIza[0-9A-Za-z_-]{35}''']
+
+# The fake Anthropic keys quoted in the plans and reports under backend/docs/. They contain the
+# word SECRET and are not real keys (the tests split them, "sk-" + "ant-...", so they never match).
+[[allowlists]]
+description = "Fake Anthropic keys used in docs"
+regexes = [
+  '''sk-ant-test-SECRET[A-Za-z0-9_-]*''',
+  '''sk-ant-api03-SECRET[A-Za-z0-9_-]*''',
+]

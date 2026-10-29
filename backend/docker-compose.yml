@@ -1,16 +1,16 @@
 name: cashguard
-
-x-pg-env: &pg-env
-  POSTGRES_USER: cashguard
-  POSTGRES_PASSWORD: cashguard
+# LOCAL DEVELOPMENT. Every `${VAR:-default}` secret below is a DEV-ONLY default, so a fresh clone
+# runs with no setup. Never deploy with them: the hosted overlay (deploy/docker-compose.prod.yml)
+# makes each one required (`${VAR:?}`), so a missing value stops `docker compose up`.
 
 services:
   db:
     image: postgres:16
     environment:
-      <<: *pg-env
+      POSTGRES_USER: cashguard
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cashguard}   # DEV-ONLY default
       POSTGRES_DB: cashguard   # our app tables (B2)
-      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}   # DEV-ONLY default
     ports:
       - "5434:5432"   # host 5432 is often taken by a local Postgres
     volumes:
@@ -28,6 +28,7 @@ services:
     environment:
       # spelled out (not the anchor): tests/unit/test_config.py checks TEST_DATABASE_URL against it
       POSTGRES_USER: cashguard
+      # throwaway test DB (tmpfs, never hosted); CI uses the same credentials
       POSTGRES_PASSWORD: cashguard
       POSTGRES_DB: cashguard_test
     ports:
@@ -55,17 +56,17 @@ services:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://db:5432/keycloak
       KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
-      KC_DEMO_PASSWORD: ${KC_DEMO_PASSWORD:-cashguard-dev}
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER:-admin}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}   # DEV-ONLY default
+      KC_DEMO_PASSWORD: ${KC_DEMO_PASSWORD:-cashguard-dev}   # DEV-ONLY default (>= 12 chars)
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER:-admin}   # DEV-ONLY default
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}   # DEV-ONLY default
       # One public address for every token's `iss` (D36); hosted: https://auth.<domain>
       KC_HOSTNAME: ${KC_HOSTNAME:-http://localhost:8081}
       # ...but token/JWKS calls from inside the network (api, cron) use http://keycloak:8080
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
-      KC_CRON_CLIENT_SECRET: ${KC_CRON_CLIENT_SECRET:-dev-cron-secret}
+      KC_CRON_CLIENT_SECRET: ${KC_CRON_CLIENT_SECRET:-dev-cron-secret}   # DEV-ONLY default
     ports:
       - "8081:8080"   # host 8081: 8080 is often taken (pgadmin, other Keycloaks); must match KC_HOSTNAME
     volumes:
@@ -84,35 +85,50 @@ services:
 
   api:
     build: .
+    security_opt:
+      - no-new-privileges:true
     env_file:
       - path: .env
         required: false
     environment:
-      DATABASE_URL: postgresql+psycopg://cashguard:cashguard@db:5432/cashguard
+      DATABASE_URL: postgresql+psycopg://cashguard:${POSTGRES_PASSWORD:-cashguard}@db:5432/cashguard   # DEV-ONLY default
       KEYCLOAK_ISSUER: ${KC_HOSTNAME:-http://localhost:8081}/realms/cashguard
       KEYCLOAK_INTERNAL_URL: http://keycloak:8080/realms/cashguard
-    # Migrate the DB, then serve. One worker: the WebSocket manager lives in memory (arch 5.2).
+      # Swagger at /api/docs for local work; the hosted overlay turns it off.
+      API_DOCS_ENABLED: ${API_DOCS_ENABLED:-true}
+      # Proxies whose X-Forwarded-* uvicorn trusts (--proxy-headers). Locally none: port 8000
+      # is reached directly, so a client can't spoof its address. The hosted overlay sets Caddy.
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
+    # Migrate the DB, then serve. One worker: the WebSocket manager and the rate limits live in
+    # memory (arch 5.2). This overrides the Dockerfile CMD: keep the two in step.
+    # `$$` is a literal `$` for the container's shell (compose would interpolate a single `$`).
     command:
       - sh
       - -c
-      - alembic upgrade head && exec uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 --workers 1
+      - >-
+        alembic upgrade head && exec uvicorn app.main:create_app --factory
+        --host 0.0.0.0 --port 8000 --workers 1
+        --proxy-headers --forwarded-allow-ips "$${FORWARDED_ALLOW_IPS:-127.0.0.1}"
+        --no-server-header --ws-max-size 65536
     ports:
       - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=2)"]
       interval: 5s
       timeout: 3s
       retries: 12
 
   cron:
     build: ./cron
+    security_opt:
+      - no-new-privileges:true
     environment:
       API_URL: http://api:8000/api
       KEYCLOAK_TOKEN_URL: http://keycloak:8080/realms/cashguard/protocol/openid-connect/token
-      CRON_CLIENT_SECRET: ${KC_CRON_CLIENT_SECRET:-dev-cron-secret}
+      CRON_CLIENT_SECRET: ${KC_CRON_CLIENT_SECRET:-dev-cron-secret}   # DEV-ONLY default
       # "all", or a space-separated list (demo: "process recover"; the simulator drives the day jobs, Q21)
       CRON_ENABLED_JOBS: ${CRON_ENABLED_JOBS:-all}
       TZ: Europe/Bucharest

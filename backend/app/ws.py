@@ -1,24 +1,43 @@
 """WebSocket: one socket set per user, push only after the DB commit (arch 5.2, B7).
 
 In-memory, so uvicorn runs with 1 worker. The DB is the truth; the socket only notifies.
+
+Abuse limits (security review P1-7): at most `MAX_SOCKETS_PER_USER` sockets per user, the
+`ws_connect` rate limit per principal, inbound frames of at most `MAX_INBOUND_BYTES` (the
+client never sends commands; uvicorn's `--ws-max-size` caps frames at the server too), and the
+token's `exp` re-checked on every inbound message and every ping: an expired token closes the
+socket with 4401 (the app refreshes its token and reconnects). Close codes: 1008 bad token,
+1009 frame too big, 4401 token expired, 4409 too many sockets, 4429 rate limited.
 """
 
 import asyncio
 import contextlib
 import logging
-from typing import Any, Protocol
+from collections.abc import Mapping
+from typing import Any, Final, Protocol
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from sqlalchemy import event as sa_event
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth import ws_user
+from app import clock
+from app.auth import ws_auth
 from app.db.session import session_factory
 from app.errors import DomainError
 from app.events import Event
+from app.security import ratelimit
 
 log = logging.getLogger(__name__)
 PING_SECONDS = 30.0
+MAX_SOCKETS_PER_USER: Final = 3
+MAX_INBOUND_BYTES: Final = 4096
+CLOSE_BAD_TOKEN: Final = 1008
+CLOSE_TOO_BIG: Final = 1009
+CLOSE_TOKEN_EXPIRED: Final = 4401
+CLOSE_TOO_MANY_SOCKETS: Final = 4409
+CLOSE_RATE_LIMITED: Final = 4429
+# Token times are Keycloak's real time, never the simulator's (tests swap this clock).
+TOKEN_CLOCK: clock.Clock = clock.RealClock()
 
 
 class Socket(Protocol):
@@ -86,33 +105,73 @@ async def _send(pending: list[tuple[int, Event]]) -> None:
 router = APIRouter()
 
 
+def token_expired(exp: object) -> bool:
+    """True once the token's `exp` (seconds since the epoch) has passed on the real clock."""
+    if not isinstance(exp, int | float):
+        return True
+    return TOKEN_CLOCK.now().timestamp() >= exp
+
+
+def _too_big(message: Mapping[str, Any]) -> bool:
+    text, data = message.get("text"), message.get("bytes")
+    size = len(text.encode()) if isinstance(text, str) else len(data or b"")
+    return size > MAX_INBOUND_BYTES
+
+
+async def _close(websocket: WebSocket, code: int, reason: str) -> None:
+    # accept first: closing before the handshake is an HTTP 403 on a real server, and the
+    # app reads the WebSocket close code (arch 5.1, 9.4)
+    await websocket.accept()
+    await websocket.close(code=code, reason=reason)
+
+
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket) -> None:
+    token = websocket.query_params.get("token")
+    client = websocket.client.host if websocket.client else "unknown"
+    principal = await ratelimit.key_for_token(token, f"ip:{client}")
+    if ratelimit.check("ws_connect", principal) is not None:
+        await _close(websocket, CLOSE_RATE_LIMITED, "rate_limited")
+        return
     try:
         async with session_factory()() as db:
-            user = await ws_user(db, websocket.query_params.get("token"))
+            user, claims = await ws_auth(db, token)
     except DomainError:
-        # accept first: closing before the handshake is an HTTP 403 on a real server, and the
-        # app expects the WebSocket close code 1008 (arch 5.1, 9.4) to refresh its token
-        await websocket.accept()
-        await websocket.close(code=1008)
+        await _close(websocket, CLOSE_BAD_TOKEN, "invalid_token")
+        return
+    exp = claims.raw.get("exp")
+    if manager.count(user.id) >= MAX_SOCKETS_PER_USER:
+        await _close(websocket, CLOSE_TOO_MANY_SOCKETS, "too_many_sockets")
         return
     await websocket.accept()
-    manager.connect(user.id, websocket)
+    manager.connect(user.id, websocket)  # no await since the count: the cap can't be raced
 
     async def ping() -> None:
         while True:
             await asyncio.sleep(PING_SECONDS)
+            if token_expired(exp):
+                await websocket.close(code=CLOSE_TOKEN_EXPIRED, reason="token_expired")
+                return
             await websocket.send_json({"type": "ping", "data": {}})
 
     pinger = asyncio.create_task(ping())
     try:
         while True:
-            await websocket.receive_text()  # the client never sends commands; keeps it open
-    except WebSocketDisconnect:
-        pass
+            # the client never sends commands; reading keeps the socket open
+            message = await websocket.receive()
+            if message["type"] == "websocket.disconnect":
+                break
+            if _too_big(message):
+                await websocket.close(code=CLOSE_TOO_BIG, reason="message_too_big")
+                break
+            if token_expired(exp):
+                await websocket.close(code=CLOSE_TOKEN_EXPIRED, reason="token_expired")
+                break
+    except (WebSocketDisconnect, RuntimeError):
+        pass  # RuntimeError: the ping task closed the socket while we were reading
     finally:
         pinger.cancel()
-        with contextlib.suppress(asyncio.CancelledError):
+        # the ping task may also have ended on a socket the client already dropped
+        with contextlib.suppress(asyncio.CancelledError, RuntimeError, WebSocketDisconnect):
             await pinger
         manager.disconnect(user.id, websocket)

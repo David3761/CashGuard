@@ -40,9 +40,14 @@ async def downgrade(conn: AsyncConnection, revision: str = "base") -> None:
 async def drop_all(conn: AsyncConnection) -> None:
     # DROP … CASCADE rather than metadata.drop_all / downgrade: it works whatever shape the
     # existing tables have (an older schema, a half-applied migration).
+    # The names come from our own metadata (never from input), and each is quoted by the
+    # dialect's identifier preparer (it doubles any embedded quote), not by hand.
+    # Semgrep (avoid-sqlalchemy-text) is silenced on that line for that reason.
+    quote = conn.dialect.identifier_preparer.quote
     names = [t.name for t in reversed(Base.metadata.sorted_tables)] + ["alembic_version"]
     for name in names:
-        await conn.execute(text(f'DROP TABLE IF EXISTS "{name}" CASCADE'))
+        statement = f"DROP TABLE IF EXISTS {quote(name)} CASCADE"
+        await conn.execute(text(statement))  # nosemgrep
 
 
 async def _main(reset: bool) -> None:

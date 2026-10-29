@@ -58,8 +58,24 @@ FIELDS = frozenset(
         "SIM_START_DATE",
         "SIM_CLOCK_FROM_DB",
         "MAX_AGENT_ITERATIONS",
+        "LLM_MAX_CONCURRENCY",
         "QUESTIONS_PER_DAY",
         "LOG_LEVEL",
+        "RATE_LIMIT_CHAT_PER_MINUTE",
+        "RATE_LIMIT_CHAT_PER_DAY",
+        "RATE_LIMIT_SIM_PER_MINUTE",
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE",
+        # the app API (tests/unit/app_api/test_settings.py checks their defaults)
+        "APP_API_ENABLED",
+        "APP_API_USER",
+        "APP_API_MAX_TEXT_CHARS",
+        "APP_API_REPLY_TIMEOUT_S",
+        "APP_API_HISTORY_LIMIT",
+        "APP_API_MAX_DEVICES",
+        "APP_API_CORS_ORIGIN_REGEX",
+        "FCM_SERVICE_ACCOUNT_FILE",
+        "FCM_PROJECT_ID",
+        "API_DOCS_ENABLED",
     }
 )
 OPTIONAL_FIELDS = (
@@ -150,8 +166,23 @@ def test_settings_defaults_match_the_documented_values(settings: Settings) -> No
         "SIM_START_DATE": date(2026, 6, 15),
         "SIM_CLOCK_FROM_DB": True,
         "MAX_AGENT_ITERATIONS": 6,
+        "LLM_MAX_CONCURRENCY": 4,
         "QUESTIONS_PER_DAY": 1,
         "LOG_LEVEL": "INFO",
+        "RATE_LIMIT_CHAT_PER_MINUTE": 10,
+        "RATE_LIMIT_CHAT_PER_DAY": 200,
+        "RATE_LIMIT_SIM_PER_MINUTE": 5,
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE": 10,
+        "APP_API_ENABLED": False,
+        "APP_API_USER": "a0000000-0000-4000-8000-000000000001",
+        "APP_API_MAX_TEXT_CHARS": 2000,
+        "APP_API_REPLY_TIMEOUT_S": 120.0,
+        "APP_API_HISTORY_LIMIT": 100,
+        "APP_API_MAX_DEVICES": 5,
+        "APP_API_CORS_ORIGIN_REGEX": r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+        "FCM_SERVICE_ACCOUNT_FILE": None,
+        "FCM_PROJECT_ID": None,
+        "API_DOCS_ENABLED": False,
     }
 
 
@@ -214,8 +245,22 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         SIM_MODE="true",
         SIM_START_DATE="2026-07-01",
         MAX_AGENT_ITERATIONS="8",
+        LLM_MAX_CONCURRENCY="2",
         QUESTIONS_PER_DAY="2",
         LOG_LEVEL="DEBUG",
+        RATE_LIMIT_CHAT_PER_MINUTE="3",
+        RATE_LIMIT_CHAT_PER_DAY="30",
+        RATE_LIMIT_SIM_PER_MINUTE="2",
+        RATE_LIMIT_WS_CONNECT_PER_MINUTE="4",
+        APP_API_ENABLED="true",
+        APP_API_USER="b0000000-0000-4000-8000-000000000002",
+        APP_API_MAX_TEXT_CHARS="500",
+        APP_API_REPLY_TIMEOUT_S="30",
+        APP_API_HISTORY_LIMIT="20",
+        APP_API_MAX_DEVICES="2",
+        APP_API_CORS_ORIGIN_REGEX="^https://app\\.example\\.com$",
+        FCM_PROJECT_ID="demo-project",
+        API_DOCS_ENABLED="true",
     )
 
     assert settings.model_dump() == {
@@ -239,8 +284,23 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         "SIM_MODE": True,
         "SIM_START_DATE": date(2026, 7, 1),
         "MAX_AGENT_ITERATIONS": 8,
+        "LLM_MAX_CONCURRENCY": 2,
         "QUESTIONS_PER_DAY": 2,
         "LOG_LEVEL": "DEBUG",
+        "RATE_LIMIT_CHAT_PER_MINUTE": 3,
+        "RATE_LIMIT_CHAT_PER_DAY": 30,
+        "RATE_LIMIT_SIM_PER_MINUTE": 2,
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE": 4,
+        "APP_API_ENABLED": True,
+        "APP_API_USER": "b0000000-0000-4000-8000-000000000002",
+        "APP_API_MAX_TEXT_CHARS": 500,
+        "APP_API_REPLY_TIMEOUT_S": 30.0,
+        "APP_API_HISTORY_LIMIT": 20,
+        "APP_API_MAX_DEVICES": 2,
+        "APP_API_CORS_ORIGIN_REGEX": "^https://app\\.example\\.com$",
+        "FCM_SERVICE_ACCOUNT_FILE": None,
+        "FCM_PROJECT_ID": "demo-project",
+        "API_DOCS_ENABLED": True,
     }
 
 
@@ -358,6 +418,21 @@ def test_max_agent_iterations_accepts_1_to_20(
     monkeypatch: pytest.MonkeyPatch, raw: str, expected: int
 ) -> None:
     assert _from_env(monkeypatch, MAX_AGENT_ITERATIONS=raw).MAX_AGENT_ITERATIONS == expected
+
+
+@pytest.mark.parametrize(("raw", "expected"), [("1", 1), ("4", 4), ("32", 32)])
+def test_llm_max_concurrency_accepts_1_to_32(
+    monkeypatch: pytest.MonkeyPatch, raw: str, expected: int
+) -> None:
+    assert _from_env(monkeypatch, LLM_MAX_CONCURRENCY=raw).LLM_MAX_CONCURRENCY == expected
+
+
+@pytest.mark.parametrize("raw", ["0", "33", "-1", "four"])
+def test_llm_max_concurrency_rejects_anything_else(
+    monkeypatch: pytest.MonkeyPatch, raw: str
+) -> None:
+    with pytest.raises(ValidationError, match="LLM_MAX_CONCURRENCY"):
+        _from_env(monkeypatch, LLM_MAX_CONCURRENCY=raw)
 
 
 @pytest.mark.parametrize("raw", ["0", "21", "-1", "six"])
@@ -555,8 +630,23 @@ def test_every_value_may_have_surrounding_spaces(monkeypatch: pytest.MonkeyPatch
         "SIM_MODE": "true",
         "SIM_START_DATE": "2026-07-01",
         "MAX_AGENT_ITERATIONS": "8",
+        "LLM_MAX_CONCURRENCY": "3",
         "QUESTIONS_PER_DAY": "2",
         "LOG_LEVEL": "WARNING",
+        "RATE_LIMIT_CHAT_PER_MINUTE": "3",
+        "RATE_LIMIT_CHAT_PER_DAY": "30",
+        "RATE_LIMIT_SIM_PER_MINUTE": "2",
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE": "4",
+        "APP_API_ENABLED": "true",
+        "APP_API_USER": "42",
+        "APP_API_MAX_TEXT_CHARS": "500",
+        "APP_API_REPLY_TIMEOUT_S": "60",
+        "APP_API_HISTORY_LIMIT": "50",
+        "APP_API_MAX_DEVICES": "3",
+        "APP_API_CORS_ORIGIN_REGEX": "^http://localhost$",
+        "FCM_SERVICE_ACCOUNT_FILE": "/run/secrets/firebase.json",
+        "FCM_PROJECT_ID": "cashctrl-6b66a",
+        "API_DOCS_ENABLED": "true",
     }
     assert set(values) == FIELDS
     plain = _from_env(monkeypatch, **values)
@@ -573,9 +663,10 @@ SECRETS = {
     "TEST_DATABASE_URL": "postgresql+psycopg://ci:ci-pass-456@db-test:5432/test",
     "ANTHROPIC_API_KEY": f"{KEY_PREFIX}api03-real-looking-key",
     "KEYCLOAK_CRON_CLIENT_SECRET": "cron-client-secret-789",
-    "AWS_BEARER_TOKEN_BEDROCK": "bedrock-api-key-987",
-    "AWS_SECRET_ACCESS_KEY": "aws-secret-access-key-321",
-    "AWS_SESSION_TOKEN": "aws-session-token-654",
+    # Split like KEY_PREFIX, so a secret scanner (gitleaks) finds no key-shaped literal.
+    "AWS_BEARER_TOKEN_BEDROCK": "bedrock-" + "api-key-987",
+    "AWS_SECRET_ACCESS_KEY": "aws-secret-" + "access-key-321",
+    "AWS_SESSION_TOKEN": "aws-session-" + "token-654",
 }
 
 

@@ -28,7 +28,8 @@ async def _fresh(db: AsyncSession, user_id: int, day: date) -> m.DayLedger:
         .where(m.DayLedger.user_id == user_id, m.DayLedger.date == day)
         .execution_options(populate_existing=True)
     )
-    assert row is not None
+    if row is None:
+        raise RuntimeError("day_ledger row missing right after its upsert")
     return row
 
 

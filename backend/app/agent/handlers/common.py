@@ -50,6 +50,7 @@ class RunState:
     plan_changed: bool = False
     plan: Any = None
     forecast: Any = None
+    transfers: int = 0  # transfer_to_savings calls that succeeded (at most one per run, LLM06)
 
 
 Handler = Callable[[ToolContext, RunState, Mapping[str, Any]], Awaitable[dict[str, Any]]]

@@ -12,7 +12,14 @@ from app.config import Settings
 from app.logging import JsonFormatter, configure_logging, redact
 
 KEY = "sk-" + "ant-api03-abcdefghijklmnop"  # split, so the security grep (D6) finds no fakes
-JWT = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJtYXRlaSJ9.c2lnbmF0dXJl"
+JWT = "eyJ" + "hbGciOiJSUzI1NiJ9." + "eyJzdWIiOiJtYXRlaSJ9." + "c2lnbmF0dXJl"  # split, as above
+# AWS and Bedrock key shapes and an IBAN, all fake and split the same way (no scanner hits).
+AWS_KEY_ID = "AKIA" + "X" * 16
+AWS_SESSION_KEY_ID = "ASIA" + "Q" * 16
+BEDROCK_KEY = "ABSK" + "QmVkcm9ja0FQSUtleS1mYWtl" * 2
+BEDROCK_SHORT_KEY = "bedrock-" + "api-key-" + "YmVkcm9jay5hbWF6b25hd3MuY29t"
+IBAN = "RO49" + "AAAA" + "1B31007593840000"
+IBAN_GROUPED = "RO49 " + "AAAA 1B31 0075 9384 0000"
 
 
 def _lines(capsys: pytest.CaptureFixture[str]) -> list[dict[str, Any]]:
@@ -116,3 +123,35 @@ def test_uvicorn_loggers_flow_into_the_json_handler(capsys: pytest.CaptureFixtur
     assert line["logger"] == "uvicorn.access"
     assert JWT not in line["msg"]
     assert redact("plain text 1234.56") == "plain text 1234.56"
+
+
+@pytest.mark.parametrize(
+    "secret",
+    [AWS_KEY_ID, AWS_SESSION_KEY_ID, BEDROCK_KEY, BEDROCK_SHORT_KEY, IBAN, IBAN_GROUPED],
+    ids=["aws key id", "aws session key id", "bedrock key", "bedrock short key", "iban", "iban 4s"],
+)
+def test_aws_and_bedrock_keys_and_ibans_are_redacted(
+    capsys: pytest.CaptureFixture[str], secret: str
+) -> None:
+    configure_logging("INFO")
+    logger = logging.getLogger("app.test")
+
+    logger.info("in the message: %s.", secret, extra={"nested": {"value": [secret]}})
+    try:
+        raise ValueError(f"in the exception: {secret}")
+    except ValueError:
+        logger.exception("failed")
+
+    output = json.dumps(_lines(capsys))
+    assert secret not in output
+    assert secret.replace(" ", "")[6:14] not in output  # no tail of it either
+    assert output.count("[REDACTED]") == 3
+
+
+def test_redaction_leaves_ordinary_log_text_alone() -> None:
+    for text in (
+        "Claude call: model=us.anthropic.claude-sonnet-5-5 stop_reason=end_turn",
+        "request_id=req_011CVabcdef tool annotate_transaction failed",
+        "HTTP 429, rate_limit_error; 1500 lei on RO day 15",
+    ):
+        assert redact(text) == text

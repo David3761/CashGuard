@@ -173,3 +173,26 @@
   - **Claude runs on Amazon Bedrock (D53):** set `LLM_PROVIDER=bedrock`, `AWS_DEFAULT_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_SESSION_TOKEN` (the hackathon's temporary credentials) in the server's env/`.env`, never in git. The model id becomes `us.anthropic.claude-sonnet-5-5` automatically, and the Docker image needs boto3/botocore (already in `requirements.txt` via `anthropic[bedrock]`).
   - The A1 live tests (`uv run pytest -m live tests/eval -q -rs`) still assume an Anthropic API key; Bedrock was verified with a direct live call instead.
 
+### H-15 · bomboe B3/B8/B9 · what the AI-safety controls expect from the platform · 🟢
+- **By:** DGAdavid1 (AI-SAFETY agent, branch `dga-task/ai-safety`), 2026-10-29
+- **Why it was needed:** the judges look at LLM safety; the agent now bounds what Claude can do, and three bounds need the platform's side.
+- **What was done:** `backend/docs/ai-safety.md` (threat model, controls → files → tests) and `tests/unit/agent/test_ai_safety.py`. `transfer_to_savings` takes at most 100 000 lei and runs at most once per run (`transfer_limit`); a run makes at most 16 tool calls; a chat run waits for Claude at most 60 s; a user message is cut to 4000 chars; `LLM_MAX_CONCURRENCY` (default 4) caps the Claude calls in flight per process.
+- **Decisions taken on the owner's behalf:** the 100 000 lei bound, the error code `transfer_limit` (HTTP 429 if it ever surfaces), the 60 s chat deadline.
+- **Merge instruction:**
+  - B3 `TransfersPort.to_savings`: refuse an amount above the current balance with `DomainError("insufficient_funds", …, 409)`; the agent can't see the balance in the tool call.
+  - B8/B9: keep chat and proactive runs of one user serialised (`pg_advisory_lock(user_id)`, arch 11): `AgentWiring` keeps one `RunState` per user.
+  - B9: `run_agent` never raises for an LLM failure, a timeout or a bug in the run; it returns the template and marks the run failed. The HTTP rate limiter (`app/security/ratelimit.py`, app-api branch) is the per-client layer in front of it.
+  - Check: `uv run pytest tests/unit/agent/test_ai_safety.py`.
+### H-16 · mobile (David V.) + whoever runs the hosted Keycloak · security changes to know · 🟢
+- **By:** DGAdavid1 (platform-security agent), 2026-10-29
+- **What changed:**
+  - `/api/sim/*` needs the Keycloak realm role **`sim`**. `realm-cashguard.json` gives it to the five demo personas, so a fresh local Keycloak just works.
+  - WebSocket close codes: **1008** bad token (refresh, then reconnect, as before), **4401** token expired while open (refresh, then reconnect), **4409** more than 3 sockets for the user (close the old ones), **4429** too many connects (wait, then reconnect), **1009** inbound frame over 4 KiB (the app never sends one).
+  - REST: 429 `rate_limited` with `Retry-After` on `/api/chat` (10/min, 200/day) and `/api/sim/*` (5/min); 413 `payload_too_large` over 64 KiB; `PATCH /api/life-profile/{key}` values ≤ 2000 characters as JSON.
+  - Only access tokens are accepted: sending an ID token now gives 401 `invalid_token`.
+- **Merge instruction:**
+  - Mobile: on 4401, treat it like 1008 (refresh the token, reconnect); back off on 4429/4409.
+  - Hosted Keycloak seeded before this change (`--import-realm` skips an existing realm): in the admin console add the realm role `sim` and assign it to the personas; turn on brute force detection; set the password policy `length(12)`. Check: `POST /api/sim/reset` with a persona token → 204.
+  - The prod overlay now refuses to start without `POSTGRES_PASSWORD`, `KC_DB_PASSWORD`, `KC_ADMIN_USER`, `KC_ADMIN_PASSWORD`, `KC_CRON_CLIENT_SECRET`, `KC_DEMO_PASSWORD` (≥ 12 chars) in `backend/.env`. An existing DB volume keeps its old password (`ALTER USER cashguard PASSWORD …`).
+  - If the demo presenter clicks the simulator faster than 5 calls a minute, raise `RATE_LIMIT_SIM_PER_MINUTE`.
+

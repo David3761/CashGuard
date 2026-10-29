@@ -2,7 +2,7 @@
 
 > **Reviewed:** bomboe's v0.7 (commit `34a892a`) · **By:** David G. (AI team), 2026-10-28
 > **Team decision:** v0.7 is the architecture we build on. The old `api-ai` branch design is superseded; only its ideas are reused here.
-> **Result:** v0.7 is a solid platform but **not complete** for the CashGuard pitch. The gaps below are folded into the architecture doc as **v0.8** (additions marked 🆕). Decisions and open questions: [`DGAREADME1.md`](../../DGAREADME1.md).
+> **Result:** v0.7 is a solid platform but **not complete** for the CashGuard pitch. The gaps below are folded into the architecture doc as **v0.8** (additions marked 🆕). Decisions and open questions: [`DGAREADME1.md`](../../docs/team/DGAREADME1.md).
 
 ---
 
