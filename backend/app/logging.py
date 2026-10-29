@@ -2,7 +2,9 @@
 
 Each line has `ts` (UTC, `…Z`, the real wall time even in SIM_MODE), `level`, `logger`, `msg`,
 any `extra=` fields, and `exc` (the traceback). Redaction runs on all of them: Anthropic keys,
-Bearer tokens, JWTs (e.g. the WebSocket `?token=` uvicorn logs) and passwords in URLs.
+Bearer tokens, JWTs (e.g. the WebSocket `?token=` uvicorn logs), passwords in URLs, AWS access
+key ids (AKIA…/ASIA…), Amazon Bedrock API keys (long-term ABSK…, short-term bedrock-api-key-…)
+and IBANs (compact or in groups of 4, as in the snapshot's scrub).
 `create_app()` calls `configure_logging`; command-line tools call it themselves.
 """
 
@@ -19,6 +21,15 @@ _PATTERNS = (
     (re.compile(r"(?i)\b(bearer\s+)[A-Za-z0-9._~+/=\-]+"), rf"\1{REDACTED}"),
     (re.compile(r"\beyJ[A-Za-z0-9_\-]{5,}\.[A-Za-z0-9_\-]{5,}\.[A-Za-z0-9_\-]*"), REDACTED),
     (re.compile(r"([a-z][a-z0-9+.\-]*://[^:/@\s\"']+:)[^@\s\"']+@"), rf"\1{REDACTED}@"),
+    (re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b"), REDACTED),
+    (re.compile(r"\bABSK[A-Za-z0-9+/=]{16,}"), REDACTED),
+    (re.compile(r"\bbedrock-api-key-[A-Za-z0-9+/=._\-]{8,}"), REDACTED),
+    (
+        re.compile(
+            r"\b[A-Z]{2}\d{2}(?:[A-Z0-9]{11,30}|(?: [A-Z0-9]{4}){3,7}(?: [A-Z0-9]{1,4})?)\b"
+        ),
+        REDACTED,
+    ),
 )
 # The anthropic SDK (and its HTTP stack) logs full request bodies at DEBUG: user financial data.
 _QUIET_LOGGERS = ("anthropic", "httpx", "httpx2", "httpcore")
