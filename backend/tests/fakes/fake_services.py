@@ -336,10 +336,13 @@ class FakeAgentEvents(FakeRecords):
 
 
 class FakeTransfers(FakeRecords):
-    def __init__(self) -> None:
+    def __init__(self, balance: Decimal | None = None) -> None:
         super().__init__("transfer")
+        self.balance = balance  # None: no balance check (like the tests before it existed)
 
     async def to_savings(self, user_id: int, amount: Decimal) -> Row:
+        if self.balance is not None and amount > self.balance:
+            raise DomainError("insufficient_funds", f"The balance is only {self.balance} lei.", 409)
         return await self.create(user_id, {"amount": amount, "kind": "manual"})
 
 

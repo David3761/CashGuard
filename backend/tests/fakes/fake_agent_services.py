@@ -93,6 +93,9 @@ class FakeAgentServices:
     history_limits: list[int] = field(default_factory=list)
     executed: list[tuple[str, dict[str, Any]]] = field(default_factory=list)
     runs: list[tuple[int | None, RunStatus, str | None]] = field(default_factory=list)
+    new_run_id: int | None = None  # what start_run returns (None: runs aren't recorded)
+    started_runs: list[int] = field(default_factory=list)  # user ids
+    tool_run_ids: list[int | None] = field(default_factory=list)
     saved_messages: list[dict[str, Any]] = field(default_factory=list)
     asked_events: list[int] = field(default_factory=list)
     notifications: list[dict[str, Any]] = field(default_factory=list)
@@ -120,6 +123,7 @@ class FakeAgentServices:
     ) -> BetaToolResultBlockParam:
         args = dict(block.input) if isinstance(block.input, dict) else {}
         self.executed.append((block.name, args))
+        self.tool_run_ids.append(run_id)
         handler = self.overrides.get(block.name) or getattr(self, f"_h_{block.name}", None)
         try:
             if handler is None:
@@ -148,6 +152,10 @@ class FakeAgentServices:
     async def save_assistant_message(self, user_id: int, **fields: Any) -> int:
         self.saved_messages.append(fields)
         return len(self.saved_messages)
+
+    async def start_run(self, user_id: int) -> int | None:
+        self.started_runs.append(user_id)
+        return self.new_run_id
 
     async def mark_event_asked(self, event_id: int) -> None:
         self.asked_events.append(event_id)

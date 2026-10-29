@@ -140,7 +140,8 @@ async def transfer_to_savings(
 ) -> dict[str, Any]:
     """Balance -> the user's own savings pot (never to anyone else). At most `MAX_TRANSFERS_PER_RUN`
     per run and `tools.MAX_TRANSFER` lei per call (the input model); the balance check is the
-    transfers port's (bomboe's B3: `insufficient_funds`), which holds the account."""
+    transfers port's (`transfers.check_funds`: `insufficient_funds`, a tool error Claude
+    explains), which holds the account. A refused transfer doesn't use up the run's one."""
     amount = to_money(args["amount"])
     if amount <= 0:
         raise DomainError("invalid_input", "The amount must be above 0.", 422)

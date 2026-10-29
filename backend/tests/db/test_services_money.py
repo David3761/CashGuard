@@ -5,6 +5,7 @@ from datetime import UTC, date, datetime
 from decimal import Decimal
 
 import pytest
+from sqlalchemy import func, select
 
 from app.db import models as m
 from app.db.session import unit_of_work
@@ -372,6 +373,26 @@ async def test_auto_save_once_per_salary(db):
 async def test_transfer_rejects_non_positive_amount(db):
     u = await f.user(db)
     await fails(transfers.create(db, u.id, amount=D("0")), "invalid_amount", 422)
+
+
+async def test_check_funds_refuses_more_than_the_balance(db):
+    u, other = await f.user(db), await f.user(db)
+    db.add(m.Account(user_id=u.id, current_balance=D("150.00")))
+    await db.flush()
+    await transfers.check_funds(db, u.id, D("150.00"))  # all of it is fine
+    await fails(transfers.check_funds(db, u.id, D("150.01")), "insufficient_funds", 409)
+    await fails(transfers.check_funds(db, other.id, D("1")), "not_found", 404)
+
+
+async def test_agent_transfer_above_the_balance_writes_nothing(db):
+    from app.agent.pg_ports import pg_services
+
+    u = await f.user(db)
+    db.add(m.Account(user_id=u.id, current_balance=D("150.00")))
+    await db.flush()
+    await fails(pg_services(db).transfers.to_savings(u.id, D("200")), "insufficient_funds", 409)
+    assert await db.scalar(select(func.count()).where(m.Transfer.user_id == u.id)) == 0
+    assert (await db.get(m.Account, u.id, populate_existing=True)).current_balance == D("150.00")
 
 
 async def test_transfers_isolation(two, db):  # noqa: F811

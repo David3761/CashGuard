@@ -252,6 +252,31 @@ async def test_a_new_transaction_triggers_a_saved_and_pushed_proactive_question(
     assert "assistant.message" in sock.types() and "notification.new" in sock.types()
 
 
+async def test_a_proactive_run_is_audited_in_agent_runs_with_its_tool_calls(
+    db_committed, matei, sock, installed
+):
+    question = "Ai dat 500 de lei la Mega Image. Pentru cine a fost?"
+    set_llm(
+        FakeLLM(
+            [tool_round(tool_use("get_plan_status", {}, tool_use_id="toolu_p")), end_turn(question)]
+        )
+    )
+    await mega_500(db_committed, matei, trigger="sim")
+    await settle()
+
+    db_committed.expire_all()
+    [run] = (
+        await db_committed.scalars(select(m.AgentRun).where(m.AgentRun.user_id == matei))
+    ).all()
+    assert run.trigger == AgentTrigger.PROACTIVE and run.status == AgentRunStatus.COMPLETED
+    assert run.finished_at is not None and run.error is None
+    [call] = (
+        await db_committed.scalars(select(m.ToolCall).where(m.ToolCall.run_id == run.id))
+    ).all()
+    assert call.tool_name == "get_plan_status" and call.status == "ok" and call.user_id == matei
+    assert not await agent_runs.is_running(db_committed, matei)  # /chat isn't left busy
+
+
 async def test_chat_endpoint_run_saves_the_reply_after_a_real_tool_call(
     as_committed_user, db_committed, matei, sock, installed
 ):

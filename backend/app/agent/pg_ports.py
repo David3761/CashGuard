@@ -408,9 +408,10 @@ class PgAgentEvents(_Base):
 class PgTransfers(_Base):
     async def to_savings(self, user_id: int, amount: Decimal) -> Row:
         """A manual transfer into the goal pot (like the payday auto-save): the account goes down
-        by `amount` and the pot up."""
+        by `amount` and the pot up. Above the balance → insufficient_funds (nothing written)."""
         if amount <= 0:
             raise invalid("invalid_amount", "A transfer amount must be positive.")
+        await transfers.check_funds(self.db, user_id, amount)
         pot = await pots.goal_pot(self.db, user_id)
         transfer = await transfers.create(
             self.db,

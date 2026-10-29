@@ -2,6 +2,7 @@
 
 import json
 from datetime import UTC, date, datetime
+from decimal import Decimal
 from typing import Any
 
 import pytest
@@ -394,6 +395,21 @@ async def test_transfer_to_savings_is_bounded_per_call() -> None:
     assert await code(h, "transfer_to_savings", {"amount": 9_999_999_999}) == "invalid_input"
     assert transfers.table.count() == 0
     assert (await ok(h, "transfer_to_savings", {"amount": 100_000}))["transfer"]["amount"] == 100000
+
+
+async def test_transfer_above_the_balance_is_a_tool_error_claude_can_explain() -> None:
+    # LLM06: the port refuses more than the balance; the run keeps its one transfer.
+    h = Harness()
+    transfers = h.services.transfers
+    assert isinstance(transfers, FakeTransfers)
+    transfers.balance = Decimal("150")
+    failed, body = await call(h, "transfer_to_savings", {"amount": 200})
+    assert failed
+    assert body["error"]["code"] == "insufficient_funds"
+    assert "150" in body["error"]["message"]
+    assert transfers.table.count() == 0
+    assert h.run.transfers == 0
+    assert (await ok(h, "transfer_to_savings", {"amount": 150}))["transfer"]["amount"] == 150
 
 
 async def test_only_one_transfer_to_savings_per_run() -> None:
