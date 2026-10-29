@@ -846,3 +846,34 @@ async def test_strict_false_checks_nothing() -> None:
     await fake.create(SYSTEM, [USER, _turn("assistant", _call("a"))], TOOLS)
 
     assert fake.violations == []
+
+
+# ── step 4-fix: run detection (review of A1.4) ──────────────────────────────────────────
+
+
+async def test_a_new_chat_run_carrying_history_may_use_another_tool_list() -> None:
+    # Arch 6.3: the next run = load_history + the new user message, after an end_turn.
+    reply = end_turn("Obiectiv setat.")
+    fake = FakeLLM([reply, end_turn("Am adăugat 100 lei.")])
+    await fake.create(SYSTEM, [USER], TOOLS)
+    history: list[BetaMessageParam] = [
+        USER,
+        {"role": "assistant", "content": reply.content},
+        {"role": "user", "content": "Mai pun 100 lei."},
+    ]
+
+    await fake.create(SYSTEM, history, [TOOL, UPDATE_GOAL])
+
+    assert fake.violations == []
+
+
+async def test_a_run_echoing_full_json_dumps_is_still_recognised() -> None:
+    # model_dump(mode="json") adds None-valued fields (citations, caller…): still the same run.
+    first = tool_round(tool_use("set_goal", {}, tool_use_id="g"))
+    fake = FakeLLM([first, end_turn("Gata.")])
+    await fake.create(SYSTEM, [USER], TOOLS)
+    dumped = [block.model_dump(mode="json") for block in first.content]
+    history = [USER, _turn("assistant", *dumped), _turn("user", _result("g"))]
+
+    with pytest.raises(FakeLLMProtocolError, match="D46"):
+        await fake.create(SYSTEM, history, [TOOL, UPDATE_GOAL])

@@ -230,11 +230,12 @@ def _conversation_problems(messages: Sequence[BetaMessageParam]) -> list[str]:
 
 
 def _canon(value: object) -> object:
-    """A comparable form: SDK blocks as the JSON the API sent, dicts and lists recursively."""
+    """A comparable form: SDK blocks as JSON, dicts and lists recursively, None-valued keys dropped
+    (so a full `model_dump(mode="json")` echo equals the SDK blocks it came from)."""
     if isinstance(value, BaseModel):
         return _canon(value.model_dump(mode="json", exclude_unset=True))
     if isinstance(value, Mapping):
-        return {key: _canon(item) for key, item in value.items()}
+        return {key: _canon(item) for key, item in value.items() if item is not None}
     if isinstance(value, list | tuple):
         return [_canon(item) for item in value]
     return value
@@ -245,9 +246,14 @@ def _assistant(response: BetaMessage) -> object:
 
 
 def _continues(request: RecordedRequest, previous: RecordedRequest, response: BetaMessage) -> bool:
-    """Whether `request` is the next request of the same run (its history only appended to)."""
+    """Whether `request` is the next request of the same run: the previous response called tools,
+    and the history was only appended to, with their results. After an `end_turn`, the next
+    request (history + a new user message) starts a new run (arch 6.3)."""
+    if response.stop_reason != "tool_use":
+        return False
     expected = [_canon(each) for each in previous.messages] + [_assistant(response)]
-    return _canon(request.messages[: len(expected)]) == expected
+    after = request.messages[len(expected)] if len(request.messages) > len(expected) else None
+    return _canon(request.messages[: len(expected)]) == expected and bool(_leading_results(after))
 
 
 def _has_thinking(response: BetaMessage) -> bool:
