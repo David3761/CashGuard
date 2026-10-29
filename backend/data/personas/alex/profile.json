@@ -1,0 +1,25 @@
+{
+  "account": {
+    "current_balance": "1200.00"
+  },
+  "fixed_costs": [],
+  "goal": null,
+  "goal_pot": null,
+  "history": {
+    "as_of": "2026-06-15",
+    "from": "2026-02-15",
+    "start_balance": "6280.84",
+    "to": "2026-06-14"
+  },
+  "id": "alex",
+  "income_sources": [],
+  "plan_preferences": {},
+  "pots": [],
+  "user": {
+    "age": 24,
+    "city": "București",
+    "coach_style": "warm",
+    "language": "ro",
+    "name": "Alex"
+  }
+}

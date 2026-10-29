@@ -1,0 +1,334 @@
+{
+  "id": "matei",
+  "seed": 101,
+  "user": {
+    "name": "Matei",
+    "age": 26,
+    "city": "București",
+    "language": "ro",
+    "coach_style": "warm"
+  },
+  "current_balance": "4870.00",
+  "income_sources": [
+    {
+      "source": "Salariu",
+      "amount": "7000",
+      "day_of_month": 10,
+      "merchant_raw": "SALARIU TECHNOVA SOFTWARE SRL"
+    }
+  ],
+  "fixed_costs": [
+    {
+      "name": "Chirie",
+      "amount": "2000",
+      "day_of_month": 1,
+      "merchant_raw": "TRANSFER CHIRIE POPESCU A",
+      "category": "housing_rent"
+    },
+    {
+      "name": "Utilități",
+      "amount": "350",
+      "day_of_month": 15,
+      "merchant_raw": "ENEL ENERGIE MUNTENIA",
+      "mcc": 4900,
+      "category": "utilities",
+      "jitter_pct": 10
+    },
+    {
+      "name": "Telefon",
+      "amount": "60",
+      "day_of_month": 20,
+      "merchant_raw": "ORANGE ROMANIA SA",
+      "mcc": 4814,
+      "category": "telecom"
+    },
+    {
+      "name": "Spotify",
+      "amount": "25",
+      "day_of_month": 5,
+      "merchant_raw": "SPOTIFY P2A41C9",
+      "mcc": 5815,
+      "category": "subscriptions"
+    },
+    {
+      "name": "Sală",
+      "amount": "180",
+      "day_of_month": 3,
+      "merchant_raw": "WORLD CLASS ROMANIA",
+      "mcc": 7997,
+      "category": "sport"
+    }
+  ],
+  "goal": {
+    "amount": "10000",
+    "deadline": "2026-12-31",
+    "motivation": "Fond de siguranță",
+    "hard_deadline": false
+  },
+  "goal_pot": {
+    "name": "Fond 10.000",
+    "saved": "5200"
+  },
+  "pots": [],
+  "plan_preferences": {
+    "buffer_pct": "0.10"
+  },
+  "streams": [
+    {
+      "name": "mega_lunch",
+      "kind": "weekly",
+      "per_week": [
+        3,
+        4
+      ],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "hours": [
+        12,
+        14
+      ],
+      "median": 85,
+      "sigma": 0.35,
+      "min": 25,
+      "max": 240,
+      "merchant_raw": [
+        "MEGA IMAGE 0451 BUCURESTI",
+        "MEGA IMAGE 0451 BUC"
+      ],
+      "mcc": 5411,
+      "category": "groceries"
+    },
+    {
+      "name": "weekend_groceries",
+      "kind": "weekly",
+      "per_week": [
+        1,
+        1
+      ],
+      "weekdays": [
+        6,
+        7
+      ],
+      "hours": [
+        10,
+        13
+      ],
+      "median": 150,
+      "sigma": 0.35,
+      "merchant_raw": "LIDL 0412 BUCURESTI",
+      "mcc": 5411,
+      "category": "groceries"
+    },
+    {
+      "name": "friday_lunch",
+      "kind": "every",
+      "weekdays": [
+        5
+      ],
+      "hours": [
+        12,
+        15
+      ],
+      "range": [
+        60,
+        110
+      ],
+      "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+      "mcc": 5812,
+      "category": "restaurants"
+    },
+    {
+      "name": "glovo",
+      "kind": "weekly",
+      "per_week": [
+        2,
+        2
+      ],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "hours": [
+        19,
+        22
+      ],
+      "median": 62,
+      "sigma": 0.3,
+      "merchant_raw": "GLOVO*ORDER 8812",
+      "mcc": 5814,
+      "category": "food_delivery"
+    },
+    {
+      "name": "bolt",
+      "kind": "weekly",
+      "per_week": [
+        1,
+        3
+      ],
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "hours": [
+        8,
+        23
+      ],
+      "median": 26,
+      "sigma": 0.4,
+      "merchant_raw": "BOLT.EU/O/2603",
+      "mcc": 4121,
+      "category": "transport"
+    },
+    {
+      "name": "concerts",
+      "kind": "every",
+      "weekdays": [
+        6
+      ],
+      "probability": 0.22,
+      "hours": [
+        18,
+        20
+      ],
+      "range": [
+        120,
+        260
+      ],
+      "merchant_raw": "IABILET.RO",
+      "mcc": 7922,
+      "category": "entertainment"
+    },
+    {
+      "name": "pharmacy",
+      "kind": "every",
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "probability": 0.03,
+      "hours": [
+        9,
+        20
+      ],
+      "median": 45,
+      "sigma": 0.5,
+      "merchant_raw": "DR.MAX 112 BUCURESTI",
+      "mcc": 5912,
+      "category": "health_pharmacy"
+    },
+    {
+      "name": "clothes",
+      "kind": "every",
+      "weekdays": [
+        6,
+        7
+      ],
+      "probability": 0.06,
+      "hours": [
+        12,
+        19
+      ],
+      "median": 190,
+      "sigma": 0.4,
+      "merchant_raw": "ZARA ROMANIA SRL",
+      "mcc": 5651,
+      "category": "clothing"
+    }
+  ],
+  "calendar": [
+    {
+      "date": "2026-03-07",
+      "amount": "150",
+      "merchant_raw": "FLORARIA DOROBANTI",
+      "category": "gifts",
+      "hours": [
+        17,
+        19
+      ]
+    },
+    {
+      "date": "2026-04-17",
+      "amount": "915",
+      "merchant_raw": "BOOKING.COM HOTEL",
+      "mcc": 4722,
+      "category": "travel",
+      "hours": [
+        21,
+        23
+      ]
+    },
+    {
+      "date": "2026-05-23",
+      "amount": "300",
+      "merchant_raw": "IABILET.RO FESTIVAL",
+      "mcc": 7922,
+      "category": "entertainment",
+      "hours": [
+        18,
+        20
+      ]
+    }
+  ],
+  "answered": [
+    {
+      "stream": "friday_lunch",
+      "last": 2,
+      "purpose": "social_connection",
+      "label": "Prânz cu echipa"
+    }
+  ],
+  "receipt_share": 0.2,
+  "receipt_items": {
+    "mega_lunch": [
+      "Salată",
+      "Iaurt",
+      "Pâine",
+      "Apă plată",
+      "Banane",
+      "Sandviș",
+      "Cafea",
+      "Brânză"
+    ]
+  },
+  "quiet": [
+    {
+      "from": "2026-03-09",
+      "to": "2026-03-22",
+      "streams": [
+        "glovo",
+        "bolt",
+        "weekend_groceries",
+        "concerts",
+        "clothes"
+      ]
+    },
+    {
+      "from": "2026-06-08",
+      "to": "2026-06-14",
+      "streams": [
+        "glovo",
+        "clothes"
+      ]
+    }
+  ]
+}

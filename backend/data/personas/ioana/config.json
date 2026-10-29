@@ -1,0 +1,229 @@
+{
+  "id": "ioana",
+  "seed": 404,
+  "user": {
+    "name": "Ioana",
+    "age": 38,
+    "city": "Cluj",
+    "language": "ro",
+    "coach_style": "warm"
+  },
+  "current_balance": "9350.00",
+  "income_sources": [
+    {
+      "source": "Venit gospodărie",
+      "amount": "15500",
+      "day_of_month": 10,
+      "merchant_raw": "SALARIU CONTA EXPERT CLUJ SRL"
+    }
+  ],
+  "fixed_costs": [
+    {
+      "name": "Rată ipotecar",
+      "amount": "3200",
+      "day_of_month": 15,
+      "merchant_raw": "RATA CREDIT IPOTECAR",
+      "category": "housing_rent"
+    },
+    {
+      "name": "Utilități",
+      "amount": "650",
+      "day_of_month": 20,
+      "merchant_raw": "ELECTRICA FURNIZARE SA",
+      "mcc": 4900,
+      "category": "utilities",
+      "jitter_pct": 10
+    },
+    {
+      "name": "Internet și telefon",
+      "amount": "120",
+      "day_of_month": 18,
+      "merchant_raw": "ORANGE ROMANIA SA",
+      "mcc": 4814,
+      "category": "telecom"
+    },
+    {
+      "name": "Club sportiv copii",
+      "amount": "300",
+      "day_of_month": 5,
+      "merchant_raw": "CLUB SPORTIV U CLUJ",
+      "category": "kids"
+    }
+  ],
+  "goal": {
+    "amount": "12000",
+    "deadline": "2026-12-31",
+    "motivation": "Fond de urgență",
+    "hard_deadline": false
+  },
+  "goal_pot": {
+    "name": "Fond de urgență",
+    "saved": "3100"
+  },
+  "pots": [],
+  "plan_preferences": {
+    "buffer_pct": "0.10"
+  },
+  "streams": [
+    {
+      "name": "shopgo",
+      "kind": "every",
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "probability": 0.85,
+      "hours": [
+        17,
+        20
+      ],
+      "median": 140,
+      "sigma": 0.42,
+      "min": 30,
+      "max": 420,
+      "merchant_raw": [
+        "SHOP&GO 123 CLUJ",
+        "SHOP&GO 087 CLUJ"
+      ],
+      "mcc": 5411,
+      "category": "groceries"
+    },
+    {
+      "name": "kaufland_saturday",
+      "kind": "every",
+      "weekdays": [
+        6
+      ],
+      "hours": [
+        10,
+        12
+      ],
+      "range": [
+        300,
+        500
+      ],
+      "merchant_raw": "KAUFLAND 1203 CLUJ",
+      "mcc": 5411,
+      "category": "groceries"
+    },
+    {
+      "name": "family_restaurant",
+      "kind": "every",
+      "weekdays": [
+        7
+      ],
+      "probability": 0.4,
+      "hours": [
+        13,
+        15
+      ],
+      "median": 220,
+      "sigma": 0.3,
+      "merchant_raw": "RESTAURANT ROATA CLUJ",
+      "mcc": 5812,
+      "category": "restaurants"
+    },
+    {
+      "name": "pharmacy",
+      "kind": "every",
+      "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "probability": 0.06,
+      "hours": [
+        9,
+        19
+      ],
+      "median": 70,
+      "sigma": 0.5,
+      "merchant_raw": "CATENA 45 CLUJ",
+      "mcc": 5912,
+      "category": "health_pharmacy"
+    },
+    {
+      "name": "fuel",
+      "kind": "every",
+      "weekdays": [
+        1,
+        4
+      ],
+      "probability": 0.5,
+      "hours": [
+        7,
+        9
+      ],
+      "range": [
+        180,
+        260
+      ],
+      "merchant_raw": "OMV 2210 CLUJ",
+      "mcc": 5541,
+      "category": "fuel"
+    },
+    {
+      "name": "savings",
+      "kind": "monthly",
+      "day_of_month": 11,
+      "amount": "4000",
+      "hours": [
+        9,
+        10
+      ],
+      "merchant_raw": "TRANSFER CONT ECONOMII",
+      "category": "savings"
+    }
+  ],
+  "spikes": [
+    {
+      "stream": "shopgo",
+      "from": "2026-04-06",
+      "to": "2026-04-11",
+      "multiplier": 2.2
+    }
+  ],
+  "calendar": [
+    {
+      "date": "2026-04-09",
+      "amount": "260",
+      "merchant_raw": "NORIEL JUCARII CLUJ",
+      "category": "gifts",
+      "hours": [
+        17,
+        19
+      ]
+    },
+    {
+      "date": "2026-04-10",
+      "amount": "640",
+      "merchant_raw": "KAUFLAND 1203 CLUJ",
+      "mcc": 5411,
+      "category": "groceries",
+      "hours": [
+        10,
+        12
+      ]
+    },
+    {
+      "date": "2026-05-30",
+      "amount": "420",
+      "merchant_raw": "NORIEL JUCARII CLUJ",
+      "category": "gifts",
+      "hours": [
+        11,
+        13
+      ]
+    }
+  ],
+  "answered": [],
+  "receipt_share": 0.0,
+  "receipt_items": {}
+}

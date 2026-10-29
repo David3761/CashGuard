@@ -1,0 +1,62 @@
+{
+  "account": {
+    "current_balance": "9350.00"
+  },
+  "fixed_costs": [
+    {
+      "amount": "3200",
+      "day_of_month": 15,
+      "name": "Rată ipotecar"
+    },
+    {
+      "amount": "650",
+      "day_of_month": 20,
+      "name": "Utilități"
+    },
+    {
+      "amount": "120",
+      "day_of_month": 18,
+      "name": "Internet și telefon"
+    },
+    {
+      "amount": "300",
+      "day_of_month": 5,
+      "name": "Club sportiv copii"
+    }
+  ],
+  "goal": {
+    "amount": "12000",
+    "deadline": "2026-12-31",
+    "hard_deadline": false,
+    "motivation": "Fond de urgență"
+  },
+  "goal_pot": {
+    "name": "Fond de urgență",
+    "saved": "3100"
+  },
+  "history": {
+    "as_of": "2026-06-15",
+    "from": "2026-02-15",
+    "start_balance": "9670.11",
+    "to": "2026-06-14"
+  },
+  "id": "ioana",
+  "income_sources": [
+    {
+      "amount": "15500",
+      "day_of_month": 10,
+      "source": "Venit gospodărie"
+    }
+  ],
+  "plan_preferences": {
+    "buffer_pct": "0.10"
+  },
+  "pots": [],
+  "user": {
+    "age": 38,
+    "city": "Cluj",
+    "coach_style": "warm",
+    "language": "ro",
+    "name": "Ioana"
+  }
+}

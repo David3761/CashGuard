@@ -1,0 +1,2486 @@
+[
+  {
+    "amount": "434.84",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "434.84",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ENGIE ROMANIA SA",
+    "occurred_at": "2026-02-15T09:07:00+02:00",
+    "ref": "andrei-0001",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "120.60",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "120.60",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-02-15T21:12:00+02:00",
+    "ref": "andrei-0002",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "68.57",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "68.57",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-02-16T16:33:00+02:00",
+    "ref": "andrei-0003",
+    "stream": "bolt"
+  },
+  {
+    "amount": "133.18",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "133.18",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-02-17T20:10:00+02:00",
+    "ref": "andrei-0004",
+    "stream": "groceries"
+  },
+  {
+    "amount": "50.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "50.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "DIGI ROMANIA SA",
+    "occurred_at": "2026-02-18T09:30:00+02:00",
+    "ref": "andrei-0005",
+    "stream": "fixed:Internet"
+  },
+  {
+    "amount": "100.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "100.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-02-19T10:02:00+02:00",
+    "ref": "andrei-0006",
+    "stream": "bolt"
+  },
+  {
+    "amount": "87.75",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "87.75",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-02-19T19:13:00+02:00",
+    "ref": "andrei-0007",
+    "stream": "groceries"
+  },
+  {
+    "amount": "148.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "148.39",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-02-21T20:12:00+02:00",
+    "ref": "andrei-0008",
+    "stream": "groceries"
+  },
+  {
+    "amount": "152.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "152.23",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-02-22T20:41:00+02:00",
+    "ref": "andrei-0009",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "222.70",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "222.70",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-02-23T17:09:00+02:00",
+    "ref": "andrei-0010",
+    "stream": "groceries"
+  },
+  {
+    "amount": "190.99",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "190.99",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-02-24T18:06:00+02:00",
+    "ref": "andrei-0011",
+    "stream": "groceries"
+  },
+  {
+    "amount": "21.79",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "21.79",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-02-26T11:38:00+02:00",
+    "ref": "andrei-0012",
+    "stream": "bolt"
+  },
+  {
+    "amount": "141.06",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "141.06",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-02-27T21:29:00+02:00",
+    "ref": "andrei-0013",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "100.38",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "100.38",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-02-28T19:19:00+02:00",
+    "ref": "andrei-0014",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "2600.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "2600.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE IONESCU M",
+    "occurred_at": "2026-03-01T09:52:00+02:00",
+    "ref": "andrei-0015",
+    "stream": "fixed:Chirie"
+  },
+  {
+    "amount": "152.67",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "152.67",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-03-01T17:31:00+02:00",
+    "ref": "andrei-0016",
+    "stream": "groceries"
+  },
+  {
+    "amount": "32.40",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "32.40",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-01T19:40:00+02:00",
+    "ref": "andrei-0017",
+    "stream": "bolt"
+  },
+  {
+    "amount": "121.34",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "121.34",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-03-03T20:22:00+02:00",
+    "ref": "andrei-0018",
+    "stream": "groceries"
+  },
+  {
+    "amount": "104.80",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "104.80",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-04T11:15:00+02:00",
+    "ref": "andrei-0019",
+    "stream": "bolt"
+  },
+  {
+    "amount": "9000.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU SPORTDATA ANALYTICS SRL",
+    "occurred_at": "2026-03-05T08:48:00+02:00",
+    "ref": "andrei-0020",
+    "stream": "salary"
+  },
+  {
+    "amount": "1500.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "1500.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CONT ECONOMII",
+    "occurred_at": "2026-03-06T09:19:00+02:00",
+    "ref": "andrei-0021",
+    "stream": "savings"
+  },
+  {
+    "amount": "186.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "186.72",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-03-06T20:12:00+02:00",
+    "ref": "andrei-0022",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "110.17",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "110.17",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-03-07T18:18:00+02:00",
+    "ref": "andrei-0023",
+    "stream": "groceries"
+  },
+  {
+    "amount": "108.88",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "108.88",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-03-07T20:07:00+02:00",
+    "ref": "andrei-0024",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "45.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "45.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "DAZN LIMITED",
+    "occurred_at": "2026-03-08T10:36:00+02:00",
+    "ref": "andrei-0025",
+    "stream": "fixed:DAZN"
+  },
+  {
+    "amount": "49.22",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "49.22",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-08T17:58:00+02:00",
+    "ref": "andrei-0026",
+    "stream": "bolt"
+  },
+  {
+    "amount": "18.95",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "18.95",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-09T19:15:00+02:00",
+    "ref": "andrei-0027",
+    "stream": "bolt"
+  },
+  {
+    "amount": "335.56",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "335.56",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-03-11T18:26:00+02:00",
+    "ref": "andrei-0028",
+    "stream": "groceries"
+  },
+  {
+    "amount": "35.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "35.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "VOYO.RO SPORT",
+    "occurred_at": "2026-03-12T09:24:00+02:00",
+    "ref": "andrei-0029",
+    "stream": "fixed:Voyo Sport"
+  },
+  {
+    "amount": "128.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "128.23",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-03-14T21:51:00+02:00",
+    "ref": "andrei-0030",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "27.09",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "27.09",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-15T10:26:00+02:00",
+    "ref": "andrei-0031",
+    "stream": "bolt"
+  },
+  {
+    "amount": "413.93",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "413.93",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ENGIE ROMANIA SA",
+    "occurred_at": "2026-03-15T10:48:00+02:00",
+    "ref": "andrei-0032",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "60.46",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.46",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-03-15T18:29:00+02:00",
+    "ref": "andrei-0033",
+    "stream": "groceries"
+  },
+  {
+    "amount": "53.74",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "53.74",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-17T12:57:00+02:00",
+    "ref": "andrei-0034",
+    "stream": "bolt"
+  },
+  {
+    "amount": "50.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "50.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "DIGI ROMANIA SA",
+    "occurred_at": "2026-03-18T10:03:00+02:00",
+    "ref": "andrei-0035",
+    "stream": "fixed:Internet"
+  },
+  {
+    "amount": "95.41",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "95.41",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-03-19T18:40:00+02:00",
+    "ref": "andrei-0036",
+    "stream": "groceries"
+  },
+  {
+    "amount": "349.99",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "349.99",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "electronics",
+    "description": "Căști wireless",
+    "direction": "debit",
+    "items": null,
+    "mcc": 5732,
+    "merchant_raw": "ALTEX ROMANIA SRL",
+    "occurred_at": "2026-03-21T13:16:00+02:00",
+    "ref": "andrei-0037",
+    "stream": "calendar"
+  },
+  {
+    "amount": "103.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "103.97",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7941,
+    "merchant_raw": "BILET.RO FOTBAL",
+    "occurred_at": "2026-03-21T16:25:00+02:00",
+    "ref": "andrei-0038",
+    "stream": "football"
+  },
+  {
+    "amount": "129.46",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "129.46",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-03-21T21:49:00+02:00",
+    "ref": "andrei-0039",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "29.12",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "29.12",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-22T17:53:00+02:00",
+    "ref": "andrei-0040",
+    "stream": "bolt"
+  },
+  {
+    "amount": "141.20",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "141.20",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-03-22T18:44:00+02:00",
+    "ref": "andrei-0041",
+    "stream": "groceries"
+  },
+  {
+    "amount": "88.30",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "88.30",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-03-25T20:46:00+02:00",
+    "ref": "andrei-0042",
+    "stream": "groceries"
+  },
+  {
+    "amount": "24.83",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "24.83",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-27T09:25:00+02:00",
+    "ref": "andrei-0043",
+    "stream": "bolt"
+  },
+  {
+    "amount": "326.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "326.72",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-03-27T17:03:00+02:00",
+    "ref": "andrei-0044",
+    "stream": "groceries"
+  },
+  {
+    "amount": "93.95",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "93.95",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7941,
+    "merchant_raw": "BILET.RO FOTBAL",
+    "occurred_at": "2026-03-28T17:06:00+02:00",
+    "ref": "andrei-0045",
+    "stream": "football"
+  },
+  {
+    "amount": "107.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "107.36",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-03-28T19:51:00+02:00",
+    "ref": "andrei-0046",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "39.51",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "39.51",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-29T10:19:00+03:00",
+    "ref": "andrei-0047",
+    "stream": "bolt"
+  },
+  {
+    "amount": "180.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "180.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-03-30T18:13:00+03:00",
+    "ref": "andrei-0048",
+    "stream": "groceries"
+  },
+  {
+    "amount": "2600.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "2600.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE IONESCU M",
+    "occurred_at": "2026-04-01T10:51:00+03:00",
+    "ref": "andrei-0049",
+    "stream": "fixed:Chirie"
+  },
+  {
+    "amount": "34.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "34.35",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-01T16:11:00+03:00",
+    "ref": "andrei-0050",
+    "stream": "bolt"
+  },
+  {
+    "amount": "135.17",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "135.17",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-04-01T20:02:00+03:00",
+    "ref": "andrei-0051",
+    "stream": "groceries"
+  },
+  {
+    "amount": "97.94",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "97.94",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-04-03T19:47:00+03:00",
+    "ref": "andrei-0052",
+    "stream": "groceries"
+  },
+  {
+    "amount": "93.73",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "93.73",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7941,
+    "merchant_raw": "BILET.RO FOTBAL",
+    "occurred_at": "2026-04-04T16:19:00+03:00",
+    "ref": "andrei-0053",
+    "stream": "football"
+  },
+  {
+    "amount": "34.53",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "34.53",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-04T17:47:00+03:00",
+    "ref": "andrei-0054",
+    "stream": "bolt"
+  },
+  {
+    "amount": "9000.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU SPORTDATA ANALYTICS SRL",
+    "occurred_at": "2026-04-05T08:24:00+03:00",
+    "ref": "andrei-0055",
+    "stream": "salary"
+  },
+  {
+    "amount": "190.90",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "190.90",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-04-05T21:12:00+03:00",
+    "ref": "andrei-0056",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "1500.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "1500.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CONT ECONOMII",
+    "occurred_at": "2026-04-06T09:30:00+03:00",
+    "ref": "andrei-0057",
+    "stream": "savings"
+  },
+  {
+    "amount": "82.68",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "82.68",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-04-06T20:44:00+03:00",
+    "ref": "andrei-0058",
+    "stream": "groceries"
+  },
+  {
+    "amount": "112.22",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "112.22",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-04-07T17:44:00+03:00",
+    "ref": "andrei-0059",
+    "stream": "groceries"
+  },
+  {
+    "amount": "45.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "45.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "DAZN LIMITED",
+    "occurred_at": "2026-04-08T10:49:00+03:00",
+    "ref": "andrei-0060",
+    "stream": "fixed:DAZN"
+  },
+  {
+    "amount": "227.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "227.36",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-04-09T20:11:00+03:00",
+    "ref": "andrei-0061",
+    "stream": "groceries"
+  },
+  {
+    "amount": "50.19",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "50.19",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-11T14:10:00+03:00",
+    "ref": "andrei-0062",
+    "stream": "bolt"
+  },
+  {
+    "amount": "61.82",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "61.82",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-12T09:06:00+03:00",
+    "ref": "andrei-0063",
+    "stream": "bolt"
+  },
+  {
+    "amount": "35.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "35.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "VOYO.RO SPORT",
+    "occurred_at": "2026-04-12T10:51:00+03:00",
+    "ref": "andrei-0064",
+    "stream": "fixed:Voyo Sport"
+  },
+  {
+    "amount": "98.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "98.07",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-04-12T19:04:00+03:00",
+    "ref": "andrei-0065",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "124.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "124.37",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-04-13T17:48:00+03:00",
+    "ref": "andrei-0066",
+    "stream": "groceries"
+  },
+  {
+    "amount": "32.40",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "32.40",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-14T13:02:00+03:00",
+    "ref": "andrei-0067",
+    "stream": "bolt"
+  },
+  {
+    "amount": "415.91",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "415.91",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ENGIE ROMANIA SA",
+    "occurred_at": "2026-04-15T10:55:00+03:00",
+    "ref": "andrei-0068",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "30.96",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "30.96",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-16T10:23:00+03:00",
+    "ref": "andrei-0069",
+    "stream": "bolt"
+  },
+  {
+    "amount": "138.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "138.23",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-04-16T20:45:00+03:00",
+    "ref": "andrei-0070",
+    "stream": "groceries"
+  },
+  {
+    "amount": "87.48",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "87.48",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-04-17T19:16:00+03:00",
+    "ref": "andrei-0071",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "50.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "50.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "DIGI ROMANIA SA",
+    "occurred_at": "2026-04-18T10:20:00+03:00",
+    "ref": "andrei-0072",
+    "stream": "fixed:Internet"
+  },
+  {
+    "amount": "129.96",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "129.96",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-04-18T21:34:00+03:00",
+    "ref": "andrei-0073",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "24.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "24.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-21T09:53:00+03:00",
+    "ref": "andrei-0074",
+    "stream": "bolt"
+  },
+  {
+    "amount": "20.26",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "20.26",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-23T14:37:00+03:00",
+    "ref": "andrei-0075",
+    "stream": "bolt"
+  },
+  {
+    "amount": "112.74",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "112.74",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-04-23T17:01:00+03:00",
+    "ref": "andrei-0076",
+    "stream": "groceries"
+  },
+  {
+    "amount": "81.01",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "81.01",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7941,
+    "merchant_raw": "BILET.RO FOTBAL",
+    "occurred_at": "2026-04-25T16:19:00+03:00",
+    "ref": "andrei-0077",
+    "stream": "football"
+  },
+  {
+    "amount": "159.19",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "159.19",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-04-25T20:19:00+03:00",
+    "ref": "andrei-0078",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "205.64",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "205.64",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-04-26T17:52:00+03:00",
+    "ref": "andrei-0079",
+    "stream": "groceries"
+  },
+  {
+    "amount": "118.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "118.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-04-27T20:13:00+03:00",
+    "ref": "andrei-0080",
+    "stream": "groceries"
+  },
+  {
+    "amount": "168.30",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "168.30",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-04-29T20:37:00+03:00",
+    "ref": "andrei-0081",
+    "stream": "groceries"
+  },
+  {
+    "amount": "2600.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "2600.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE IONESCU M",
+    "occurred_at": "2026-05-01T09:25:00+03:00",
+    "ref": "andrei-0082",
+    "stream": "fixed:Chirie"
+  },
+  {
+    "amount": "41.41",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "41.41",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-01T15:00:00+03:00",
+    "ref": "andrei-0083",
+    "stream": "bolt"
+  },
+  {
+    "amount": "168.53",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "168.53",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-05-01T19:34:00+03:00",
+    "ref": "andrei-0084",
+    "stream": "groceries"
+  },
+  {
+    "amount": "96.48",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "96.48",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7941,
+    "merchant_raw": "BILET.RO FOTBAL",
+    "occurred_at": "2026-05-02T17:49:00+03:00",
+    "ref": "andrei-0085",
+    "stream": "football"
+  },
+  {
+    "amount": "208.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "208.62",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-05-02T21:31:00+03:00",
+    "ref": "andrei-0086",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "187.08",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "187.08",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-05-04T17:53:00+03:00",
+    "ref": "andrei-0087",
+    "stream": "groceries"
+  },
+  {
+    "amount": "9000.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU SPORTDATA ANALYTICS SRL",
+    "occurred_at": "2026-05-05T08:41:00+03:00",
+    "ref": "andrei-0088",
+    "stream": "salary"
+  },
+  {
+    "amount": "70.16",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "70.16",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-05T21:26:00+03:00",
+    "ref": "andrei-0089",
+    "stream": "bolt"
+  },
+  {
+    "amount": "1500.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "1500.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CONT ECONOMII",
+    "occurred_at": "2026-05-06T09:19:00+03:00",
+    "ref": "andrei-0090",
+    "stream": "savings"
+  },
+  {
+    "amount": "34.08",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "34.08",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-06T18:27:00+03:00",
+    "ref": "andrei-0091",
+    "stream": "bolt"
+  },
+  {
+    "amount": "45.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "45.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "DAZN LIMITED",
+    "occurred_at": "2026-05-08T10:22:00+03:00",
+    "ref": "andrei-0092",
+    "stream": "fixed:DAZN"
+  },
+  {
+    "amount": "72.65",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "72.65",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-05-08T17:10:00+03:00",
+    "ref": "andrei-0093",
+    "stream": "groceries"
+  },
+  {
+    "amount": "118.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "118.37",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7941,
+    "merchant_raw": "BILET.RO FOTBAL",
+    "occurred_at": "2026-05-09T17:03:00+03:00",
+    "ref": "andrei-0094",
+    "stream": "football"
+  },
+  {
+    "amount": "102.13",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "102.13",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-05-09T20:37:00+03:00",
+    "ref": "andrei-0095",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "114.46",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "114.46",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-05-10T19:49:00+03:00",
+    "ref": "andrei-0096",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "35.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "35.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "VOYO.RO SPORT",
+    "occurred_at": "2026-05-12T09:51:00+03:00",
+    "ref": "andrei-0097",
+    "stream": "fixed:Voyo Sport"
+  },
+  {
+    "amount": "15.01",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "15.01",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-12T18:53:00+03:00",
+    "ref": "andrei-0098",
+    "stream": "bolt"
+  },
+  {
+    "amount": "226.19",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "226.19",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-05-14T20:38:00+03:00",
+    "ref": "andrei-0099",
+    "stream": "groceries"
+  },
+  {
+    "amount": "422.33",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "422.33",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ENGIE ROMANIA SA",
+    "occurred_at": "2026-05-15T09:25:00+03:00",
+    "ref": "andrei-0100",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "135.91",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "135.91",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-05-15T18:35:00+03:00",
+    "ref": "andrei-0101",
+    "stream": "groceries"
+  },
+  {
+    "amount": "101.42",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "101.42",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-05-17T19:22:00+03:00",
+    "ref": "andrei-0102",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "191.90",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "191.90",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-05-17T19:34:00+03:00",
+    "ref": "andrei-0103",
+    "stream": "groceries"
+  },
+  {
+    "amount": "50.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "50.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "DIGI ROMANIA SA",
+    "occurred_at": "2026-05-18T10:18:00+03:00",
+    "ref": "andrei-0104",
+    "stream": "fixed:Internet"
+  },
+  {
+    "amount": "71.04",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "71.04",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-18T13:31:00+03:00",
+    "ref": "andrei-0105",
+    "stream": "bolt"
+  },
+  {
+    "amount": "64.01",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "64.01",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-19T20:38:00+03:00",
+    "ref": "andrei-0106",
+    "stream": "bolt"
+  },
+  {
+    "amount": "148.92",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "148.92",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-05-21T17:30:00+03:00",
+    "ref": "andrei-0107",
+    "stream": "groceries"
+  },
+  {
+    "amount": "366.56",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "366.56",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-05-22T19:49:00+03:00",
+    "ref": "andrei-0108",
+    "stream": "groceries"
+  },
+  {
+    "amount": "238.55",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "238.55",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-05-23T19:20:00+03:00",
+    "ref": "andrei-0109",
+    "stream": "groceries"
+  },
+  {
+    "amount": "198.76",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "198.76",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-05-24T21:58:00+03:00",
+    "ref": "andrei-0110",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "72.77",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "72.77",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-05-27T18:46:00+03:00",
+    "ref": "andrei-0111",
+    "stream": "groceries"
+  },
+  {
+    "amount": "70.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "70.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-28T18:25:00+03:00",
+    "ref": "andrei-0112",
+    "stream": "bolt"
+  },
+  {
+    "amount": "233.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "233.72",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-05-29T17:38:00+03:00",
+    "ref": "andrei-0113",
+    "stream": "groceries"
+  },
+  {
+    "amount": "98.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "98.62",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7941,
+    "merchant_raw": "BILET.RO FOTBAL",
+    "occurred_at": "2026-05-30T17:02:00+03:00",
+    "ref": "andrei-0114",
+    "stream": "football"
+  },
+  {
+    "amount": "138.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "138.97",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-05-31T19:11:00+03:00",
+    "ref": "andrei-0115",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "2600.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "2600.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE IONESCU M",
+    "occurred_at": "2026-06-01T09:25:00+03:00",
+    "ref": "andrei-0116",
+    "stream": "fixed:Chirie"
+  },
+  {
+    "amount": "21.78",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "21.78",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-06-01T16:28:00+03:00",
+    "ref": "andrei-0117",
+    "stream": "bolt"
+  },
+  {
+    "amount": "174.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "174.36",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-06-02T20:09:00+03:00",
+    "ref": "andrei-0118",
+    "stream": "groceries"
+  },
+  {
+    "amount": "201.14",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "201.14",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-06-03T17:58:00+03:00",
+    "ref": "andrei-0119",
+    "stream": "groceries"
+  },
+  {
+    "amount": "27.19",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "27.19",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-06-04T13:12:00+03:00",
+    "ref": "andrei-0120",
+    "stream": "bolt"
+  },
+  {
+    "amount": "9000.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU SPORTDATA ANALYTICS SRL",
+    "occurred_at": "2026-06-05T08:30:00+03:00",
+    "ref": "andrei-0121",
+    "stream": "salary"
+  },
+  {
+    "amount": "102.38",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "102.38",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-06-05T19:01:00+03:00",
+    "ref": "andrei-0122",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "1500.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "1500.00",
+      "label": null,
+      "purpose": "unknown",
+      "source": "auto"
+    },
+    "category": "savings",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CONT ECONOMII",
+    "occurred_at": "2026-06-06T09:19:00+03:00",
+    "ref": "andrei-0123",
+    "stream": "savings"
+  },
+  {
+    "amount": "142.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "142.49",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7941,
+    "merchant_raw": "BILET.RO FOTBAL",
+    "occurred_at": "2026-06-06T16:46:00+03:00",
+    "ref": "andrei-0124",
+    "stream": "football"
+  },
+  {
+    "amount": "159.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "159.49",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-06-06T19:17:00+03:00",
+    "ref": "andrei-0125",
+    "stream": "restaurants"
+  },
+  {
+    "amount": "177.33",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "177.33",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-06-07T19:42:00+03:00",
+    "ref": "andrei-0126",
+    "stream": "groceries"
+  },
+  {
+    "amount": "45.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "45.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "DAZN LIMITED",
+    "occurred_at": "2026-06-08T10:06:00+03:00",
+    "ref": "andrei-0127",
+    "stream": "fixed:DAZN"
+  },
+  {
+    "amount": "208.59",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "208.59",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "KAUFLAND 0812 BUCURESTI",
+    "occurred_at": "2026-06-09T17:40:00+03:00",
+    "ref": "andrei-0128",
+    "stream": "groceries"
+  },
+  {
+    "amount": "124.53",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "124.53",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0233 BUCURESTI",
+    "occurred_at": "2026-06-10T19:57:00+03:00",
+    "ref": "andrei-0129",
+    "stream": "groceries"
+  },
+  {
+    "amount": "33.26",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.26",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-06-10T20:32:00+03:00",
+    "ref": "andrei-0130",
+    "stream": "bolt"
+  },
+  {
+    "amount": "35.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "35.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "VOYO.RO SPORT",
+    "occurred_at": "2026-06-12T09:41:00+03:00",
+    "ref": "andrei-0131",
+    "stream": "fixed:Voyo Sport"
+  },
+  {
+    "amount": "137.51",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "137.51",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "TRATTORIA IL CALCIO",
+    "occurred_at": "2026-06-12T21:58:00+03:00",
+    "ref": "andrei-0132",
+    "stream": "restaurants"
+  }
+]

@@ -1,0 +1,67 @@
+{
+  "account": {
+    "current_balance": "7240.00"
+  },
+  "fixed_costs": [
+    {
+      "amount": "2600",
+      "day_of_month": 1,
+      "name": "Chirie"
+    },
+    {
+      "amount": "420",
+      "day_of_month": 15,
+      "name": "Utilități"
+    },
+    {
+      "amount": "50",
+      "day_of_month": 18,
+      "name": "Internet"
+    },
+    {
+      "amount": "45",
+      "day_of_month": 8,
+      "name": "DAZN"
+    },
+    {
+      "amount": "35",
+      "day_of_month": 12,
+      "name": "Voyo Sport"
+    }
+  ],
+  "goal": {
+    "amount": "15000",
+    "deadline": "2027-03-31",
+    "hard_deadline": false,
+    "motivation": "Avans pentru mașină"
+  },
+  "goal_pot": {
+    "name": "Avans mașină",
+    "saved": "4100"
+  },
+  "history": {
+    "as_of": "2026-06-15",
+    "from": "2026-02-15",
+    "start_balance": "2284.47",
+    "to": "2026-06-14"
+  },
+  "id": "andrei",
+  "income_sources": [
+    {
+      "amount": "9000",
+      "day_of_month": 5,
+      "source": "Salariu"
+    }
+  ],
+  "plan_preferences": {
+    "buffer_pct": "0.10"
+  },
+  "pots": [],
+  "user": {
+    "age": 31,
+    "city": "București",
+    "coach_style": "direct",
+    "language": "ro",
+    "name": "Andrei"
+  }
+}

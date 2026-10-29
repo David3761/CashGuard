@@ -1,0 +1,3574 @@
+[
+  {
+    "amount": "318.40",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "318.40",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ENEL ENERGIE MUNTENIA",
+    "occurred_at": "2026-02-15T10:04:00+02:00",
+    "ref": "matei-0001",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "23.38",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "23.38",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-02-15T20:19:00+02:00",
+    "ref": "matei-0002",
+    "stream": "bolt"
+  },
+  {
+    "amount": "53.19",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "53.19",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-02-15T20:59:00+02:00",
+    "ref": "matei-0003",
+    "stream": "glovo"
+  },
+  {
+    "amount": "93.59",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "93.59",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": [
+      {
+        "amount": "35.51",
+        "name": "Cafea",
+        "qty": 1
+      },
+      {
+        "amount": "21.38",
+        "name": "Apă plată",
+        "qty": 1
+      },
+      {
+        "amount": "36.70",
+        "name": "Pâine",
+        "qty": 1
+      }
+    ],
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-02-17T12:54:00+02:00",
+    "ref": "matei-0004",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "31.68",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "31.68",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-02-17T22:23:00+02:00",
+    "ref": "matei-0005",
+    "stream": "bolt"
+  },
+  {
+    "amount": "121.65",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "121.65",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-02-18T12:27:00+02:00",
+    "ref": "matei-0006",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "60.92",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.92",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-02-18T19:45:00+02:00",
+    "ref": "matei-0007",
+    "stream": "glovo"
+  },
+  {
+    "amount": "107.53",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "107.53",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-02-19T13:23:00+02:00",
+    "ref": "matei-0008",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "60.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "ORANGE ROMANIA SA",
+    "occurred_at": "2026-02-20T09:42:00+02:00",
+    "ref": "matei-0009",
+    "stream": "fixed:Telefon"
+  },
+  {
+    "amount": "52.95",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "52.95",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-02-20T12:50:00+02:00",
+    "ref": "matei-0010",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "64.88",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "64.88",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-02-20T14:03:00+02:00",
+    "ref": "matei-0011",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "60.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.10",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-02-20T20:22:00+02:00",
+    "ref": "matei-0012",
+    "stream": "glovo"
+  },
+  {
+    "amount": "118.34",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "118.34",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-02-21T10:57:00+02:00",
+    "ref": "matei-0013",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "83.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "83.36",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": [
+      {
+        "amount": "21.03",
+        "name": "Iaurt",
+        "qty": 1
+      },
+      {
+        "amount": "17.19",
+        "name": "Pâine",
+        "qty": 1
+      },
+      {
+        "amount": "23.11",
+        "name": "Brânză",
+        "qty": 1
+      },
+      {
+        "amount": "22.03",
+        "name": "Banane",
+        "qty": 1
+      }
+    ],
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-02-23T13:35:00+02:00",
+    "ref": "matei-0014",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "82.08",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "82.08",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-02-24T12:27:00+02:00",
+    "ref": "matei-0015",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "22.31",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "22.31",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-02-24T16:47:00+02:00",
+    "ref": "matei-0016",
+    "stream": "bolt"
+  },
+  {
+    "amount": "91.58",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "91.58",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-02-24T19:58:00+02:00",
+    "ref": "matei-0017",
+    "stream": "glovo"
+  },
+  {
+    "amount": "52.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "52.36",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-02-25T20:44:00+02:00",
+    "ref": "matei-0018",
+    "stream": "glovo"
+  },
+  {
+    "amount": "93.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "93.49",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-02-26T12:44:00+02:00",
+    "ref": "matei-0019",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "82.69",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "82.69",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-02-27T14:53:00+02:00",
+    "ref": "matei-0020",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "51.44",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "51.44",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-02-27T17:55:00+02:00",
+    "ref": "matei-0021",
+    "stream": "bolt"
+  },
+  {
+    "amount": "701.91",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "701.91",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "clothing",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5651,
+    "merchant_raw": "ZARA ROMANIA SRL",
+    "occurred_at": "2026-02-28T16:14:00+02:00",
+    "ref": "matei-0022",
+    "stream": "clothes"
+  },
+  {
+    "amount": "30.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "30.72",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-01T09:45:00+02:00",
+    "ref": "matei-0023",
+    "stream": "bolt"
+  },
+  {
+    "amount": "151.96",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "151.96",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-03-01T10:08:00+02:00",
+    "ref": "matei-0024",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "2000.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "2000.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE POPESCU A",
+    "occurred_at": "2026-03-01T10:09:00+02:00",
+    "ref": "matei-0025",
+    "stream": "fixed:Chirie"
+  },
+  {
+    "amount": "61.52",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "61.52",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-03-02T12:55:00+02:00",
+    "ref": "matei-0026",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "22.42",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "22.42",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-02T18:25:00+02:00",
+    "ref": "matei-0027",
+    "stream": "bolt"
+  },
+  {
+    "amount": "180.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "180.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "sport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7997,
+    "merchant_raw": "WORLD CLASS ROMANIA",
+    "occurred_at": "2026-03-03T10:38:00+02:00",
+    "ref": "matei-0028",
+    "stream": "fixed:Sală"
+  },
+  {
+    "amount": "102.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "102.10",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-03-03T12:35:00+02:00",
+    "ref": "matei-0029",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "20.03",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "20.03",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-03T15:04:00+02:00",
+    "ref": "matei-0030",
+    "stream": "bolt"
+  },
+  {
+    "amount": "93.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "93.72",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-03-03T20:22:00+02:00",
+    "ref": "matei-0031",
+    "stream": "glovo"
+  },
+  {
+    "amount": "92.11",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "92.11",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-03-04T13:54:00+02:00",
+    "ref": "matei-0032",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "25.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "25.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "SPOTIFY P2A41C9",
+    "occurred_at": "2026-03-05T09:24:00+02:00",
+    "ref": "matei-0033",
+    "stream": "fixed:Spotify"
+  },
+  {
+    "amount": "68.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "68.23",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-03-06T13:37:00+02:00",
+    "ref": "matei-0034",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "28.86",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "28.86",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "health_pharmacy",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5912,
+    "merchant_raw": "DR.MAX 112 BUCURESTI",
+    "occurred_at": "2026-03-06T14:17:00+02:00",
+    "ref": "matei-0035",
+    "stream": "pharmacy"
+  },
+  {
+    "amount": "16.24",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.24",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-06T14:22:00+02:00",
+    "ref": "matei-0036",
+    "stream": "bolt"
+  },
+  {
+    "amount": "150.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "150.00",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "gifts",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "FLORARIA DOROBANTI",
+    "occurred_at": "2026-03-07T17:59:00+02:00",
+    "ref": "matei-0037",
+    "stream": "calendar"
+  },
+  {
+    "amount": "106.99",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "106.99",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-03-07T20:25:00+02:00",
+    "ref": "matei-0038",
+    "stream": "glovo"
+  },
+  {
+    "amount": "106.85",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "106.85",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-03-08T11:57:00+02:00",
+    "ref": "matei-0039",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "42.29",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "42.29",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-03-09T13:28:00+02:00",
+    "ref": "matei-0040",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "7000.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU TECHNOVA SOFTWARE SRL",
+    "occurred_at": "2026-03-10T08:37:00+02:00",
+    "ref": "matei-0041",
+    "stream": "salary"
+  },
+  {
+    "amount": "74.21",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "74.21",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": [
+      {
+        "amount": "34.92",
+        "name": "Brânză",
+        "qty": 1
+      },
+      {
+        "amount": "39.29",
+        "name": "Salată",
+        "qty": 1
+      }
+    ],
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-03-11T12:08:00+02:00",
+    "ref": "matei-0042",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "52.66",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "52.66",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-03-12T13:13:00+02:00",
+    "ref": "matei-0043",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "103.32",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "103.32",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-03-13T12:59:00+02:00",
+    "ref": "matei-0044",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "330.02",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "330.02",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ENEL ENERGIE MUNTENIA",
+    "occurred_at": "2026-03-15T09:28:00+02:00",
+    "ref": "matei-0045",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "170.71",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "170.71",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-03-18T12:17:00+02:00",
+    "ref": "matei-0046",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "98.90",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "98.90",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-03-19T13:58:00+02:00",
+    "ref": "matei-0047",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "60.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "ORANGE ROMANIA SA",
+    "occurred_at": "2026-03-20T09:56:00+02:00",
+    "ref": "matei-0048",
+    "stream": "fixed:Telefon"
+  },
+  {
+    "amount": "48.91",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "48.91",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-03-20T13:53:00+02:00",
+    "ref": "matei-0049",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "85.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "85.49",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-03-20T14:17:00+02:00",
+    "ref": "matei-0050",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "38.05",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "38.05",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-24T09:02:00+02:00",
+    "ref": "matei-0051",
+    "stream": "bolt"
+  },
+  {
+    "amount": "127.09",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "127.09",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-03-24T12:48:00+02:00",
+    "ref": "matei-0052",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "101.94",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "101.94",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-03-25T12:59:00+02:00",
+    "ref": "matei-0053",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "132.10",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "132.10",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-03-25T21:12:00+02:00",
+    "ref": "matei-0054",
+    "stream": "glovo"
+  },
+  {
+    "amount": "27.53",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "27.53",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-26T22:05:00+02:00",
+    "ref": "matei-0055",
+    "stream": "bolt"
+  },
+  {
+    "amount": "75.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "75.62",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-03-27T12:24:00+02:00",
+    "ref": "matei-0056",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "98.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "98.15",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-03-27T13:47:00+02:00",
+    "ref": "matei-0057",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "51.59",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "51.59",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "health_pharmacy",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5912,
+    "merchant_raw": "DR.MAX 112 BUCURESTI",
+    "occurred_at": "2026-03-28T09:39:00+02:00",
+    "ref": "matei-0058",
+    "stream": "pharmacy"
+  },
+  {
+    "amount": "223.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "223.37",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-03-28T12:49:00+02:00",
+    "ref": "matei-0059",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "26.88",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.88",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-29T11:20:00+03:00",
+    "ref": "matei-0060",
+    "stream": "bolt"
+  },
+  {
+    "amount": "45.54",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "45.54",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-03-29T19:40:00+03:00",
+    "ref": "matei-0061",
+    "stream": "glovo"
+  },
+  {
+    "amount": "161.58",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "161.58",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-03-30T12:54:00+03:00",
+    "ref": "matei-0062",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "37.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "37.15",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-03-30T19:38:00+03:00",
+    "ref": "matei-0063",
+    "stream": "bolt"
+  },
+  {
+    "amount": "79.58",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "79.58",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-03-30T20:36:00+03:00",
+    "ref": "matei-0064",
+    "stream": "glovo"
+  },
+  {
+    "amount": "179.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "179.49",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-03-31T13:07:00+03:00",
+    "ref": "matei-0065",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "2000.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "2000.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE POPESCU A",
+    "occurred_at": "2026-04-01T10:58:00+03:00",
+    "ref": "matei-0066",
+    "stream": "fixed:Chirie"
+  },
+  {
+    "amount": "77.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "77.72",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-04-01T12:31:00+03:00",
+    "ref": "matei-0067",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "180.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "180.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "sport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7997,
+    "merchant_raw": "WORLD CLASS ROMANIA",
+    "occurred_at": "2026-04-03T10:08:00+03:00",
+    "ref": "matei-0068",
+    "stream": "fixed:Sală"
+  },
+  {
+    "amount": "78.74",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "78.74",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-04-03T12:13:00+03:00",
+    "ref": "matei-0069",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "55.98",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "55.98",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-04-03T12:35:00+03:00",
+    "ref": "matei-0070",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "75.86",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "75.86",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-04-04T19:46:00+03:00",
+    "ref": "matei-0071",
+    "stream": "glovo"
+  },
+  {
+    "amount": "25.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "25.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "SPOTIFY P2A41C9",
+    "occurred_at": "2026-04-05T09:20:00+03:00",
+    "ref": "matei-0072",
+    "stream": "fixed:Spotify"
+  },
+  {
+    "amount": "158.16",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "158.16",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-04-05T10:11:00+03:00",
+    "ref": "matei-0073",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "24.63",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "24.63",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-06T17:11:00+03:00",
+    "ref": "matei-0074",
+    "stream": "bolt"
+  },
+  {
+    "amount": "74.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "74.49",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-04-07T21:06:00+03:00",
+    "ref": "matei-0075",
+    "stream": "glovo"
+  },
+  {
+    "amount": "46.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "46.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-04-08T13:12:00+03:00",
+    "ref": "matei-0076",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "37.46",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "37.46",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-08T20:30:00+03:00",
+    "ref": "matei-0077",
+    "stream": "bolt"
+  },
+  {
+    "amount": "61.72",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "61.72",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-04-09T13:42:00+03:00",
+    "ref": "matei-0078",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "56.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "56.49",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-04-09T19:26:00+03:00",
+    "ref": "matei-0079",
+    "stream": "glovo"
+  },
+  {
+    "amount": "7000.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU TECHNOVA SOFTWARE SRL",
+    "occurred_at": "2026-04-10T08:54:00+03:00",
+    "ref": "matei-0080",
+    "stream": "salary"
+  },
+  {
+    "amount": "60.64",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.64",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-04-10T12:26:00+03:00",
+    "ref": "matei-0081",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "144.41",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "144.41",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-04-10T13:24:00+03:00",
+    "ref": "matei-0082",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "179.80",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "179.80",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-04-11T10:59:00+03:00",
+    "ref": "matei-0083",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "61.69",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "61.69",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-04-13T12:44:00+03:00",
+    "ref": "matei-0084",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "43.54",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "43.54",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-04-14T13:21:00+03:00",
+    "ref": "matei-0085",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "27.14",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "27.14",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-14T19:59:00+03:00",
+    "ref": "matei-0086",
+    "stream": "bolt"
+  },
+  {
+    "amount": "379.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "379.23",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ENEL ENERGIE MUNTENIA",
+    "occurred_at": "2026-04-15T10:02:00+03:00",
+    "ref": "matei-0087",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "87.06",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "87.06",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-04-15T13:35:00+03:00",
+    "ref": "matei-0088",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "96.55",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "96.55",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-04-16T13:25:00+03:00",
+    "ref": "matei-0089",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "64.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "64.07",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-04-16T20:41:00+03:00",
+    "ref": "matei-0090",
+    "stream": "glovo"
+  },
+  {
+    "amount": "86.46",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "86.46",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-04-17T12:40:00+03:00",
+    "ref": "matei-0091",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "915.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "915.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "travel",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4722,
+    "merchant_raw": "BOOKING.COM HOTEL",
+    "occurred_at": "2026-04-17T22:43:00+03:00",
+    "ref": "matei-0092",
+    "stream": "calendar"
+  },
+  {
+    "amount": "150.44",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "150.44",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-04-18T10:47:00+03:00",
+    "ref": "matei-0093",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "60.04",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.04",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-04-18T19:44:00+03:00",
+    "ref": "matei-0094",
+    "stream": "glovo"
+  },
+  {
+    "amount": "60.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "ORANGE ROMANIA SA",
+    "occurred_at": "2026-04-20T09:09:00+03:00",
+    "ref": "matei-0095",
+    "stream": "fixed:Telefon"
+  },
+  {
+    "amount": "52.09",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "52.09",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-04-20T12:03:00+03:00",
+    "ref": "matei-0096",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "26.24",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.24",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-20T15:51:00+03:00",
+    "ref": "matei-0097",
+    "stream": "bolt"
+  },
+  {
+    "amount": "100.55",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "100.55",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-04-21T13:05:00+03:00",
+    "ref": "matei-0098",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "55.24",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "55.24",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-04-22T12:16:00+03:00",
+    "ref": "matei-0099",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "26.58",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "26.58",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-23T13:50:00+03:00",
+    "ref": "matei-0100",
+    "stream": "bolt"
+  },
+  {
+    "amount": "86.46",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "86.46",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-04-24T13:13:00+03:00",
+    "ref": "matei-0101",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "17.35",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.35",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-24T14:31:00+03:00",
+    "ref": "matei-0102",
+    "stream": "bolt"
+  },
+  {
+    "amount": "96.05",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "96.05",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-04-24T20:43:00+03:00",
+    "ref": "matei-0103",
+    "stream": "glovo"
+  },
+  {
+    "amount": "148.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "148.62",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7922,
+    "merchant_raw": "IABILET.RO",
+    "occurred_at": "2026-04-25T19:09:00+03:00",
+    "ref": "matei-0104",
+    "stream": "concerts"
+  },
+  {
+    "amount": "96.45",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "96.45",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-04-26T11:09:00+03:00",
+    "ref": "matei-0105",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "73.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "73.97",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-04-26T20:30:00+03:00",
+    "ref": "matei-0106",
+    "stream": "glovo"
+  },
+  {
+    "amount": "95.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "95.39",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-04-27T12:58:00+03:00",
+    "ref": "matei-0107",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "94.70",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "94.70",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-04-28T13:36:00+03:00",
+    "ref": "matei-0108",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "67.99",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "67.99",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-04-28T19:52:00+03:00",
+    "ref": "matei-0109",
+    "stream": "glovo"
+  },
+  {
+    "amount": "87.42",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "87.42",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-04-29T13:34:00+03:00",
+    "ref": "matei-0110",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "16.56",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.56",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-04-29T20:24:00+03:00",
+    "ref": "matei-0111",
+    "stream": "bolt"
+  },
+  {
+    "amount": "74.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "74.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-04-30T12:56:00+03:00",
+    "ref": "matei-0112",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "2000.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "2000.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE POPESCU A",
+    "occurred_at": "2026-05-01T09:45:00+03:00",
+    "ref": "matei-0113",
+    "stream": "fixed:Chirie"
+  },
+  {
+    "amount": "109.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "109.00",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-05-01T14:53:00+03:00",
+    "ref": "matei-0114",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "33.90",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.90",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-02T12:25:00+03:00",
+    "ref": "matei-0115",
+    "stream": "bolt"
+  },
+  {
+    "amount": "222.16",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "222.16",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7922,
+    "merchant_raw": "IABILET.RO",
+    "occurred_at": "2026-05-02T18:10:00+03:00",
+    "ref": "matei-0116",
+    "stream": "concerts"
+  },
+  {
+    "amount": "42.78",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "42.78",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-05-02T21:52:00+03:00",
+    "ref": "matei-0117",
+    "stream": "glovo"
+  },
+  {
+    "amount": "180.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "180.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "sport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7997,
+    "merchant_raw": "WORLD CLASS ROMANIA",
+    "occurred_at": "2026-05-03T09:46:00+03:00",
+    "ref": "matei-0118",
+    "stream": "fixed:Sală"
+  },
+  {
+    "amount": "241.56",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "241.56",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-05-03T11:41:00+03:00",
+    "ref": "matei-0119",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "66.87",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "66.87",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": [
+      {
+        "amount": "14.73",
+        "name": "Iaurt",
+        "qty": 1
+      },
+      {
+        "amount": "14.68",
+        "name": "Salată",
+        "qty": 1
+      },
+      {
+        "amount": "26.09",
+        "name": "Cafea",
+        "qty": 1
+      },
+      {
+        "amount": "11.37",
+        "name": "Sandviș",
+        "qty": 1
+      }
+    ],
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-05-04T12:52:00+03:00",
+    "ref": "matei-0120",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "79.68",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "79.68",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-05-04T19:44:00+03:00",
+    "ref": "matei-0121",
+    "stream": "glovo"
+  },
+  {
+    "amount": "25.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "25.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "SPOTIFY P2A41C9",
+    "occurred_at": "2026-05-05T09:11:00+03:00",
+    "ref": "matei-0122",
+    "stream": "fixed:Spotify"
+  },
+  {
+    "amount": "79.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "79.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-07T13:25:00+03:00",
+    "ref": "matei-0123",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "24.45",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "24.45",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-07T21:10:00+03:00",
+    "ref": "matei-0124",
+    "stream": "bolt"
+  },
+  {
+    "amount": "17.22",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.22",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-08T10:37:00+03:00",
+    "ref": "matei-0125",
+    "stream": "bolt"
+  },
+  {
+    "amount": "137.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "137.23",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-08T13:02:00+03:00",
+    "ref": "matei-0126",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "64.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "64.37",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-05-08T14:56:00+03:00",
+    "ref": "matei-0127",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "128.88",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "128.88",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-05-09T12:12:00+03:00",
+    "ref": "matei-0128",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "173.24",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "173.24",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7922,
+    "merchant_raw": "IABILET.RO",
+    "occurred_at": "2026-05-09T18:22:00+03:00",
+    "ref": "matei-0129",
+    "stream": "concerts"
+  },
+  {
+    "amount": "7000.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU TECHNOVA SOFTWARE SRL",
+    "occurred_at": "2026-05-10T08:12:00+03:00",
+    "ref": "matei-0130",
+    "stream": "salary"
+  },
+  {
+    "amount": "52.96",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "52.96",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-05-10T21:09:00+03:00",
+    "ref": "matei-0131",
+    "stream": "glovo"
+  },
+  {
+    "amount": "157.91",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "157.91",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-05-11T12:11:00+03:00",
+    "ref": "matei-0132",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "28.47",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "28.47",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-12T16:20:00+03:00",
+    "ref": "matei-0133",
+    "stream": "bolt"
+  },
+  {
+    "amount": "77.58",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "77.58",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-13T13:06:00+03:00",
+    "ref": "matei-0134",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "363.47",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "363.47",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "utilities",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4900,
+    "merchant_raw": "ENEL ENERGIE MUNTENIA",
+    "occurred_at": "2026-05-15T09:27:00+03:00",
+    "ref": "matei-0135",
+    "stream": "fixed:Utilități"
+  },
+  {
+    "amount": "33.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.39",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-15T12:18:00+03:00",
+    "ref": "matei-0136",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "69.39",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "69.39",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-05-15T14:23:00+03:00",
+    "ref": "matei-0137",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "39.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "39.23",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-05-16T21:58:00+03:00",
+    "ref": "matei-0138",
+    "stream": "glovo"
+  },
+  {
+    "amount": "116.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "116.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-05-17T12:14:00+03:00",
+    "ref": "matei-0139",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "57.08",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "57.08",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-05-17T19:59:00+03:00",
+    "ref": "matei-0140",
+    "stream": "glovo"
+  },
+  {
+    "amount": "101.86",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "101.86",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-18T13:22:00+03:00",
+    "ref": "matei-0141",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "33.49",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "33.49",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-05-18T21:06:00+03:00",
+    "ref": "matei-0142",
+    "stream": "glovo"
+  },
+  {
+    "amount": "80.66",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "80.66",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-19T12:29:00+03:00",
+    "ref": "matei-0143",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "71.20",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "71.20",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-05-19T21:51:00+03:00",
+    "ref": "matei-0144",
+    "stream": "glovo"
+  },
+  {
+    "amount": "60.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "telecom",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4814,
+    "merchant_raw": "ORANGE ROMANIA SA",
+    "occurred_at": "2026-05-20T09:32:00+03:00",
+    "ref": "matei-0145",
+    "stream": "fixed:Telefon"
+  },
+  {
+    "amount": "51.28",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "51.28",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-21T13:33:00+03:00",
+    "ref": "matei-0146",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "165.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "165.23",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": [
+      {
+        "amount": "76.72",
+        "name": "Salată",
+        "qty": 1
+      },
+      {
+        "amount": "40.56",
+        "name": "Iaurt",
+        "qty": 1
+      },
+      {
+        "amount": "47.95",
+        "name": "Banane",
+        "qty": 1
+      }
+    ],
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-22T12:57:00+03:00",
+    "ref": "matei-0147",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "67.37",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "67.37",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-05-22T14:35:00+03:00",
+    "ref": "matei-0148",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "29.97",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "29.97",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-22T18:06:00+03:00",
+    "ref": "matei-0149",
+    "stream": "bolt"
+  },
+  {
+    "amount": "230.34",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "230.34",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-05-23T12:15:00+03:00",
+    "ref": "matei-0150",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "300.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "300.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "entertainment",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7922,
+    "merchant_raw": "IABILET.RO FESTIVAL",
+    "occurred_at": "2026-05-23T19:50:00+03:00",
+    "ref": "matei-0151",
+    "stream": "calendar"
+  },
+  {
+    "amount": "184.15",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "184.15",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-25T13:55:00+03:00",
+    "ref": "matei-0152",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "56.40",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "56.40",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": [
+      {
+        "amount": "24.30",
+        "name": "Brânză",
+        "qty": 1
+      },
+      {
+        "amount": "12.23",
+        "name": "Apă plată",
+        "qty": 1
+      },
+      {
+        "amount": "19.87",
+        "name": "Sandviș",
+        "qty": 1
+      }
+    ],
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-26T13:13:00+03:00",
+    "ref": "matei-0153",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "38.98",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "38.98",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-26T14:29:00+03:00",
+    "ref": "matei-0154",
+    "stream": "bolt"
+  },
+  {
+    "amount": "92.88",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "92.88",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-05-27T20:22:00+03:00",
+    "ref": "matei-0155",
+    "stream": "glovo"
+  },
+  {
+    "amount": "74.79",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "74.79",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-05-28T20:30:00+03:00",
+    "ref": "matei-0156",
+    "stream": "glovo"
+  },
+  {
+    "amount": "44.62",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "44.62",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-05-29T12:14:00+03:00",
+    "ref": "matei-0157",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "69.20",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "69.20",
+      "label": null,
+      "purpose": "social_connection",
+      "source": "auto"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-05-29T13:18:00+03:00",
+    "ref": "matei-0158",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "10.28",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "10.28",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-05-30T15:54:00+03:00",
+    "ref": "matei-0159",
+    "stream": "bolt"
+  },
+  {
+    "amount": "211.36",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "211.36",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-05-31T11:56:00+03:00",
+    "ref": "matei-0160",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "2000.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "2000.00",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "housing_rent",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "TRANSFER CHIRIE POPESCU A",
+    "occurred_at": "2026-06-01T09:59:00+03:00",
+    "ref": "matei-0161",
+    "stream": "fixed:Chirie"
+  },
+  {
+    "amount": "92.24",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "92.24",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-06-01T13:36:00+03:00",
+    "ref": "matei-0162",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "93.14",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "93.14",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": [
+      {
+        "amount": "25.24",
+        "name": "Pâine",
+        "qty": 1
+      },
+      {
+        "amount": "16.83",
+        "name": "Banane",
+        "qty": 1
+      },
+      {
+        "amount": "31.87",
+        "name": "Brânză",
+        "qty": 1
+      },
+      {
+        "amount": "19.20",
+        "name": "Cafea",
+        "qty": 1
+      }
+    ],
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-06-02T13:27:00+03:00",
+    "ref": "matei-0163",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "21.93",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "21.93",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-06-02T22:42:00+03:00",
+    "ref": "matei-0164",
+    "stream": "bolt"
+  },
+  {
+    "amount": "180.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "180.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "sport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 7997,
+    "merchant_raw": "WORLD CLASS ROMANIA",
+    "occurred_at": "2026-06-03T09:24:00+03:00",
+    "ref": "matei-0165",
+    "stream": "fixed:Sală"
+  },
+  {
+    "amount": "78.86",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "78.86",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-06-03T12:12:00+03:00",
+    "ref": "matei-0166",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "25.00",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "25.00",
+      "label": null,
+      "purpose": "identity_joy",
+      "source": "auto"
+    },
+    "category": "subscriptions",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5815,
+    "merchant_raw": "SPOTIFY P2A41C9",
+    "occurred_at": "2026-06-05T09:56:00+03:00",
+    "ref": "matei-0167",
+    "stream": "fixed:Spotify"
+  },
+  {
+    "amount": "108.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "108.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": [
+      {
+        "amount": "44.20",
+        "name": "Apă plată",
+        "qty": 1
+      },
+      {
+        "amount": "34.54",
+        "name": "Banane",
+        "qty": 1
+      },
+      {
+        "amount": "29.87",
+        "name": "Brânză",
+        "qty": 1
+      }
+    ],
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-06-05T13:23:00+03:00",
+    "ref": "matei-0168",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "51.22",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "51.22",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "health_pharmacy",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5912,
+    "merchant_raw": "DR.MAX 112 BUCURESTI",
+    "occurred_at": "2026-06-05T13:46:00+03:00",
+    "ref": "matei-0169",
+    "stream": "pharmacy"
+  },
+  {
+    "amount": "81.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "81.23",
+      "label": "Prânz cu echipa",
+      "purpose": "social_connection",
+      "source": "answer"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-06-05T14:07:00+03:00",
+    "ref": "matei-0170",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "36.23",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "36.23",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-06-06T20:29:00+03:00",
+    "ref": "matei-0171",
+    "stream": "glovo"
+  },
+  {
+    "amount": "115.13",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "115.13",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-06-07T10:34:00+03:00",
+    "ref": "matei-0172",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "64.64",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "64.64",
+      "label": null,
+      "purpose": "unplanned_discretionary",
+      "source": "auto"
+    },
+    "category": "food_delivery",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5814,
+    "merchant_raw": "GLOVO*ORDER 8812",
+    "occurred_at": "2026-06-07T20:33:00+03:00",
+    "ref": "matei-0173",
+    "stream": "glovo"
+  },
+  {
+    "amount": "69.61",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "69.61",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUCURESTI",
+    "occurred_at": "2026-06-08T12:39:00+03:00",
+    "ref": "matei-0174",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "57.21",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "57.21",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-06-08T19:43:00+03:00",
+    "ref": "matei-0175",
+    "stream": "bolt"
+  },
+  {
+    "amount": "16.26",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "16.26",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-06-09T18:56:00+03:00",
+    "ref": "matei-0176",
+    "stream": "bolt"
+  },
+  {
+    "amount": "7000.00",
+    "annotation": null,
+    "category": "income",
+    "description": null,
+    "direction": "credit",
+    "items": null,
+    "mcc": null,
+    "merchant_raw": "SALARIU TECHNOVA SOFTWARE SRL",
+    "occurred_at": "2026-06-10T08:58:00+03:00",
+    "ref": "matei-0177",
+    "stream": "salary"
+  },
+  {
+    "amount": "100.43",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "100.43",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-06-10T12:25:00+03:00",
+    "ref": "matei-0178",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "60.88",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "60.88",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "MEGA IMAGE 0451 BUC",
+    "occurred_at": "2026-06-11T12:19:00+03:00",
+    "ref": "matei-0179",
+    "stream": "mega_lunch"
+  },
+  {
+    "amount": "77.92",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "77.92",
+      "label": "Prânz cu echipa",
+      "purpose": "social_connection",
+      "source": "answer"
+    },
+    "category": "restaurants",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5812,
+    "merchant_raw": "BISTRO OFFICE DELIGHT SRL",
+    "occurred_at": "2026-06-12T12:43:00+03:00",
+    "ref": "matei-0180",
+    "stream": "friday_lunch"
+  },
+  {
+    "amount": "202.54",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "202.54",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "groceries",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 5411,
+    "merchant_raw": "LIDL 0412 BUCURESTI",
+    "occurred_at": "2026-06-14T10:16:00+03:00",
+    "ref": "matei-0181",
+    "stream": "weekend_groceries"
+  },
+  {
+    "amount": "17.07",
+    "annotation": {
+      "beneficiary": "self",
+      "effective_amount": "17.07",
+      "label": null,
+      "purpose": "essential_living",
+      "source": "auto"
+    },
+    "category": "transport",
+    "description": null,
+    "direction": "debit",
+    "items": null,
+    "mcc": 4121,
+    "merchant_raw": "BOLT.EU/O/2603",
+    "occurred_at": "2026-06-14T12:44:00+03:00",
+    "ref": "matei-0182",
+    "stream": "bolt"
+  }
+]
