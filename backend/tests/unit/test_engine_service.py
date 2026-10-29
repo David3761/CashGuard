@@ -1,21 +1,21 @@
 """Engine DB shells (arch 15.1) with bomboe's services faked: what they read, write and return."""
 
 import asyncio
-from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
-from typing import Any
+from typing import Any, cast
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 pytest.importorskip("app.services.context_loader", reason="needs bomboe's services (B3/B4)")
 
 from app.domain.enums import Category, Direction, PotKind
-from app.domain.models import LifeEvent, Pot, Transfer
-from app.domain.results import Forecast, PlanSummary
+from app.domain.models import Transfer, TxView
+from app.domain.results import Forecast, PlanResult, PlanSummary
 from app.engine import service
 from app.errors import DomainError
-from tests.builders import tx
+from tests.builders import life_event, pot, replace, tx
 from tests.unit.test_forecast import GOAL_POT, TODAY, matei_ctx
 
 D = Decimal
@@ -30,15 +30,22 @@ class FakeDB:
         self.statements.append(str(statement))
 
 
+def fake_db(fake: FakeDB | None = None) -> AsyncSession:
+    """A FakeDB typed as the session the shells take (they only call `execute`)."""
+    return cast(AsyncSession, fake or FakeDB())
+
+
 class Fakes:
     """Records every service call; `ctx` and `tx` are what the loader / transactions.get return."""
 
     def __init__(self, monkeypatch: pytest.MonkeyPatch, ctx: Any, today: date = TODAY) -> None:
         self.calls: list[tuple[str, tuple[Any, ...], dict[str, Any]]] = []
-        self.ctx, self.tx, self.today = ctx, None, today
+        self.ctx, self.today = ctx, today
+        self.tx: TxView | None = None
         self.version = 0
         self.transfer: Transfer | None = None
         self.ledger_spent: dict[date, Decimal] = {}
+        self.last_plan: PlanSummary | None = ctx.plan if ctx is not None else None
 
         async def load(db: Any, user_id: int, today: date) -> Any:
             return self.ctx
@@ -46,24 +53,47 @@ class Fakes:
         async def get_tx(db: Any, user_id: int, tx_id: int) -> Any:
             return self.tx
 
-        async def next_version(db: Any, user_id: int) -> int:
+        async def save_plan(
+            db: Any,
+            user_id: int,
+            result: PlanResult,
+            *,
+            reason: str,
+            trigger_ref: dict[str, Any] | None = None,
+        ) -> PlanSummary:
+            """bomboe's `plans.save`: the next version, previous_today_budget from the last."""
             self.version += 1
-            return self.version
+            self._record("plans.save", (result,), {"reason": reason, "trigger_ref": trigger_ref})
+            previous = self.last_plan
+            self.last_plan = PlanSummary(
+                version=self.version,
+                feasible=result.feasible,
+                today_budget=result.today_budget,
+                previous_today_budget=previous.today_budget if previous is not None else None,
+                next_7_days=result.next_7_days,
+                reason=reason,
+            )
+            return self.last_plan
 
-        async def get_or_create(db: Any, user_id: int, day: date) -> Any:
-            return type("Day", (), {"spent": self.ledger_spent.get(day, D("0"))})()
+        async def add_spent(db: Any, user_id: int, day: date, delta: Decimal) -> Any:
+            """bomboe's atomic `ledger.add_spent` (never below 0)."""
+            self._record("ledger.add_spent", (day, delta), {})
+            self.ledger_spent[day] = max(self.ledger_spent.get(day, D("0")) + delta, D("0"))
 
-        async def by_income_tx(db: Any, user_id: int, tx_id: int) -> Any:
+        async def for_income(db: Any, user_id: int, tx_id: int) -> Any:
             return self.transfer
 
         async def create_transfer(db: Any, user_id: int, **kw: Any) -> Transfer:
             self._record("transfers.create", (), kw)
-            self.transfer = Transfer(
-                id=1,
-                amount=kw["amount"],
-                kind=kw["kind"],
-                pot_id=kw["pot_id"],
-                income_transaction_id=kw["income_transaction_id"],
+            self.transfer = Transfer.model_validate(
+                {
+                    "id": 1,
+                    "amount": kw["amount"],
+                    "kind": kw["kind"],
+                    "pot_id": kw["pot_id"],
+                    "income_transaction_id": kw["income_transaction_id"],
+                    "created_at": datetime(2026, 7, 10, 9, 0, tzinfo=UTC),
+                }
             )
             return self.transfer
 
@@ -73,23 +103,21 @@ class Fakes:
         patches = {
             "load_user_context": load,
             "transactions_service.get": get_tx,
-            "plans_service.next_version": next_version,
-            "ledger_service.get_or_create": get_or_create,
-            "transfers_service.get_by_income_transaction": by_income_tx,
+            "plans_service.save": save_plan,
+            "ledger_service.add_spent": add_spent,
+            "transfers_service.for_income": for_income,
             "transfers_service.create": create_transfer,
-            "fixed_costs_service.list": list_fixed,
+            "fixed_costs_service.list_all": list_fixed,
             "clock.today": lambda: self.today,
         }
         for name in (
             "accounts_service.adjust_balance",
-            "ledger_service.update",
             "pots_service.add_saved",
             "pots_service.update",
-            "plans_service.create",
             "forecasts_service.save",
-            "notifications_service.notify",
+            "notify_service.notify",
             "baselines_service.replace_all",
-            "users_service.update_household_scale",
+            "users_service.update",
         ):
             patches[name] = self._recorder(name.replace("_service", ""))
         for target, fn in patches.items():
@@ -127,15 +155,16 @@ def test_apply_transaction_moves_balance_and_day_spent(monkeypatch: pytest.Monke
     fakes.tx = tx(
         amount=D("500"), effective_amount=D("500"), occurred_at=at(TODAY), status="processing"
     )
-    run(service.apply_transaction(FakeDB(), 1, 918))
+    run(service.apply_transaction(fake_db(), 1, 918))
     assert fakes.args("accounts.adjust_balance") == [((D("-500"),), {})]
-    assert fakes.args("ledger.update") == [((TODAY,), {"spent": D("500")})]
+    assert fakes.args("ledger.add_spent") == [((TODAY, D("500")), {})]
+    assert fakes.ledger_spent[TODAY] == D("500")
 
 
 def test_apply_transaction_twice_is_a_no_op(monkeypatch: pytest.MonkeyPatch) -> None:
     fakes = Fakes(monkeypatch, matei_ctx())
     fakes.tx = tx(amount=D("500"), effective_amount=D("500"), status="resolved")
-    run(service.apply_transaction(FakeDB(), 1, 918))
+    run(service.apply_transaction(fake_db(), 1, 918))
     assert fakes.calls == []
 
 
@@ -144,11 +173,12 @@ def test_on_annotation_changed_moves_only_the_day_spent(monkeypatch: pytest.Monk
     fakes.ledger_spent[TODAY] = D("500")
     old = tx(amount=D("500"), effective_amount=D("500"), occurred_at=at(TODAY))
     new = replace(old, effective_amount=D("100"))
-    run(service.on_annotation_changed(FakeDB(), 1, old.id, old, new))
-    assert fakes.names() == ["ledger.update"]
-    assert fakes.args("ledger.update") == [((TODAY,), {"spent": D("100")})]
+    run(service.on_annotation_changed(fake_db(), 1, old.id, old, new))
+    assert fakes.names() == ["ledger.add_spent"]
+    assert fakes.args("ledger.add_spent") == [((TODAY, D("-400")), {})]
+    assert fakes.ledger_spent[TODAY] == D("100")
     fakes.calls.clear()
-    run(service.on_annotation_changed(FakeDB(), 1, old.id, new, new))
+    run(service.on_annotation_changed(fake_db(), 1, old.id, new, new))
     assert fakes.calls == []
 
 
@@ -166,7 +196,7 @@ def test_own_share_estimate_uses_the_baseline(monkeypatch: pytest.MonkeyPatch) -
         monthly_expected=D("1400"),
     )
     Fakes(monkeypatch, matei_ctx(baselines={Category.GROCERIES: groceries}))
-    assert run(service.own_share_estimate(FakeDB(), 1, tx(amount=D("500")))) == D("85.00")
+    assert run(service.own_share_estimate(fake_db(), 1, tx(amount=D("500")))) == D("85.00")
 
 
 # ── recompute_plan ───────────────────────────────────────────────────────────
@@ -176,39 +206,36 @@ def test_recompute_plan_saves_increasing_versions_with_reason(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     previous = PlanSummary(
-        version=0,
+        version=1,  # our PlanSummary versions start at 1
         feasible=True,
         today_budget=D("50.00"),
         previous_today_budget=None,
-        next_7_days=[],
+        next_7_days=(),
     )
     fakes = Fakes(monkeypatch, matei_ctx(plan=previous))
-    db = FakeDB()
+    fake = FakeDB()
+    db = fake_db(fake)
     summaries = [
         run(service.recompute_plan(db, 1, "new transactions", {"transaction_id": 918}))
         for _ in range(3)
     ]
     assert [s.version for s in summaries] == [1, 2, 3]
     assert summaries[0].previous_today_budget == D("50.00")
-    _, kw = fakes.args("plans.create")[0]
-    assert (kw["reason"], kw["trigger_ref"], kw["version"]) == (
-        "new transactions",
-        {"transaction_id": 918},
-        1,
-    )
-    assert all("pg_advisory_xact_lock" in s for s in db.statements)
-    assert len(db.statements) == 3
+    _, kw = fakes.args("plans.save")[0]
+    assert (kw["reason"], kw["trigger_ref"]) == ("new transactions", {"transaction_id": 918})
+    assert all("pg_advisory_xact_lock" in s for s in fake.statements)
+    assert len(fake.statements) == 3
 
 
 def test_recompute_plan_without_a_goal_saves_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
     fakes = Fakes(monkeypatch, matei_ctx(goal=None))
-    assert run(service.recompute_plan(FakeDB(), 1, "seed")) is None
-    assert "plans.create" not in fakes.names()
+    assert run(service.recompute_plan(fake_db(), 1, "seed")) is None
+    assert "plans.save" not in fakes.names()
 
 
 def test_recompute_plan_sets_event_pot_contributions(monkeypatch: pytest.MonkeyPatch) -> None:
-    trip = LifeEvent(id=7, name="Vacanță", date=date(2026, 8, 15), est_cost=D("3000"))
-    pot = Pot(
+    trip = life_event(id=7, name="Vacanță", date=date(2026, 8, 15), est_cost=D("3000"))
+    trip_pot = pot(
         id=3,
         name="Vacanță august",
         kind=PotKind.EVENT,
@@ -217,8 +244,8 @@ def test_recompute_plan_sets_event_pot_contributions(monkeypatch: pytest.MonkeyP
         deadline=date(2026, 8, 15),
         life_event_id=7,
     )
-    fakes = Fakes(monkeypatch, matei_ctx(life_events=[trip], pots=[GOAL_POT, pot]))
-    run(service.recompute_plan(FakeDB(), 1, "pot"))
+    fakes = Fakes(monkeypatch, matei_ctx(life_events=[trip], pots=[GOAL_POT, trip_pot]))
+    run(service.recompute_plan(fake_db(), 1, "pot"))
     assert fakes.args("pots.update") == [((3,), {"monthly_contribution": D("1500.00")})]
 
 
@@ -235,24 +262,25 @@ def test_forecast_goal_saves_a_weekly_snapshot_on_monday(monkeypatch: pytest.Mon
         sim_date=TODAY - timedelta(7),
     )
     fakes = Fakes(monkeypatch, matei_ctx(last_weekly_forecast=last_week))
-    first = run(service.forecast_goal(FakeDB(), 1, plan_version=4))
+    first = run(service.forecast_goal(fake_db(), 1, plan_version=4))
     assert first.is_weekly_snapshot
     assert first.last_week_probability == 0.72
-    _, kw = fakes.args("forecasts.save")[0]
-    assert (kw["plan_version"], kw["sim_date"], kw["forecast"]) == (4, TODAY, first)
-    assert run(service.forecast_goal(FakeDB(), 1, plan_version=4)).probability == first.probability
+    (saved,), kw = fakes.args("forecasts.save")[0]
+    assert (saved.plan_version, saved.sim_date, saved) == (4, TODAY, first)
+    assert kw["goal_id"] == matei_ctx().goal.id
+    assert run(service.forecast_goal(fake_db(), 1, plan_version=4)).probability == first.probability
 
 
 def test_forecast_goal_without_a_goal_raises(monkeypatch: pytest.MonkeyPatch) -> None:
     Fakes(monkeypatch, matei_ctx(goal=None))
     with pytest.raises(DomainError):
-        run(service.forecast_goal(FakeDB(), 1, plan_version=1))
+        run(service.forecast_goal(fake_db(), 1, plan_version=1))
 
 
 def test_simulate_plan_writes_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
     fakes = Fakes(monkeypatch, matei_ctx())
-    result = run(service.simulate_plan(FakeDB(), 1, {"income_delta": 500}))
-    assert result.diff_vs_current["today_budget"] > 0
+    result = run(service.simulate_plan(fake_db(), 1, {"income_delta": 500}))
+    assert result.diff_vs_current.today_budget > 0
     assert fakes.calls == []
 
 
@@ -280,12 +308,12 @@ def test_auto_save_moves_the_planned_saving_to_the_goal_pot(
 ) -> None:
     fakes = Fakes(monkeypatch, salary_ctx(), today=SALARY_DAY)
     fakes.tx = salary()
-    transfer = run(service.auto_save(FakeDB(), 1, 501))
+    transfer = run(service.auto_save(fake_db(), 1, 501))
     assert transfer is not None
     assert transfer.amount == D("800.00")
     assert fakes.args("accounts.adjust_balance") == [((D("-800.00"),), {})]
     assert fakes.args("pots.add_saved") == [((GOAL_POT.id, D("800.00")), {})]
-    assert fakes.names().count("notifications.notify") == 1
+    assert fakes.names().count("notify.notify") == 1
 
 
 def test_auto_save_twice_for_the_same_salary_moves_money_once(
@@ -293,21 +321,21 @@ def test_auto_save_twice_for_the_same_salary_moves_money_once(
 ) -> None:
     fakes = Fakes(monkeypatch, salary_ctx(), today=SALARY_DAY)
     fakes.tx = salary()
-    first = run(service.auto_save(FakeDB(), 1, 501))
-    second = run(service.auto_save(FakeDB(), 1, 501))
+    first = run(service.auto_save(fake_db(), 1, 501))
+    second = run(service.auto_save(fake_db(), 1, 501))
     assert second == first
     assert fakes.names().count("transfers.create") == 1
 
 
 def test_auto_save_ignores_credits_that_are_not_a_salary(monkeypatch: pytest.MonkeyPatch) -> None:
     fakes = Fakes(monkeypatch, salary_ctx(), today=SALARY_DAY)
-    fakes.tx = replace(salary(), amount=D("150"))  # a refund, not the salary
-    assert run(service.auto_save(FakeDB(), 1, 501)) is None
+    fakes.tx = replace(salary(), amount=D("150"), effective_amount=D("150"))  # a refund
+    assert run(service.auto_save(fake_db(), 1, 501)) is None
     assert fakes.calls == []
 
 
 def test_auto_save_with_nothing_to_spare_does_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
     fakes = Fakes(monkeypatch, salary_ctx(balance="1500"), today=SALARY_DAY)
     fakes.tx = salary()
-    assert run(service.auto_save(FakeDB(), 1, 501)) is None
+    assert run(service.auto_save(fake_db(), 1, 501)) is None
     assert "transfers.create" not in fakes.names()
