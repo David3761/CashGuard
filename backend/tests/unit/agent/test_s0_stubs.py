@@ -7,7 +7,6 @@ import pytest
 
 from app.agent.handlers import transactions as handlers
 from app.agent.language import detect_language
-from app.agent.loop import run_agent
 from app.agent.proactive import run_proactive
 from app.agent.snapshot import build_snapshot
 from app.clock import FixedClock, use_clock
@@ -15,15 +14,6 @@ from app.domain.enums import AnnotationSource, Beneficiary, Direction, Language,
 from app.domain.models import TxView
 from app.domain.results import AgentResult
 from app.errors import DomainError
-
-
-def test_run_agent_echoes() -> None:
-    result = run_agent(1, "chat", "am luat pentru colegi")
-    assert isinstance(result, AgentResult)
-    assert result.text == "Am primit: am luat pentru colegi"
-    assert run_agent(1, "proactive", None).text == "Am primit."
-    long = run_agent(1, "chat", "x" * 2000)  # speak_text has a 300-char limit
-    assert long.speak_text == "Am primit."
 
 
 def test_run_proactive_template_question() -> None:
