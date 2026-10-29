@@ -1,15 +1,18 @@
-"""/sim/* (arch F7, 9.2; B10). Only mounted when SIM_MODE=true; needs a logged-in user."""
+"""/sim/* (arch F7, 9.2; B10). Only mounted when SIM_MODE=true, and every route needs the
+realm role `sim` (the demo operator; `require_sim`): the simulator writes into any persona,
+moves the global clock and reseeds every user, so a plain login is not enough."""
 
 from decimal import Decimal
 from typing import Any
 
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Depends, Response
 from pydantic import AwareDatetime, BaseModel, Field
 
 from app import clock, events
 from app.api import schemas as s
 from app.api.deps import CurrentUser
 from app.api.views import plan_out
+from app.auth import require_sim
 from app.config import get_settings
 from app.db.seed import persona_list, realm_subs, seed_all
 from app.db.session import unit_of_work
@@ -23,7 +26,7 @@ from app.sim import scenarios
 from app.sim.clock_store import SimClock
 from app.ws import manager
 
-router = APIRouter(prefix="/sim", tags=["sim"])
+router = APIRouter(prefix="/sim", tags=["sim"], dependencies=[Depends(require_sim)])
 
 
 def sim_clock() -> SimClock:

@@ -111,3 +111,28 @@ def test_no_persona_user_has_the_internal_role(realm):
 
 def test_access_token_lifespan_is_at_least_30_minutes(realm):
     assert realm["accessTokenLifespan"] >= 1800
+
+
+def test_brute_force_protection_is_on(realm):
+    # P1-9: a password grant (savings-dev) must not allow unlimited guesses.
+    assert realm["bruteForceProtected"] is True
+    assert realm["permanentLockout"] is False  # a lockout must not kill the demo for good
+    assert 1 <= realm["failureFactor"] <= 10
+    assert realm["waitIncrementSeconds"] >= 60
+
+
+def test_password_policy_needs_12_chars_and_the_dev_default_meets_it(realm):
+    policy = realm["passwordPolicy"]
+    assert "length(12)" in policy and "notUsername" in policy
+    # Keycloak checks the policy when it imports the personas: the dev default must pass it.
+    for u in persona_users(realm):
+        default = u["credentials"][0]["value"].removeprefix("${KC_DEMO_PASSWORD:").rstrip("}")
+        assert len(default) >= 12
+
+
+def test_realm_defines_the_sim_role_and_only_personas_have_it(realm):
+    assert "sim" in {r["name"] for r in realm["roles"]["realm"]}
+    for u in persona_users(realm):
+        assert "sim" in u["realmRoles"]  # the demo operator logs in as a persona
+    sa = next(u for u in realm["users"] if u.get("serviceAccountClientId") == "savings-cron")
+    assert "sim" not in sa["realmRoles"]

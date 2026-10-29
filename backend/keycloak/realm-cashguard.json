@@ -8,9 +8,19 @@
   "ssoSessionMaxLifespan": 86400,
   "registrationAllowed": false,
   "loginWithEmailAllowed": true,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "failureFactor": 10,
+  "waitIncrementSeconds": 60,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "passwordPolicy": "length(12) and notUsername(undefined)",
   "roles": {
     "realm": [
-      { "name": "internal", "description": "Cron jobs: may call /api/internal/*" }
+      { "name": "internal", "description": "Cron jobs: may call /api/internal/*" },
+      { "name": "sim", "description": "Demo operator: may drive the simulator /api/sim/* (SIM_MODE only)" }
     ]
   },
   "clients": [
@@ -49,7 +59,7 @@
     {
       "clientId": "savings-dev",
       "name": "CashGuard dev scripts",
-      "description": "DEV/TEST ONLY: password grant for scripts and tests (demo client, smoke). Disable on a real deployment.",
+      "description": "DEV/TEST ONLY: password grant (ROPC) for the smoke scripts and tests. The hosted demo keeps it for scripts/smoke_remote.sh; disable it (enabled=false) on any real deployment. Brute-force protection and the required KC_DEMO_PASSWORD limit it meanwhile.",
       "protocol": "openid-connect",
       "enabled": true,
       "publicClient": true,
@@ -75,6 +85,7 @@
       "lastName": "Demo",
       "email": "matei@demo.cashguard.ro",
       "requiredActions": [],
+      "realmRoles": ["default-roles-cashguard", "sim"],
       "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
     },
     {
@@ -86,6 +97,7 @@
       "lastName": "Demo",
       "email": "andrei@demo.cashguard.ro",
       "requiredActions": [],
+      "realmRoles": ["default-roles-cashguard", "sim"],
       "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
     },
     {
@@ -97,6 +109,7 @@
       "lastName": "Demo",
       "email": "bianca@demo.cashguard.ro",
       "requiredActions": [],
+      "realmRoles": ["default-roles-cashguard", "sim"],
       "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
     },
     {
@@ -108,6 +121,7 @@
       "lastName": "Demo",
       "email": "ioana@demo.cashguard.ro",
       "requiredActions": [],
+      "realmRoles": ["default-roles-cashguard", "sim"],
       "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
     },
     {
@@ -119,6 +133,7 @@
       "lastName": "Demo",
       "email": "alex@demo.cashguard.ro",
       "requiredActions": [],
+      "realmRoles": ["default-roles-cashguard", "sim"],
       "credentials": [{ "type": "password", "value": "${KC_DEMO_PASSWORD:cashguard-dev}", "temporary": false }]
     }
   ]

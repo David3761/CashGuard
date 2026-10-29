@@ -14,8 +14,18 @@ from app.db.session import unit_of_work
 from app.main import create_app
 from app.pipeline import day_jobs
 from app.sim.clock_store import SimClock
+from tests import factories as f
 
 MATEI = realm_subs()["matei"]
+SIM = ("sim",)  # the demo operator's realm role (require_sim)
+
+SIM_ROUTES = [
+    ("POST", "/sim/transaction", {"scenario_id": "matei_mega_500"}),
+    ("POST", "/sim/next-day", None),
+    ("POST", "/sim/jump", {"days": 1}),
+    ("POST", "/sim/reset", None),
+    ("GET", "/sim/personas", None),
+]
 
 
 @pytest.fixture
@@ -44,10 +54,26 @@ async def test_sim_routes_are_gone_when_sim_mode_is_off(make_token, test_jwks):
     assert r.status_code == 404
 
 
+@pytest.mark.parametrize(("method", "path", "body"), SIM_ROUTES)
+@pytest.mark.parametrize("roles", [(), ("internal",)])
+async def test_sim_needs_the_sim_role(as_user, db, method, path, body, roles):
+    # P0-1: a plain persona login (or the cron's `internal`) must not reseed or write into
+    # other users: every /sim/* route is 403 before it touches anything.
+    u = await f.user(db)
+    r = await as_user(u, roles=roles).request(method, path, json=body)
+    assert r.status_code == 403 and r.json()["error"]["code"] == "forbidden"
+
+
+async def test_sim_with_the_sim_role_is_allowed(as_user, db):
+    u = await f.user(db)
+    r = await as_user(u, roles=SIM).get("/sim/personas")
+    assert r.status_code == 200 and r.json()["personas"]
+
+
 async def test_scenario_transaction_is_resolved_for_the_persona(
     as_committed_user, seeded, db_committed
 ):
-    r = await as_committed_user(MATEI).post(
+    r = await as_committed_user(MATEI, roles=SIM).post(
         "/sim/transaction", json={"scenario_id": "matei_mega_500"}
     )
     assert r.status_code == 200
@@ -63,10 +89,12 @@ async def test_scenario_transaction_is_resolved_for_the_persona(
 async def test_scenario_for_another_persona_and_raw_transactions(
     as_committed_user, seeded, db_committed
 ):
-    r = await as_committed_user(MATEI).post("/sim/transaction", json={"scenario_id": "andrei_tv"})
+    r = await as_committed_user(MATEI, roles=SIM).post(
+        "/sim/transaction", json={"scenario_id": "andrei_tv"}
+    )
     tx = await db_committed.get(m.Transaction, r.json()["transaction_id"])
     assert tx.user_id == seeded["andrei"] and tx.items[0]["name"] == 'Televizor 65"'
-    raw = await as_committed_user(MATEI).post(
+    raw = await as_committed_user(MATEI, roles=SIM).post(
         "/sim/transaction",
         json={"merchant_raw": "LIBRARIA CARTURESTI", "amount": 45, "category": "books"},
     )
@@ -85,12 +113,12 @@ async def test_scenario_for_another_persona_and_raw_transactions(
     ],
 )
 async def test_sim_transaction_errors(as_committed_user, seeded, body, status, code):
-    r = await as_committed_user(MATEI).post("/sim/transaction", json=body)
+    r = await as_committed_user(MATEI, roles=SIM).post("/sim/transaction", json=body)
     assert r.status_code == status and r.json()["error"]["code"] == code
 
 
 async def test_personas(as_committed_user, seeded):
-    r = await as_committed_user(MATEI).get("/sim/personas")
+    r = await as_committed_user(MATEI, roles=SIM).get("/sim/personas")
     assert [p["id"] for p in r.json()["personas"]] == ["matei", "andrei", "bianca", "ioana", "alex"]
 
 
@@ -105,7 +133,7 @@ async def test_next_day_runs_the_jobs_in_order_and_advances_one_day(
         await real(job, user_id, day)
 
     monkeypatch.setattr(day_jobs, "run", spy)
-    r = await as_committed_user(MATEI).post("/sim/next-day")
+    r = await as_committed_user(MATEI, roles=SIM).post("/sim/next-day")
     body = r.json()
     assert r.status_code == 200 and body["date"] == "2026-06-16"
     assert body["ledger"]["date"] == "2026-06-15" and body["plan"] is not None
@@ -128,12 +156,12 @@ async def test_jump_crossing_a_monday_snapshots_once(
         return await real(job, day)
 
     monkeypatch.setattr(day_jobs, "run_for_all", spy)
-    r = await as_committed_user(MATEI).post("/sim/jump", json={"days": 5})
+    r = await as_committed_user(MATEI, roles=SIM).post("/sim/jump", json={"days": 5})
     assert r.json()["date"] == "2026-06-23" and snapshots == [date(2026, 6, 22)]
 
 
 async def test_reset_twice_gives_the_same_state(as_committed_user, seeded, db_committed):
-    client = as_committed_user(MATEI)
+    client = as_committed_user(MATEI, roles=SIM)
     await client.post("/sim/transaction", json={"scenario_id": "matei_mega_500"})
     await client.post("/sim/next-day")
     assert (await client.post("/sim/reset")).status_code == 204
@@ -145,4 +173,6 @@ async def test_reset_twice_gives_the_same_state(as_committed_user, seeded, db_co
 
 
 async def test_jump_rejects_bad_days(as_committed_user, seeded):
-    assert (await as_committed_user(MATEI).post("/sim/jump", json={"days": 0})).status_code == 422
+    assert (
+        await as_committed_user(MATEI, roles=SIM).post("/sim/jump", json={"days": 0})
+    ).status_code == 422
