@@ -1,0 +1,11 @@
+{
+  "facts": [
+    {"type": "occupation", "value": {"title": "contabilă"}, "text": "Sunt contabilă", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "employment", "value": {"kind": "employee"}, "text": "Sunt angajată", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "household_member", "value": {"role": "adult", "relation": "partner"}, "text": "Stau cu soțul meu", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "household_member", "value": {"role": "child", "age": 7, "relation": "daughter"}, "text": "Fiica mea are 7 ani", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "household_member", "value": {"role": "child", "age": 11, "relation": "son"}, "text": "Fiul meu are 11 ani", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "housing", "value": {"kind": "own", "note": "mortgage"}, "text": "Avem casa noastră, plătim rata", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"},
+    {"type": "city", "value": {"name": "Cluj"}, "text": "Stăm în Cluj", "source": "seed", "status": "confirmed", "confidence": 0.95, "persistence": "permanent", "valid_from": "2026-01-01"}
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "rules": [
+    {"kind": "classify", "match": {"merchant_id": null, "category": "restaurants", "weekdays": [5], "from": "12:00", "to": "15:00", "amount_min": 60, "amount_max": 130}, "outcome": {"purpose": "social_connection", "label": "Prânz cu echipa", "own_share_ratio": 1.0}, "confidence": 0.7, "hits": 2, "misses": 0, "source": "learned", "active": true, "created_at": "2026-06-05T13:40:00+03:00", "last_hit_at": "2026-06-12T13:25:00+03:00"}
+  ]
+}
