@@ -127,6 +127,15 @@ How to use them: **`backend/tests/README.md`** (one example per fixture, how to 
 | `verify_token(token) -> Claims(sub, azp, roles, raw)` | `backend/app/auth.py` | RS256 only; `iss == KEYCLOAK_ISSUER`; `exp`/`nbf` with 30 s leeway **against real time** (tokens come from Keycloak's clock, not the simulator's); `azp` ∈ {savings-frontend, savings-dev, savings-cron} or `aud` ∋ `KEYCLOAK_AUDIENCE`. Errors: `invalid_token`, `token_expired`, `invalid_issuer`, `invalid_audience` (401), `auth_unavailable` (503) |
 | `JWKSCache`, `get_jwks()`, `set_jwks()` | same | keys by `kid` from `<KEYCLOAK_INTERNAL_URL or KEYCLOAK_ISSUER>/.well-known/openid-configuration`; encryption keys ignored; an unknown `kid` refetches at most once per 60 s; Keycloak down → 503 only when the key isn't cached. Verified live against the running Keycloak (a Matei token and a cron token) |
 
+### B4 · `load_user_context` ✅ · B5 step 2 ✅ · B7 WebSocket ✅ (core)
+
+| Piece | Where | Notes for others |
+|---|---|---|
+| `load_user_context(db, user_id, today, history_days=180)` | `app/services/context_loader.py` | **real now** (the Matei stub is gone). Facts = confirmed and active on `today`; hypotheses apart; signatures only of today's facts; transactions = resolved, `today − 180 days … today`; events = pending + asked; `questions_asked_today` from `QUESTION_EVENT_TYPES`; no account row → `Account()` (zeros). ⚠️ ~20 SQL statements, not the ≤ 10 of the spec (built on the services for speed; batching later if the < 50 ms budget fails) |
+| `current_user`, `current_claims`, `require_internal`, `ws_user` | `app/auth.py` | FastAPI deps: `Annotated[UserProfile, Depends(current_user)]`. Errors `missing_token` (no / non-Bearer header, `bearer` lowercase ok), `unknown_user` (401), `forbidden` (403, no `internal` role) |
+| Event builders | `app/events.py` | one function per arch 5.2 event → `{type, data, ts}` (`ts` UTC `Z`, money as numbers). `transaction_annotated(tx, purpose_label)`: the label comes from the caller until `app/i18n/labels.py` (C1) exists |
+| `manager`, `push_after_commit(session, user_id, event)` | `app/ws.py` | **call `push_after_commit` in tool handlers / pipeline**: events go out only after the session commits, in order; a rollback drops them. `/ws?token=` closes 1008 on a bad token; ping every 30 s |
+
 ### Service contract + B3 CRUD services ✅ (only `load_user_context` is still a stub, B4)
 
 | What | Where | Notes for others |
@@ -194,3 +203,4 @@ Differences from the names in Bomboe.md / arch 15.1:
 | `c2d0ddd` | B5.1 `verify_token` + JWKS cache; F3 auth helpers |
 | `34f1687` | F3.2–3 API + WS fixtures, `tests/README.md`; `make check` → 481 passed |
 | `f22171e`, `5ac8c5c`, `306c337`, `94528ea` | B3 steps 1–4: every CRUD service; `make check` → 625 passed |
+| `fd0c526`, `7c05067`, (next) | B4 loader, B5.2 auth deps, B7 WebSocket core |
