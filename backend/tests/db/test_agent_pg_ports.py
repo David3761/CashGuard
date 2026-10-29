@@ -286,3 +286,207 @@ async def test_chat_endpoint_run_saves_the_reply_after_a_real_tool_call(
     tx = await transactions.get(db_committed, matei, tx_id)
     assert tx.effective_amount == D("100.00")
     assert "assistant.message" in sock.types() and "plan.updated" in sock.types()
+
+
+# ── every port against the DB, scoped by user ───────────────────────────────────────────────
+
+
+async def test_every_port_works_for_its_user_and_hides_the_other_users_rows(db_committed, matei):
+    from app.agent.pg_ports import pg_services
+    from app.agent.ports import Annotation, ReceivableDraft
+    from app.domain.enums import AnnotationSource, PotKind
+    from app.services import life_facts, pattern_rules
+    from tests import factories as f
+    from tests.db.test_services_profile import fails
+
+    other = (await f.user(db_committed)).id
+    tx_id = await mega_500(db_committed, matei)
+    s = pg_services(db_committed)
+    today = clock.today()
+
+    # transactions
+    tx = await s.transactions.get(matei, tx_id)
+    assert tx.amount == D("500.00")
+    assert tx_id in [t.id for t in await s.transactions.list(matei, today, today)]
+    assert await s.transactions.list(matei, today, today, "electronics") == []
+    owed = await s.receivables.create(
+        matei,
+        ReceivableDraft(
+            debtor_label="colegi",
+            amount=D("400"),
+            expected_by=today + timedelta(days=7),
+            transaction_id=tx_id,
+            people_count=5,
+            amount_each=D("100"),
+        ),
+    )
+    annotation = Annotation(
+        purpose="on_behalf_of_others",
+        beneficiary="shared",
+        effective_amount=D("100"),
+        source=AnnotationSource.ANSWER,
+        receivable_id=owed.id,
+    )
+    tx = await s.transactions.annotate(matei, tx_id, annotation)
+    assert (tx.effective_amount, tx.receivable_id) == (D("100.00"), owed.id)
+    # receivables
+    assert (await s.receivables.get(matei, owed.id)).amount == D("400.00")
+    assert [r.id for r in await s.receivables.list_open(matei)] == [owed.id]
+    assert (await s.receivables.open_for_transaction(matei, tx_id)).id == owed.id
+    assert (await s.receivables.mark_paid(matei, owed.id)).status == "paid"
+    second = await s.receivables.create(
+        matei, ReceivableDraft(debtor_label="Ana", amount=D("50"), expected_by=today)
+    )
+    assert (await s.receivables.cancel(matei, second.id)).status == "cancelled"
+    assert await s.receivables.open_for_transaction(matei, tx_id) is None
+    # pots + set_pot
+    pot = await s.pots.create(
+        matei, {"name": "Vacanță", "kind": PotKind.EVENT, "target": D("1500"), "saved": D("0")}
+    )
+    assert (await s.pots.get(matei, pot.id)).name == "Vacanță"
+    assert (await s.pots.update(matei, pot.id, {"name": "Mare"})).name == "Mare"
+    assert (await s.transactions.set_pot(matei, tx_id, pot.id)).pot_id == pot.id
+    assert (await s.pots.close(matei, pot.id)).status == "closed"
+    # goals
+    goal = await s.goals.active(matei)
+    assert goal is not None
+    assert (await s.goals.update(matei, goal.id, {"motivation": "Liniște"})).motivation == "Liniște"
+    assert await s.goals.active(other) is None
+    # life facts + signatures
+    fact = (await life_facts.list_active(db_committed, matei, today))[0]
+    assert (await s.life_facts.get(matei, fact.id)).id == fact.id
+    assert fact.id in [x.id for x in await s.life_facts.list_active(matei)]
+    draft = fact.model_dump(exclude={"id", "created_at"})
+    updated = await s.life_facts.update(
+        matei, fact.id, type(fact).model_validate({**fact.model_dump(), "text": "Altfel spus"})
+    )
+    assert updated.text == "Altfel spus" and draft
+    await s.signatures.replace_for_fact(matei, fact.id, [])
+    assert await signatures.list_for_fact(db_committed, matei, fact.id) == []
+    assert (await s.life_facts.expire(matei, fact.id, today)).status == "expired"
+    hypo = await life_facts.create(
+        db_committed,
+        matei,
+        fact.model_copy(update={"status": "hypothesis", "confidence": 0.5}),
+    )
+    assert (await s.life_facts.confirm(matei, hypo.id)).status == "confirmed"
+    hypo2 = await life_facts.create(
+        db_committed, matei, fact.model_copy(update={"status": "hypothesis", "confidence": 0.5})
+    )
+    assert (await s.life_facts.reject(matei, hypo2.id)).status == "rejected"
+    # pattern rules
+    rule = (await pattern_rules.list_active(db_committed, matei))[0]
+    made = await s.pattern_rules.create(matei, rule.model_copy(update={"id": None}))
+    assert made.id is not None and made.id != rule.id
+    # records
+    inc = await s.income_sources.create(
+        matei, {"source": "Bonus", "amount": D("500"), "day_of_month": 20}
+    )
+    assert (await s.income_sources.update(matei, inc["id"], {"amount": D("600")}))["amount"] == D(
+        "600.00"
+    )
+    assert inc["id"] in [r["id"] for r in await s.income_sources.list(matei)]
+    await s.income_sources.remove(matei, inc["id"])
+    cost = await s.fixed_costs.create(
+        matei, {"name": "Netflix", "amount": D("50"), "day_of_month": 9}
+    )
+    assert (await s.fixed_costs.get(matei, cost["id"]))["name"] == "Netflix"
+    assert (await s.fixed_costs.update(matei, cost["id"], {"day_of_month": 10}))[
+        "day_of_month"
+    ] == 10
+    await s.fixed_costs.remove(matei, cost["id"])
+    event = await s.life_events.create(
+        matei,
+        {
+            "name": "Nuntă",
+            "date": today + timedelta(days=30),
+            "est_cost": D("800"),
+            "type": "social",
+        },
+    )
+    assert (await s.life_events.update(matei, event["id"], {"est_cost": D("900")}))[
+        "est_cost"
+    ] == D("900.00")
+    assert (await s.life_events.update(matei, event["id"], {"status": "cancelled"}))[
+        "status"
+    ] == "cancelled"
+    slip = await s.slips.create(matei, {"date": today, "reason": "ieșire", "recurring": False})
+    assert slip["amount_over"] >= 0 and (await s.slips.list(matei))[-1]["id"] == slip["id"]
+    reflection = await s.reflections.create(matei, {"motivation": 4, "answer": "bine"})
+    assert reflection["week_start"].weekday() == 0
+    # preferences, profile, events, transfers, users, plans, forecasts, products
+    prefs = await s.plan_preferences.get(matei)
+    saved = await s.plan_preferences.save(matei, prefs.model_copy(update={"buffer_pct": D("0.15")}))
+    assert (await s.plan_preferences.get(matei)).buffer_pct == saved.buffer_pct == D("0.15")
+    assert (await s.life_profile.set_note(matei, "ton", "scurt"))["ton"] == "scurt"
+    from app.services import agent_events as events_service
+
+    question = (await events_service.pending_for(db_committed, matei))[0]
+    assert (await s.agent_events.get(matei, question.id))["id"] == question.id
+    await events_service.mark_asked(db_committed, matei, question.id)
+    assert (await s.agent_events.open_question_for(matei, tx_id))["id"] == question.id
+    assert (await s.agent_events.mark_answered(matei, question.id))["status"] == "answered"
+    assert await s.agent_events.open_question_for(matei, tx_id) is None
+    pot_before = await db_committed.scalar(
+        select(m.Pot.saved).where(m.Pot.user_id == matei, m.Pot.kind == "goal")
+    )
+    transfer = await s.transfers.to_savings(matei, D("100"))
+    assert transfer["amount"] == D("100.00") and transfer["kind"] == "manual"
+    pot_after = await db_committed.scalar(
+        select(m.Pot.saved)
+        .where(m.Pot.user_id == matei, m.Pot.kind == "goal")
+        .execution_options(populate_existing=True)
+    )
+    assert pot_after == pot_before + D("100")
+    assert (await s.users.mark_onboarded(other))["onboarded_at"] is not None
+    assert (await s.plans.latest(matei))["version"] >= 1
+    assert await s.plans.latest(other) is None
+    assert (await s.forecasts.latest(matei))["probability"] > 0
+    assert len(await s.products.list()) > 0
+    run_id = await agent_runs.start(db_committed, matei, trigger=AgentTrigger.CHAT, model="fake")
+    await db_committed.commit()
+    await s.tool_calls.log(matei, run_id, "toolu_x", "get_plan", {"d": today}, '{"ok": true}', "ok")
+    logged = await db_committed.scalar(select(m.ToolCall).where(m.ToolCall.run_id == run_id))
+    assert logged is not None and logged.output == {"ok": True}
+    await db_committed.commit()
+
+    # the other user sees none of it: not_found, like a missing id
+    hidden = [
+        s.transactions.get(other, tx_id),
+        s.transactions.annotate(other, tx_id, annotation),
+        s.transactions.set_pot(other, tx_id, pot.id),
+        s.receivables.get(other, owed.id),
+        s.receivables.cancel(other, owed.id),
+        s.receivables.mark_paid(other, owed.id),
+        s.receivables.create(
+            other,
+            ReceivableDraft(
+                debtor_label="x", amount=D("1"), expected_by=today, transaction_id=tx_id
+            ),
+        ),
+        s.life_facts.get(other, fact.id),
+        s.life_facts.update(other, fact.id, fact),
+        s.life_facts.expire(other, fact.id, today),
+        s.life_facts.confirm(other, hypo.id),
+        s.life_facts.reject(other, hypo.id),
+        s.signatures.replace_for_fact(other, fact.id, []),
+        s.pots.get(other, pot.id),
+        s.pots.update(other, pot.id, {"name": "x"}),
+        s.pots.close(other, pot.id),
+        s.goals.update(other, goal.id, {"motivation": "x"}),
+        s.income_sources.get(other, inc["id"]),
+        s.fixed_costs.update(other, cost["id"], {"name": "x"}),
+        s.life_events.get(other, event["id"]),
+        s.life_events.update(other, event["id"], {"name": "x"}),
+        s.slips.get(other, slip["id"]),
+        s.slips.remove(other, slip["id"]),
+        s.reflections.update(other, reflection["id"], {"answer": "x"}),
+        s.agent_events.get(other, question.id),
+        s.agent_events.mark_handled(other, question.id),
+    ]
+    for call in hidden:
+        await fails(call, "not_found", 404)
+    assert await s.receivables.list_open(other) == []
+    assert await s.transactions.list(other, today, today) == []
+    assert await s.agent_events.open_question_for(other, tx_id) is None
+    assert await s.slips.list(other) == []
