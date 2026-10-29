@@ -4,7 +4,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
+from app import clock
 from app.auth import Claims, require_internal
+from app.pipeline import day_jobs
 from app.pipeline.processor import process_user, recover_stale, users_with_work
 
 router = APIRouter(prefix="/internal", tags=["internal"])
@@ -25,3 +27,10 @@ async def process(_: Internal) -> dict[str, int]:
 async def recover(_: Internal) -> dict[str, int]:
     """Reset `processing` rows stuck for more than 5 minutes."""
     return {"recovered": await recover_stale()}
+
+
+@router.post("/{job}")
+async def run_day_job(job: day_jobs.Job, _: Internal) -> dict[str, int]:
+    """close-day, expire-events, expire-questions, receivable-reminders, forecast-snapshot,
+    weekly-reflection, preemptive, infer-hypotheses (cron schedules them, arch §10)."""
+    return {"users": await day_jobs.run_for_all(job, clock.today())}
