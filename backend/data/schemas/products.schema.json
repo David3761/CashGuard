@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CashGuard mock savings products (backend/data/products.json)",
+  "description": "The mock product catalogue (arch 4.4, 16.5): fictional products and rates, always mock. Read by the seed (B12), GET /products (B6b) and the ranking (C12). Load strictly (Decimal, no duplicate keys, no NaN), as tests/unit/datafiles.py parse_json does.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["products"],
+  "properties": {
+    "products": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/product" } }
+  },
+  "$defs": {
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "kind", "liquidity", "rate", "min_months", "max_months", "mock"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$", "maxLength": 40 },
+        "name": { "description": "The product's (Romanian) name, as in arch 16.5.", "type": "string", "minLength": 1, "maxLength": 60 },
+        "kind": { "enum": ["flexible_pot", "savings_account", "term_deposit"] },
+        "liquidity": { "enum": ["instant", "notice", "locked"] },
+        "rate": { "description": "Fictional annual rate as a fraction (0.0350 = 3.5%).", "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 0.2 },
+        "min_months": { "description": "The savings horizon (months until the money is needed) this product suits: from.", "type": "integer", "minimum": 0, "maximum": 120 },
+        "max_months": { "description": "... to (min_months < max_months).", "type": "integer", "minimum": 1, "maximum": 120 },
+        "mock": { "description": "Always true: the challenge requires a mock catalogue; the UI labels it.", "const": true }
+      }
+    }
+  }
+}
