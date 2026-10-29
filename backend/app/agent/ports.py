@@ -9,8 +9,9 @@ bomboe implements them with Postgres (`app/services/*`); the tests use the in-me
   probed.
 - The handlers compute every amount (effective amounts, splits, receivables); a service only
   stores what it is given.
-- Rows the F2 models don't cover yet are plain `Row` dicts with the arch 4.x column names. They
-  become the F2 models (`Receivable`, `Pot`, `Goal`, …) once F2 step 6 lands.
+- The rows the handlers reason about are the F2 models (`TxView`, `Receivable`, `LifeFact`,
+  `PatternRule`, `Pot`, `Goal`, `PlanPreferences`); the plain records (income sources, fixed
+  costs, life events, slips, reflections, …) are `Row` dicts with the arch 4.x column names.
 
 The engine (danutu, arch 15.1) and the context layer (C4, C8, C9) are behind ports too, with lazy
 adapters that call the real functions: their modules are landing in parallel, so nothing here
@@ -25,10 +26,21 @@ from decimal import Decimal
 from typing import Any, Protocol
 
 from app.domain.enums import AnnotationSource, Beneficiary, Purpose
-from app.domain.models import TxView
+from app.domain.models import (
+    Goal,
+    LifeFact,
+    LifeFactDraft,
+    PatternRule,
+    PlanPreferences,
+    Pot,
+    Receivable,
+    Signature,
+    TxView,
+)
+from app.domain.results import Forecast, PlanSummary, PropagationResult, SimResult
 
 Row = dict[str, Any]
-"""A DB row as a dict (arch 4.x column names); replaced by the F2 models as they land."""
+"""A plain record as a dict (arch 4.x column names)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,10 +63,10 @@ class ReceivableDraft:
 
     debtor_label: str
     amount: Decimal
+    expected_by: date
     transaction_id: int | None = None
     people_count: int | None = None
     amount_each: Decimal | None = None
-    expected_by: date | None = None
 
 
 # ── bomboe's services (arch 15.1 `services/`) ─────────────────────────────────────────────────
@@ -70,50 +82,60 @@ class TransactionsPort(Protocol):
 
 
 class ReceivablesPort(Protocol):
-    def create(self, user_id: int, draft: ReceivableDraft) -> Row: ...
-    def get(self, user_id: int, receivable_id: int) -> Row: ...
-    def cancel(self, user_id: int, receivable_id: int) -> Row: ...
-    def mark_paid(self, user_id: int, receivable_id: int) -> Row: ...
-    def list_open(self, user_id: int) -> list[Row]: ...
-    def open_for_transaction(self, user_id: int, tx_id: int) -> Row | None: ...
+    def create(self, user_id: int, draft: ReceivableDraft) -> Receivable: ...
+    def get(self, user_id: int, receivable_id: int) -> Receivable: ...
+    def cancel(self, user_id: int, receivable_id: int) -> Receivable: ...
+    def mark_paid(self, user_id: int, receivable_id: int) -> Receivable: ...
+    def list_open(self, user_id: int) -> list[Receivable]: ...  # open + requested
+    def open_for_transaction(self, user_id: int, tx_id: int) -> Receivable | None: ...
 
 
 class LifeFactsPort(Protocol):
-    def create(self, user_id: int, data: Mapping[str, Any]) -> Row: ...
-    def get(self, user_id: int, fact_id: int) -> Row: ...
-    def update(self, user_id: int, fact_id: int, changes: Mapping[str, Any]) -> Row: ...
-    def expire(self, user_id: int, fact_id: int, valid_to: date) -> Row: ...
-    def confirm(self, user_id: int, fact_id: int) -> Row: ...
-    def reject(self, user_id: int, fact_id: int) -> Row: ...
-    def list_active(self, user_id: int) -> list[Row]: ...
+    def create(self, user_id: int, draft: LifeFactDraft) -> LifeFact: ...
+    def get(self, user_id: int, fact_id: int) -> LifeFact: ...
+    def update(self, user_id: int, fact_id: int, draft: LifeFactDraft) -> LifeFact: ...
+    def expire(self, user_id: int, fact_id: int, valid_to: date) -> LifeFact: ...
+    def confirm(self, user_id: int, fact_id: int) -> LifeFact: ...
+    def reject(self, user_id: int, fact_id: int) -> LifeFact: ...
+    def list_active(self, user_id: int) -> list[LifeFact]: ...  # confirmed, valid today
 
 
 class SignaturesPort(Protocol):
-    def replace_for_fact(self, user_id: int, fact_id: int, signatures: Sequence[Any]) -> None: ...
+    def replace_for_fact(
+        self, user_id: int, fact_id: int, signatures: Sequence[Signature]
+    ) -> None: ...
 
 
 class PatternRulesPort(Protocol):
-    def create(self, user_id: int, data: Mapping[str, Any]) -> Row: ...
+    def create(self, user_id: int, rule: PatternRule) -> PatternRule: ...
+
+
+class PotsPort(Protocol):
+    def create(self, user_id: int, data: Mapping[str, Any]) -> Pot: ...
+    def get(self, user_id: int, pot_id: int) -> Pot: ...
+    def update(self, user_id: int, pot_id: int, changes: Mapping[str, Any]) -> Pot: ...
+    def close(self, user_id: int, pot_id: int) -> Pot: ...
 
 
 class RecordsPort(Protocol):
-    """Plain per-user CRUD: pots, goals, income sources, fixed costs, life events, slips, …"""
+    """Plain per-user CRUD: income sources, fixed costs, life events, slips, reflections."""
 
     def create(self, user_id: int, data: Mapping[str, Any]) -> Row: ...
     def get(self, user_id: int, record_id: int) -> Row: ...
     def update(self, user_id: int, record_id: int, changes: Mapping[str, Any]) -> Row: ...
     def list(self, user_id: int) -> list[Row]: ...
+    def remove(self, user_id: int, record_id: int) -> None: ...
 
 
 class GoalsPort(Protocol):
-    def active(self, user_id: int) -> Row | None: ...
-    def create(self, user_id: int, data: Mapping[str, Any]) -> Row: ...
-    def update(self, user_id: int, goal_id: int, changes: Mapping[str, Any]) -> Row: ...
+    def active(self, user_id: int) -> Goal | None: ...
+    def create(self, user_id: int, data: Mapping[str, Any]) -> Goal: ...
+    def update(self, user_id: int, goal_id: int, changes: Mapping[str, Any]) -> Goal: ...
 
 
 class PlanPreferencesPort(Protocol):
-    def get(self, user_id: int) -> Row: ...
-    def update(self, user_id: int, changes: Mapping[str, Any]) -> Row: ...
+    def get(self, user_id: int) -> PlanPreferences: ...
+    def save(self, user_id: int, preferences: PlanPreferences) -> PlanPreferences: ...
 
 
 class LifeProfilePort(Protocol):
@@ -169,7 +191,7 @@ class Services:
     life_facts: LifeFactsPort
     signatures: SignaturesPort
     pattern_rules: PatternRulesPort
-    pots: RecordsPort
+    pots: PotsPort
     goals: GoalsPort
     income_sources: RecordsPort
     fixed_costs: RecordsPort
@@ -193,13 +215,13 @@ class Services:
 class EnginePort(Protocol):
     def recompute_plan(
         self, db: Any, user_id: int, reason: str, trigger_ref: dict[str, Any] | None = None
-    ) -> Any: ...
-    def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Any: ...
+    ) -> PlanSummary: ...
+    def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast: ...
     def own_share_estimate(self, db: Any, user_id: int, tx: TxView) -> Decimal: ...
     def on_annotation_changed(
         self, db: Any, user_id: int, tx_id: int, old: Decimal, new: Decimal
     ) -> None: ...
-    def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> Any: ...
+    def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> SimResult: ...
 
 
 class LazyEngine:
@@ -210,11 +232,13 @@ class LazyEngine:
 
     def recompute_plan(
         self, db: Any, user_id: int, reason: str, trigger_ref: dict[str, Any] | None = None
-    ) -> Any:
-        return self._fn("recompute_plan")(db, user_id, reason, trigger_ref)
+    ) -> PlanSummary:
+        plan: PlanSummary = self._fn("recompute_plan")(db, user_id, reason, trigger_ref)
+        return plan
 
-    def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Any:
-        return self._fn("forecast_goal")(db, user_id, plan_version)
+    def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast:
+        forecast: Forecast = self._fn("forecast_goal")(db, user_id, plan_version)
+        return forecast
 
     def own_share_estimate(self, db: Any, user_id: int, tx: TxView) -> Decimal:
         value: Decimal = self._fn("own_share_estimate")(db, user_id, tx)
@@ -225,8 +249,9 @@ class LazyEngine:
     ) -> None:
         self._fn("on_annotation_changed")(db, user_id, tx_id, old, new)
 
-    def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> Any:
-        return self._fn("simulate_plan")(db, user_id, changes)
+    def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> SimResult:
+        result: SimResult = self._fn("simulate_plan")(db, user_id, changes)
+        return result
 
 
 # ── the context layer (C4 signatures, C8 learning, C9 propagation) ────────────────────────────
@@ -234,37 +259,65 @@ class LazyEngine:
 
 class ContextPort(Protocol):
     def signatures_for_fact(
-        self, fact: Row, llm_signatures: list[dict[str, Any]] | None
-    ) -> list[Any]: ...
-    def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> Any: ...
+        self, fact: LifeFact, llm_signatures: list[dict[str, Any]] | None
+    ) -> list[Signature]: ...
+    def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> PropagationResult | None: ...
     def learn_from_annotation(self, db: Any, user_id: int, tx_id: int) -> Any: ...
 
 
-def _optional(module: str, name: str) -> Any | None:
-    """`module.name`, or None while that module hasn't landed yet (C4/C8/C9 are in progress)."""
-    try:
-        return getattr(importlib.import_module(module), name, None)
-    except ModuleNotFoundError:
-        return None
+def _first(*candidates: tuple[str, str]) -> Any:
+    """The first `module.name` that exists: the real C4/C8/C9 module, else S0's stub."""
+    for module, name in candidates:
+        try:
+            fn = getattr(importlib.import_module(module), name, None)
+        except ModuleNotFoundError:
+            continue
+        if fn is not None:
+            return fn
+    raise RuntimeError(f"none of {candidates} exists")
 
 
 class LazyContext:
-    """`ContextPort` over `app.context.*`; a no-op for each function not written yet."""
+    """`ContextPort` over `app.context.*`: C4's library, C9's propagation and C8's rules once they
+    land, S0's `app.context.service` stubs until then."""
 
     def signatures_for_fact(
-        self, fact: Row, llm_signatures: list[dict[str, Any]] | None
-    ) -> list[Any]:
-        fn = _optional("app.context.library", "signatures_for_fact")
-        return [] if fn is None else list(fn(fact, llm_signatures))
-
-    def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> Any:
-        fn = _optional("app.context.propagate", "on_fact_changed") or _optional(
-            "app.context.service", "on_fact_changed"
+        self, fact: LifeFact, llm_signatures: list[dict[str, Any]] | None
+    ) -> list[Signature]:
+        fn = _first(
+            ("app.context.library", "signatures_for_fact"),
+            ("app.context.service", "signatures_for_fact"),
         )
-        return None if fn is None else fn(db, user_id, fact_id)
+        return list(fn(fact, llm_signatures))
+
+    def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> PropagationResult | None:
+        fn = _first(
+            ("app.context.propagate", "on_fact_changed"),
+            ("app.context.service", "on_fact_changed"),
+        )
+        result: PropagationResult | None = fn(db, user_id, fact_id)
+        return result
 
     def learn_from_annotation(self, db: Any, user_id: int, tx_id: int) -> Any:
-        fn = _optional("app.context.rules", "learn_from_annotation") or _optional(
-            "app.context.service", "learn_from_annotation"
+        fn = _first(
+            ("app.context.rules", "learn_from_annotation"),
+            ("app.context.service", "learn_from_annotation"),
         )
-        return None if fn is None else fn(db, user_id, tx_id)
+        return fn(db, user_id, tx_id)
+
+
+# ── where the services come from outside a tool call (bomboe's PATCH /transactions) ──────────
+
+_services_factory: list[Any] = []
+
+
+def set_services_factory(factory: Any) -> None:
+    """bomboe registers `factory(db) -> Services` (his Postgres ports) once at startup."""
+    _services_factory[:] = [factory]
+
+
+def services_for(db: Any) -> Services:
+    if not _services_factory:
+        raise RuntimeError("no services factory: B3 must call set_services_factory at startup")
+    services: Services = _services_factory[0](db)
+    return services

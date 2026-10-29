@@ -10,15 +10,30 @@ from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
+from app import clock
 from app.agent.handlers.common import RunState, ToolContext
 from app.agent.ports import Annotation, ReceivableDraft, Row, Services
 from app.domain.enums import (
     Direction,
     FactStatus,
+    GoalStatus,
     Language,
+    PotStatus,
     ReceivableStatus,
 )
-from app.domain.models import TxView
+from app.domain.models import (
+    DomainModel,
+    Goal,
+    LifeFact,
+    LifeFactDraft,
+    PatternRule,
+    PlanPreferences,
+    Pot,
+    Receivable,
+    Signature,
+    TxView,
+)
+from app.domain.results import Forecast, PlanSummary, SimDiff, SimResult
 from app.errors import DomainError
 
 
@@ -54,8 +69,41 @@ class Table:
     def list(self, user_id: int) -> list[Row]:
         return [dict(row) for owner, row in self.rows.values() if owner == user_id]
 
+    def remove(self, user_id: int, record_id: int) -> None:
+        self.get(user_id, record_id)
+        del self.rows[record_id]
+
     def count(self) -> int:
         return len(self.rows)
+
+
+class ModelTable[M: DomainModel]:
+    """F2 models keyed by id, each owned by one user; `update` re-validates (`replace`)."""
+
+    def __init__(self, what: str, model: type[M]) -> None:
+        self.what, self.model = what, model
+        self.rows: dict[int, tuple[int, M]] = {}
+        self._next = 1
+
+    def insert(self, user_id: int, data: Mapping[str, Any]) -> M:
+        row = self.model.model_validate({**data, "id": self._next})
+        self.rows[self._next] = (user_id, row)
+        self._next += 1
+        return row
+
+    def get(self, user_id: int, record_id: int) -> M:
+        owner, row = self.rows.get(record_id, (None, None))
+        if owner != user_id or row is None:
+            raise not_found(self.what)
+        return row
+
+    def update(self, user_id: int, record_id: int, changes: Mapping[str, Any]) -> M:
+        row = self.get(user_id, record_id).replace(**changes)
+        self.rows[record_id] = (user_id, row)
+        return row
+
+    def list(self, user_id: int) -> list[M]:
+        return [row for owner, row in self.rows.values() if owner == user_id]
 
 
 class FakeRecords:
@@ -73,6 +121,9 @@ class FakeRecords:
 
     def list(self, user_id: int) -> list[Row]:
         return self.table.list(user_id)
+
+    def remove(self, user_id: int, record_id: int) -> None:
+        self.table.remove(user_id, record_id)
 
 
 class FakeTransactions:
@@ -122,9 +173,9 @@ class FakeTransactions:
 
 class FakeReceivables:
     def __init__(self) -> None:
-        self.table = Table("receivable")
+        self.table = ModelTable("receivable", Receivable)
 
-    def create(self, user_id: int, draft: ReceivableDraft) -> Row:
+    def create(self, user_id: int, draft: ReceivableDraft) -> Receivable:
         return self.table.insert(
             user_id,
             {
@@ -135,71 +186,121 @@ class FakeReceivables:
                 "amount_each": draft.amount_each,
                 "expected_by": draft.expected_by,
                 "status": ReceivableStatus.OPEN,
+                "created_at": clock.now(),
             },
         )
 
-    def get(self, user_id: int, receivable_id: int) -> Row:
+    def get(self, user_id: int, receivable_id: int) -> Receivable:
         return self.table.get(user_id, receivable_id)
 
-    def cancel(self, user_id: int, receivable_id: int) -> Row:
+    def cancel(self, user_id: int, receivable_id: int) -> Receivable:
         return self.table.update(user_id, receivable_id, {"status": ReceivableStatus.CANCELLED})
 
-    def mark_paid(self, user_id: int, receivable_id: int) -> Row:
-        return self.table.update(user_id, receivable_id, {"status": ReceivableStatus.PAID})
+    def mark_paid(self, user_id: int, receivable_id: int) -> Receivable:
+        return self.table.update(
+            user_id, receivable_id, {"status": ReceivableStatus.PAID, "paid_at": clock.now()}
+        )
 
-    def list_open(self, user_id: int) -> list[Row]:
+    def list_open(self, user_id: int) -> list[Receivable]:
         live = (ReceivableStatus.OPEN, ReceivableStatus.REQUESTED)
-        return [r for r in self.table.list(user_id) if r["status"] in live]
+        return [r for r in self.table.list(user_id) if r.status in live]
 
-    def open_for_transaction(self, user_id: int, tx_id: int) -> Row | None:
-        found = [r for r in self.list_open(user_id) if r["transaction_id"] == tx_id]
+    def open_for_transaction(self, user_id: int, tx_id: int) -> Receivable | None:
+        found = [r for r in self.list_open(user_id) if r.transaction_id == tx_id]
         return found[-1] if found else None
 
 
-class FakeLifeFacts(FakeRecords):
+class FakeLifeFacts:
     def __init__(self) -> None:
-        super().__init__("life fact")
+        self.table = ModelTable("life fact", LifeFact)
 
-    def expire(self, user_id: int, fact_id: int, valid_to: date) -> Row:
-        return self.update(user_id, fact_id, {"status": FactStatus.EXPIRED, "valid_to": valid_to})
+    def create(self, user_id: int, draft: LifeFactDraft) -> LifeFact:
+        return self.table.insert(user_id, {**draft.model_dump(), "created_at": clock.now()})
 
-    def confirm(self, user_id: int, fact_id: int) -> Row:
-        return self.update(user_id, fact_id, {"status": FactStatus.CONFIRMED})
+    def get(self, user_id: int, fact_id: int) -> LifeFact:
+        return self.table.get(user_id, fact_id)
 
-    def reject(self, user_id: int, fact_id: int) -> Row:
-        return self.update(user_id, fact_id, {"status": FactStatus.REJECTED})
+    def update(self, user_id: int, fact_id: int, draft: LifeFactDraft) -> LifeFact:
+        return self.table.update(user_id, fact_id, draft.model_dump())
 
-    def list_active(self, user_id: int) -> list[Row]:
-        return [r for r in self.list(user_id) if r.get("status") == FactStatus.CONFIRMED]
+    def expire(self, user_id: int, fact_id: int, valid_to: date) -> LifeFact:
+        return self.table.update(
+            user_id, fact_id, {"status": FactStatus.EXPIRED, "valid_to": valid_to}
+        )
+
+    def confirm(self, user_id: int, fact_id: int) -> LifeFact:
+        return self.table.update(user_id, fact_id, {"status": FactStatus.CONFIRMED})
+
+    def reject(self, user_id: int, fact_id: int) -> LifeFact:
+        return self.table.update(user_id, fact_id, {"status": FactStatus.REJECTED})
+
+    def list_active(self, user_id: int) -> list[LifeFact]:
+        today = clock.today()
+        return [
+            f
+            for f in self.table.list(user_id)
+            if f.status is FactStatus.CONFIRMED and f.active_on(today)
+        ]
 
 
 class FakeSignatures:
     def __init__(self) -> None:
-        self.by_fact: dict[tuple[int, int], list[Any]] = {}
+        self.by_fact: dict[tuple[int, int], list[Signature]] = {}
 
-    def replace_for_fact(self, user_id: int, fact_id: int, signatures: Sequence[Any]) -> None:
+    def replace_for_fact(self, user_id: int, fact_id: int, signatures: Sequence[Signature]) -> None:
         self.by_fact[(user_id, fact_id)] = list(signatures)
 
 
-class FakeGoals(FakeRecords):
+class FakePatternRules:
     def __init__(self) -> None:
-        super().__init__("goal")
+        self.table = ModelTable("pattern rule", PatternRule)
 
-    def active(self, user_id: int) -> Row | None:
-        found = [r for r in self.list(user_id) if r.get("status") == "active"]
+    def create(self, user_id: int, rule: PatternRule) -> PatternRule:
+        return self.table.insert(user_id, rule.model_dump(exclude={"id"}))
+
+
+class FakePots:
+    def __init__(self) -> None:
+        self.table = ModelTable("pot", Pot)
+
+    def create(self, user_id: int, data: Mapping[str, Any]) -> Pot:
+        return self.table.insert(user_id, data)
+
+    def get(self, user_id: int, pot_id: int) -> Pot:
+        return self.table.get(user_id, pot_id)
+
+    def update(self, user_id: int, pot_id: int, changes: Mapping[str, Any]) -> Pot:
+        return self.table.update(user_id, pot_id, changes)
+
+    def close(self, user_id: int, pot_id: int) -> Pot:
+        return self.table.update(user_id, pot_id, {"status": PotStatus.CLOSED})
+
+
+class FakeGoals:
+    def __init__(self) -> None:
+        self.table = ModelTable("goal", Goal)
+
+    def active(self, user_id: int) -> Goal | None:
+        found = [g for g in self.table.list(user_id) if g.status is GoalStatus.ACTIVE]
         return found[0] if found else None
+
+    def create(self, user_id: int, data: Mapping[str, Any]) -> Goal:
+        return self.table.insert(user_id, {**data, "created_at": clock.now()})
+
+    def update(self, user_id: int, goal_id: int, changes: Mapping[str, Any]) -> Goal:
+        return self.table.update(user_id, goal_id, changes)
 
 
 class FakePlanPreferences:
     def __init__(self) -> None:
-        self.rows: dict[int, Row] = {}
+        self.rows: dict[int, PlanPreferences] = {}
 
-    def get(self, user_id: int) -> Row:
-        return dict(self.rows.get(user_id, {"weekday_weights": {}, "pinned_days": {}}))
+    def get(self, user_id: int) -> PlanPreferences:
+        return self.rows.get(user_id, PlanPreferences())
 
-    def update(self, user_id: int, changes: Mapping[str, Any]) -> Row:
-        self.rows[user_id] = {**self.get(user_id), **changes}
-        return self.get(user_id)
+    def save(self, user_id: int, preferences: PlanPreferences) -> PlanPreferences:
+        self.rows[user_id] = preferences
+        return preferences
 
 
 class FakeLifeProfile:
@@ -296,8 +397,8 @@ def fake_services() -> Services:
         receivables=FakeReceivables(),
         life_facts=FakeLifeFacts(),
         signatures=FakeSignatures(),
-        pattern_rules=FakeRecords("pattern rule"),
-        pots=FakeRecords("pot"),
+        pattern_rules=FakePatternRules(),
+        pots=FakePots(),
         goals=FakeGoals(),
         income_sources=FakeRecords("income source"),
         fixed_costs=FakeRecords("fixed cost"),
@@ -329,26 +430,29 @@ class FakeEngine:
 
     def recompute_plan(
         self, db: Any, user_id: int, reason: str, trigger_ref: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    ) -> PlanSummary:
         self.calls.append(("recompute_plan", (user_id, reason, trigger_ref)))
         previous, self.version = self.today_budget, self.version + 1
         self.today_budget = previous - Decimal("1.40")
-        return {
-            "version": self.version,
-            "feasible": True,
-            "today_budget": self.today_budget,
-            "previous_today_budget": previous,
-            "reason": reason,
-        }
+        return PlanSummary(
+            version=self.version,
+            feasible=True,
+            today_budget=self.today_budget,
+            previous_today_budget=previous,
+            reason=reason[:300],
+        )
 
-    def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> dict[str, Any]:
+    def forecast_goal(self, db: Any, user_id: int, plan_version: int) -> Forecast:
         self.calls.append(("forecast_goal", (user_id, plan_version)))
-        previous, self.probability = self.probability, round(self.probability + 0.06, 2)
-        return {
-            "probability": self.probability,
-            "previous_probability": previous,
-            "last_week_probability": 0.72,
-        }
+        previous, self.probability = self.probability, min(1.0, round(self.probability + 0.06, 2))
+        return Forecast(
+            probability=self.probability,
+            previous_probability=previous,
+            last_week_probability=0.72,
+            p10=Decimal("8000"),
+            p50=Decimal("10400"),
+            p90=Decimal("12100"),
+        )
 
     def own_share_estimate(self, db: Any, user_id: int, tx: TxView) -> Decimal:
         self.calls.append(("own_share_estimate", (user_id, tx.id)))
@@ -359,9 +463,15 @@ class FakeEngine:
     ) -> None:
         self.calls.append(("on_annotation_changed", (user_id, tx_id, old, new)))
 
-    def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> dict[str, Any]:
+    def simulate_plan(self, db: Any, user_id: int, changes: dict[str, Any]) -> SimResult:
         self.calls.append(("simulate_plan", (user_id, changes)))
-        return {"feasible": True, "today_budget": Decimal("38.10"), "probability": 0.79}
+        return SimResult(
+            feasible=True,
+            today_budget=Decimal("38.10"),
+            avg_daily_budget=Decimal("36.40"),
+            probability=0.79,
+            diff_vs_current=SimDiff(today_budget=Decimal("6.90"), probability=0.08),
+        )
 
     def names(self) -> list[str]:
         return [name for name, _ in self.calls]
@@ -369,13 +479,13 @@ class FakeEngine:
 
 @dataclass
 class FakeContext:
-    signatures: list[Any] = field(default_factory=lambda: [{"effect": "explains"}])
+    signatures: list[Signature] = field(default_factory=list)
     calls: list[tuple[str, tuple[Any, ...]]] = field(default_factory=list)
 
     def signatures_for_fact(
-        self, fact: Row, llm_signatures: list[dict[str, Any]] | None
-    ) -> list[Any]:
-        self.calls.append(("signatures_for_fact", (fact["id"], llm_signatures)))
+        self, fact: LifeFact, llm_signatures: list[dict[str, Any]] | None
+    ) -> list[Signature]:
+        self.calls.append(("signatures_for_fact", (fact.id, llm_signatures)))
         return list(self.signatures)
 
     def on_fact_changed(self, db: Any, user_id: int, fact_id: int) -> None:

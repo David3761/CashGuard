@@ -146,8 +146,7 @@ def _recompute(
     reason = str(result.pop("_plan_reason", None) or name)
     trigger_ref = {"tool": name, "tool_use_id": tool_use_id, **result.pop("_trigger_ref", {})}
     plan = ctx.engine.recompute_plan(ctx.db, ctx.user_id, reason, trigger_ref)
-    version = plan["version"] if isinstance(plan, Mapping) else plan.version
-    forecast = ctx.engine.forecast_goal(ctx.db, ctx.user_id, version)
+    forecast = ctx.engine.forecast_goal(ctx.db, ctx.user_id, plan.version)
     result["plan"], result["forecast"] = plan, forecast
     run.plan_changed, run.plan, run.forecast = True, plan, forecast
 
