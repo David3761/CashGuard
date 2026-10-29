@@ -122,3 +122,52 @@
   - **To confirm (C1's readings):** the city index also applies to kids; the kids basket is per transaction (not × children); E8 may model the 8 lumpy categories (basket > month) as compound Poisson rather than lognormal; if lognormal, parameterise it by the **mean** with the file's `cv` (arch 6.7 uses a flat 0.25); seasonal categories (gifts, travel, kids, clothing) noted.
   - **Demo:** Ioana's real pattern (Shop&Go almost daily) gives ~4.300–5.800 lei/month of groceries against the 1.890 family prior, so Scene E must quote E6's computed figure, never "1.890".
 - **Merge instruction:** keep ours unless danutu's calibration (E13) needs different numbers. Change a number and its golden entry in the same commit, and keep the plausibility tests green. **Load strictly** with `app.domain.money.parse_json` (Decimal, duplicate keys/NaN/Infinity/BOM rejected). Check: `pytest tests/unit/test_data_priors.py`.
+
+> **Entries H-10 to H-14 were written in fast mode (D52).** Each comes from the agent's own proposal; the details are in the task reports under `backend/docs/reports/`.
+
+### H-10 · danutu E3/E4/E5/E8/E10 · engine stubs in `app/engine/service.py` + pure E6/E7 · 🟢
+- **By:** DGAdavid1 (S0 + C5 agents), 2026-10-29
+- **What was done:** `app/engine/service.py` has his §15 functions with the exact signatures and stub bodies: `apply_transaction` (rule in the pure `ledger_delta`), `on_annotation_changed(old, new: TxView)`, `recompute_baselines`, `recompute_plan` (fixed PlanSummary), `forecast_goal` (0.78), `simulate_plan`, `own_share_estimate`, `auto_save` (None). Also **real** pure minimums: `app/engine/baselines.py` (`household_scale` OECD 1/0.5/0.3, `compute_baselines` with blend k = 5, MAD fallback, city index, kids per child D50) and `app/engine/anomaly.py` (`anomaly_features`, arch 5.3.4 step 4).
+- **Merge instruction:** replace the stub bodies with E3/E4/E5/E8/E10; keep the signatures and return types. Keep or extend the pure E6/E7 (they pass Matei's z ≈ 11.2 and Ioana's scale 2.1). Who updates `pots.saved` on `link_transaction_to_pot` (E10) is open. Check: `tests/unit/engine/`.
+
+### H-11 · bomboe B3 · implement `app/agent/ports.py` with Postgres · 🟢
+- **By:** DGAdavid1 (A3 agent), 2026-10-29
+- **What was done:** the tool handlers call bomboe's services only through typed Protocols in `app/agent/ports.py`; `tests/fakes/fake_services.py` is the in-memory reference implementation. Every method takes `user_id` and raises `not_found` for a missing id or another user's row.
+- **Merge instruction:** implement the Protocols over Postgres and register them at startup (`set_services_factory(lambda db: Services(...))`). Method list (see `backend/docs/reports/A3.md`):
+  - transactions: get/list/annotate/set_pot
+  - receivables: create/get/cancel/mark_paid/list_open/open_for_transaction
+  - life_facts: create/get/update/expire/confirm/reject/list_active
+  - `signatures.replace_for_fact`, `pattern_rules.create`
+  - pots: create/get/update/close; goals: active/create/update
+  - income_sources, fixed_costs, life_events, slips, reflections (CRUD)
+  - plan_preferences: get/save; `life_profile.set_note`
+  - agent_events: get/open_question_for/mark_answered/mark_handled
+  - `transfers.to_savings`, `users.mark_onboarded`, `plans.latest`, `forecasts.latest`, `products.list`, `tool_calls.log`
+
+  WebSocket events collected in `run.pushes` are pushed after commit. Check: run A3's handler tests against the Postgres implementation.
+
+### H-12 · bomboe B4/B8/B9 · `load_user_context`, `/chat`, the pipeline's proactive call · 🟢
+- **By:** DGAdavid1 (A2/A4, A6/A7/A9 agents), 2026-10-29
+- **What was done:** `build_snapshot(db, user_id, trigger, event_id)` is **async** and loads `app/services/context_loader.load_user_context` (B4, async, returns `app.domain.user_context.UserContext`). `run_agent(user_id, "chat", text, input_mode, run_id=…)` and `run_proactive(user_id, event_id, run_id=…)` are **async**; `run_proactive` returns `None` when nothing was said. `app/agent/wiring.py` is the adapter over our real pieces (tools_for once per run (D46), build_snapshot, A3's executor, the engine stubs).
+- **Merge instruction:**
+  - B4 fills the Q6 extras of `UserContext`: `recent_days` (14 days), `slips`/`reflections` (5 each), `life_notes`, `products`, `recent_questions`. It includes the asked question event (payload: reason, params, ask_what_item; `ref_transaction_id`) and its transaction.
+  - B9 saves the user message first, then `await run_agent(...)`; a fallback reply marks the run failed.
+  - B8 calls `await run_proactive(...)` for sim/cron triggers (not chat).
+  - Check: `tests/unit/agent/test_scene_a.py`.
+
+### H-13 · bomboe B12 + B10 · persona facts/rules + scenario files · 🟢
+- **By:** DGAdavid1 (C2/C4/D1 and S0/D2 agents), 2026-10-29
+- **What was done:**
+  - `data/personas/<id>/facts.json` (`{"facts": [LifeFactDraft]}`, ids assigned by the DB; Alex empty) and `data/personas/matei/rules.json` (`{"rules": [PatternRule]}`: restaurants, Fri 12:00–15:00, 60–130 lei → "Prânz cu echipa", 0.7, 2 hits).
+  - `data/signature_library.json` (45 entries) + `app/context/library.signatures_for_fact`.
+  - `data/scenarios/<id>.json` (8 demo scenes + schema): the timestamp is the sim date + `day_offset` at `time` (Bucharest).
+- **Merge instruction:** B12 reads these files with `money.parse_json` + `model_validate` and stores `signatures_for_fact(fact)` as `spending_signatures` (origin `library`). B10 `/sim/transaction {scenario_id}` reads the scenarios; `requires`/`expected` are for tests only. Check: Matei has 7 facts + 1 rule, Alex 0, Andrei exactly 2 `work_tool` signatures; `tests/unit/test_data_scenarios.py`.
+
+### H-14 · bomboe B6b/B13 + David V. · texts, tools and limits to know · 🟢
+- **By:** DGAdavid1, 2026-10-29
+- **Notes:**
+  - Romanian sentences use `app.i18n.format.format_money_in_sentence` ("80 de lei", "101 lei", "1 leu"); `format_money` is the compact display form ("500 lei").
+  - B13 notification texts must pass `app.agent.style.find_banned` (every "iar"/"din nou"/"de ce", even neutral, D48). B9's error fallback is `app.agent.templates.fallback_reply("llm_down", lang)`.
+  - The Claude API takes at most **20 strict tools** per request, so `tools_for` marks a priority subset strict, and the executor's Pydantic validation is the real guard.
+  - The live tests (`uv run pytest -m live tests/eval -q -rs`) haven't been run: no API key yet. Run them before enabling `ANTHROPIC_REFUSAL_FALLBACK`.
+

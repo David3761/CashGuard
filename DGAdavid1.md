@@ -13,37 +13,37 @@
 | Order | ID | Task | P | h | Status |
 |---|---|---|---|---|---|
 | 1 | F1 | Repo skeleton, tooling, config, clock, error envelope | P0 | 0.5 | ✅ ([report](backend/docs/reports/F1.md)) |
-| 2 | F2 | Shared domain types, enums, money helpers, test builders | P0 | 1 | ◐ steps 1–3 ✅ ([report](backend/docs/reports/F2.md)) |
+| 2 | F2 | Shared domain types, enums, money helpers, test builders | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/F2.md)) |
 | 3 | C1 | Fixed lists, RO/EN labels & formats, data files | P0 | 1 | ✅ ([report](backend/docs/reports/C1.md)) |
-| 4 | C2 | Merchant normalisation | P0 | 0.5 | ☐ |
-| 5 | S0 | Stubs of your §15 functions | P0 | 0.25 | ☐ |
-| 6 | C4 | Signature library + `signatures_for_fact` | P0 | 1.5 | ☐ |
-| 7 | D1 | Persona life facts + Matei's seeded rule | P0 | 0.75 | ☐ |
-| 8 | C5 | `life_fit` + the "because" | P0 | 1.5 | ☐ |
-| 9 | C6 | `evaluate_transaction` | P0 | 1 | ☐ |
-| 10 | C7 | Question policy | P0 | 1 | ☐ |
+| 4 | C2 | Merchant normalisation | P0 | 0.5 | ✅ fast mode |
+| 5 | S0 | Stubs of your §15 functions | P0 | 0.25 | ✅ fast mode ([report](backend/docs/reports/S0.md)) |
+| 6 | C4 | Signature library + `signatures_for_fact` | P0 | 1.5 | ✅ fast mode |
+| 7 | D1 | Persona life facts + Matei's seeded rule | P0 | 0.75 | ✅ fast mode |
+| 8 | C5 | `life_fit` + the "because" | P0 | 1.5 | ✅ fast mode ([report](backend/docs/reports/C5-C7.md)) |
+| 9 | C6 | `evaluate_transaction` | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/C5-C7.md)) |
+| 10 | C7 | Question policy | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/C5-C7.md)) |
 | 11 | A1 | Claude client wrapper + `FakeLLM` | P0 | 0.5 | ✅ ([report](backend/docs/reports/A1.md)) |
-| 12 | A2 | Tool schemas, registry, `tools_for` | P0 | 1 | ☐ |
-| 13 | A5 | Prompts, banned-phrase checker, templates | P0 | 0.75 | ◐ A5.1 ✅ ([report](backend/docs/reports/A5.md)) |
-| 14 | A4 | Snapshot builder | P0 | 1 | ☐ |
-| 15 | A3 | Tool executor + every handler | P0 | 2 | ☐ |
-| 16 | A6 | Agent loop | P0 | 1 | ☐ |
-| 17 | A7 | Proactive runs (the spoken question) | P0 | 1 | ☐ |
-| 18 | D2 | Scenario files | P0 | 0.5 | ☐ |
-| 19 | D4 | Demo client (end-to-end scenes) | P0 | 0.75 | ☐ |
+| 12 | A2 | Tool schemas, registry, `tools_for` | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/A2-A4.md)) |
+| 13 | A5 | Prompts, banned-phrase checker, templates | P0 | 0.75 | ✅ fast mode ([report](backend/docs/reports/A5.md)) |
+| 14 | A4 | Snapshot builder | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/A2-A4.md)) |
+| 15 | A3 | Tool executor + every handler | P0 | 2 | ✅ fast mode ([report](backend/docs/reports/A3.md)) |
+| 16 | A6 | Agent loop | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/A6-A7-A9.md)) |
+| 17 | A7 | Proactive runs (the spoken question) | P0 | 1 | ✅ fast mode ([report](backend/docs/reports/A6-A7-A9.md)) |
+| 18 | D2 | Scenario files | P0 | 0.5 | ✅ fast mode ([report](backend/docs/reports/S0.md)) |
+| 19 | D4 | Demo client (end-to-end scenes) | P0 | 0.75 | ⏸ blocked on bomboe's API (B5/B7/B9/B10); our side proven by `tests/unit/agent/test_scene_a.py` |
 | | | ★ **Checkpoint: Scene A end-to-end** | | | |
-| 20 | A9 | Deterministic fallbacks (LLM down) | P1 | 0.75 | ☐ |
-| 21 | C8 | Learning rules | P1 | 1 | ☐ |
-| 22 | C9 | Propagation on a fact change | P1 | 1 | ☐ |
-| 23 | D3 | Acceptance suite (arch 16.3) | P1 | 1 | ☐ |
-| 24 | A11 | Language detection + `speak_text` | P1 | 0.5 | ☐ |
-| 25 | A10 | LLM eval set + runner | P1 | 1 | ☐ |
-| 26 | D6 | Security & privacy review | P1 | 0.5 | ☐ |
-| 27 | D5 | Demo runbook + rehearsal | P1 | 0.5 | ☐ |
-| 28 | C10 | Hypotheses inference | P2 | 0.75 | ☐ |
-| 29 | C11 | Calendar expected events | P2 | 0.5 | ☐ |
-| 30 | C12 | Product ranking | P2 | 0.5 | ☐ |
-| 31 | A8 | Live onboarding | P2 | 0.5 | ☐ |
+| 20 | A9 | Deterministic fallbacks (LLM down) | P1 | 0.75 | ✅ fast mode ([report](backend/docs/reports/A6-A7-A9.md)) |
+| 21 | C8 | Learning rules | P1 | 1 | ✂ cut (D52) |
+| 22 | C9 | Propagation on a fact change | P1 | 1 | ✂ cut (D52) |
+| 23 | D3 | Acceptance suite (arch 16.3) | P1 | 1 | ✂ cut (D52) |
+| 24 | A11 | Language detection + `speak_text` | P1 | 0.5 | ✂ cut (D52) |
+| 25 | A10 | LLM eval set + runner | P1 | 1 | ✂ cut (D52) |
+| 26 | D6 | Security & privacy review | P1 | 0.5 | ✂ cut (D52) |
+| 27 | D5 | Demo runbook + rehearsal | P1 | 0.5 | ✂ cut (D52) |
+| 28 | C10 | Hypotheses inference | P2 | 0.75 | ✂ cut (D52) |
+| 29 | C11 | Calendar expected events | P2 | 0.5 | ✂ cut (D52) |
+| 30 | C12 | Product ranking | P2 | 0.5 | ✂ cut (D52) |
+| 31 | A8 | Live onboarding | P2 | 0.5 | ✂ cut (D52) |
 
 **Load:** P0 ≈ 18 h · total ≈ 26.5 h. This is the heaviest of the three: bomboe has ~13.75 h of P0 and danutu ~10.25 h. The quickest relief would be moving **C1, C2, C7, D2** (≈ 3 h) to danutu. Your call.
 

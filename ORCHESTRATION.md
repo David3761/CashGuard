@@ -54,16 +54,16 @@
 | Task | Agent | Worktree / branch | Needs (from) | Status |
 |---|---|---|---|---|
 | F1 (F1.2–F1.5) | f1 | `.worktrees/f1` · `dga-task/f1-skeleton` | — | ✅ done |
-| F2 | f2 | `.worktrees/f2` · `dga-task/f2-domain` | — | 1a, 1b, 2 ✅ merged · building step 3 |
+| F2 | f2 | `.worktrees/f2` · `dga-task/f2-domain` | — | ✅ done |
 | C1 | c1 | `.worktrees/c1` · `dga-task/c1-lists` | — | ✅ done |
 | A1 | a1 | `.worktrees/a1` · `dga-task/a1-llm` | — | ✅ done (live tests need a key) |
-| A5 | a5 | `.worktrees/a5` · `dga-task/a5-prompts` | — | A5.1 ✅ merged · building A5.2 |
+| A5 | a5 | `.worktrees/a5` · `dga-task/a5-prompts` | — | ✅ done |
 
-| S0 + D2 | s0 | `.worktrees/s0` · `dga-task/s0-stubs-scenarios` | F2 types | fast |
-| C2 + C4 + D1 | c2 | `.worktrees/c2` · `dga-task/c2-c4-d1-life` | F2 types | fast |
-| C5 + C6 + C7 (+ pure E6/E7) | c5 | `.worktrees/c5` · `dga-task/c5-c7-evaluate` | F2 types, C2, C4 | fast |
-| A2 + A4 | a2 | `.worktrees/a2` · `dga-task/a2-a4-tools-snapshot` | F2 types | fast |
-| A3 | a3 | `.worktrees/a3` · `dga-task/a3-executor` | A2, S0, F2 | fast |
-| A6 + A7 + A9 | a6 | `.worktrees/a6` · `dga-task/a6-a7-a9-loop` | A2–A5, F2 | fast |
+| S0 + D2 | s0 | `.worktrees/s0` · `dga-task/s0-stubs-scenarios` | F2 types | ✅ done (fast) |
+| C2 + C4 + D1 | c2 | `.worktrees/c2` · `dga-task/c2-c4-d1-life` | F2 types | ✅ done (fast) |
+| C5 + C6 + C7 (+ pure E6/E7) | c5 | `.worktrees/c5` · `dga-task/c5-c7-evaluate` | F2 types, C2, C4 | ✅ done (fast) |
+| A2 + A4 | a2 | `.worktrees/a2` · `dga-task/a2-a4-tools-snapshot` | F2 types | ✅ done (fast) |
+| A3 | a3 | `.worktrees/a3` · `dga-task/a3-executor` | A2, S0, F2 | ✅ done (fast) |
+| A6 + A7 + A9 | a6 | `.worktrees/a6` · `dga-task/a6-a7-a9-loop` | A2–A5, F2 | ✅ done (fast) |
 
 **Next waves (superseded by D52)** (an agent starts as soon as its inputs are merged): S0, C2, C4, A2 (after F2) → D1, C5, A4 → C6, A3 → C7, A6 → A7, D2 → D4 → ★ checkpoint (Scene A) → the P1 / P2 tasks. Dependencies: [`DGAdavid1.md`](DGAdavid1.md) §1–§2 and [`backend/docs/work-breakdown.md`](backend/docs/work-breakdown.md) §1.
