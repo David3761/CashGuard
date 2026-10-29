@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from app import clock
-from app.context import service
+from app.context import library, service
 from app.context.evaluate import evaluate
 from app.domain.enums import AnnotationSource, Category, Decision, Direction, FactType, Purpose
 from app.domain.models import Item, TxView
@@ -89,7 +89,7 @@ def test_pick_question_asks_the_waiting_transaction(
 
 def test_the_other_stubs() -> None:
     occupation = fact(FactType.OCCUPATION, id=7)
-    assert service.signatures_for_fact(occupation, None) == []
+    assert service.signatures_for_fact(occupation, None) == library.signatures_for_fact(occupation)
     assert service.on_fact_changed(None, 1, 7) == PropagationResult(fact_id=7)
     assert service.learn_from_annotation(None, 1, 1) is None
     assert service.infer_hypotheses(None, 1) == []

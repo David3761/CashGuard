@@ -1,8 +1,9 @@
 """The context layer's §15 entry points (arch 15.1), with the exact signatures.
 
 Real: `evaluate_transaction` (C6, `context.evaluate`), `pick_question` and `default_reading` (C7,
-`context.questions`). Still S0 stubs, until C4 (`signatures_for_fact`), C9 (`on_fact_changed`),
-C8 (`learn_from_annotation`) and C10 (`infer_hypotheses`): `[]`, a no-op result, `None`.
+`context.questions`), `signatures_for_fact` (C4, `context.library`). Still S0 stubs, until C9
+(`on_fact_changed`), C8 (`learn_from_annotation`) and C10 (`infer_hypotheses`): `[]`, a no-op
+result, `None`.
 
 `db` is typed `Any` until bomboe's session exists. The DB reads go through bomboe's services
 (arch 15.1 `services/`), looked up at call time because B3 isn't merged yet; tests replace them.
@@ -14,7 +15,7 @@ from typing import Any
 
 from app import clock
 from app.config import get_settings
-from app.context import questions
+from app.context import library, questions
 from app.context.evaluate import evaluate, goal_impact
 from app.domain.enums import Decision
 from app.domain.models import LifeFact, LifeFactDraft, Signature, TxView
@@ -95,8 +96,8 @@ def pick_question(db: Any, user_id: int, today: date) -> QuestionCandidate | Non
 def signatures_for_fact(
     fact: LifeFact, llm_signatures: list[dict[str, Any]] | None
 ) -> list[Signature]:
-    """Stub of C4: no signatures yet."""
-    return []
+    """C4: the library's signatures for `fact`, then Claude's valid ones (5.3.3)."""
+    return library.signatures_for_fact(fact, llm_signatures)
 
 
 def on_fact_changed(db: Any, user_id: int, fact_id: int) -> PropagationResult:
