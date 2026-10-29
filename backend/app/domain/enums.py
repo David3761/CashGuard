@@ -287,6 +287,12 @@ class TxSource(StrEnum):
     SIM = "sim"
 
 
+TransactionStatus = TxStatus
+"""bomboe's name for `TxStatus` (compat alias: the same enum)."""
+TransactionSource = TxSource
+"""bomboe's name for `TxSource` (compat alias: the same enum)."""
+
+
 @unique
 class LedgerStatus(StrEnum):
     """A day's spending against its budget (arch 4.1 `day_ledger.status`)."""
@@ -414,6 +420,31 @@ class MessageRole(StrEnum):
 
     USER = "user"
     ASSISTANT = "assistant"
+
+
+@unique
+class AgentTrigger(StrEnum):
+    """What started an agent run (arch 4.1 `agent_runs.trigger`; bomboe's B2 CHECK)."""
+
+    CHAT = "chat"
+    PROACTIVE = "proactive"
+
+
+@unique
+class AgentRunStatus(StrEnum):
+    """An agent run's state (arch 4.1 `agent_runs.status`; bomboe's B2 pick)."""
+
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+@unique
+class ToolCallStatus(StrEnum):
+    """A logged tool call's outcome (arch 4.1 `tool_calls.status`)."""
+
+    OK = "ok"
+    ERROR = "error"
 
 
 # ── fixed sets ───────────────────────────────────────────────────────────────────────────────

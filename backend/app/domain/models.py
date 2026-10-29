@@ -57,11 +57,13 @@ from app.domain.enums import (
     FactType,
     GoalStatus,
     HouseholdRole,
+    InputMode,
     Language,
     LedgerStatus,
     LifeEventStatus,
     LifeEventType,
     Liquidity,
+    MessageRole,
     Persistence,
     PotKind,
     PotStatus,
@@ -74,6 +76,8 @@ from app.domain.enums import (
     SignatureEffect,
     SignatureOrigin,
     TransferKind,
+    TxSource,
+    TxStatus,
 )
 from app.domain.money import Money, decimal_to_json, parse_json, to_decimal
 
@@ -298,6 +302,8 @@ class TxView(DomainModel):
     matched_rule_id: Id | None = None
     pot_id: Id | None = None
     receivable_id: Id | None = None
+    status: TxStatus | None = None  # bomboe's services fill it (the queue state)
+    source: TxSource | None = None
 
     @model_validator(mode="after")
     def _effective_within_amount(self) -> Self:
@@ -346,6 +352,7 @@ SmallCount = Annotated[int, Field(ge=1, le=1000, strict=True)]
 class OccupationValue(DomainModel):
     title: Text200
     work_mode: Text80 | None = None
+    employer: Text80 | None = None  # bomboe's F2 field
 
 
 class EmploymentValue(DomainModel):
@@ -387,6 +394,7 @@ class CityValue(DomainModel):
 
 class VehicleValue(DomainModel):
     kind: Text80 = "car"
+    fuel: Text80 | None = None  # bomboe's F2 field
 
 
 class CommuteValue(DomainModel):
@@ -417,6 +425,7 @@ class RhythmValue(DomainModel):
 class PriorityValue(DomainModel):
     category: Text80  # free text ("concerts" isn't a Category); C4 maps it to a protects signature
     priority: PriorityLevel
+    label: Text80 | None = None  # bomboe's F2 field (a display label)
 
 
 class CustomValue(DomainModel):
@@ -604,6 +613,7 @@ class RuleOutcome(DomainModel):
     purpose: Purpose | None = None
     label: Text80 | None = None
     own_share_ratio: Annotated[Factor, Field(ge=0, le=1)] | None = None
+    beneficiary: Beneficiary | None = None  # bomboe's F2 field
 
 
 class PatternRule(DomainModel):
@@ -677,6 +687,9 @@ class Goal(DomainModel):
     motivation: Text300 | None = None
     status: GoalStatus
     created_at: Timestamp
+    soft: StrictBool = (
+        True  # the deadline may move (bomboe's `goals.soft`; E9 moves soft ones only)
+    )
 
 
 class IncomeSource(DomainModel):
@@ -751,6 +764,8 @@ class Transfer(DomainModel):
 
 
 class UserProfile(DomainModel):
+    # bomboe's services fill the users row id (`current_user`); 0 = not a stored user (pure tests).
+    id: Annotated[int, Field(ge=0, le=2**63 - 1, strict=True)] = 0
     name: Text80
     age: Annotated[int, Field(ge=0, le=120, strict=True)] | None = None
     language: Language
@@ -762,8 +777,10 @@ class UserProfile(DomainModel):
 
 
 class Account(DomainModel):
-    current_balance: Money  # may be negative
-    savings_pot: NonNegMoney
+    """No account row yet → zeros (bomboe's B4 builds `Account()` for a fresh user)."""
+
+    current_balance: Money = Decimal("0")  # may be negative
+    savings_pot: NonNegMoney = Decimal("0")
 
 
 class AgentEventView(DomainModel):
@@ -774,6 +791,7 @@ class AgentEventView(DomainModel):
     status: AgentEventStatus
     payload: Mapping[str, JsonValue] = Field(default_factory=dict)
     ref_transaction_id: Id | None = None
+    event_date: Date | None = None  # bomboe's dedup day (day-level types are unique per day)
     created_at: Timestamp
     asked_at: Timestamp | None = None
     answered_at: Timestamp | None = None
@@ -805,7 +823,7 @@ class Reflection(DomainModel):
 class Product(DomainModel):
     """A mock savings product (arch 4.4 `products`)."""
 
-    id: Id
+    id: MerchantId  # a slug (data/products.json, products.id TEXT), like the merchants' ids
     name: Text80
     kind: ProductKind
     rate: Annotated[Factor, Field(ge=0)]
@@ -820,3 +838,36 @@ class Product(DomainModel):
         if self.min_months >= self.max_months:
             raise ValueError("min_months must be below max_months")
         return self
+
+
+# ── bomboe's API views (B6a: messages and notifications as the API returns them) ─────────────
+
+
+class MessageView(DomainModel):
+    """A chat message as the API returns it (arch 9.3)."""
+
+    id: Id
+    role: MessageRole
+    content: Annotated[str, StringConstraints(max_length=8000)]
+    quick_replies: tuple[Text80, ...] = ()
+    action_cards: tuple[Mapping[str, JsonValue], ...] = ()
+    input_mode: InputMode | None = None
+    speak: StrictBool = False
+    speak_text: Text300 | None = None
+    ref_transaction_id: Id | None = None
+    agent_event_id: Id | None = None
+    created_at: Timestamp
+
+
+class NotificationView(DomainModel):
+    """An in-app notification (arch 4.1 `notifications`, B13)."""
+
+    id: Id
+    type: Text80
+    title: Text200
+    body: Text500
+    read: StrictBool = False
+    opens_chat: StrictBool = False
+    agent_event_id: Id | None = None
+    message_id: Id | None = None
+    created_at: Timestamp

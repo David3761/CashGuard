@@ -38,10 +38,17 @@ def _tx(
     )
 
 
+def _returning(value: Any) -> Any:
+    async def fake(*_: Any, **__: Any) -> Any:
+        return value
+
+    return fake
+
+
 @pytest.fixture
 def one_tx(monkeypatch: pytest.MonkeyPatch) -> Any:
     def install(tx: TxView) -> None:
-        monkeypatch.setattr(service, "_transaction", lambda db, user_id, tx_id: tx)
+        monkeypatch.setattr(service.transactions_service, "get", _returning(tx))
 
     return install
 
@@ -49,15 +56,15 @@ def one_tx(monkeypatch: pytest.MonkeyPatch) -> Any:
 @pytest.fixture
 def matei(monkeypatch: pytest.MonkeyPatch) -> UserContext:
     ctx = builders.matei_ctx()
-    monkeypatch.setattr(service, "_context", lambda db, user_id, today: ctx)
+    monkeypatch.setattr(service, "load_user_context", _returning(ctx))
     return ctx
 
 
-def test_evaluate_transaction_runs_the_pure_core(one_tx: Any, matei: UserContext) -> None:
+async def test_evaluate_transaction_runs_the_pure_core(one_tx: Any, matei: UserContext) -> None:
     tx = builders.tx(id=700, amount="500", effective_amount="500", decision=None)
     one_tx(tx)
     with clock.use_clock(clock.FixedClock(NOON)):
-        result = service.evaluate_transaction(None, 1, 700)
+        result = await service.evaluate_transaction(None, 1, 700)  # type: ignore[arg-type]
     assert result == evaluate(matei, tx)
     assert result.decision == Decision.ASK
 
@@ -70,32 +77,26 @@ def test_default_reading() -> None:
     assert reading.effective_amount == Decimal("120.50")
 
 
-def test_pick_question_asks_the_waiting_transaction(
+async def test_pick_question_asks_the_waiting_transaction(
     monkeypatch: pytest.MonkeyPatch, matei: UserContext
 ) -> None:
     waiting = builders.tx(id=701, amount="500", effective_amount="500", decision="ask",
                           unexplained=0.8)  # fmt: skip
-    days = {TODAY: [waiting, builders.tx(id=702, decision="auto")]}
-    monkeypatch.setattr(service, "_transactions_of_day", lambda db, u, day: days.get(day, []))
+    recent = [waiting, builders.tx(id=702, decision="auto")]
+    monkeypatch.setattr(service.transactions_service, "list_effective", _returning(recent))
     with clock.use_clock(clock.FixedClock(NOON)):
-        candidate = service.pick_question(None, 1, TODAY)
+        candidate = await service.pick_question(None, 1, TODAY)  # type: ignore[arg-type]
     assert isinstance(candidate, QuestionCandidate)
     assert candidate.transaction_id == 701
     asked = matei.replace(questions_asked_today=1)
-    monkeypatch.setattr(service, "_context", lambda db, user_id, today: asked)
+    monkeypatch.setattr(service, "load_user_context", _returning(asked))
     with clock.use_clock(clock.FixedClock(NOON)):
-        assert service.pick_question(None, 1, TODAY) is None
+        assert await service.pick_question(None, 1, TODAY) is None  # type: ignore[arg-type]
 
 
-def test_the_other_stubs() -> None:
+async def test_the_other_stubs() -> None:
     occupation = fact(FactType.OCCUPATION, id=7)
     assert service.signatures_for_fact(occupation, None) == library.signatures_for_fact(occupation)
-    assert service.on_fact_changed(None, 1, 7) == PropagationResult(fact_id=7)
-    assert service.learn_from_annotation(None, 1, 1) is None
-    assert service.infer_hypotheses(None, 1) == []
-
-
-def test_services_are_looked_up_at_call_time() -> None:
-    # B3 isn't merged: the stub fails clearly at call time, not at import.
-    with pytest.raises(ModuleNotFoundError, match=r"app\.services"):
-        service.evaluate_transaction(None, 1, 1)
+    assert await service.on_fact_changed(None, 1, 7) == PropagationResult(fact_id=7)  # type: ignore[arg-type]
+    assert await service.learn_from_annotation(None, 1, 1) is None  # type: ignore[arg-type]
+    assert await service.infer_hypotheses(None, 1) == []  # type: ignore[arg-type]

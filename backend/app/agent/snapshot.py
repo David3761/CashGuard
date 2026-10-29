@@ -579,8 +579,7 @@ def render_snapshot(
 
 
 async def _load_context(db: Any, user_id: int, today: date) -> UserContext:
-    # TODO(B4): bomboe's loader; drop the ignore when app/services/context_loader.py exists.
-    from app.services.context_loader import load_user_context  # type: ignore[import-not-found]
+    from app.services.context_loader import load_user_context
 
     loaded: UserContext = await load_user_context(db, user_id, today)
     return loaded

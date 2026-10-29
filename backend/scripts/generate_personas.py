@@ -1,8 +1,10 @@
 """Persona data generator (E12, arch 16.1 / 16.5).
 
-Reads `data/personas/<id>/config.json` (inputs we write) and writes `profile.json` + `transactions.json`
+Reads `data/personas/<id>/config.json` (inputs we write) and writes `profile.json` +
+`transactions.json`
 next to it: 4 months of history (2026-02-15 … 2026-06-14, Bucharest time) before the demo date.
-Deterministic: one seeded `random.Random` per persona, sorted JSON, so two runs give identical bytes.
+Deterministic: one seeded `random.Random` per persona, sorted JSON, so two runs give identical
+bytes.
 The start balance is computed backwards, so the history ends exactly on `current_balance`.
 
     python scripts/generate_personas.py            # every persona under data/personas/
@@ -26,7 +28,8 @@ AS_OF = date(2026, 6, 15)
 DATA_DIR = Path(__file__).resolve().parents[1] / "data" / "personas"
 CENT = Decimal("0.01")
 
-# purpose of the seeded history, from the category (the answered ones are set by `answered` in the config)
+# purpose of the seeded history, from the category (the answered ones are set by `answered` in the
+# config)
 PURPOSE_BY_CATEGORY = {
     "groceries": "essential_living",
     "transport": "essential_living",
@@ -80,7 +83,7 @@ def month_days(day_of_month: int) -> list[date]:
 class Generator:
     def __init__(self, config: dict[str, Any]) -> None:
         self.config = config
-        self.rng = random.Random(config["seed"])
+        self.rng = random.Random(config["seed"])  # noqa: S311 (seeded test data, not crypto)
         self.rows: list[dict[str, Any]] = []
 
     # ── helpers ──────────────────────────────────────────────────────────────
@@ -101,7 +104,9 @@ class Generator:
             value = float(stream["amount"])
         return money(value * multiplier)
 
-    def add(self, when: datetime, amount: Decimal, stream: dict[str, Any], direction: str = "debit") -> None:
+    def add(
+        self, when: datetime, amount: Decimal, stream: dict[str, Any], direction: str = "debit"
+    ) -> None:
         merchant = stream["merchant_raw"]
         if isinstance(merchant, list):
             merchant = self.rng.choice(merchant)
@@ -127,7 +132,8 @@ class Generator:
         return 1.0
 
     def quiet(self, d: date, stream: dict[str, Any]) -> bool:
-        """Days a stream pauses (a week at home, a trip…): `quiet` periods list the streams they pause."""
+        """Days a stream pauses (a week at home, a trip…): `quiet` periods list the streams they
+        pause."""
         return any(
             stream["name"] in q["streams"]
             and date.fromisoformat(q["from"]) <= d <= date.fromisoformat(q["to"])
@@ -147,7 +153,9 @@ class Generator:
             for d in month_days(cost["day_of_month"]):
                 factor = 1 + self.rng.uniform(-jitter, jitter) / 100 if jitter else 1
                 self.add(
-                    self.at(d, [9, 11]), money(Decimal(str(cost["amount"])) * Decimal(str(factor))), stream
+                    self.at(d, [9, 11]),
+                    money(Decimal(str(cost["amount"])) * Decimal(str(factor))),
+                    stream,
                 )
 
     def irregular_income(self) -> None:
@@ -168,7 +176,10 @@ class Generator:
             d = clamp_day(year, month, day)
             if HISTORY_FROM <= d <= HISTORY_TO:
                 self.add(
-                    self.at(d, [9, 12]), self.amount(spec["wage"]), {"name": "wage", **spec["wage"]}, "credit"
+                    self.at(d, [9, 12]),
+                    self.amount(spec["wage"]),
+                    {"name": "wage", **spec["wage"]},
+                    "credit",
                 )
 
     def weekly(self, stream: dict[str, Any]) -> None:
@@ -183,14 +194,20 @@ class Generator:
                 d = monday + timedelta(days=wd - 1)
                 if HISTORY_FROM <= d <= HISTORY_TO and not self.quiet(d, stream):
                     self.add(
-                        self.at(d, stream["hours"]), self.amount(stream, self.multiplier(stream, d)), stream
+                        self.at(d, stream["hours"]),
+                        self.amount(stream, self.multiplier(stream, d)),
+                        stream,
                     )
 
     def every(self, stream: dict[str, Any]) -> None:
         for d in history_days():
             due = d.isoweekday() in stream["weekdays"] and not self.quiet(d, stream)
             if due and self.rng.random() < stream.get("probability", 1.0):
-                self.add(self.at(d, stream["hours"]), self.amount(stream, self.multiplier(stream, d)), stream)
+                self.add(
+                    self.at(d, stream["hours"]),
+                    self.amount(stream, self.multiplier(stream, d)),
+                    stream,
+                )
 
     def monthly(self, stream: dict[str, Any]) -> None:
         for d in month_days(stream["day_of_month"]):
@@ -216,7 +233,7 @@ class Generator:
         total = row["amount"]
         parts = [money(total * Decimal(str(w / sum(weights)))) for w in weights]
         parts[-1] = total - sum(parts[:-1], Decimal(0))
-        return [{"name": n, "qty": 1, "amount": str(p)} for n, p in zip(names, parts)]
+        return [{"name": n, "qty": 1, "amount": str(p)} for n, p in zip(names, parts, strict=False)]
 
     def annotate(self, rows: list[dict[str, Any]]) -> None:
         for row in rows:
@@ -257,7 +274,9 @@ class Generator:
             }
             for i, row in enumerate(rows, 1)
         ]
-        net = sum((r["amount"] if r["direction"] == "credit" else -r["amount"] for r in rows), Decimal(0))
+        net = sum(
+            (r["amount"] if r["direction"] == "credit" else -r["amount"] for r in rows), Decimal(0)
+        )
         current = money(self.config["current_balance"])
         return self.profile(current, current - net), transactions
 
@@ -305,7 +324,9 @@ def write_persona(folder: Path) -> None:
 
 def main(argv: list[str]) -> None:
     folders = (
-        [DATA_DIR / name for name in argv] if argv else sorted(p for p in DATA_DIR.iterdir() if p.is_dir())
+        [DATA_DIR / name for name in argv]
+        if argv
+        else sorted(p for p in DATA_DIR.iterdir() if p.is_dir())
     )
     for folder in folders:
         write_persona(folder)

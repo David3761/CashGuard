@@ -1,5 +1,4 @@
 import time
-from dataclasses import replace
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
@@ -7,12 +6,13 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-pytest.importorskip("app.domain", reason="needs F2 app.domain (David G.)")
-
-from app.domain.enums import PotKind, ReceivableStatus
-from app.domain.models import FixedCost, Goal, IncomeSource, LifeEvent, PlanPreferences, Pot, Receivable
-from app.errors import DomainError
-
+from app.domain.enums import PotKind, PotStatus, ReceivableStatus
+from app.domain.models import (
+    WEEKDAY_NAMES,
+    FixedCost,
+    IncomeSource,
+    PlanPreferences,
+)
 from app.engine.budget import (
     PlanInputs,
     available,
@@ -24,7 +24,24 @@ from app.engine.budget import (
     pot_contributions_remaining,
     still_to_save,
 )
-from tests.builders import ctx, tx
+from app.errors import DomainError
+from tests.builders import (
+    ctx,
+    replace,
+    tx,
+)
+from tests.builders import (
+    goal as make_goal,
+)
+from tests.builders import (
+    life_event as make_life_event,
+)
+from tests.builders import (
+    pot as make_pot,
+)
+from tests.builders import (
+    receivable as make_receivable,
+)
 
 D = Decimal
 TODAY = date(2026, 6, 15)  # Monday
@@ -32,7 +49,7 @@ DEADLINE = date(2026, 12, 31)
 SALARY = IncomeSource(id=1, source="Salariu", amount=D("7000"), day_of_month=10)
 RENT = FixedCost(id=1, name="Chirie", amount=D("2000"), day_of_month=1)
 PHONE = FixedCost(id=2, name="Telefon", amount=D("60"), day_of_month=20)
-GOAL = Goal(id=1, amount=D("10000"), deadline=DEADLINE)
+GOAL = make_goal(id=1, amount=D("10000"), deadline=DEADLINE)
 
 
 def matei(**over: object) -> PlanInputs:
@@ -49,7 +66,7 @@ def matei(**over: object) -> PlanInputs:
         preferences=PlanPreferences(),
         essentials_floor=D("30"),
     )
-    return replace(base, **over)  # type: ignore[arg-type]
+    return replace(base, **over)
 
 
 # ── the money terms (arch 6.7 definitions) ───────────────────────────────────
@@ -57,7 +74,9 @@ def matei(**over: object) -> PlanInputs:
 
 def test_expected_income_counts_paydays_from_tomorrow() -> None:
     assert expected_income([SALARY], TODAY, DEADLINE) == D("42000")  # 10 Jul … 10 Dec
-    assert expected_income([SALARY], date(2026, 7, 10), date(2026, 7, 31)) == D("0")  # today's salary is in
+    assert expected_income([SALARY], date(2026, 7, 10), date(2026, 7, 31)) == D(
+        "0"
+    )  # today's salary is in
 
 
 def test_fixed_remaining_counts_rent_due_later_not_earlier() -> None:
@@ -71,9 +90,9 @@ def test_fixed_cost_due_today_counts_as_paid() -> None:
 
 
 def test_events_covered_by_a_pot_are_not_subtracted_twice() -> None:
-    trip = LifeEvent(id=7, name="Vacanță", date=date(2026, 8, 15), est_cost=D("3000"))
-    concert = LifeEvent(id=8, name="Concert", date=date(2026, 7, 1), est_cost=D("100"))
-    pot = Pot(
+    trip = make_life_event(id=7, name="Vacanță", date=date(2026, 8, 15), est_cost=D("3000"))
+    concert = make_life_event(id=8, name="Concert", date=date(2026, 7, 1), est_cost=D("100"))
+    pot = make_pot(
         id=3,
         name="Vacanță august",
         kind=PotKind.EVENT,
@@ -87,15 +106,22 @@ def test_events_covered_by_a_pot_are_not_subtracted_twice() -> None:
 
 
 def test_events_outside_the_horizon_or_cancelled_are_ignored() -> None:
-    past = LifeEvent(id=1, name="x", date=date(2026, 6, 1), est_cost=D("50"))
-    later = LifeEvent(id=2, name="y", date=date(2027, 2, 1), est_cost=D("50"))
-    cancelled = LifeEvent(id=3, name="z", date=date(2026, 7, 1), est_cost=D("50"), status="cancelled")
+    past = make_life_event(id=1, name="x", date=date(2026, 6, 1), est_cost=D("50"))
+    later = make_life_event(id=2, name="y", date=date(2027, 2, 1), est_cost=D("50"))
+    cancelled = make_life_event(
+        id=3, name="z", date=date(2026, 7, 1), est_cost=D("50"), status="cancelled"
+    )
     assert events_remaining([past, later, cancelled], [], TODAY, DEADLINE) == D("0")
 
 
 def test_pot_ending_after_the_goal_deadline_counts_only_paydays_inside() -> None:
-    pot = Pot(
-        id=4, name="Mașină", kind=PotKind.CUSTOM, target=D("8000"), saved=D("0"), deadline=date(2027, 4, 30)
+    pot = make_pot(
+        id=4,
+        name="Mașină",
+        kind=PotKind.CUSTOM,
+        target=D("8000"),
+        saved=D("0"),
+        deadline=date(2027, 4, 30),
     )
     # 10 paydays to 30 Apr 2027 → 800 each; 6 of them before 31 Dec
     assert pot_contributions_remaining([pot], [SALARY], TODAY, DEADLINE) == D("4800")
@@ -107,7 +133,7 @@ def test_still_to_save_is_zero_when_the_goal_is_reached() -> None:
 
 
 def test_available_adds_receivables_and_spent_today() -> None:
-    r = Receivable(
+    r = make_receivable(
         id=1,
         amount=D("400"),
         debtor_label="colegi",
@@ -147,43 +173,52 @@ def test_pinned_day_gets_exactly_its_amount_and_the_rest_is_shared() -> None:
     assert plan is not None
     day = next(d for d in plan.days if d.date == date(2026, 6, 20))
     assert (day.budget, day.pinned) == (D("150.00"), True)
+    assert plan.free_money is not None
     assert sum(d.budget for d in plan.days if not d.pinned) == plan.free_money - D("150.00")
 
 
 def test_pinned_total_above_free_money_is_infeasible() -> None:
     pins = {TODAY + timedelta(1): D("50000")}
     plan = compute_plan(matei(preferences=PlanPreferences(pinned_days=pins)), TODAY)
-    assert plan is not None and not plan.feasible
+    assert plan is not None
+    assert not plan.feasible
 
 
 def test_day_below_the_essentials_floor_is_infeasible_and_listed() -> None:
     plan = compute_plan(matei(essentials_floor=D("1000")), TODAY)
     assert plan is not None
     assert not plan.feasible
-    assert plan.infeasible_days == [d.date for d in plan.days]
+    assert list(plan.infeasible_days) == [d.date for d in plan.days]
 
 
 def test_weights_move_money_between_days_without_changing_the_total() -> None:
     weekend = PlanPreferences(weekday_weights={"Sat": D("1.5"), "Sun": D("1.5")})
     flat, shaped = compute_plan(matei(), TODAY), compute_plan(matei(preferences=weekend), TODAY)
-    assert flat is not None and shaped is not None
+    assert flat is not None
+    assert shaped is not None
     assert total(flat) == total(shaped)
     saturday = date(2026, 6, 20)
     sat = next(d for d in shaped.days if d.date == saturday)
     mon = next(d for d in shaped.days if d.date == date(2026, 6, 22))
-    assert sat.weight == D("1.5") and sat.budget > mon.budget
+    assert sat.weight == D("1.5")
+    assert sat.budget > mon.budget
 
 
 def test_buffer_changes_free_money_by_exactly_its_share_of_available() -> None:
     none, ten = (
-        compute_plan(matei(preferences=PlanPreferences(buffer_pct=D(p))), TODAY) for p in ("0", "0.10")
+        compute_plan(matei(preferences=PlanPreferences(buffer_pct=D(p))), TODAY)
+        for p in ("0", "0.10")
     )
-    assert none is not None and ten is not None
+    assert none is not None
+    assert ten is not None
+    assert none.free_money is not None
+    assert ten.free_money is not None
+    assert none.available is not None
     assert none.free_money - ten.free_money == D("0.10") * none.available
 
 
 def test_receivable_raises_the_daily_budget() -> None:
-    r = Receivable(
+    r = make_receivable(
         id=1,
         amount=D("400"),
         debtor_label="colegi",
@@ -191,15 +226,21 @@ def test_receivable_raises_the_daily_budget() -> None:
         status=ReceivableStatus.OPEN,
     )
     without, with_r = compute_plan(matei(), TODAY), compute_plan(matei(receivables=(r,)), TODAY)
-    assert without is not None and with_r is not None
+    assert without is not None
+    assert with_r is not None
     assert with_r.today_budget > without.today_budget
 
 
 @settings(max_examples=40, deadline=None)
-@given(weights=st.lists(st.decimals(min_value="0.5", max_value="3", places=2), min_size=7, max_size=7))
+@given(
+    weights=st.lists(st.decimals(min_value="0.5", max_value="3", places=2), min_size=7, max_size=7)
+)
 def test_any_weights_keep_the_sum_exact(weights: list[Decimal]) -> None:
-    names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    plan = compute_plan(matei(preferences=PlanPreferences(weekday_weights=dict(zip(names, weights)))), TODAY)
+    names = WEEKDAY_NAMES
+    plan = compute_plan(
+        matei(preferences=PlanPreferences(weekday_weights=dict(zip(names, weights, strict=False)))),
+        TODAY,
+    )
     assert plan is not None
     assert total(plan) == plan.free_money
 
@@ -221,7 +262,8 @@ def test_golden_matei_plan() -> None:
 
 def test_deadline_today_is_a_one_day_horizon() -> None:
     plan = compute_plan(matei(goal=replace(GOAL, deadline=TODAY)), TODAY)
-    assert plan is not None and len(plan.days) == 1
+    assert plan is not None
+    assert len(plan.days) == 1
 
 
 def test_deadline_passed_raises() -> None:
@@ -232,7 +274,8 @@ def test_deadline_passed_raises() -> None:
 
 def test_negative_balance_is_infeasible_without_crashing() -> None:
     plan = compute_plan(matei(balance=D("-90000")), TODAY)
-    assert plan is not None and not plan.feasible
+    assert plan is not None
+    assert not plan.feasible
 
 
 def test_no_goal_gives_no_plan() -> None:
@@ -241,7 +284,8 @@ def test_no_goal_gives_no_plan() -> None:
 
 def test_plan_is_deterministic_and_in_cents() -> None:
     first, second = compute_plan(matei(), TODAY), compute_plan(matei(), TODAY)
-    assert first == second and first is not None
+    assert first == second
+    assert first is not None
     assert all(d.budget == d.budget.quantize(D("0.01")) for d in first.days)
 
 
@@ -250,7 +294,7 @@ def test_two_hundred_day_horizon_under_five_ms() -> None:
     start = time.perf_counter()
     for _ in range(10):
         compute_plan(matei(), TODAY)
-    assert (time.perf_counter() - start) / 10 < 0.005 * 3  # 5 ms budget, ×3 margin for slow CI
+    assert (time.perf_counter() - start) / 10 < 0.005 * 3  # 5 ms budget, x3 margin for slow CI
 
 
 # ── plan_inputs(ctx) ─────────────────────────────────────────────────────────
@@ -260,11 +304,23 @@ def test_plan_inputs_reads_the_context_and_today_spending() -> None:
     from app.domain.models import Account
     from app.domain.models import Pot as PotModel
 
-    goal_pot = PotModel(id=9, name="Fond", kind=PotKind.GOAL, target=D("10000"), saved=D("5200"), goal_id=1)
-    today_tx = tx(
-        effective_amount=D("100"), amount=D("500"), occurred_at=datetime(2026, 6, 15, 10, 5, tzinfo=UTC)
+    goal_pot = PotModel(
+        id=9,
+        name="Fond",
+        kind=PotKind.GOAL,
+        target=D("10000"),
+        saved=D("5200"),
+        goal_id=1,
+        status=PotStatus.ACTIVE,
     )
-    yesterday_tx = tx(effective_amount=D("40"), occurred_at=datetime(2026, 6, 14, 10, 0, tzinfo=UTC))
+    today_tx = tx(
+        effective_amount=D("100"),
+        amount=D("500"),
+        occurred_at=datetime(2026, 6, 15, 10, 5, tzinfo=UTC),
+    )
+    yesterday_tx = tx(
+        effective_amount=D("40"), occurred_at=datetime(2026, 6, 14, 10, 0, tzinfo=UTC)
+    )
     c = ctx(
         account=Account(current_balance=D("4900")),
         goal=GOAL,
@@ -275,5 +331,9 @@ def test_plan_inputs_reads_the_context_and_today_spending() -> None:
         transactions=[today_tx, yesterday_tx],
     )
     inputs = plan_inputs(c, TODAY, D("30"))
-    assert (inputs.balance, inputs.goal_saved, inputs.spent_today) == (D("4900"), D("5200"), D("100"))
+    assert (inputs.balance, inputs.goal_saved, inputs.spent_today) == (
+        D("4900"),
+        D("5200"),
+        D("100"),
+    )
     assert inputs.pots == ()  # the goal pot is the goal, not an event pot

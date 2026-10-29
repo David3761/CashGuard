@@ -5,8 +5,6 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-pytest.importorskip("app.domain", reason="needs F2 app.domain (David G.)")
-
 from app.engine.baselines import Member, is_active, person_weight, scale_from_members
 
 D = Decimal
@@ -58,7 +56,9 @@ def test_household_scale_returns_exact_decimal() -> None:
         (date(2026, 8, 1), D("2.1")),  # after the visit
     ],
 )
-def test_household_scale_counts_temporary_member_only_inside_window(on_date: date, expected: Decimal) -> None:
+def test_household_scale_counts_temporary_member_only_inside_window(
+    on_date: date, expected: Decimal
+) -> None:
     # arch 16.3 #13: "mama stă la noi în iulie" → 2.1 → 2.6, only in July
     assert scale_from_members([*IOANA_HOUSEHOLD, MOTHER_IN_JULY], on_date) == expected
 
@@ -112,7 +112,7 @@ def test_person_weight_oecd_modified(role: str, age: int | None, expected: Decim
 )
 def test_person_weight_rejects_invalid_members(role: str, age: int | None) -> None:
     # pets are a different fact type and never reach the scale; a child needs an age
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"household role|needs an age|age must"):
         person_weight(role, age)
 
 
@@ -137,5 +137,5 @@ def test_is_active_bounds_are_inclusive(
 
 
 def test_is_active_rejects_window_ending_before_it_starts() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="valid_to must not be before"):
         is_active(date(2026, 7, 31), date(2026, 7, 1), TODAY)

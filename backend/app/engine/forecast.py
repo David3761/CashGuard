@@ -1,16 +1,21 @@
 """Monte Carlo goal forecast (arch 6.7 "Goal forecast", D27, E8). Pure; numpy floats inside.
 
-Savings_T = goal_pot.saved + max(0, Σ_m (Income − Fixed − ΣVar − PotContrib − Events + Recv − Shock))
+Savings_T = goal_pot.saved + max(0, Σ_m(Income - Fixed - ΣVar - PotContrib - Events + Recv - Shock))
 over every month from the current one to the deadline's, for `n_paths` paths:
-- Income: deterministic per month (salaries), or bootstrapped from history with an irregular-income fact.
-- Var: per category, a bootstrap of the user's full-month effective totals (last 6 months, ≥ 3 needed),
-  else lognormal around the baseline's monthly_expected (CV 0.25); × household-scale ratio for household
-  categories in months where a temporary member is there; × the share of the month still to come.
+- Income: deterministic per month (salaries), or bootstrapped from history with an irregular-income
+fact.
+- Var: per category, a bootstrap of the user's full-month effective totals (last 6 months, ≥ 3
+needed),
+  else lognormal around the baseline's monthly_expected (CV 0.25); x household-scale ratio for
+  household
+  categories in months where a temporary member is there; x the share of the month still to come.
 - The current month = what was already spent this month (own share + what was paid for others,
   since that money left the account) + the expected rest.
-- Events ± 20 %; receivables Bernoulli(p_repay) in their month; shocks Bernoulli(0.05) × lognormal(700),
+- Events ± 20 %; receivables Bernoulli(p_repay) in their month; shocks Bernoulli(0.05) x
+lognormal(700),
   off when an emergency pot has money.
-Draw order is fixed (variable categories, income, events, shocks, then receivables), so property tests
+Draw order is fixed (variable categories, income, events, shocks, then receivables), so property
+tests
 with the same seed compare like with like (common random numbers).
 """
 
@@ -21,10 +26,18 @@ from decimal import Decimal
 
 import numpy as np
 
-from app.domain.enums import Category, Direction, FactType, PotKind, PotStatus, Purpose, SignatureEffect
-from app.domain.user_context import UserContext
+from app.domain.enums import (
+    Category,
+    Direction,
+    FactType,
+    PotKind,
+    PotStatus,
+    Purpose,
+    SignatureEffect,
+)
 from app.domain.money import to_money
 from app.domain.results import Forecast
+from app.domain.user_context import UserContext
 from app.engine.baselines import HOUSEHOLD_SCALED, household_scale
 from app.engine.calendar import days_in_month, months_between, occurrences, paydays_between
 from app.engine.ledger import counts_as_spent, ledger_day
@@ -74,21 +87,28 @@ def _month_bounds(month: Month) -> tuple[date, date]:
     return date(year, m, 1), date(year, m, days_in_month(year, m))
 
 
-def _per_month(day_of_month: int, amount: float, months: tuple[Month, ...], deadline: date) -> list[float]:
+def _per_month(
+    day_of_month: int, amount: float, months: tuple[Month, ...], deadline: date
+) -> list[float]:
     out = []
     for month in months:
         first, last = _month_bounds(month)
-        out.append(amount * len(occurrences(day_of_month, first - timedelta(days=1), min(last, deadline))))
+        out.append(
+            amount * len(occurrences(day_of_month, first - timedelta(days=1), min(last, deadline)))
+        )
     return out
 
 
 def _full_months(ctx: UserContext, today: date) -> list[Month]:
-    """Calendar months fully covered by the history, before the current month, at most the last 6."""
+    """Calendar months fully covered by the history, before the current month, at most the last
+    6."""
     if not ctx.transactions:
         return []
     start = min(ledger_day(t.occurred_at) for t in ctx.transactions)
     current = (today.year, today.month)
-    months = [m for m in months_between(start, today) if m != current and _month_bounds(m)[0] >= start]
+    months = [
+        m for m in months_between(start, today) if m != current and _month_bounds(m)[0] >= start
+    ]
     return months[-HISTORY_MONTHS:]
 
 
@@ -104,7 +124,8 @@ def _irregular_income(ctx: UserContext) -> bool:
 def build_forecast_inputs(
     ctx: UserContext, today: date, *, deadline: date | None = None, target: Decimal | None = None
 ) -> ForecastInputs:
-    """ForecastInputs from the read model; `deadline` / `target` override the goal's (what-if, options)."""
+    """ForecastInputs from the read model; `deadline` / `target` override the goal's (what-if,
+    options)."""
     goal = ctx.goal
     if goal is None:
         raise ValueError("no active goal")
@@ -115,11 +136,19 @@ def build_forecast_inputs(
     income = [0.0] * count
     for s in ctx.income_sources:
         income = [
-            a + b for a, b in zip(income, _per_month(s.day_of_month, float(s.amount), months, deadline))
+            a + b
+            for a, b in zip(
+                income, _per_month(s.day_of_month, float(s.amount), months, deadline), strict=False
+            )
         ]
     fixed = [0.0] * count
     for c in ctx.fixed_costs:
-        fixed = [a + b for a, b in zip(fixed, _per_month(c.day_of_month, float(c.amount), months, deadline))]
+        fixed = [
+            a + b
+            for a, b in zip(
+                fixed, _per_month(c.day_of_month, float(c.amount), months, deadline), strict=False
+            )
+        ]
 
     history_months = _full_months(ctx, today)
     var_totals: dict[Category, dict[Month, float]] = {}
@@ -139,17 +168,23 @@ def build_forecast_inputs(
             if counts_as_spent(t, ctx.fixed_costs):
                 var_actual += float(t.effective_amount)
             if t.purpose != Purpose.PLANNED_EVENT:
-                var_actual += float(t.amount - t.effective_amount)  # paid for others, left the account
-        if month in income_totals and counts_as_spent(t, ctx.fixed_costs):
+                var_actual += float(
+                    t.amount - t.effective_amount
+                )  # paid for others, left the account
+        if month in income_totals and counts_as_spent(t, ctx.fixed_costs) and t.category:
             var_totals.setdefault(t.category, {}).setdefault(month, 0.0)
             var_totals[t.category][month] += float(t.effective_amount)
 
     categories = set(var_totals) | {c for c, b in ctx.baselines.items() if b.monthly_expected > 0}
-    var_history = {c: tuple(var_totals.get(c, {}).get(m, 0.0) for m in history_months) for c in categories}
-    var_prior = {c: float(ctx.baselines[c].monthly_expected) for c in categories if c in ctx.baselines}
-    for c in categories:
-        if c not in var_prior and history_months:
-            var_prior[c] = sum(var_history[c]) / len(history_months)
+    var_history = {
+        c: tuple(var_totals.get(c, {}).get(m, 0.0) for m in history_months) for c in categories
+    }
+    var_prior = {
+        c: float(ctx.baselines[c].monthly_expected) for c in categories if c in ctx.baselines
+    }
+    for cat in categories:
+        if cat not in var_prior and history_months:
+            var_prior[cat] = sum(var_history[cat]) / len(history_months)
 
     scale_now = float(household_scale(ctx.facts, today))
     ratios = tuple(
@@ -166,23 +201,30 @@ def build_forecast_inputs(
         share.append(max(0, (end - start).days + 1) / days_in_month(*month))
 
     covered = {
-        p.life_event_id for p in ctx.pots if p.life_event_id is not None and p.status == PotStatus.ACTIVE
+        p.life_event_id
+        for p in ctx.pots
+        if p.life_event_id is not None and p.status == PotStatus.ACTIVE
     }
     events = [0.0] * count
     for e in ctx.life_events:
         if e.status == "planned" and today <= e.date <= deadline and e.id not in covered:
             events[months.index((e.date.year, e.date.month))] += float(e.est_cost)
-    for s in ctx.signatures:
-        expected = s.effect == SignatureEffect.EXPECTS_EVENT and s.expected_amount and s.expected_date
-        if expected and today <= s.expected_date <= deadline:
-            index = months.index((s.expected_date.year, s.expected_date.month))
-            events[index] += float(s.expected_amount * s.strength)
+    for sig in ctx.signatures:
+        on, amount = sig.expected_date, sig.expected_amount
+        if sig.effect != SignatureEffect.EXPECTS_EVENT or on is None or amount is None:
+            continue
+        if today <= on <= deadline:
+            events[months.index((on.year, on.month))] += float(amount) * sig.strength
 
     days = [s.day_of_month for s in ctx.income_sources]
     goal_pot_id = ctx.goal_pot.id if ctx.goal_pot is not None else None
     pot_contrib = [0.0] * count
     for p in ctx.pots:
-        if p.id == goal_pot_id or p.kind in (PotKind.GOAL, PotKind.EMERGENCY) or p.status != PotStatus.ACTIVE:
+        if (
+            p.id == goal_pot_id
+            or p.kind in (PotKind.GOAL, PotKind.EMERGENCY)
+            or p.status != PotStatus.ACTIVE
+        ):
             continue
         per_payday = float(pot_contribution(p.target, p.saved, p.deadline, today, days))
         end = min(p.deadline or deadline, deadline)
@@ -202,7 +244,8 @@ def build_forecast_inputs(
         if r.status in OPEN_RECEIVABLES and r.expected_by <= deadline
     )
     emergency = any(
-        p.kind == PotKind.EMERGENCY and p.status == PotStatus.ACTIVE and p.saved > 0 for p in ctx.pots
+        p.kind == PotKind.EMERGENCY and p.status == PotStatus.ACTIVE and p.saved > 0
+        for p in ctx.pots
     )
     irregular = _irregular_income(ctx) and len(history_months) >= MIN_HISTORY_MONTHS
     return ForecastInputs(
@@ -270,7 +313,15 @@ def simulate_savings(inputs: ForecastInputs, n_paths: int, seed: int) -> np.ndar
     received = np.zeros(shape)
     for amount, probability, month in inputs.receivables:
         received[:, month] += amount * (rng.random(n_paths) < probability)
-    net = income - np.asarray(inputs.fixed) - var - np.asarray(inputs.pot_contrib) - events + received - shock
+    net = (
+        income
+        - np.asarray(inputs.fixed)
+        - var
+        - np.asarray(inputs.pot_contrib)
+        - events
+        + received
+        - shock
+    )
     savings: np.ndarray = inputs.saved + np.maximum(np.cumsum(net, axis=1), 0.0)
     return savings
 
@@ -288,7 +339,9 @@ def _reach_date(inputs: ForecastInputs, median_path: np.ndarray) -> date | None:
 def forecast(inputs: ForecastInputs, n_paths: int = DEFAULT_PATHS, seed: int = 0) -> Forecast:
     if inputs.saved >= inputs.target:
         saved = to_money(inputs.saved)
-        return Forecast(probability=1.0, p10=saved, p50=saved, p90=saved, expected_reach_date=inputs.today)
+        return Forecast(
+            probability=1.0, p10=saved, p50=saved, p90=saved, expected_reach_date=inputs.today
+        )
     savings = simulate_savings(inputs, n_paths, seed)
     final = savings[:, -1]
     p10, p50, p90 = (to_money(round(float(q), 2)) for q in np.percentile(final, QUANTILES))
@@ -302,6 +355,7 @@ def forecast(inputs: ForecastInputs, n_paths: int = DEFAULT_PATHS, seed: int = 0
 
 
 def is_weekly_snapshot(today: date, last_snapshot: date | None) -> bool:
-    """The first forecast on or after Monday 00:00 (sim time) of this week is the weekly snapshot."""
+    """The first forecast on or after Monday 00:00 (sim time) of this week is the weekly
+    snapshot."""
     week_start = today - timedelta(days=today.weekday())
     return last_snapshot is None or last_snapshot < week_start

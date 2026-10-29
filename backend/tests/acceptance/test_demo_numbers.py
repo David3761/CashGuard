@@ -1,12 +1,13 @@
 """E13 golden: Matei's demo probabilities (arch 16.2 Scene A) from the committed persona files.
 
 Fails when the engine or the persona data change in a way that breaks the demo script.
-Assumes what the seed (B12) and the pipeline do: Matei is user 1; the seed saves plan version 1 and its
-forecast on 2026-06-15 plus the "last week" snapshot as of 2026-06-08; the Mega Image transaction makes
+Assumes what the seed (B12) and the pipeline do: Matei is user 1; the seed saves plan version 1 and
+its
+forecast on 2026-06-15 plus the "last week" snapshot as of 2026-06-08; the Mega Image transaction
+makes
 plan version 2, the answer version 3; the receivable is expected 14 days later.
 """
 
-import json
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
@@ -14,14 +15,31 @@ from typing import Any
 
 import pytest
 
-pytest.importorskip("app.domain", reason="needs F2 app.domain (David G.)")
-
-from app.domain.enums import Beneficiary, Category, Direction, PotKind, Purpose, ReceivableStatus
-from app.domain.models import Account, FixedCost, Goal, IncomeSource, Pot, Receivable, TxView, UserProfile
-
+from app.domain.enums import (
+    Beneficiary,
+    Category,
+    CoachStyle,
+    Direction,
+    Language,
+    PotKind,
+    Purpose,
+    ReceivableStatus,
+)
+from app.domain.models import (
+    Account,
+    FixedCost,
+    IncomeSource,
+    Receivable,
+    TxView,
+    UserProfile,
+)
+from app.domain.money import parse_json
 from app.engine.forecast import build_forecast_inputs, forecast
 from app.engine.stats import stable_seed
 from tests.builders import ctx
+from tests.builders import goal as make_goal
+from tests.builders import pot as make_pot
+from tests.builders import receivable as make_receivable
 
 D = Decimal
 PERSONA = Path(__file__).resolve().parents[2] / "data" / "personas" / "matei"
@@ -45,6 +63,7 @@ def to_tx(i: int, t: dict[str, Any]) -> TxView:
     annotation = t["annotation"] or {}
     return TxView(
         id=i,
+        merchant_raw=t["merchant_raw"],
         amount=D(t["amount"]),
         effective_amount=D(annotation.get("effective_amount", t["amount"])),
         category=Category(t["category"]),
@@ -55,13 +74,18 @@ def to_tx(i: int, t: dict[str, Any]) -> TxView:
     )
 
 
-def matei(today: date, extra: tuple[TxView, ...] = (), receivables: tuple[Receivable, ...] = ()) -> Any:
-    profile = json.loads((PERSONA / "profile.json").read_text(encoding="utf-8"))
-    rows = json.loads((PERSONA / "transactions.json").read_text(encoding="utf-8"))
-    goal = Goal(
-        id=1, amount=D(profile["goal"]["amount"]), deadline=date.fromisoformat(profile["goal"]["deadline"])
+def matei(
+    today: date, extra: tuple[TxView, ...] = (), receivables: tuple[Receivable, ...] = ()
+) -> Any:
+    # strict, exact JSON (money as Decimal, H-8)
+    profile: Any = parse_json((PERSONA / "profile.json").read_bytes())
+    rows: Any = parse_json((PERSONA / "transactions.json").read_bytes())
+    goal = make_goal(
+        id=1,
+        amount=D(profile["goal"]["amount"]),
+        deadline=date.fromisoformat(profile["goal"]["deadline"]),
     )
-    pot = Pot(
+    pot = make_pot(
         id=1,
         name=profile["goal_pot"]["name"],
         kind=PotKind.GOAL,
@@ -70,16 +94,26 @@ def matei(today: date, extra: tuple[TxView, ...] = (), receivables: tuple[Receiv
         goal_id=1,
     )
     history = [
-        to_tx(i, t) for i, t in enumerate(rows, 1) if datetime.fromisoformat(t["occurred_at"]).date() <= today
+        to_tx(i, t)
+        for i, t in enumerate(rows, 1)
+        if datetime.fromisoformat(t["occurred_at"]).date() <= today
     ]
     return ctx(
-        profile=UserProfile(id=MATEI_ID, name="Matei", city=profile["user"]["city"]),
+        user_id=MATEI_ID,
+        profile=UserProfile(
+            name="Matei",
+            city=profile["user"]["city"],
+            language=Language.RO,
+            coach_style=CoachStyle.WARM,
+        ),
         account=Account(current_balance=D(profile["account"]["current_balance"])),
         goal=goal,
         goal_pot=pot,
         pots=[pot],
         income_sources=[
-            IncomeSource(id=i, source=s["source"], amount=D(s["amount"]), day_of_month=s["day_of_month"])
+            IncomeSource(
+                id=i, source=s["source"], amount=D(s["amount"]), day_of_month=s["day_of_month"]
+            )
             for i, s in enumerate(profile["income_sources"], 1)
         ],
         fixed_costs=[
@@ -100,6 +134,7 @@ def probability(c: Any, today: date, plan_version: int) -> float:
 def scene_a() -> dict[str, float]:
     mega = TxView(
         id=918,
+        merchant_raw="MEGA IMAGE 0451 BUCURESTI",
         amount=D("500"),
         effective_amount=D("500"),
         category=Category.GROCERIES,
@@ -115,7 +150,7 @@ def scene_a() -> dict[str, float]:
             "beneficiary": Beneficiary.SHARED,
         }
     )
-    owed = Receivable(
+    owed = make_receivable(
         id=9,
         amount=D("400"),
         debtor_label="colegi",
@@ -144,4 +179,6 @@ def test_scene_a_is_close_to_the_demo_script(moment: str) -> None:
 def test_scene_a_story_order() -> None:
     p = scene_a()
     assert p["last_week"] < p["before"]  # "78 %, față de 72 % săptămâna trecută"
-    assert p["provisional"] < p["answered"] < p["before"]  # 500 lei drops it, the answer lifts it back
+    assert (
+        p["provisional"] < p["answered"] < p["before"]
+    )  # 500 lei drops it, the answer lifts it back

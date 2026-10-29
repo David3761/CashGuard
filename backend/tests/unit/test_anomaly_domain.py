@@ -1,22 +1,20 @@
 """E7 wrapper on F2 types: anomaly_features(tx, baseline, history, monthly_disposable)."""
 
+import itertools
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from typing import Any
 
 import pytest
 
-pytest.importorskip("app.domain", reason="needs F2 app.domain (David G.)")
-
 from app.domain.enums import Category
 from app.domain.models import Baseline, FixedCost, IncomeSource
-
 from app.engine.anomaly import anomaly_features, monthly_disposable
 from tests.builders import tx
 
 D = Decimal
 NOW = datetime(2026, 6, 15, 10, 5, tzinfo=UTC)
-MEGA = 7
+MEGA = "mega_image"  # merchant ids are text slugs (D47)
 GROCERIES = Baseline(
     category=Category.GROCERIES,
     personal_median=D("85"),
@@ -29,8 +27,12 @@ GROCERIES = Baseline(
 )
 
 
-def mega(amount: str, when: datetime = NOW, merchant: int | None = MEGA) -> Any:
+_IDS = itertools.count(1)
+
+
+def mega(amount: str, when: datetime = NOW, merchant: str | None = MEGA) -> Any:
     return tx(
+        id=next(_IDS),  # distinct ids: the transaction itself is left out of its history by id
         amount=D(amount),
         effective_amount=D(amount),
         merchant_id=merchant,
@@ -54,7 +56,7 @@ def test_the_transaction_itself_and_later_ones_are_not_history() -> None:
 
 
 def test_new_merchant_in_a_known_category_is_half_novel() -> None:
-    history = [mega("80", NOW - timedelta(days=10), merchant=99)]
+    history = [mega("80", NOW - timedelta(days=10), merchant="lidl")]
     assert anomaly_features(mega("90"), GROCERIES, history, D("4385")).novelty == 0.5
 
 

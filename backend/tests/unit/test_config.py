@@ -23,7 +23,18 @@ ENV_EXAMPLE = BACKEND_DIR / ".env.example"
 KEY_PREFIX = "sk-" + "ant-"
 # Variables in .env.example that the app doesn't read (compose / cron only). bomboe's B1 adds its
 # compose variables here (HANDOFFS H-5). Must stay disjoint from the Settings fields.
-NON_APP_KEYS: frozenset[str] = frozenset()
+# Compose-only variables (bomboe's B1: the Keycloak container, the cron container's TZ).
+NON_APP_KEYS: frozenset[str] = frozenset(
+    {
+        "KC_HOSTNAME",
+        "KC_ADMIN_USER",
+        "KC_ADMIN_PASSWORD",
+        "KC_CRON_CLIENT_SECRET",
+        "KC_DB_PASSWORD",
+        "KC_DEMO_PASSWORD",
+        "TZ",
+    }
+)
 
 FIELDS = frozenset(
     {

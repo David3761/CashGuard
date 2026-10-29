@@ -13,17 +13,14 @@
 7. ask is provisional: effective_amount = amount, purpose unknown.
 """
 
-import json
 from collections.abc import Mapping
 from datetime import date
 from decimal import Decimal
-from functools import cache
 from typing import Any, Final
 
 from pydantic import JsonValue
 
 from app.clock import APP_TZ
-from app.config import BACKEND_DIR
 from app.context.life_fit import best_rule, explain, fit_purpose, life_fit
 from app.context.normalize import normalize
 from app.domain.enums import (
@@ -44,7 +41,7 @@ from app.domain.models import Baseline, PatternRule, Pot, TxView
 from app.domain.results import Evaluation, FitResult, QuestionHint
 from app.domain.user_context import UserContext
 from app.engine.anomaly import anomaly_features
-from app.engine.baselines import children_count, compute_baselines
+from app.engine.baselines import Priors, children_count, compute_baselines, load_priors
 from app.i18n.format import format_money_in_sentence
 from app.i18n.labels import label
 
@@ -87,11 +84,10 @@ EVAL_TEMPLATES: Final[Mapping[str, tuple[str, str]]] = {
 """Explanation key → (ro, en). Descriptive only: never "good" or "bad"."""
 
 
-@cache
-def default_priors() -> Mapping[str, Any]:
-    """data/priors.json (C1), read once: the prior when the context has no baseline yet."""
-    data: Mapping[str, Any] = json.loads((BACKEND_DIR / "data" / "priors.json").read_text("utf-8"))
-    return data
+def default_priors() -> Priors:
+    """data/priors.json (C1), read once and strictly (E6's loader): the prior when the context
+    has no baseline yet."""
+    return load_priors()
 
 
 def _text(key: str, lang: Language, **values: str) -> str:

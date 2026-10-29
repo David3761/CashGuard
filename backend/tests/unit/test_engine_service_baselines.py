@@ -1,4 +1,5 @@
-"""Shell `recompute_baselines(db, user_id)`: loads the context, calls the core, writes both results."""
+"""Shell `recompute_baselines(db, user_id)`: loads the context, calls the core, writes both
+results."""
 
 import asyncio
 from datetime import date
@@ -10,16 +11,15 @@ import pytest
 
 pytest.importorskip("app.services.context_loader", reason="needs bomboe's services (B3/B4)")
 
-from app.domain.enums import Category, FactType
+from app.domain.enums import Category, FactType, HouseholdRole
 from app.domain.models import HouseholdMemberValue
-
 from app.engine import service
 from tests.builders import fact, tx
 
 TODAY = date(2026, 6, 15)
 PRIORS = {
-    "city_index": {"Cluj": 1.0},
-    "categories": {"groceries": {"basket_median": 70, "monthly_median": 800, "cv": 0.25}},
+    "cities": [{"id": "cluj", "names": ["Cluj"], "index": Decimal("1.0")}],
+    "categories": {"groceries": {"basket_median": 70, "monthly_mean": 800, "cv": 0.25}},
 }
 
 
@@ -31,9 +31,13 @@ class FakeServices:
 
     async def load_user_context(self, db: Any, user_id: int, today: date) -> Any:
         self.loaded.append((user_id, today))
-        kids = [HouseholdMemberValue(role="child", age=7), HouseholdMemberValue(role="child", age=11)]
+        kids = [
+            HouseholdMemberValue(role=HouseholdRole.CHILD, age=7),
+            HouseholdMemberValue(role=HouseholdRole.CHILD, age=11),
+        ]
         facts = [
-            fact(type=FactType.HOUSEHOLD_MEMBER, value=v) for v in (HouseholdMemberValue(role="adult"), *kids)
+            fact(type=FactType.HOUSEHOLD_MEMBER, value=v)
+            for v in (HouseholdMemberValue(role=HouseholdRole.ADULT), *kids)
         ]
         return SimpleNamespace(
             profile=SimpleNamespace(city="Cluj"),
@@ -53,7 +57,9 @@ def fakes(monkeypatch: pytest.MonkeyPatch) -> FakeServices:
     f = FakeServices()
     monkeypatch.setattr("app.engine.service.load_user_context", f.load_user_context)
     monkeypatch.setattr("app.engine.service.baselines_service.replace_all", f.replace_all)
-    monkeypatch.setattr("app.engine.service.users_service.update_household_scale", f.update_household_scale)
+    monkeypatch.setattr(
+        "app.engine.service.users_service.update_household_scale", f.update_household_scale
+    )
     monkeypatch.setattr("app.engine.service.clock.today", lambda: TODAY)
     monkeypatch.setattr("app.engine.service.load_priors", lambda: PRIORS)
     return f

@@ -6,12 +6,24 @@ test can pass plain values (`tx(amount="500")`). No clock: fixed dates around th
 not the seeded data (that's danutu's E12).
 """
 
+import dataclasses
 from datetime import date, datetime
 from typing import Any
 from zoneinfo import ZoneInfo
 
 from app.domain.enums import FactType
-from app.domain.models import LifeFact, PatternRule, Signature, TxView
+from app.domain.models import (
+    AgentEventView,
+    DomainModel,
+    Goal,
+    LifeEvent,
+    LifeFact,
+    PatternRule,
+    Pot,
+    Receivable,
+    Signature,
+    TxView,
+)
 from app.domain.user_context import UserContext
 
 TODAY = date(2026, 6, 15)
@@ -45,7 +57,14 @@ DEFAULT_VALUES: dict[FactType, dict[str, Any]] = {
 
 
 def tx(**overrides: Any) -> TxView:
-    """A resolved Mega Image lunch basket of 85 lei (Matei's usual)."""
+    """A resolved Mega Image lunch basket of 85 lei (Matei's usual).
+
+    Only one of `amount` / `effective_amount` given → the other one follows it (the whole amount
+    is the user's), like the arch's default `effective_amount = amount`."""
+    if "amount" in overrides and "effective_amount" not in overrides:
+        overrides["effective_amount"] = overrides["amount"]
+    elif "effective_amount" in overrides and "amount" not in overrides:
+        overrides["amount"] = overrides["effective_amount"]
     return TxView.model_validate(
         {
             "id": 1,
@@ -378,3 +397,87 @@ def ioana_ctx() -> UserContext:
         ],
         baselines={"groceries": _baseline("groceries", "140", "2.1")},
     )
+
+
+# ── plan & money rows (added at the integration for danutu's engine tests) ─────────────────
+
+
+def goal(**overrides: Any) -> Goal:
+    """Matei's active goal: 10 000 lei by the end of the year, a soft deadline."""
+    return Goal.model_validate(
+        {
+            "id": 1,
+            "amount": "10000",
+            "deadline": date(2026, 12, 31),
+            "status": "active",
+            "created_at": CREATED,
+            **overrides,
+        }
+    )
+
+
+def pot(**overrides: Any) -> Pot:
+    """An active event pot of 1 000 lei, empty."""
+    return Pot.model_validate(
+        {
+            "id": 1,
+            "name": "Vacanță",
+            "kind": "event",
+            "target": "1000",
+            "saved": "0",
+            "status": "active",
+            **overrides,
+        }
+    )
+
+
+def receivable(**overrides: Any) -> Receivable:
+    """An open receivable of 100 lei from the colleagues, due in two weeks."""
+    return Receivable.model_validate(
+        {
+            "id": 1,
+            "amount": "100",
+            "debtor_label": "colegi",
+            "expected_by": date(2026, 6, 29),
+            "status": "open",
+            "created_at": CREATED,
+            **overrides,
+        }
+    )
+
+
+def life_event(**overrides: Any) -> LifeEvent:
+    """A planned trip in August."""
+    return LifeEvent.model_validate(
+        {
+            "id": 1,
+            "name": "Vacanță",
+            "date": date(2026, 8, 15),
+            "est_cost": "1000",
+            "type": "trip",
+            **overrides,
+        }
+    )
+
+
+def agent_event(**overrides: Any) -> AgentEventView:
+    """A pending overspend event of today."""
+    return AgentEventView.model_validate(
+        {
+            "id": 1,
+            "type": "overspend",
+            "status": "pending",
+            "event_date": TODAY,
+            "created_at": at(TODAY, 21),
+            **overrides,
+        }
+    )
+
+
+def replace[T](obj: T, **changes: Any) -> T:
+    """`dataclasses.replace` for dataclasses, `DomainModel.replace` (validated) for models."""
+    if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
+        return dataclasses.replace(obj, **changes)
+    if isinstance(obj, DomainModel):
+        return obj.replace(**changes)
+    raise TypeError(f"cannot replace fields of {type(obj).__name__}")

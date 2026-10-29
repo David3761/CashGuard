@@ -1,8 +1,11 @@
-"""Shared test config. bomboe's F3 adds the db / api / auth / ws fixtures here (HANDOFFS H-4)."""
+"""Shared test config: ours (F1.2 isolation, hypothesis, clock reset, make_client) merged with
+bomboe's F3 (db / api / auth / ws fixtures, the folder → marker hook, the sim-date clock)."""
 
 import logging
 import os
 from collections.abc import Iterator
+from datetime import date
+from pathlib import Path
 from typing import Protocol
 
 import httpx
@@ -19,7 +22,31 @@ settings.register_profile("cashguard", derandomize=True, deadline=None, print_bl
 settings.load_profile("cashguard")
 
 # `pytester` runs an inner pytest session (tests/unit/test_isolation.py checks the live opt-out).
-pytest_plugins = ["pytester"]
+pytest_plugins = [
+    "pytester",
+    "tests.fixtures.db",
+    "tests.fixtures.auth",
+    "tests.fixtures.api",
+    "tests.fixtures.ws",
+]
+
+SIM_START = date(2026, 6, 15)
+"""bomboe's test date: tests in tests/db, tests/api and tests/ws run at 2026-06-15 12:00."""
+
+_MARKER_BY_FOLDER = {"db": pytest.mark.db, "api": pytest.mark.api, "ws": pytest.mark.ws}
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    """bomboe's hook: tests/db/* get the marker db, tests/api/* api, tests/ws/* ws."""
+    for item in items:
+        folder = Path(str(item.fspath)).parent.name
+        if folder in _MARKER_BY_FOLDER:
+            item.add_marker(_MARKER_BY_FOLDER[folder])
+
+
+def _platform_test(request: pytest.FixtureRequest) -> bool:
+    """bomboe's db / api / ws tests: they run at SIM_START with SIM_MODE on (his defaults)."""
+    return Path(str(request.node.fspath)).parent.name in _MARKER_BY_FOLDER
 
 
 # ── Isolation (F1.2) ─────────────────────────────────────────────────────────────────────────
@@ -48,12 +75,24 @@ def _restore_global_state(
     logging setup (create_app configures it)."""
     if request.node.get_closest_marker("live") is None:
         _isolate_environment(monkeypatch)
+    platform = _platform_test(request)
+    if platform:
+        # bomboe's environment: the simulator is on, but its clock isn't read from the DB at
+        # app startup (his conftest's SIM_CLOCK_FROM_DB=false).
+        monkeypatch.setenv("SIM_MODE", "true")
+        monkeypatch.setenv("SIM_CLOCK_FROM_DB", "false")
     get_settings.cache_clear()
-    # A fresh real clock, not "whatever is installed": a clock installed at import/collection
-    # time (a module-level set_clock, or an app built in SIM_MODE) must not leak into tests.
-    real_clock = clock.RealClock()
-    clock.set_clock(real_clock)
-    assert clock.get_clock() is real_clock, "a use_clock() block was entered and never left"
+    # One clock mechanism: a fresh clock per test, never "whatever is installed" (a clock
+    # installed at import/collection time, or an app built in SIM_MODE, must not leak). Our
+    # tests start with a real clock; bomboe's db/api/ws tests, and any test asking for
+    # `fixed_clock`, start at SIM_START 12:00 Bucharest (his autouse `fixed_clock`).
+    start: clock.Clock = (
+        clock.FixedClock.on(SIM_START)
+        if platform or "fixed_clock" in request.fixturenames
+        else clock.RealClock()
+    )
+    clock.set_clock(start)
+    assert clock.get_clock() is start, "a use_clock() block was entered and never left"
     loggers = [logging.getLogger(name) for name in ("", "anthropic", "httpx", "httpx2", "httpcore")]
     saved = [(logger, logger.level, list(logger.handlers)) for logger in loggers]
     yield
@@ -62,6 +101,15 @@ def _restore_global_state(
         logger.handlers[:] = handlers
     clock.set_clock(clock.RealClock())
     get_settings.cache_clear()
+
+
+@pytest.fixture
+def fixed_clock() -> clock.FixedClock:
+    """The test's FixedClock at SIM_START 12:00 (installed by `_restore_global_state`). A test
+    that needs another time calls `clock.set_clock(FixedClock(...))`; it is undone after."""
+    installed = clock.get_clock()
+    assert isinstance(installed, clock.FixedClock)
+    return installed
 
 
 @pytest.fixture(name="settings")

@@ -1,8 +1,8 @@
 """Day-level signals → agent_event drafts (arch 6.7, F3/F5, E11). Pure.
 
 Thresholds (🟡 danutu to confirm, then final):
-- warning: spent > 0.9 × budget; overspend: spent > budget (only the stronger one fires)
-- under (ledger status at close): spent < 0.5 × budget
+- warning: spent > 0.9 x budget; overspend: spent > budget (only the stronger one fires)
+- under (ledger status at close): spent < 0.5 x budget
 - underspend_week (at Sunday's close): the week's spending ≤ 80 % of the week's budget
 - category_cap: this ISO week's spending in a capped category reaches 80 % / 100 % of the cap;
   one event a day (unique per type and date), keeping the highest level
@@ -17,8 +17,8 @@ from decimal import Decimal
 from typing import Any, Protocol
 
 from app.domain.enums import AgentEventType
-from app.domain.user_context import UserContext
 from app.domain.results import PlanResult, SignalDraft
+from app.domain.user_context import UserContext
 from app.engine.ledger import counts_as_spent, ledger_day
 
 WARNING_SHARE = Decimal("0.9")
@@ -38,7 +38,8 @@ class LedgerDay(Protocol):
 
 
 def day_status(spent: Decimal, budget: Decimal, *, closed: bool) -> str:
-    """`day_ledger.status`: ok | warning | overspent | under ("under" only once the day is closed)."""
+    """`day_ledger.status`: ok | warning | overspent | under ("under" only once the day is
+    closed)."""
     if spent > budget:
         return "overspent"
     if spent > WARNING_SHARE * budget:
@@ -112,7 +113,12 @@ def detect_signals(
         drafts[AgentEventType.INFEASIBLE_PLAN] = {"infeasible_days": len(plan.infeasible_days)}
 
     goal, pot = ctx.goal, ctx.goal_pot
-    if goal is not None and pot is not None and goal.status == "active" and pot.saved >= goal.amount:
+    if (
+        goal is not None
+        and pot is not None
+        and goal.status == "active"
+        and pot.saved >= goal.amount
+    ):
         drafts[AgentEventType.GOAL_COMPLETED] = {"goal_id": goal.id, "saved": pot.saved}
 
     existing = {(e.type, e.event_date) for e in ctx.agent_events}

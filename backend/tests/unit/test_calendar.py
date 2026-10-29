@@ -31,7 +31,7 @@ def test_days_in_month_handles_short_and_leap_months(year: int, month: int, expe
 
 @pytest.mark.parametrize("month", [0, 13])
 def test_days_in_month_rejects_invalid_month(month: int) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="month"):
         days_in_month(2026, month)
 
 
@@ -78,7 +78,7 @@ def test_occurrences_end_before_start_is_empty() -> None:
 
 @pytest.mark.parametrize("day", [0, 32, -1])
 def test_occurrences_rejects_invalid_day_of_month(day: int) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="day_of_month must be 1-31"):
         occurrences(day, date(2026, 6, 15), date(2026, 12, 31))
 
 
@@ -88,7 +88,9 @@ def test_occurrences_crosses_year_boundary() -> None:
 
 
 @given(day=day_numbers, start=dates, span=st.integers(min_value=0, max_value=800))
-def test_occurrences_are_in_range_sorted_unique_one_per_month(day: int, start: date, span: int) -> None:
+def test_occurrences_are_in_range_sorted_unique_one_per_month(
+    day: int, start: date, span: int
+) -> None:
     end = start + timedelta(days=span)
     result = occurrences(day, start, end)
     assert all(start < d <= end for d in result)
@@ -125,7 +127,9 @@ def test_paydays_between_no_income_days_is_empty() -> None:
 
 
 def test_months_between_matei_horizon_has_seven_months() -> None:
-    assert months_between(date(2026, 6, 15), date(2026, 12, 31)) == [(2026, m) for m in range(6, 13)]
+    assert months_between(date(2026, 6, 15), date(2026, 12, 31)) == [
+        (2026, m) for m in range(6, 13)
+    ]
 
 
 def test_months_between_same_day_is_one_month() -> None:

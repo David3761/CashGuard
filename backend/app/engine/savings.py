@@ -24,7 +24,7 @@ OPEN_RECEIVABLES = frozenset({ReceivableStatus.OPEN, ReceivableStatus.REQUESTED}
 def pot_contribution(
     target: Decimal, saved: Decimal, deadline: date | None, today: date, paydays: Iterable[int]
 ) -> Decimal:
-    """(target − saved) per payday left in `(today, deadline]`, rounded up to the cent.
+    """(target - saved) per payday left in `(today, deadline]`, rounded up to the cent.
 
     No payday left before the deadline → the whole rest now. No deadline, deadline passed or
     target reached → 0.
@@ -37,7 +37,7 @@ def pot_contribution(
 
 
 def p_repay(expected_by: date, today: date) -> Decimal:
-    """0.9 until `expected_by`, then −0.1 per full 14 days overdue, never below 0."""
+    """0.9 until `expected_by`, then -0.1 per full 14 days overdue, never below 0."""
     overdue = (today - expected_by).days
     if overdue < OVERDUE_STEP_DAYS:
         return P_REPAY_ON_TIME
@@ -45,7 +45,7 @@ def p_repay(expected_by: date, today: date) -> Decimal:
 
 
 def receivables_expected(receivables: Iterable[Receivable], today: date, deadline: date) -> Decimal:
-    """Σ amount × p_repay of open/requested receivables expected by the deadline (inclusive)."""
+    """Σ amount x p_repay of open/requested receivables expected by the deadline (inclusive)."""
     return to_money(
         sum(
             (
@@ -59,25 +59,31 @@ def receivables_expected(receivables: Iterable[Receivable], today: date, deadlin
 
 
 def _nearest_occurrence_gap(on: date, day_of_month: int) -> int:
-    """Days between `on` and the closest date falling on `day_of_month` (previous, same or next month)."""
+    """Days between `on` and the closest date falling on `day_of_month` (previous, same or next
+    month)."""
     gaps = []
     for shift in (-1, 0, 1):
         year, month = divmod(on.year * 12 + on.month - 1 + shift, 12)
         month += 1
-        gaps.append(abs((date(year, month, min(day_of_month, days_in_month(year, month))) - on).days))
+        gaps.append(
+            abs((date(year, month, min(day_of_month, days_in_month(year, month))) - on).days)
+        )
     return min(gaps)
 
 
 def matches_recurring(
     amount: Decimal, on: date, expected_amount: Decimal, day_of_month: int, tolerance: Decimal
 ) -> bool:
-    """`amount` within ±`tolerance` of `expected_amount` and `on` within ±3 days of `day_of_month`."""
+    """`amount` within ±`tolerance` of `expected_amount` and `on` within ±3 days of
+    `day_of_month`."""
     return abs(amount - expected_amount) <= tolerance * expected_amount and (
         _nearest_occurrence_gap(on, day_of_month) <= DAY_TOLERANCE
     )
 
 
-def matching_income_source(tx: TxView, income_sources: Iterable[IncomeSource]) -> IncomeSource | None:
+def matching_income_source(
+    tx: TxView, income_sources: Iterable[IncomeSource]
+) -> IncomeSource | None:
     """The income source a credit is the salary of (±20 % amount, ±3 days), if any (D37)."""
     if tx.direction != Direction.CREDIT:
         return None
@@ -104,8 +110,10 @@ def auto_save_amount(
 ) -> Decimal:
     """min(planned saving, what the balance can spare until the next payday), never negative (D37).
 
-    planned saving = still_to_save / paydays left in `[today, deadline]` (today's salary is one of them).
-    spare = balance − fixed costs due in `[today, next payday)` − essentials floor × days to the next payday.
+    planned saving = still_to_save / paydays left in `[today, deadline]` (today's salary is one of
+    them).
+    spare = balance - fixed costs due in `[today, next payday)` - essentials floor x days to the
+    next payday.
     """
     if still_to_save <= 0 or goal_deadline < today:
         return Decimal("0.00")
@@ -117,7 +125,11 @@ def auto_save_amount(
     fixed_due = sum(
         (
             fc.amount
-            * len(occurrences(fc.day_of_month, today - timedelta(days=1), next_payday - timedelta(days=1)))
+            * len(
+                occurrences(
+                    fc.day_of_month, today - timedelta(days=1), next_payday - timedelta(days=1)
+                )
+            )
             for fc in fixed_costs
         ),
         Decimal(0),

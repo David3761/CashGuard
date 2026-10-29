@@ -10,7 +10,14 @@ from typing import Annotated, Literal, Self
 
 from pydantic import BeforeValidator, Field, JsonValue, StrictBool, model_validator
 
-from app.domain.enums import AnnotationSource, Beneficiary, Category, Decision, Purpose
+from app.domain.enums import (
+    AgentEventType,
+    AnnotationSource,
+    Beneficiary,
+    Category,
+    Decision,
+    Purpose,
+)
 from app.domain.models import (
     DomainModel,
     Factor,
@@ -70,6 +77,11 @@ class Evaluation(DomainModel):
     goal_impact: NonNegFloat = 0.0
     question_hint: QuestionHint | None = None
 
+    @property
+    def annotation_confidence(self) -> float:
+        """bomboe's name for `confidence` (his `save_evaluation` stores it)."""
+        return self.confidence
+
     @model_validator(mode="after")
     def _ask_needs_a_hint(self) -> Self:
         if self.decision is Decision.ASK and self.question_hint is None:
@@ -101,6 +113,11 @@ class QuestionCandidate(DomainModel):
     def priority(self) -> float:
         return self.unexplained * self.goal_impact
 
+    @property
+    def hint(self) -> QuestionHint:
+        """bomboe's name for `question_hint`."""
+        return self.question_hint
+
 
 class RuleChange(DomainModel):
     """What C8 learned (5.3.7)."""
@@ -108,6 +125,16 @@ class RuleChange(DomainModel):
     action: Literal["created", "updated", "deactivated"]
     rule: PatternRule
     previous_confidence: Ratio | None = None
+
+    @property
+    def rule_id(self) -> int | None:
+        """bomboe's flat field: the rule's id."""
+        return self.rule.id
+
+    @property
+    def confidence(self) -> float:
+        """bomboe's flat field: the rule's new confidence."""
+        return self.rule.confidence
 
 
 # ── engine (danutu) ──────────────────────────────────────────────────────────────────────────
@@ -130,12 +157,19 @@ class DayBudget(DomainModel):
 
 
 class PlanResult(DomainModel):
-    """E2's `compute_plan` result."""
+    """E2's `compute_plan` result.
+
+    `days` (the whole horizon) and the 6.7 terms `available`, `free_money`, `still_to_save` are
+    the integration's additions for danutu's E2 (None = not computed, e.g. a stub)."""
 
     today_budget: Money
     next_7_days: tuple[DayBudget, ...] = ()
     feasible: StrictBool
     infeasible_days: tuple[Date, ...] = ()
+    days: tuple[DayBudget, ...] = ()
+    available: Money | None = None
+    free_money: Money | None = None
+    still_to_save: NonNegMoney | None = None
 
 
 class PlanSummary(DomainModel):
@@ -147,6 +181,7 @@ class PlanSummary(DomainModel):
     previous_today_budget: Money | None = None
     next_7_days: tuple[DayBudget, ...] = ()
     reason: Text300 | None = None
+    created_at: Timestamp | None = None  # bomboe's plans.created_at (the saved row)
 
 
 class Driver(DomainModel):
@@ -154,10 +189,21 @@ class Driver(DomainModel):
     pp_per_100_lei: NonNegFloat
 
 
+OptionKind = Literal["count_receivables", "move_deadline", "reduce_category"]
+OptionParam = Money | Date | int | Text80
+"""An option's label parameter: money stays a Decimal (a JSON number), a date an ISO date."""
+
+
 class Option(DomainModel):
+    """One E9 option. `label` is shown as is; `label_key` + `params` are danutu's i18n form
+    (`option.move_deadline`, {"deadline": ..., "months": 2})."""
+
     label: Text80
     probability: Probability
     apply_hint: Mapping[str, JsonValue] = Field(default_factory=dict)
+    kind: OptionKind | None = None
+    label_key: Text80 | None = None
+    params: Mapping[str, OptionParam] = Field(default_factory=dict)
 
 
 class Forecast(DomainModel):
@@ -172,12 +218,28 @@ class Forecast(DomainModel):
     expected_reach_date: Date | None = None
     drivers: tuple[Driver, ...] = ()
     options: tuple[Option, ...] | None = None
+    # E8's bookkeeping (integration additions, bomboe's names): the plan version and sim day the
+    # forecast was computed for, and whether it is this week's snapshot.
+    plan_version: Annotated[int, Field(ge=0, strict=True)] | None = None
+    sim_date: Date | None = None
+    is_weekly_snapshot: StrictBool = False
 
     @model_validator(mode="after")
     def _ordered(self) -> Self:
         if not self.p10 <= self.p50 <= self.p90:
             raise ValueError("p10 <= p50 <= p90")
         return self
+
+
+class SignalDraft(DomainModel):
+    """E11's day-level signal: an `agent_events` row to create (type, event_date, payload).
+
+    The payload carries engine values (Decimal money, ratios, categories); the caller stores it
+    as JSON (money as numbers)."""
+
+    type: AgentEventType
+    date: Date
+    payload: Mapping[str, OptionParam | float] = Field(default_factory=dict)
 
 
 class SimDiff(DomainModel):
@@ -188,6 +250,7 @@ class SimDiff(DomainModel):
 class SolveResult(DomainModel):
     deadline_needed: Date | None = None
     goal_amount_possible: Money | None = None
+    reason: Text80 | None = None  # "target_not_reachable" when neither is found (E5)
 
 
 class SimResult(DomainModel):

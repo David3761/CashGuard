@@ -400,3 +400,34 @@ def test_every_clock_keeps_the_contract(candidate: Clock, real_time: bool) -> No
     if real_time:
         reference = datetime.now(UTC)  # noqa: TID251 - an independent reference
         assert abs(before - reference) < timedelta(seconds=5)
+
+
+# ── bomboe's helpers kept by the integration (FixedClock.on, to_local, local_date) ───────────
+
+
+def _utc(y: int, mo: int, d: int, h: int, mi: int) -> datetime:
+    return datetime(y, mo, d, h, mi, tzinfo=UTC)
+
+
+def test_fixed_clock_on_is_noon_bucharest_by_default() -> None:
+    c = FixedClock.on(date(2026, 6, 15))
+    assert c.today() == date(2026, 6, 15)
+    assert c.now() == datetime(2026, 6, 15, 12, 0, tzinfo=clock.APP_TZ)
+
+
+def test_local_date_late_utc_evening_is_next_bucharest_day_in_summer() -> None:
+    assert clock.local_date(_utc(2026, 6, 14, 21, 30)) == date(2026, 6, 15)
+    assert clock.local_date(_utc(2026, 6, 14, 20, 59)) == date(2026, 6, 14)
+
+
+def test_to_local_on_the_dst_end_day() -> None:
+    before = clock.to_local(_utc(2026, 10, 25, 0, 59))
+    after = clock.to_local(_utc(2026, 10, 25, 1, 0))
+    assert before.utcoffset() == timedelta(hours=3)
+    assert after.utcoffset() == timedelta(hours=2)
+    assert clock.local_date(_utc(2026, 10, 25, 22, 30)) == date(2026, 10, 26)
+
+
+def test_to_local_rejects_a_naive_datetime() -> None:
+    with pytest.raises(ValueError, match="naive"):
+        clock.to_local(datetime(2026, 6, 15, 12, 0))  # noqa: DTZ001

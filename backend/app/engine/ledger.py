@@ -1,8 +1,10 @@
 """Ledger rules: how one transaction moves the balance, the day's "spent" and a pot (E3). Pure.
 
-- The balance moves by the full `amount` (debit −, credit +).
-- "Spent" counts `effective_amount` of debits, except fixed costs (±10 %, ±3 days of a `fixed_costs` row),
-  pot-funded spending (`planned_event`) and money moved to transfers / savings. Credits are never spent.
+- The balance moves by the full `amount` (debit -, credit +).
+- "Spent" counts `effective_amount` of debits, except fixed costs (±10 %, ±3 days of a `fixed_costs`
+row),
+  pot-funded spending (`planned_event`) and money moved to transfers / savings. Credits are never
+  spent.
 - A pot-funded transaction lowers `pot.saved` by its `amount`.
 - The ledger day is `occurred_at` in Bucharest time.
 """
@@ -71,10 +73,14 @@ def apply(tx: TxView, fixed_costs: Iterable[FixedCost]) -> LedgerDelta:
     """The changes one newly processed transaction makes."""
     fixed = list(fixed_costs)
     balance = -tx.amount if tx.direction == Direction.DEBIT else tx.amount
-    return LedgerDelta(ledger_day(tx.occurred_at), balance, _spent(tx, fixed), _pot_draw(tx), tx.pot_id)
+    return LedgerDelta(
+        ledger_day(tx.occurred_at), balance, _spent(tx, fixed), _pot_draw(tx), tx.pot_id
+    )
 
 
-def reannotate_delta(before: TxView, after: TxView, fixed_costs: Iterable[FixedCost]) -> LedgerDelta:
+def reannotate_delta(
+    before: TxView, after: TxView, fixed_costs: Iterable[FixedCost]
+) -> LedgerDelta:
     """What changes when a processed transaction is re-annotated: never the balance."""
     fixed = list(fixed_costs)
     pot_id = after.pot_id if _pot_funded(after) else before.pot_id
@@ -88,5 +94,6 @@ def reannotate_delta(before: TxView, after: TxView, fixed_costs: Iterable[FixedC
 
 
 def estimate_own_share(amount: Decimal, baseline: Baseline | None) -> Decimal:
-    """Own share when the user gave no count or amount: the usual basket, never more than the amount."""
+    """Own share when the user gave no count or amount: the usual basket, never more than the
+    amount."""
     return to_money(min(amount, baseline.expected_median) if baseline is not None else amount)

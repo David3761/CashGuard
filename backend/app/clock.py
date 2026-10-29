@@ -11,11 +11,24 @@ import itertools
 import threading
 from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time
 from typing import Final, Protocol, runtime_checkable
 from zoneinfo import ZoneInfo
 
 APP_TZ: Final = ZoneInfo("Europe/Bucharest")  # resolved at import: a missing tz database fails fast
+BUCHAREST: Final = APP_TZ  # bomboe's name (compat)
+
+
+def to_local(instant: datetime) -> datetime:
+    """The same instant in Bucharest time (bomboe's B2/B3 helper). Naive datetimes are rejected."""
+    if instant.utcoffset() is None:
+        raise ValueError("naive datetime: an instant needs a time zone")
+    return instant.astimezone(UTC).astimezone(APP_TZ)
+
+
+def local_date(instant: datetime) -> date:
+    """The Bucharest calendar day an instant falls on."""
+    return to_local(instant).date()
 
 
 @runtime_checkable
@@ -52,6 +65,11 @@ class FixedClock:
         # Through UTC: astimezone() is a no-op on a datetime already in APP_TZ, which would keep a
         # local time that never existed (03:30 on the spring-forward night).
         self._at = at.astimezone(UTC).astimezone(APP_TZ)
+
+    @classmethod
+    def on(cls, day: date, at: time = time(12, 0)) -> "FixedClock":
+        """A clock at `at` (default noon) Bucharest time on `day` (bomboe's test helper)."""
+        return cls(datetime.combine(day, at, tzinfo=APP_TZ))
 
     def now(self) -> datetime:
         return self._at

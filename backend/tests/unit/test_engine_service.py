@@ -13,9 +13,8 @@ pytest.importorskip("app.services.context_loader", reason="needs bomboe's servic
 from app.domain.enums import Category, Direction, PotKind
 from app.domain.models import LifeEvent, Pot, Transfer
 from app.domain.results import Forecast, PlanSummary
-from app.errors import DomainError
-
 from app.engine import service
+from app.errors import DomainError
 from tests.builders import tx
 from tests.unit.test_forecast import GOAL_POT, TODAY, matei_ctx
 
@@ -125,7 +124,9 @@ def at(d: date, hour: int = 12) -> datetime:
 
 def test_apply_transaction_moves_balance_and_day_spent(monkeypatch: pytest.MonkeyPatch) -> None:
     fakes = Fakes(monkeypatch, matei_ctx())
-    fakes.tx = tx(amount=D("500"), effective_amount=D("500"), occurred_at=at(TODAY), status="processing")
+    fakes.tx = tx(
+        amount=D("500"), effective_amount=D("500"), occurred_at=at(TODAY), status="processing"
+    )
     run(service.apply_transaction(FakeDB(), 1, 918))
     assert fakes.args("accounts.adjust_balance") == [((D("-500"),), {})]
     assert fakes.args("ledger.update") == [((TODAY,), {"spent": D("500")})]
@@ -171,14 +172,21 @@ def test_own_share_estimate_uses_the_baseline(monkeypatch: pytest.MonkeyPatch) -
 # ── recompute_plan ───────────────────────────────────────────────────────────
 
 
-def test_recompute_plan_saves_increasing_versions_with_reason(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_recompute_plan_saves_increasing_versions_with_reason(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     previous = PlanSummary(
-        version=0, feasible=True, today_budget=D("50.00"), previous_today_budget=None, next_7_days=[]
+        version=0,
+        feasible=True,
+        today_budget=D("50.00"),
+        previous_today_budget=None,
+        next_7_days=[],
     )
     fakes = Fakes(monkeypatch, matei_ctx(plan=previous))
     db = FakeDB()
     summaries = [
-        run(service.recompute_plan(db, 1, "new transactions", {"transaction_id": 918})) for _ in range(3)
+        run(service.recompute_plan(db, 1, "new transactions", {"transaction_id": 918}))
+        for _ in range(3)
     ]
     assert [s.version for s in summaries] == [1, 2, 3]
     assert summaries[0].previous_today_budget == D("50.00")
@@ -188,7 +196,8 @@ def test_recompute_plan_saves_increasing_versions_with_reason(monkeypatch: pytes
         {"transaction_id": 918},
         1,
     )
-    assert all("pg_advisory_xact_lock" in s for s in db.statements) and len(db.statements) == 3
+    assert all("pg_advisory_xact_lock" in s for s in db.statements)
+    assert len(db.statements) == 3
 
 
 def test_recompute_plan_without_a_goal_saves_nothing(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -227,7 +236,8 @@ def test_forecast_goal_saves_a_weekly_snapshot_on_monday(monkeypatch: pytest.Mon
     )
     fakes = Fakes(monkeypatch, matei_ctx(last_weekly_forecast=last_week))
     first = run(service.forecast_goal(FakeDB(), 1, plan_version=4))
-    assert first.is_weekly_snapshot and first.last_week_probability == 0.72
+    assert first.is_weekly_snapshot
+    assert first.last_week_probability == 0.72
     _, kw = fakes.args("forecasts.save")[0]
     assert (kw["plan_version"], kw["sim_date"], kw["forecast"]) == (4, TODAY, first)
     assert run(service.forecast_goal(FakeDB(), 1, plan_version=4)).probability == first.probability
@@ -265,17 +275,22 @@ def salary() -> Any:
     )
 
 
-def test_auto_save_moves_the_planned_saving_to_the_goal_pot(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_auto_save_moves_the_planned_saving_to_the_goal_pot(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     fakes = Fakes(monkeypatch, salary_ctx(), today=SALARY_DAY)
     fakes.tx = salary()
     transfer = run(service.auto_save(FakeDB(), 1, 501))
-    assert transfer is not None and transfer.amount == D("800.00")  # 4 800 left / 6 paydays (10 Jul … 10 Dec)
+    assert transfer is not None
+    assert transfer.amount == D("800.00")
     assert fakes.args("accounts.adjust_balance") == [((D("-800.00"),), {})]
     assert fakes.args("pots.add_saved") == [((GOAL_POT.id, D("800.00")), {})]
     assert fakes.names().count("notifications.notify") == 1
 
 
-def test_auto_save_twice_for_the_same_salary_moves_money_once(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_auto_save_twice_for_the_same_salary_moves_money_once(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     fakes = Fakes(monkeypatch, salary_ctx(), today=SALARY_DAY)
     fakes.tx = salary()
     first = run(service.auto_save(FakeDB(), 1, 501))

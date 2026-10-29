@@ -95,6 +95,13 @@ ERROR_RESPONSES: dict[int | str, dict[str, Any]] = {
 }
 
 
+def error_response(
+    status: int, code: str, message: str, headers: Mapping[str, str] | None = None
+) -> Response:
+    """The arch 9.1 envelope as a response (bomboe's helper, e.g. for the WS/auth paths)."""
+    return _envelope(status, code, message, headers)
+
+
 # ── sending an error ─────────────────────────────────────────────────────────────────────────
 
 
