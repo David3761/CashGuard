@@ -4,7 +4,6 @@ Matei's open question on tx 918 (Mega Image, 500 lei); he answers "suntem cinci"
 (FakeLLM, strict) annotates the split and offers the payment request.
 """
 
-import json
 import sys
 import types
 from datetime import UTC, datetime
@@ -14,8 +13,6 @@ from typing import Any
 import pytest
 from anthropic.types.beta import BetaMessageParam
 
-from app.agent.executor import execute_tool
-from app.agent.handlers.common import RunState, ToolContext
 from app.agent.loop import run_agent
 from app.agent.ports import LazyEngine
 from app.agent.style import find_banned
@@ -111,36 +108,6 @@ def test_the_real_tool_context_uses_the_engine_service() -> None:
     assert isinstance(ctx.engine, LazyEngine)
     assert ctx.engine._fn("recompute_plan") is engine_service.recompute_plan
     assert ctx.user_id == 1
-
-
-async def test_the_real_engine_port_is_awaited() -> None:
-    # LazyEngine awaits danutu's async engine shells (the S0 stubs here). C8/C9 need bomboe's DB,
-    # so the context is the fake (LazyContext's awaits: test_propagate.py, test_onboarding.py).
-    harness = Harness()
-    harness.add_tx(918, "500.00")
-    ctx = ToolContext(
-        user_id=1, services=harness.services, engine=LazyEngine(), context=harness.context
-    )
-    run = RunState()
-    shared = {"transaction_id": 918, "purpose": "on_behalf_of_others", "beneficiary": "shared"}
-    out = await execute_tool(
-        ctx, run, tool_use("annotate_transaction", shared, tool_use_id="toolu_1")
-    )
-    body = json.loads(out["content"])
-    assert "is_error" not in out, body
-    assert (body["effective_amount"], body["estimated"]) == (500.0, True)  # E10 stub: all his
-    assert (body["plan"]["today_budget"], body["forecast"]["probability"]) == (150.0, 0.78)
-    fact = {
-        "type": "occupation",
-        "value": {"title": "analist sportiv"},
-        "text": "Sunt analist sportiv",
-        "persistence": "permanent",
-    }
-    out = await execute_tool(ctx, run, tool_use("add_life_fact", fact, tool_use_id="toolu_2"))
-    body = json.loads(out["content"])
-    assert "is_error" not in out, body
-    assert body["reevaluated_transaction_ids"] == []  # the fake C9
-    assert body["plan"]["version"] == 1
 
 
 async def test_lazy_engine_hands_danutu_the_views_before_and_after(

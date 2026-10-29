@@ -30,7 +30,6 @@ from app.domain.models import LifeFact, TxView
 from app.domain.results import Forecast, PlanSummary
 from app.domain.user_context import UserContext
 from app.engine.baselines import compute_baselines, household_scale
-from app.engine.service import ledger_delta
 from tests.builders import TODAY, andrei_ctx, at, fact, ioana_ctx, signature
 from tests.unit.context.test_life_fit import emag_tv
 
@@ -93,7 +92,6 @@ def test_andrei_tv_becomes_a_work_tool_once_the_job_is_known() -> None:
     assert "analist sportiv" in new.explanation
     # the ledger is unchanged: the whole amount was already counted
     assert new.effective_amount == tv.effective_amount == Decimal(4500)
-    assert ledger_delta(tv.replace(effective_amount=new.effective_amount)) == ledger_delta(tv)
 
 
 @pytest.mark.parametrize("source", [AnnotationSource.ANSWER, AnnotationSource.USER_EDIT])

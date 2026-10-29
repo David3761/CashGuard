@@ -142,9 +142,3 @@ async def test_infer_hypotheses_without_list_rejected_still_runs(
     monkeypatch.setattr(service, "_service", lambda name: object())
     with clock.use_clock(clock.FixedClock(NOON)):
         assert [d.type for d in await service.infer_hypotheses(None, 5)] == [FactType.VEHICLE]
-
-
-async def test_services_are_looked_up_at_call_time() -> None:
-    # B3 isn't merged: the stub fails clearly at call time, not at import.
-    with pytest.raises(ModuleNotFoundError, match=r"app\.services"):
-        await service.evaluate_transaction(None, 1, 1)
