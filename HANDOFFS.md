@@ -85,3 +85,13 @@
   - **Team rule (PEP 495):** a Bucharest datetime in the repeated or skipped DST hour is never `==` to the same instant in another zone, so compare instants via `.astimezone(UTC)`.
 - **Merge instruction:** keep ours. B10 adds `app/sim/clock_store.py`'s SimClock and registers it in the contract test. Check: `make check` (the architecture test + the contract test) passes with SimClock installed.
 
+
+### H-7 · bomboe B12 + danutu E12 · `data/merchants.json` (the merchant catalogue) · 🟢
+- **Date / by:** 2026-10-29, DGAdavid1 (C1.2, merged b7d1739)
+- **Why it was needed:** B12 seeds the `merchants` table from it, E12 generates each history transaction's `merchant_raw` from its aliases, and C2 normalises bank text with it.
+- **What was done:** `backend/data/merchants.json`: 62 fictional-data entries for real Romanian brands, each with a **slug id** (D47), a canonical name, aliases (lower case, no store numbers, payment prefixes or cities; unique across merchants even reduced to letters + digits), a `Category`, a 4-digit text MCC, a 2-dp `typical_basket` and `multi_category` (exactly eMAG, Altex, Carrefour, Auchan, Flanco, Diverta: D32). The schema is `data/schemas/merchants.schema.json`, and a golden snapshot test pins every field.
+- **Decisions taken on the owner's behalf:**
+  - 62 merchants instead of ~40. The 9 additions are for the persona streams: DAZN, Wolt, World Class, iaBilet, Eventim, 5 to go, STB, Metrorex, CTP Iași. Enel is now **`ppc_energie`** (PPC Energie; `enel` is kept as an alias).
+  - `merchants.id` is TEXT (the slug).
+  - **Loaders must reject duplicate keys, NaN and Infinity, and read numbers as `Decimal`.** Use `tests/unit/datafiles.py`'s strict parser or the same rules. Plain `json.load` silently keeps the last duplicate key.
+- **Merge instruction:** keep ours. B12 maps `id` → `merchants.id` (TEXT PK). E12 builds `merchant_raw` from an alias plus realistic noise (store numbers, city, `POS`/`PAYU*` prefixes, `BOLT.EU/O/…`), and its "every merchant_raw resolves" test then exercises C2. Check: the B12 seed counts 62 merchants; `pytest tests/unit/test_data_merchants.py` passes.
