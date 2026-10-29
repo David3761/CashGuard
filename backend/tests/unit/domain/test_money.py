@@ -488,6 +488,15 @@ def test_parse_json_keeps_strings_ints_and_nesting() -> None:
     assert parsed == {"amount": "12.30", "n": 5, "items": [{"amount": Decimal("4500.10")}]}
 
 
+@pytest.mark.parametrize(
+    "raw", ['{"amount": 1, "amount": 500}', '{"items": [{"a": 1, "a": 1}]}', '{"x": {}, "x": {}}']
+)
+def test_parse_json_rejects_a_duplicate_key(raw: str) -> None:
+    # The stdlib silently keeps the last value; which one wins is a trap (C1's H-7 loader rule).
+    with pytest.raises(ValueError, match="duplicate key"):
+        parse_json(raw)
+
+
 # ── invariants (property tests) ──────────────────────────────────────────────────────────────
 
 
