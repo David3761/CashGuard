@@ -427,6 +427,7 @@ async def test_every_port_works_for_its_user_and_hides_the_other_users_rows(db_c
     assert (await s.agent_events.open_question_for(matei, tx_id))["id"] == question.id
     assert (await s.agent_events.mark_answered(matei, question.id))["status"] == "answered"
     assert await s.agent_events.open_question_for(matei, tx_id) is None
+    assert (await s.agent_events.mark_handled(matei, question.id))["status"] == "answered"
     pot_before = await db_committed.scalar(
         select(m.Pot.saved).where(m.Pot.user_id == matei, m.Pot.kind == "goal")
     )

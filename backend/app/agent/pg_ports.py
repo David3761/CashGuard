@@ -397,6 +397,11 @@ class PgAgentEvents(_Base):
         return (await agent_events.mark_answered(self.db, user_id, event_id)).model_dump()
 
     async def mark_handled(self, user_id: int, event_id: int) -> Row:
+        """pending | asked → handled. Already answered or handled → the event as it is (Claude
+        often closes the question it just answered with `annotate_transaction`)."""
+        event = await agent_events.get(self.db, user_id, event_id)
+        if event.status in (AgentEventStatus.ANSWERED, AgentEventStatus.HANDLED):
+            return event.model_dump()
         return (await agent_events.mark_handled(self.db, user_id, event_id)).model_dump()
 
 
