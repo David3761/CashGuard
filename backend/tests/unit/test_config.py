@@ -64,6 +64,7 @@ FIELDS = frozenset(
         "RATE_LIMIT_CHAT_PER_DAY",
         "RATE_LIMIT_SIM_PER_MINUTE",
         "RATE_LIMIT_WS_CONNECT_PER_MINUTE",
+        "API_DOCS_ENABLED",
     }
 )
 OPTIONAL_FIELDS = (
@@ -156,6 +157,11 @@ def test_settings_defaults_match_the_documented_values(settings: Settings) -> No
         "MAX_AGENT_ITERATIONS": 6,
         "QUESTIONS_PER_DAY": 1,
         "LOG_LEVEL": "INFO",
+        "RATE_LIMIT_CHAT_PER_MINUTE": 10,
+        "RATE_LIMIT_CHAT_PER_DAY": 200,
+        "RATE_LIMIT_SIM_PER_MINUTE": 5,
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE": 10,
+        "API_DOCS_ENABLED": False,
     }
 
 
@@ -220,6 +226,11 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         MAX_AGENT_ITERATIONS="8",
         QUESTIONS_PER_DAY="2",
         LOG_LEVEL="DEBUG",
+        RATE_LIMIT_CHAT_PER_MINUTE="11",
+        RATE_LIMIT_CHAT_PER_DAY="201",
+        RATE_LIMIT_SIM_PER_MINUTE="6",
+        RATE_LIMIT_WS_CONNECT_PER_MINUTE="12",
+        API_DOCS_ENABLED="true",
     )
 
     assert settings.model_dump() == {
@@ -245,6 +256,11 @@ def test_settings_read_every_field_from_the_environment(monkeypatch: pytest.Monk
         "MAX_AGENT_ITERATIONS": 8,
         "QUESTIONS_PER_DAY": 2,
         "LOG_LEVEL": "DEBUG",
+        "RATE_LIMIT_CHAT_PER_MINUTE": 11,
+        "RATE_LIMIT_CHAT_PER_DAY": 201,
+        "RATE_LIMIT_SIM_PER_MINUTE": 6,
+        "RATE_LIMIT_WS_CONNECT_PER_MINUTE": 12,
+        "API_DOCS_ENABLED": True,
     }
 
 
@@ -565,6 +581,7 @@ def test_every_value_may_have_surrounding_spaces(monkeypatch: pytest.MonkeyPatch
         "RATE_LIMIT_CHAT_PER_DAY": "30",
         "RATE_LIMIT_SIM_PER_MINUTE": "2",
         "RATE_LIMIT_WS_CONNECT_PER_MINUTE": "4",
+        "API_DOCS_ENABLED": "true",
     }
     assert set(values) == FIELDS
     plain = _from_env(monkeypatch, **values)
