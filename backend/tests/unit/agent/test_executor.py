@@ -186,6 +186,7 @@ def test_money_tool_result_has_plan_and_forecast_with_previous_values() -> None:
         "feasible": True,
         "today_budget": 29.8,
         "previous_today_budget": 31.2,
+        "next_7_days": [],
         "reason": "set_goal",
     }
     assert body["forecast"]["probability"] == 0.77
