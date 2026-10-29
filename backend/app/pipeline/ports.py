@@ -71,3 +71,8 @@ try:
 except ImportError:
     format_money = _fallbacks.format_money
     label = _fallbacks.label
+
+try:
+    from app.context.products import rank_products
+except ImportError:
+    rank_products = _fallbacks.rank_products

@@ -286,3 +286,10 @@ async def infer_hypotheses(db: AsyncSession, user_id: int) -> list[LifeFactDraft
 async def recompute_baselines(db: AsyncSession, user_id: int) -> dict[str, Any]:
     """S0 (danutu, E6): keeps whatever is cached."""
     return {}
+
+
+def rank_products(
+    ctx: dm.UserContext, products: list[dm.Product]
+) -> list[tuple[dm.Product, str | None]]:
+    """S0 (David G., C12): catalogue order, no reason."""
+    return [(p, None) for p in products]

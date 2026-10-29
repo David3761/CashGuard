@@ -2,11 +2,13 @@ from fastapi import APIRouter, FastAPI
 
 from app.api import (
     chat,
+    context,
     internal,
     me,
     messages,
     notifications,
     plan,
+    receivables,
     state,
     transactions,
     transfers,
@@ -36,7 +38,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"status": "ok"}
 
     api.include_router(internal.router)
-    for module in (chat, me, state, messages, notifications, plan, transactions, transfers):
+    for module in (
+        chat,
+        me,
+        state,
+        messages,
+        notifications,
+        plan,
+        transactions,
+        transfers,
+        receivables,
+        context,
+    ):
         api.include_router(module.router)
     app.include_router(api)
     app.include_router(ws_router)

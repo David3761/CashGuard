@@ -224,3 +224,108 @@ class TransferOut(BaseModel):
     kind: str
     pot_id: int | None
     undone_at: Timestamp | None
+
+
+class ReceivableOut(BaseModel):
+    id: int
+    transaction_id: int | None
+    amount: Money
+    debtor_label: str
+    people_count: int | None
+    amount_each: Money | None
+    expected_by: date
+    status: str
+    requested_at: Timestamp | None
+    paid_at: Timestamp | None
+
+
+class ReceivablesOut(BaseModel):
+    receivables: list[ReceivableOut]
+
+
+class DriverOut(BaseModel):
+    category: str
+    category_label: str | None
+    pp_per_100_lei: float
+
+
+class OptionOut(BaseModel):
+    label: str
+    probability: float
+    apply_hint: dict[str, Any]
+
+
+class HistoryPoint(BaseModel):
+    date: date
+    probability: float
+
+
+class ForecastDetail(ForecastOut):
+    drivers: list[DriverOut]
+    options: list[OptionOut] | None
+    history: list[HistoryPoint]
+
+
+class PotsOut(BaseModel):
+    pots: list[PotOut]
+
+
+class ProductOut(BaseModel):
+    id: str
+    name: str
+    kind: str
+    rate: float
+    liquidity: str
+    why_for_you: str | None
+
+
+class ProductsOut(BaseModel):
+    products: list[ProductOut]
+
+
+class LifeFactOut(BaseModel):
+    id: int
+    type: str
+    text: str | None
+    value: dict[str, Any]
+    status: str
+    source: str
+    confidence: float
+    persistence: str
+    valid_from: date | None
+    valid_to: date | None
+    explains: list[str]
+
+
+class LifeFactsOut(BaseModel):
+    facts: list[LifeFactOut]
+
+
+class LifeFactIn(BaseModel):
+    type: str
+    value: dict[str, Any]
+    text: str | None = None
+    persistence: str = "permanent"
+    valid_from: date | None = None
+    valid_to: date | None = None
+
+
+class LifeFactPatch(BaseModel):
+    value: dict[str, Any] | None = None
+    text: str | None = None
+    persistence: str | None = None
+    valid_from: date | None = None
+    valid_to: date | None = None
+
+
+class NoteIn(BaseModel):
+    value: Any
+
+
+class LifeProfileOut(BaseModel):
+    life_profile: dict[str, Any]
+    plan_preferences: dict[str, Any]
+    goal: dict[str, Any] | None
+    events: list[EventOut]
+    income_sources: list[dict[str, Any]]
+    fixed_costs: list[dict[str, Any]]
