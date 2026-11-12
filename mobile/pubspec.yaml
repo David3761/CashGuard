@@ -36,10 +36,10 @@ dependencies:
   collection: ^1.19.1
 
   # Packages for checking the internet connection
-  connectivity_plus: ^7.3.1
+  connectivity_plus: ^7.3.2
 
   # Database ORM
-  drift: ^2.35.2
+  drift: ^2.35.4
   drift_flutter: ^0.3.1
 
   # Encryption algorithms package (e.g.: AES)
@@ -66,7 +66,7 @@ dependencies:
     sdk: flutter
 
   # The main package for state management
-  flutter_riverpod: ^3.4.3
+  flutter_riverpod: ^3.5.0
 
   # A package for storing secrets (e.g.: the AES key) in the platform's
   # keystore: the Keychain on iOS and the Android Keystore on Android.
@@ -115,7 +115,7 @@ dev_dependencies:
 
   chopper_generator: ^8.7.1
 
-  drift_dev: ^2.35.1
+  drift_dev: ^2.35.3
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -127,7 +127,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  json_serializable: ^6.14.1
+  json_serializable: ^6.15.2
 
   # The riverpod's generator
   riverpod_generator: ^4.0.9
